@@ -1,3 +1,4 @@
+import { ParsedContext } from "../context-node";
 import { getChildContextElements } from "./bos-adapter";
 import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
 import { IAdapter } from "./interface";
