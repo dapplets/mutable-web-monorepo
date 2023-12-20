@@ -1,7 +1,5 @@
-import { ContextNode } from "../context-node";
-
 export interface IAdapter {
-  root: ContextNode;
+  context: Element;
   start(): void;
   stop(): void;
 }

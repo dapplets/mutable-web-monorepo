@@ -1,24 +1,35 @@
-import { ParsedContext } from "../context-node";
 import { getChildContextElements } from "./bos-adapter";
 import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
 import { IAdapter } from "./interface";
 
 export class MicrodataAdapter extends DynamicHtmlAdapter implements IAdapter {
-  override parseContext() {
-    const result: ParsedContext = {};
+  constructor(
+    element: Element,
+    document: Document,
+    namespace: string,
+    name: string = "root"
+  ) {
+    super(element, document, namespace, name);
+  }
 
+  override parseContext() {
     const elements = getChildContextElements(this.element, "itemprop");
 
     for (const element of elements) {
       const propName = element.getAttribute("itemprop")!;
-      result[propName] = MicrodataAdapter.getPropertyValue(element);
+      const propValue = MicrodataAdapter.getPropertyValue(element);
+
+      if (propValue !== undefined) {
+        this.context.setAttributeNS(this.namespace, propName, propValue);
+      } else {
+        this.context.removeAttributeNS(this.namespace, propName);
+      }
     }
 
     if (this.element.hasAttribute("itemid")) {
-      result.id = this.element.getAttribute("itemid")!;
+      const id = this.element.getAttribute("itemid")!;
+      this.context.setAttributeNS(this.namespace, "id", id);
     }
-
-    return result;
   }
 
   override findChildElements() {
@@ -26,7 +37,8 @@ export class MicrodataAdapter extends DynamicHtmlAdapter implements IAdapter {
   }
 
   override createChildAdapter(element: Element) {
-    return new MicrodataAdapter(element, element.getAttribute("itemtype")!);
+    const name = element.getAttribute("itemtype")!;
+    return new MicrodataAdapter(element, this.document, this.namespace, name);
   }
 
   static getPropertyValue(element: Element) {

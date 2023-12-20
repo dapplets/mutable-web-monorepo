@@ -1,24 +1,31 @@
-import { ContextNode, ParsedContext } from "../context-node";
+import { Context } from "../types";
 import { IAdapter } from "./interface";
 
 export abstract class DynamicHtmlAdapter implements IAdapter {
-  public root: ContextNode;
   protected element: Element;
+  protected document: Document;
+  protected namespace: string;
+  public context: Context;
 
-  #mutationObserver: MutationObserver;
+  #observer: MutationObserver;
   #children: Map<Element, DynamicHtmlAdapter> = new Map();
 
-  constructor(element: Element, contextType = "root") {
-    this.#mutationObserver = new MutationObserver(
-      this._handleMutations.bind(this)
-    );
-    this.root = new ContextNode(contextType);
+  constructor(
+    element: Element,
+    document: Document,
+    namespace: string,
+    name: string
+  ) {
     this.element = element;
+    this.document = document;
+    this.namespace = namespace;
+    this.context = document.createElementNS(namespace, name);
+    this.#observer = new MutationObserver(this._handleMutations.bind(this));
   }
 
   start() {
     this.#children.forEach((adapter) => adapter.start());
-    this.#mutationObserver.observe(this.element, {
+    this.#observer.observe(this.element, {
       attributes: true,
       childList: true,
       subtree: true,
@@ -28,16 +35,16 @@ export abstract class DynamicHtmlAdapter implements IAdapter {
 
   stop() {
     this.#children.forEach((adapter) => adapter.stop());
-    this.#mutationObserver.disconnect();
+    this.#observer.disconnect();
   }
 
-  abstract parseContext(): ParsedContext;
+  abstract parseContext(): void;
   abstract findChildElements(): Element[];
   abstract createChildAdapter(element: Element): DynamicHtmlAdapter | undefined;
 
   private _handleMutations(mutations: MutationRecord[]) {
     // parse and update props
-    Object.assign(this.root.props, this.parseContext());
+    this.parseContext();
 
     // update children contexts
     const childElements = new Set(this.findChildElements());
@@ -50,7 +57,7 @@ export abstract class DynamicHtmlAdapter implements IAdapter {
           continue;
         }
         this.#children.set(el, adapter);
-        this.root.addChild(adapter.root);
+        this.context.appendChild(adapter.context);
         adapter.start();
       }
     }
@@ -58,7 +65,7 @@ export abstract class DynamicHtmlAdapter implements IAdapter {
     // remove children that are no longer in the DOM
     for (const [element, adapter] of this.#children) {
       if (!childElements.has(element)) {
-        this.root.removeChild(adapter.root);
+        this.context.removeChild(adapter.context);
         adapter.stop();
         this.#children.delete(element);
       }

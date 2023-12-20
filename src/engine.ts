@@ -1,44 +1,36 @@
 import { IAdapter } from "./adapters/interface";
 import { BosAdapter } from "./adapters/bos-adapter";
-import { JsonAdapter, AdapterConfig } from "./adapters/json-adapter";
+import {
+  JsonAdapter,
+  JsonAdapterConfig,
+  ParserConfig,
+} from "./adapters/json-adapter";
 import { MicrodataAdapter } from "./adapters/microdata-adapter";
-import { ContextNode } from "./context-node";
 
-class SemNode {
-  children: SemNode[] = [];
-  parent: SemNode | null = null;
-  contexts: ContextNode[] = [];
-
-  addChild(node: SemNode) {
-    node.parent = this;
-    this.children.push(node);
-  }
-
-  removeChild(node: SemNode) {
-    this.children.splice(this.children.indexOf(node), 1);
-  }
-
-  // ToDo: addContext, removeContext ?
+export enum AdapterType {
+  Bos = "bos",
+  Microdata = "microdata",
+  Json = "json",
 }
 
 export type EngineConfig = {
-  jsonAdapterConfigs: AdapterConfig[];
+  jsonAdapterConfigs: ParserConfig[];
 };
 
 export class Engine {
-  adapters: IAdapter[];
+  adapters: IAdapter[] = [];
+  document: XMLDocument = document.implementation.createDocument(
+    null,
+    "semantictree"
+  );
 
   constructor(config: Partial<EngineConfig> = {}) {
-    const targetElement = document.body;
-
-    this.adapters = [
-      new BosAdapter(targetElement),
-      new MicrodataAdapter(targetElement),
-    ];
-
-    for (const adapterConfig of config.jsonAdapterConfigs ?? []) {
-      this.adapters.push(new JsonAdapter(targetElement, adapterConfig));
-    }
+    this.attachAdapter(AdapterType.Bos);
+    this.attachAdapter(AdapterType.Microdata);
+    this.attachAdapter(AdapterType.Json, {
+      namespace: "some-web-site",
+      parserConfig: config.jsonAdapterConfigs![0],
+    });
   }
 
   start() {
@@ -47,5 +39,50 @@ export class Engine {
 
   stop() {
     this.adapters.forEach((adapter) => adapter.stop());
+  }
+
+  attachAdapter(type: AdapterType.Microdata): void;
+  attachAdapter(type: AdapterType.Bos): void;
+  attachAdapter(type: AdapterType.Json, config: JsonAdapterConfig): void;
+  attachAdapter(type: AdapterType, config?: JsonAdapterConfig): void {
+    const observingElement = document.body;
+
+    let adapter: IAdapter;
+
+    switch (type) {
+      case AdapterType.Bos:
+        adapter = new BosAdapter(
+          observingElement,
+          this.document,
+          "https://dapplets.org/ns/bos"
+        );
+        break;
+
+      case AdapterType.Microdata:
+        adapter = new MicrodataAdapter(
+          observingElement,
+          this.document,
+          "https://dapplets.org/ns/microdata"
+        );
+        break;
+
+      case AdapterType.Json:
+        if (!config?.namespace) {
+          throw new Error("Json adapter requires id");
+        }
+
+        adapter = new JsonAdapter(
+          observingElement,
+          this.document,
+          "https://dapplets.org/ns/json/" + config.namespace,
+          config?.parserConfig
+        );
+        break;
+
+      default:
+        throw new Error("Incompatible adapter type");
+    }
+
+    this.adapters.push(adapter);
   }
 }

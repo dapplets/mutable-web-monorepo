@@ -1,16 +1,20 @@
-import { ParsedContext } from "../context-node";
 import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
 import { IAdapter } from "./interface";
 
-export type AdapterConfig = {
+export type JsonAdapterConfig = {
+  namespace: string;
+  parserConfig: ParserConfig;
+};
+
+export type ParserConfig = {
   context: {
     selector?: string;
-    type: string;
+    name: string;
     props?: {
       [key: string]: string;
     };
   };
-  children?: AdapterConfig[];
+  children?: ParserConfig[];
 };
 
 const query = (cssOrXPath: string, element: Element) => {
@@ -41,28 +45,36 @@ const query = (cssOrXPath: string, element: Element) => {
 };
 
 export class JsonAdapter extends DynamicHtmlAdapter implements IAdapter {
-  #config: AdapterConfig;
+  config: ParserConfig;
 
-  constructor(element: Element, config: AdapterConfig) {
-    super(element, config.context.type);
-    this.#config = config;
+  constructor(
+    element: Element,
+    document: Document,
+    namespace: string,
+    config: ParserConfig
+  ) {
+    super(element, document, namespace, config.context.name);
+    this.config = config;
   }
 
   parseContext() {
-    const result: ParsedContext = {};
+    for (const prop in this.config.context.props) {
+      const cssOrXpathQuery = this.config.context.props[prop];
+      const value = query(cssOrXpathQuery, this.element);
 
-    for (const prop in this.#config.context.props) {
-      const cssOrXpathQuery = this.#config.context.props[prop];
-      result[prop] = query(cssOrXpathQuery, this.element);
+      if (value !== null) {
+        // ToDo: add type casting
+        this.context.setAttributeNS(this.namespace, prop, value.toString());
+      } else {
+        this.context.removeAttributeNS(this.namespace, prop);
+      }
     }
-
-    return result;
   }
 
   findChildElements() {
     const result: Element[] = [];
 
-    for (const childConfig of this.#config.children ?? []) {
+    for (const childConfig of this.config.children ?? []) {
       if (!childConfig.context.selector) continue;
 
       const found = Array.from(
@@ -76,7 +88,7 @@ export class JsonAdapter extends DynamicHtmlAdapter implements IAdapter {
   }
 
   createChildAdapter(element: Element) {
-    for (const childConfig of this.#config.children ?? []) {
+    for (const childConfig of this.config.children ?? []) {
       if (!childConfig.context.selector) continue;
 
       // ToDo: avoid double querySelectorAll
@@ -85,7 +97,12 @@ export class JsonAdapter extends DynamicHtmlAdapter implements IAdapter {
       );
 
       if (found.has(element)) {
-        return new JsonAdapter(element, childConfig);
+        return new JsonAdapter(
+          element,
+          this.document,
+          this.namespace,
+          childConfig
+        );
       }
     }
   }
