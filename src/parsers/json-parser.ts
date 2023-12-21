@@ -12,6 +12,9 @@ export type ParserConfig = {
       props: {
         [prop: string]: string;
       };
+      insertionPoints?: {
+        [insPointName: string]: string;
+      };
       children?: string[];
     };
   };
@@ -84,5 +87,16 @@ export class JsonParser implements IParser {
     }
 
     return result;
+  }
+
+  findInsertionPoint(
+    element: Element,
+    contextName: string,
+    insertionPoint: string
+  ): Element | null {
+    const contextConfig = this.config.contexts[contextName];
+    const selector = contextConfig.insertionPoints?.[insertionPoint];
+    if (!selector) return null;
+    return element.querySelector(selector);
   }
 }

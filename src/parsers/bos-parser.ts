@@ -14,4 +14,12 @@ export class BosParser implements IParser {
       })
     );
   }
+
+  findInsertionPoint(
+    element: Element,
+    _: string,
+    insertionPoint: string
+  ): Element | null {
+    return element.querySelector(`[data-component="${insertionPoint}"]`);
+  }
 }

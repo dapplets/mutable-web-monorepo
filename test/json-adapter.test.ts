@@ -1,7 +1,7 @@
 import { JsonParser } from "../src/parsers/json-parser";
 import { DynamicHtmlAdapter } from "../src/adapters/dynamic-html-adapter";
 import { Context } from "../src/types";
-import { IAdapter } from "../src/adapters/interface";
+import { IAdapter, InsertionType } from "../src/adapters/interface";
 
 const config = {
   contexts: {
@@ -84,5 +84,16 @@ describe("JSON adapter", () => {
 
     expect(ctx.children[0].getAttributeNS(ns, "text")).toBe("Text 1 changed");
     expect(ctx.children[1].getAttributeNS(ns, "text")).toBe("Msg 2 changed");
+  });
+
+  it("should inject new element", async () => {
+    const post = ctx.children[0];
+
+    const widget = document.createElement("button");
+    widget.innerText = "Injecting Widget";
+
+    adapter.injectElement(widget, post, "text", InsertionType.After);
+
+    expect(element.querySelector("button")).toBe(widget);
   });
 });

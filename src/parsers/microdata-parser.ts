@@ -27,6 +27,14 @@ export class MicrodataParser implements IParser {
     }));
   }
 
+  findInsertionPoint(
+    element: Element,
+    _: string,
+    insertionPoint: string
+  ): Element | null {
+    return element.querySelector(`[itemtype="${insertionPoint}"]`);
+  }
+
   static getPropertyValue(element: Element) {
     if (element.hasAttribute("itemscope")) {
       return undefined;

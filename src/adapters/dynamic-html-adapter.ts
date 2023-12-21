@@ -1,6 +1,6 @@
 import { IParser } from "../parsers/interface";
 import { Context } from "../types";
-import { IAdapter } from "./interface";
+import { IAdapter, InsertionType } from "./interface";
 
 export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
@@ -42,6 +42,40 @@ export class DynamicHtmlAdapter implements IAdapter {
 
   stop() {
     this.#observerByElement.forEach((observer) => observer.disconnect());
+  }
+
+  injectElement(
+    injectingElement: Element,
+    context: Context,
+    insertionPoint: string,
+    insertionType: InsertionType
+  ) {
+    const contextElement = this.#elementByContext.get(context);
+
+    if (!contextElement) {
+      throw new Error("Context element not found");
+    }
+
+    const insPointElement = this.parser.findInsertionPoint(
+      contextElement,
+      context.tagName,
+      insertionPoint
+    );
+
+    if (!insPointElement) {
+      throw new Error("Insertion point not found");
+    }
+
+    switch (insertionType) {
+      case InsertionType.Before:
+        insPointElement.before(injectingElement);
+        break;
+      case InsertionType.After:
+        insPointElement.after(injectingElement);
+        break;
+      default:
+        throw new Error("Unknown insertion type");
+    }
   }
 
   _createContextForElement(element: Element, contextName: string) {

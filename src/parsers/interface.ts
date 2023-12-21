@@ -1,3 +1,5 @@
+import { Context } from "../types";
+
 export interface IParser {
   parseContext(
     element: Element,
@@ -8,4 +10,10 @@ export interface IParser {
     element: Element,
     contextName: string
   ): { element: Element; contextName: string }[];
+
+  findInsertionPoint(
+    element: Element,
+    contextName: string,
+    insertionPoint: string
+  ): Element | null;
 }
