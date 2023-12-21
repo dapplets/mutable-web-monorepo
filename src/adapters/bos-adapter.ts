@@ -2,26 +2,17 @@ import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
 import { IAdapter } from "./interface";
 
 export class BosAdapter extends DynamicHtmlAdapter implements IAdapter {
-  constructor(
-    element: Element,
-    document: Document,
-    namespace: string,
-    name: string = "root"
-  ) {
-    super(element, document, namespace, name);
+  override parseContext(element: Element) {
+    return JSON.parse(element.getAttribute("data-props") ?? "{}");
   }
 
-  override parseContext() {
-    return JSON.parse(this.element.getAttribute("data-props") ?? "{}");
-  }
-
-  override findChildElements() {
-    return getChildContextElements(this.element, "data-component");
-  }
-
-  override createChildAdapter(element: Element) {
-    const name = element.getAttribute("data-component")!;
-    return new BosAdapter(element, this.document, this.namespace, name);
+  override findChildElements(element: Element) {
+    return getChildContextElements(element, "data-component").map(
+      (element) => ({
+        element,
+        contextName: element.getAttribute("data-component")!,
+      })
+    );
   }
 }
 

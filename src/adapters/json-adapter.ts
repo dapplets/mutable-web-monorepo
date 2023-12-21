@@ -1,3 +1,4 @@
+import { Context } from "../types";
 import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
 import { IAdapter } from "./interface";
 
@@ -7,14 +8,15 @@ export type JsonAdapterConfig = {
 };
 
 export type ParserConfig = {
-  context: {
-    selector?: string;
-    name: string;
-    props?: {
-      [key: string]: string;
+  contexts: {
+    [name: string]: {
+      selector: string;
+      props: {
+        [prop: string]: string;
+      };
+      children?: string[];
     };
   };
-  children?: ParserConfig[];
 };
 
 const query = (cssOrXPath: string, element: Element) => {
@@ -45,7 +47,7 @@ const query = (cssOrXPath: string, element: Element) => {
 };
 
 export class JsonAdapter extends DynamicHtmlAdapter implements IAdapter {
-  config: ParserConfig;
+  protected config: ParserConfig;
 
   constructor(
     element: Element,
@@ -53,57 +55,42 @@ export class JsonAdapter extends DynamicHtmlAdapter implements IAdapter {
     namespace: string,
     config: ParserConfig
   ) {
-    super(element, document, namespace, config.context.name);
+    super(element, document, namespace);
     this.config = config;
   }
 
-  parseContext() {
-    for (const prop in this.config.context.props) {
-      const cssOrXpathQuery = this.config.context.props[prop];
-      const value = query(cssOrXpathQuery, this.element);
+  parseContext(element: Element, contextName: string) {
+    const contextProperties = this.config.contexts[contextName].props;
+    const parsed: [string, string | null][] = [];
 
-      if (value !== null) {
-        // ToDo: add type casting
-        this.context.setAttributeNS(this.namespace, prop, value.toString());
-      } else {
-        this.context.removeAttributeNS(this.namespace, prop);
-      }
+    for (const [prop, cssOrXpathQuery] of Object.entries(contextProperties)) {
+      const value = query(cssOrXpathQuery, element)?.toString() ?? null;
+      parsed.push([prop, value]);
     }
+
+    return parsed;
   }
 
-  findChildElements() {
-    const result: Element[] = [];
+  findChildElements(
+    element: Element,
+    contextName: string
+  ): { element: Element; contextName: string }[] {
+    const contextConfig = this.config.contexts[contextName];
+    if (!contextConfig.children?.length) return [];
 
-    for (const childConfig of this.config.children ?? []) {
-      if (!childConfig.context.selector) continue;
+    const result: { element: Element; contextName: string }[] = [];
 
-      const found = Array.from(
-        this.element.querySelectorAll(childConfig.context.selector)
+    for (const childContextName of contextConfig.children ?? []) {
+      const childConfig = this.config.contexts[childContextName];
+      const childElements = Array.from(
+        element.querySelectorAll(childConfig.selector)
       );
 
-      result.push(...found);
+      for (const childElement of childElements) {
+        result.push({ element: childElement, contextName: childContextName });
+      }
     }
 
     return result;
-  }
-
-  createChildAdapter(element: Element) {
-    for (const childConfig of this.config.children ?? []) {
-      if (!childConfig.context.selector) continue;
-
-      // ToDo: avoid double querySelectorAll
-      const found = new WeakSet(
-        Array.from(this.element.querySelectorAll(childConfig.context.selector))
-      );
-
-      if (found.has(element)) {
-        return new JsonAdapter(
-          element,
-          this.document,
-          this.namespace,
-          childConfig
-        );
-      }
-    }
   }
 }

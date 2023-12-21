@@ -3,42 +3,29 @@ import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
 import { IAdapter } from "./interface";
 
 export class MicrodataAdapter extends DynamicHtmlAdapter implements IAdapter {
-  constructor(
-    element: Element,
-    document: Document,
-    namespace: string,
-    name: string = "root"
-  ) {
-    super(element, document, namespace, name);
-  }
+  override parseContext(element: Element) {
+    const childElements = getChildContextElements(element, "itemprop");
+    const result: [string, string | null][] = [];
 
-  override parseContext() {
-    const elements = getChildContextElements(this.element, "itemprop");
-
-    for (const element of elements) {
-      const propName = element.getAttribute("itemprop")!;
-      const propValue = MicrodataAdapter.getPropertyValue(element);
-
-      if (propValue !== undefined) {
-        this.context.setAttributeNS(this.namespace, propName, propValue);
-      } else {
-        this.context.removeAttributeNS(this.namespace, propName);
-      }
+    for (const childElement of childElements) {
+      const propName = childElement.getAttribute("itemprop")!;
+      const propValue = MicrodataAdapter.getPropertyValue(childElement) ?? null;
+      result.push([propName, propValue]);
     }
 
-    if (this.element.hasAttribute("itemid")) {
-      const id = this.element.getAttribute("itemid")!;
-      this.context.setAttributeNS(this.namespace, "id", id);
+    if (element.hasAttribute("itemid")) {
+      const id = element.getAttribute("itemid")!;
+      result.push(["id", id]);
     }
+
+    return result;
   }
 
-  override findChildElements() {
-    return getChildContextElements(this.element, "itemtype");
-  }
-
-  override createChildAdapter(element: Element) {
-    const name = element.getAttribute("itemtype")!;
-    return new MicrodataAdapter(element, this.document, this.namespace, name);
+  override findChildElements(element: Element) {
+    return getChildContextElements(element, "itemtype").map((element) => ({
+      element,
+      contextName: element.getAttribute("itemtype")!,
+    }));
   }
 
   static getPropertyValue(element: Element) {

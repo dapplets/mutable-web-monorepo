@@ -7,67 +7,100 @@ export abstract class DynamicHtmlAdapter implements IAdapter {
   protected namespace: string;
   public context: Context;
 
-  #observer: MutationObserver;
-  #children: Map<Element, DynamicHtmlAdapter> = new Map();
+  #observerByElement: Map<Element, MutationObserver> = new Map();
+  #elementByContext: WeakMap<Context, Element> = new WeakMap();
+  #contextByElement: Map<Element, Context> = new Map();
 
-  constructor(
-    element: Element,
-    document: Document,
-    namespace: string,
-    name: string
-  ) {
+  constructor(element: Element, document: Document, namespace: string) {
     this.element = element;
     this.document = document;
     this.namespace = namespace;
-    this.context = document.createElementNS(namespace, name);
-    this.#observer = new MutationObserver(this._handleMutations.bind(this));
+    this.context = this._createContextForElement(element, "root");
   }
 
   start() {
-    this.#children.forEach((adapter) => adapter.start());
-    this.#observer.observe(this.element, {
-      attributes: true,
-      childList: true,
-      subtree: true,
-    });
-    this._handleMutations([]);
+    this.#observerByElement.forEach((observer, element) =>
+      observer.observe(element, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        characterData: true,
+      })
+    );
   }
 
   stop() {
-    this.#children.forEach((adapter) => adapter.stop());
-    this.#observer.disconnect();
+    this.#observerByElement.forEach((observer) => observer.disconnect());
   }
 
-  abstract parseContext(): void;
-  abstract findChildElements(): Element[];
-  abstract createChildAdapter(element: Element): DynamicHtmlAdapter | undefined;
+  abstract parseContext(
+    element: Element,
+    contextName: string
+  ): [string, string | null][];
 
-  private _handleMutations(mutations: MutationRecord[]) {
-    // parse and update props
-    this.parseContext();
+  abstract findChildElements(
+    element: Element,
+    contextName: string
+  ): { element: Element; contextName: string }[];
 
-    // update children contexts
-    const childElements = new Set(this.findChildElements());
+  _createContextForElement(element: Element, contextName: string) {
+    const context = this.document.createElementNS(this.namespace, contextName);
+    this.#elementByContext.set(context, element);
 
-    for (const el of childElements) {
-      if (!this.#children.has(el)) {
-        const adapter = this.createChildAdapter(el);
-        if (!adapter) {
-          console.error("Adapter not found for element", el);
-          continue;
-        }
-        this.#children.set(el, adapter);
-        this.context.appendChild(adapter.context);
-        adapter.start();
+    const mutationHandler = () => {
+      // abstract methods that implemented in adapter classes
+      const records = this.parseContext(element, context.tagName);
+      const pairs = this.findChildElements(element, context.tagName);
+      
+      this._updateContext(records, context);
+      this._appendNewChildContexts(pairs, context);
+      this._removeOldChildContexts(pairs, context);
+    };
+
+    const observer = new MutationObserver(mutationHandler);
+
+    this.#observerByElement.set(element, observer);
+
+    return context;
+  }
+
+  private _updateContext(records: [string, string | null][], context: Context) {
+    for (const [prop, value] of records) {
+      if (value !== null && value !== undefined) {
+        context.setAttributeNS(this.namespace, prop, value);
+      } else {
+        context.removeAttributeNS(this.namespace, prop);
       }
     }
+  }
 
-    // remove children that are no longer in the DOM
-    for (const [element, adapter] of this.#children) {
-      if (!childElements.has(element)) {
-        this.context.removeChild(adapter.context);
-        adapter.stop();
-        this.#children.delete(element);
+  private _appendNewChildContexts(
+    childPairs: { element: Element; contextName: string }[],
+    parentContext: Context
+  ) {
+    for (const { element, contextName } of childPairs) {
+      if (!this.#contextByElement.has(element)) {
+        const childContext = this._createContextForElement(
+          element,
+          contextName
+        );
+        parentContext.appendChild(childContext);
+        this.#contextByElement.set(element, childContext);
+      }
+    }
+  }
+
+  private _removeOldChildContexts(
+    childPairs: { element: Element; contextName: string }[],
+    parentContext: Context
+  ) {
+    const childElementsSet = new Set(childPairs.map((el) => el.element));
+    for (const [el, ctx] of this.#contextByElement) {
+      if (!childElementsSet.has(el)) {
+        parentContext.removeChild(ctx);
+        this.#contextByElement.delete(el);
+        this.#observerByElement.get(el)?.disconnect();
+        this.#observerByElement.delete(el);
       }
     }
   }

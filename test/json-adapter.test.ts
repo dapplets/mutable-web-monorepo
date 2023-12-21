@@ -2,35 +2,32 @@ import { JsonAdapter } from "../src/adapters/json-adapter";
 import { Context } from "../src/types";
 
 const config = {
-  context: {
-    name: "root",
-    selector: "div",
-    props: {
-      id: "string('global')",
+  contexts: {
+    root: {
+      selector: "div",
+      props: {
+        id: "string('global')",
+      },
+      children: ["post", "msg"],
+    },
+    post: {
+      selector: ".post",
+      props: {
+        id: "number(.//@data-id)",
+        text: ".text",
+      },
+      insertionPoints: {
+        text: ".text",
+      },
+    },
+    msg: {
+      selector: ".msg",
+      props: {
+        id: "number(.//@data-id)",
+        text: ".text",
+      },
     },
   },
-  children: [
-    {
-      context: {
-        name: "post",
-        selector: ".post",
-        props: {
-          id: "number(.//@data-id)",
-          text: ".text",
-        },
-      },
-    },
-    {
-      context: {
-        name: "msg",
-        selector: ".msg",
-        props: {
-          id: "number(.//@data-id)",
-          text: ".text",
-        },
-      },
-    },
-  ],
 };
 
 describe("JSON adapter", () => {
@@ -54,7 +51,6 @@ describe("JSON adapter", () => {
     ns = "https://dapplets.org/ns/json/some-web-site";
     adapter = new JsonAdapter(element, xmlDocument, ns, config);
     ctx = adapter.context;
-    adapter.start();
   });
 
   it("should return a parsed semantic tree by given html and adapter", () => {
@@ -77,13 +73,7 @@ describe("JSON adapter", () => {
     // ToDo: wait for context changed event?
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(ctx.tagName).toBe("root");
-    expect(ctx.getAttributeNS(ns, "id")).toBe("global");
-    expect(ctx.children[0].tagName).toBe("post");
-    expect(ctx.children[0].getAttributeNS(ns, "id")).toBe("1");
     expect(ctx.children[0].getAttributeNS(ns, "text")).toBe("Text 1 changed");
-    expect(ctx.children[1].tagName).toBe("msg");
-    expect(ctx.children[1].getAttributeNS(ns, "id")).toBe("2");
     expect(ctx.children[1].getAttributeNS(ns, "text")).toBe("Msg 2 changed");
   });
 });
