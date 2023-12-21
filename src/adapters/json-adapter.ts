@@ -1,6 +1,4 @@
-import { Context } from "../types";
-import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
-import { IAdapter } from "./interface";
+import { IHtmlParser } from "./interface";
 
 export type JsonAdapterConfig = {
   namespace: string;
@@ -46,16 +44,10 @@ const query = (cssOrXPath: string, element: Element) => {
   return null;
 };
 
-export class JsonAdapter extends DynamicHtmlAdapter implements IAdapter {
+export class JsonAdapter implements IHtmlParser {
   protected config: ParserConfig;
 
-  constructor(
-    element: Element,
-    document: Document,
-    namespace: string,
-    config: ParserConfig
-  ) {
-    super(element, document, namespace);
+  constructor(config: ParserConfig) {
     this.config = config;
   }
 

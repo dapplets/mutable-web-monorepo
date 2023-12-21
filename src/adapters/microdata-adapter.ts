@@ -1,9 +1,8 @@
 import { getChildContextElements } from "./bos-adapter";
-import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
-import { IAdapter } from "./interface";
+import { IHtmlParser } from "./interface";
 
-export class MicrodataAdapter extends DynamicHtmlAdapter implements IAdapter {
-  override parseContext(element: Element) {
+export class MicrodataAdapter implements IHtmlParser {
+  parseContext(element: Element) {
     const childElements = getChildContextElements(element, "itemprop");
     const result: [string, string | null][] = [];
 
@@ -21,7 +20,7 @@ export class MicrodataAdapter extends DynamicHtmlAdapter implements IAdapter {
     return result;
   }
 
-  override findChildElements(element: Element) {
+  findChildElements(element: Element) {
     return getChildContextElements(element, "itemtype").map((element) => ({
       element,
       contextName: element.getAttribute("itemtype")!,

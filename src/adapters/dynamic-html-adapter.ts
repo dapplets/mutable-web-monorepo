@@ -1,67 +1,69 @@
 import { Context } from "../types";
-import { IAdapter } from "./interface";
+import { IAdapter, IHtmlParser } from "./interface";
 
-export abstract class DynamicHtmlAdapter implements IAdapter {
+export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
   protected document: Document;
   protected namespace: string;
+  protected adapter: IHtmlParser;
   public context: Context;
 
   #observerByElement: Map<Element, MutationObserver> = new Map();
   #elementByContext: WeakMap<Context, Element> = new WeakMap();
   #contextByElement: Map<Element, Context> = new Map();
 
-  constructor(element: Element, document: Document, namespace: string) {
+  constructor(
+    element: Element,
+    document: Document,
+    namespace: string,
+    adapter: IHtmlParser
+  ) {
     this.element = element;
     this.document = document;
     this.namespace = namespace;
+    this.adapter = adapter;
     this.context = this._createContextForElement(element, "root");
   }
 
   start() {
-    this.#observerByElement.forEach((observer, element) =>
+    this.#observerByElement.forEach((observer, element) => {
       observer.observe(element, {
         attributes: true,
         childList: true,
         subtree: true,
         characterData: true,
-      })
-    );
+      });
+
+      // initial parsing without waiting for mutations in the DOM
+      this._handleMutations(element, this.#contextByElement.get(element)!);
+    });
   }
 
   stop() {
     this.#observerByElement.forEach((observer) => observer.disconnect());
   }
 
-  abstract parseContext(
-    element: Element,
-    contextName: string
-  ): [string, string | null][];
-
-  abstract findChildElements(
-    element: Element,
-    contextName: string
-  ): { element: Element; contextName: string }[];
-
   _createContextForElement(element: Element, contextName: string) {
     const context = this.document.createElementNS(this.namespace, contextName);
-    this.#elementByContext.set(context, element);
 
-    const mutationHandler = () => {
-      // abstract methods that implemented in adapter classes
-      const records = this.parseContext(element, context.tagName);
-      const pairs = this.findChildElements(element, context.tagName);
-      
-      this._updateContext(records, context);
-      this._appendNewChildContexts(pairs, context);
-      this._removeOldChildContexts(pairs, context);
-    };
-
-    const observer = new MutationObserver(mutationHandler);
+    const observer = new MutationObserver(() =>
+      this._handleMutations(element, context)
+    );
 
     this.#observerByElement.set(element, observer);
+    this.#elementByContext.set(context, element);
+    this.#contextByElement.set(element, context);
 
     return context;
+  }
+
+  private _handleMutations(element: Element, context: Context) {
+    const records = this.adapter.parseContext(element, context.tagName);
+    const pairs = this.adapter.findChildElements(element, context.tagName);
+
+    this._updateContext(records, context);
+    this._appendNewChildContexts(pairs, context);
+    this._removeOldChildContexts(pairs, context);
   }
 
   private _updateContext(records: [string, string | null][], context: Context) {
@@ -94,13 +96,16 @@ export abstract class DynamicHtmlAdapter implements IAdapter {
     childPairs: { element: Element; contextName: string }[],
     parentContext: Context
   ) {
-    const childElementsSet = new Set(childPairs.map((el) => el.element));
-    for (const [el, ctx] of this.#contextByElement) {
-      if (!childElementsSet.has(el)) {
-        parentContext.removeChild(ctx);
-        this.#contextByElement.delete(el);
-        this.#observerByElement.get(el)?.disconnect();
-        this.#observerByElement.delete(el);
+    const childElementsSet = new Set(childPairs.map((pair) => pair.element));
+    for (const [element, context] of this.#contextByElement) {
+      if (
+        !childElementsSet.has(element) &&
+        context.parentNode === parentContext
+      ) {
+        parentContext.removeChild(context);
+        this.#contextByElement.delete(element);
+        this.#observerByElement.get(element)?.disconnect();
+        this.#observerByElement.delete(element);
       }
     }
   }

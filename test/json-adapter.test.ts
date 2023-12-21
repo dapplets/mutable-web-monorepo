@@ -1,5 +1,7 @@
 import { JsonAdapter } from "../src/adapters/json-adapter";
+import { DynamicHtmlAdapter } from "../src/adapters/dynamic-html-adapter";
 import { Context } from "../src/types";
+import { IAdapter } from "../src/adapters/interface";
 
 const config = {
   contexts: {
@@ -33,7 +35,7 @@ const config = {
 describe("JSON adapter", () => {
   let element: HTMLElement;
   let ns: string;
-  let adapter: JsonAdapter;
+  let adapter: IAdapter;
   let ctx: Context;
 
   beforeEach(() => {
@@ -49,8 +51,15 @@ describe("JSON adapter", () => {
     );
 
     ns = "https://dapplets.org/ns/json/some-web-site";
-    adapter = new JsonAdapter(element, xmlDocument, ns, config);
+    adapter = new DynamicHtmlAdapter(
+      element,
+      xmlDocument,
+      ns,
+      new JsonAdapter(config)
+    );
     ctx = adapter.context;
+
+    adapter.start();
   });
 
   it("should return a parsed semantic tree by given html and adapter", () => {

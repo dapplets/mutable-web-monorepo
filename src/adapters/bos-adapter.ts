@@ -1,12 +1,11 @@
-import { DynamicHtmlAdapter } from "./dynamic-html-adapter";
-import { IAdapter } from "./interface";
+import { IHtmlParser } from "./interface";
 
-export class BosAdapter extends DynamicHtmlAdapter implements IAdapter {
-  override parseContext(element: Element) {
+export class BosAdapter implements IHtmlParser {
+  parseContext(element: Element) {
     return JSON.parse(element.getAttribute("data-props") ?? "{}");
   }
 
-  override findChildElements(element: Element) {
+  findChildElements(element: Element) {
     return getChildContextElements(element, "data-component").map(
       (element) => ({
         element,

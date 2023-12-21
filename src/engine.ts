@@ -1,4 +1,4 @@
-import { IAdapter } from "./adapters/interface";
+import { IAdapter, IHtmlParser } from "./adapters/interface";
 import { BosAdapter } from "./adapters/bos-adapter";
 import {
   JsonAdapter,
@@ -6,6 +6,7 @@ import {
   ParserConfig,
 } from "./adapters/json-adapter";
 import { MicrodataAdapter } from "./adapters/microdata-adapter";
+import { DynamicHtmlAdapter } from "./adapters/dynamic-html-adapter";
 
 export enum AdapterType {
   Bos = "bos",
@@ -51,18 +52,20 @@ export class Engine {
 
     switch (type) {
       case AdapterType.Bos:
-        adapter = new BosAdapter(
+        adapter = new DynamicHtmlAdapter(
           observingElement,
           this.document,
-          "https://dapplets.org/ns/bos"
+          "https://dapplets.org/ns/bos",
+          new BosAdapter()
         );
         break;
 
       case AdapterType.Microdata:
-        adapter = new MicrodataAdapter(
+        adapter = new DynamicHtmlAdapter(
           observingElement,
           this.document,
-          "https://dapplets.org/ns/microdata"
+          "https://dapplets.org/ns/microdata",
+          new MicrodataAdapter()
         );
         break;
 
@@ -71,11 +74,11 @@ export class Engine {
           throw new Error("Json adapter requires id");
         }
 
-        adapter = new JsonAdapter(
+        adapter = new DynamicHtmlAdapter(
           observingElement,
           this.document,
           "https://dapplets.org/ns/json/" + config.namespace,
-          config?.parserConfig
+          new JsonAdapter(config?.parserConfig)
         );
         break;
 
