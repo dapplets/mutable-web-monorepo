@@ -6,7 +6,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
   protected document: Document;
   protected namespace: string;
-  protected adapter: IParser;
+  protected parser: IParser;
   public context: Context;
 
   #observerByElement: Map<Element, MutationObserver> = new Map();
@@ -17,12 +17,12 @@ export class DynamicHtmlAdapter implements IAdapter {
     element: Element,
     document: Document,
     namespace: string,
-    adapter: IParser
+    parser: IParser
   ) {
     this.element = element;
     this.document = document;
     this.namespace = namespace;
-    this.adapter = adapter;
+    this.parser = parser;
     this.context = this._createContextForElement(element, "root");
   }
 
@@ -59,8 +59,8 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   private _handleMutations(element: Element, context: Context) {
-    const records = this.adapter.parseContext(element, context.tagName);
-    const pairs = this.adapter.findChildElements(element, context.tagName);
+    const records = this.parser.parseContext(element, context.tagName);
+    const pairs = this.parser.findChildElements(element, context.tagName);
 
     this._updateContext(records, context);
     this._appendNewChildContexts(pairs, context);
