@@ -1,11 +1,11 @@
-import { IAdapter, IHtmlParser } from "./adapters/interface";
-import { BosAdapter } from "./adapters/bos-adapter";
+import { IAdapter } from "./adapters/interface";
+import { BosParser } from "./parsers/bos-parser";
 import {
-  JsonAdapter,
-  JsonAdapterConfig,
+  JsonParser,
+  JsonParserConfig,
   ParserConfig,
-} from "./adapters/json-adapter";
-import { MicrodataAdapter } from "./adapters/microdata-adapter";
+} from "./parsers/json-parser";
+import { MicrodataParser } from "./parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./adapters/dynamic-html-adapter";
 
 export enum AdapterType {
@@ -15,7 +15,7 @@ export enum AdapterType {
 }
 
 export type EngineConfig = {
-  jsonAdapterConfigs: ParserConfig[];
+  JsonParserConfigs: ParserConfig[];
 };
 
 export class Engine {
@@ -30,7 +30,7 @@ export class Engine {
     this.attachAdapter(AdapterType.Microdata);
     this.attachAdapter(AdapterType.Json, {
       namespace: "some-web-site",
-      parserConfig: config.jsonAdapterConfigs![0],
+      parserConfig: config.JsonParserConfigs![0],
     });
   }
 
@@ -44,8 +44,8 @@ export class Engine {
 
   attachAdapter(type: AdapterType.Microdata): void;
   attachAdapter(type: AdapterType.Bos): void;
-  attachAdapter(type: AdapterType.Json, config: JsonAdapterConfig): void;
-  attachAdapter(type: AdapterType, config?: JsonAdapterConfig): void {
+  attachAdapter(type: AdapterType.Json, config: JsonParserConfig): void;
+  attachAdapter(type: AdapterType, config?: JsonParserConfig): void {
     const observingElement = document.body;
 
     let adapter: IAdapter;
@@ -56,7 +56,7 @@ export class Engine {
           observingElement,
           this.document,
           "https://dapplets.org/ns/bos",
-          new BosAdapter()
+          new BosParser()
         );
         break;
 
@@ -65,7 +65,7 @@ export class Engine {
           observingElement,
           this.document,
           "https://dapplets.org/ns/microdata",
-          new MicrodataAdapter()
+          new MicrodataParser()
         );
         break;
 
@@ -78,7 +78,7 @@ export class Engine {
           observingElement,
           this.document,
           "https://dapplets.org/ns/json/" + config.namespace,
-          new JsonAdapter(config?.parserConfig)
+          new JsonParser(config?.parserConfig)
         );
         break;
 

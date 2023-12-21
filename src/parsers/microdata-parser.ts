@@ -1,14 +1,14 @@
-import { getChildContextElements } from "./bos-adapter";
-import { IHtmlParser } from "./interface";
+import { getChildContextElements } from "./utils";
+import { IParser } from "./interface";
 
-export class MicrodataAdapter implements IHtmlParser {
+export class MicrodataParser implements IParser {
   parseContext(element: Element) {
     const childElements = getChildContextElements(element, "itemprop");
     const result: [string, string | null][] = [];
 
     for (const childElement of childElements) {
       const propName = childElement.getAttribute("itemprop")!;
-      const propValue = MicrodataAdapter.getPropertyValue(childElement) ?? null;
+      const propValue = MicrodataParser.getPropertyValue(childElement) ?? null;
       result.push([propName, propValue]);
     }
 

@@ -1,21 +1,3 @@
-import { IHtmlParser } from "./interface";
-
-export class BosAdapter implements IHtmlParser {
-  parseContext(element: Element) {
-    return JSON.parse(element.getAttribute("data-props") ?? "{}");
-  }
-
-  findChildElements(element: Element) {
-    return getChildContextElements(element, "data-component").map(
-      (element) => ({
-        element,
-        contextName: element.getAttribute("data-component")!,
-      })
-    );
-  }
-}
-
-// ToDo: move to utils
 export function getChildContextElements(
   element: Element,
   attribute: string,

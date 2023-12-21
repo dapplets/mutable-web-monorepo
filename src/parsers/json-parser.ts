@@ -1,6 +1,6 @@
-import { IHtmlParser } from "./interface";
+import { IParser } from "./interface";
 
-export type JsonAdapterConfig = {
+export type JsonParserConfig = {
   namespace: string;
   parserConfig: ParserConfig;
 };
@@ -44,7 +44,7 @@ const query = (cssOrXPath: string, element: Element) => {
   return null;
 };
 
-export class JsonAdapter implements IHtmlParser {
+export class JsonParser implements IParser {
   protected config: ParserConfig;
 
   constructor(config: ParserConfig) {

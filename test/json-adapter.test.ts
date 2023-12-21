@@ -1,4 +1,4 @@
-import { JsonAdapter } from "../src/adapters/json-adapter";
+import { JsonParser } from "../src/parsers/json-parser";
 import { DynamicHtmlAdapter } from "../src/adapters/dynamic-html-adapter";
 import { Context } from "../src/types";
 import { IAdapter } from "../src/adapters/interface";
@@ -55,7 +55,7 @@ describe("JSON adapter", () => {
       element,
       xmlDocument,
       ns,
-      new JsonAdapter(config)
+      new JsonParser(config)
     );
     ctx = adapter.context;
 

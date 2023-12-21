@@ -1,11 +1,12 @@
+import { IParser } from "../parsers/interface";
 import { Context } from "../types";
-import { IAdapter, IHtmlParser } from "./interface";
+import { IAdapter } from "./interface";
 
 export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
   protected document: Document;
   protected namespace: string;
-  protected adapter: IHtmlParser;
+  protected adapter: IParser;
   public context: Context;
 
   #observerByElement: Map<Element, MutationObserver> = new Map();
@@ -16,7 +17,7 @@ export class DynamicHtmlAdapter implements IAdapter {
     element: Element,
     document: Document,
     namespace: string,
-    adapter: IHtmlParser
+    adapter: IParser
   ) {
     this.element = element;
     this.document = document;
