@@ -1,0 +1,10 @@
+node_modules
+build
+secrets.*.js
+dist
+lib
+.env
+.DS_Store
+/test-results/
+/playwright-report/
+/playwright/.cache/

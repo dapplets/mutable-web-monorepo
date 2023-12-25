@@ -1,0 +1,129 @@
+{
+  "name": "@dapplets/mutable-web-extension",
+  "version": "0.1.0",
+  "description": "The Mutable Web",
+  "scripts": {
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack -w --config webpack.dev.js",
+    "lint": "npm run prettify && npm run stylelint && npm run eslint",
+    "prettify": "prettier --write src",
+    "eslint": "eslint ./src --ext .ts --fix",
+    "stylelint": "stylelint ./src/**/*.{css,scss,module.scss} --fix"
+  },
+  "devDependencies": {
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@svgr/webpack": "^6.5.1",
+    "@types/chrome": "^0.0.236",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@types/webextension-polyfill": "^0.10.0",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "copy-webpack-plugin": "^11.0.0",
+    "assert-browserify": "^2.0.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.7.3",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "fork-ts-checker-webpack-plugin": "^7.3.0",
+    "postcss-scss": "^4.0.6",
+    "prettier": "^2.8.7",
+    "prettier-plugin-organize-imports": "^3.2.2",
+    "process": "^0.11.10",
+    "raw-loader": "^4.0.2",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.60.0",
+    "sass-loader": "^13.2.2",
+    "semantic-release": "^19.0.5",
+    "stream-browserify": "^3.0.0",
+    "style-loader": "^3.3.2",
+    "stylelint": "^14.16.1",
+    "stylelint-config-clean-order": "^2.3.1",
+    "stylelint-config-prettier-scss": "^0.0.1",
+    "stylelint-config-standard-scss": "^6.1.0",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "url-loader": "^4.1.1",
+    "webextension-polyfill": "^0.10.0",
+    "webpack": "^5.86.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1",
+    "webpack-merge": "^5.9.0"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "near-social-vm": "github:dapplets/near-social-vm"
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dapplets/mutable-web-extension.git"
+  },
+  "author": "Dapplets Team <contact@dapplets.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dapplets/mutable-web-extension/issues"
+  },
+  "homepage": "https://github.com/dapplets/mutable-web-extension#readme",
+  "files": [
+    "lib/**/*"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "release": {
+    "branches": [
+      "master",
+      {
+        "name": "testing",
+        "prerelease": "beta"
+      },
+      {
+        "name": "develop",
+        "prerelease": "alpha"
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "package-lock.json"
+          ]
+        }
+      ],
+      [
+        "@semantic-release/exec",
+        {
+          "publishCmd": "npm run build:extension && cd build && zip -r dapplet-extension.zip *"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "build/dapplet-extension.zip",
+              "label": "Browser Extension (zip)"
+            },
+            {
+              "path": "lib/index.min.js",
+              "label": "Pure JSLib for browser (js)"
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
