@@ -64,13 +64,13 @@ describe("JSON adapter", () => {
 
   it("should return a parsed semantic tree by given html and adapter", () => {
     expect(ctx.tagName).toBe("root");
-    expect(ctx.getAttributeNS(ns, "id")).toBe("global");
+    expect(ctx.getAttribute("id")).toBe("global");
     expect(ctx.children[0].tagName).toBe("post");
-    expect(ctx.children[0].getAttributeNS(ns, "id")).toBe("1");
-    expect(ctx.children[0].getAttributeNS(ns, "text")).toBe("Text 1");
+    expect(ctx.children[0].getAttribute("id")).toBe("1");
+    expect(ctx.children[0].getAttribute("text")).toBe("Text 1");
     expect(ctx.children[1].tagName).toBe("msg");
-    expect(ctx.children[1].getAttributeNS(ns, "id")).toBe("2");
-    expect(ctx.children[1].getAttributeNS(ns, "text")).toBe("Msg 2");
+    expect(ctx.children[1].getAttribute("id")).toBe("2");
+    expect(ctx.children[1].getAttribute("text")).toBe("Msg 2");
   });
 
   it("should parse dynamically changed html", async () => {
@@ -82,8 +82,8 @@ describe("JSON adapter", () => {
     // ToDo: wait for context changed event?
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    expect(ctx.children[0].getAttributeNS(ns, "text")).toBe("Text 1 changed");
-    expect(ctx.children[1].getAttributeNS(ns, "text")).toBe("Msg 2 changed");
+    expect(ctx.children[0].getAttribute("text")).toBe("Text 1 changed");
+    expect(ctx.children[1].getAttribute("text")).toBe("Msg 2 changed");
   });
 
   it("should inject new element", async () => {

@@ -6,6 +6,7 @@ export enum InsertionType {
 }
 
 export interface IAdapter {
+  namespace: string;
   context: Context;
 
   start(): void;

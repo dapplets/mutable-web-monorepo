@@ -5,13 +5,15 @@ import { IAdapter, InsertionType } from "./interface";
 export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
   protected document: Document;
-  protected namespace: string;
   protected parser: IParser;
+  public namespace: string;
   public context: Context;
 
   #observerByElement: Map<Element, MutationObserver> = new Map();
   #elementByContext: WeakMap<Context, Element> = new WeakMap();
   #contextByElement: Map<Element, Context> = new Map();
+
+  #isStarted = false; // ToDo: find another way to check if adapter is started
 
   constructor(
     element: Element,
@@ -38,9 +40,11 @@ export class DynamicHtmlAdapter implements IAdapter {
       // initial parsing without waiting for mutations in the DOM
       this._handleMutations(element, this.#contextByElement.get(element)!);
     });
+    this.#isStarted = true;
   }
 
   stop() {
+    this.#isStarted = false;
     this.#observerByElement.forEach((observer) => observer.disconnect());
   }
 
@@ -89,6 +93,16 @@ export class DynamicHtmlAdapter implements IAdapter {
     this.#elementByContext.set(context, element);
     this.#contextByElement.set(element, context);
 
+    // ToDo: duplicate code
+    if (this.#isStarted) {
+      observer.observe(element, {
+        attributes: true,
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    }
+
     return context;
   }
 
@@ -103,10 +117,13 @@ export class DynamicHtmlAdapter implements IAdapter {
 
   private _updateContext(records: [string, string | null][], context: Context) {
     for (const [prop, value] of records) {
-      if (value !== null && value !== undefined) {
-        context.setAttributeNS(this.namespace, prop, value);
+      if (value === context.getAttribute(prop)) {
+        continue;
+      } else if (value !== null && value !== undefined) {
+        // ToDo: nested objects will be lost
+        context.setAttribute(prop, value);
       } else {
-        context.removeAttributeNS(this.namespace, prop);
+        context.removeAttribute(prop);
       }
     }
   }

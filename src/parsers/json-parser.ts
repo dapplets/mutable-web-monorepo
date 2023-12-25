@@ -8,8 +8,8 @@ export type JsonParserConfig = {
 export type ParserConfig = {
   contexts: {
     [name: string]: {
-      selector: string;
-      props: {
+      selector?: string;
+      props?: {
         [prop: string]: string;
       };
       insertionPoints?: {
@@ -51,11 +51,14 @@ export class JsonParser implements IParser {
   protected config: ParserConfig;
 
   constructor(config: ParserConfig) {
+    // ToDo: validate config
     this.config = config;
   }
 
   parseContext(element: Element, contextName: string) {
     const contextProperties = this.config.contexts[contextName].props;
+    if (!contextProperties) return [];
+
     const parsed: [string, string | null][] = [];
 
     for (const [prop, cssOrXpathQuery] of Object.entries(contextProperties)) {
@@ -77,6 +80,8 @@ export class JsonParser implements IParser {
 
     for (const childContextName of contextConfig.children ?? []) {
       const childConfig = this.config.contexts[childContextName];
+      if (!childConfig.selector) continue;
+
       const childElements = Array.from(
         element.querySelectorAll(childConfig.selector)
       );
