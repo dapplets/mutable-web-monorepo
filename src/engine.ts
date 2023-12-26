@@ -14,6 +14,7 @@ import {
 } from "./context-observer";
 import { LinkProvider } from "./providers/link-provider";
 import { ParserConfigProvider } from "./providers/parser-config-provider";
+import { BosWidgetFactory } from "./bos/bos-widget-factory";
 
 export enum AdapterType {
   Bos = "bos",
@@ -22,7 +23,8 @@ export enum AdapterType {
 }
 
 export type EngineConfig = {
-  jsonParserConfigs: ParserConfig[];
+  networkId: string;
+  selector: any;
 };
 
 const activatedParserConfigs = [
@@ -40,8 +42,15 @@ export class Engine implements IContextCallbacks {
   #contextObserver = new ContextObserver(this);
   #linkProvider = new LinkProvider();
   #parserConfigProvider = new ParserConfigProvider();
+  #bosWidgetFactory: BosWidgetFactory;
 
-  constructor(config: Partial<EngineConfig> = {}) {}
+  constructor(config: Partial<EngineConfig> = {}) {
+    this.#bosWidgetFactory = new BosWidgetFactory({
+      networkId: config.networkId ?? "mainnet",
+      selector: config.selector,
+      nodeName: "bos-component",
+    });
+  }
 
   handleContextStarted(context: Element): void {
     this.#linkProvider
@@ -57,18 +66,9 @@ export class Engine implements IContextCallbacks {
 
           if (!adapter) return;
 
-          const element = document.createElement("button");
-          element.innerText = link.component;
-          element.addEventListener("click", () => {
-            const obj = Array.from(context.attributes)
-              .map((a) => [a.name, a.value])
-              .reduce((acc, attr) => {
-                // @ts-ignore
-                acc[attr[0]] = attr[1];
-                return acc;
-              }, {});
-            alert(JSON.stringify(obj, null, 2));
-          });
+          const element = this.#bosWidgetFactory.createWidget(
+            link.component
+          );
 
           adapter.injectElement(
             element,

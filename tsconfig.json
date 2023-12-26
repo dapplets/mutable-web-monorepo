@@ -6,8 +6,9 @@
       "rootDir": "./src",
       "strict": true,
       "declaration": true,
-      "declarationMap": true
+      "declarationMap": true,
+      "jsx": "react"
     },
-    "include": ["src/**/*.ts", "src/json-adapter.ts!", "src/engine-wip.ts!"],
+    "include": ["src/**/*.ts", "src/**/*.tsx"],
     "exclude": ["node_modules"]
   }
