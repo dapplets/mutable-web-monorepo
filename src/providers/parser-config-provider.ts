@@ -1,4 +1,4 @@
-import { ParserConfig } from "../parsers/json-parser";
+import { ParserConfig } from "../core/parsers/json-parser";
 
 const configs = [
   {

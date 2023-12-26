@@ -1,4 +1,4 @@
-import { Context } from "../types";
+import { Context } from "../core/types";
 
 export type BosUserLink = {
   id: string;

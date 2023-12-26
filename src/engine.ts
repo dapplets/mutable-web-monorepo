@@ -1,17 +1,17 @@
-import { IAdapter, InsertionType } from "./adapters/interface";
-import { BosParser } from "./parsers/bos-parser";
+import { IAdapter, InsertionType } from "./core/adapters/interface";
+import { BosParser } from "./core/parsers/bos-parser";
 import {
   JsonParser,
   JsonParserConfig,
   ParserConfig,
-} from "./parsers/json-parser";
-import { MicrodataParser } from "./parsers/microdata-parser";
-import { DynamicHtmlAdapter } from "./adapters/dynamic-html-adapter";
+} from "./core/parsers/json-parser";
+import { MicrodataParser } from "./core/parsers/microdata-parser";
+import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import {
   ContextChangedDetails,
   ContextObserver,
   IContextCallbacks,
-} from "./context-observer";
+} from "./core/context-observer";
 import { LinkProvider } from "./providers/link-provider";
 import { ParserConfigProvider } from "./providers/parser-config-provider";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
@@ -66,9 +66,7 @@ export class Engine implements IContextCallbacks {
 
           if (!adapter) return;
 
-          const element = this.#bosWidgetFactory.createWidget(
-            link.component
-          );
+          const element = this.#bosWidgetFactory.createWidget(link.component);
 
           adapter.injectElement(
             element,
