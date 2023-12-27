@@ -40,10 +40,16 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["custom-elements.min.js","contentscript.js"],
+      "js": ["custom-elements.min.js", "contentscript.js"],
       "run_at": "document_idle"
     }
   ],
-  "permissions": [],
+  "web_accessible_resources": [
+    {
+      "resources": ["callback.html"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "permissions": ["storage", "tabs", "activeTab"],
   "host_permissions": ["*://localhost/*", "http://*/*", "https://*/*"]
 }
