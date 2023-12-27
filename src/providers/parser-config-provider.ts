@@ -35,7 +35,7 @@ const configs = [
         children: ["post", "profile"],
       },
       post: {
-        selector: "article[data-testid=tweet]",
+        selector: "div[data-testid=cellInnerDiv]",
         props: {
           id: "substring-after(string(.//time/../@href), 'status/')",
           text: "string(.//*[@data-testid='tweetText'])",

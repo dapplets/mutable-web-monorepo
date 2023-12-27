@@ -4,13 +4,14 @@ import { createRoot } from "react-dom/client";
 import { StyleSheetManager } from "styled-components";
 
 export class BosComponent extends HTMLElement {
-  public src: string = '';
-
   private _adapterStylesMountPoint = document.createElement("style");
   private _stylesMountPoint = document.createElement("div");
   private _componentMountPoint = document.createElement("div");
   private _root = createRoot(this._componentMountPoint);
   private _BosWidget: React.FC<{ src: string; props: any }>;
+
+  #src: string = "";
+  #props: any = {};
 
   constructor(useSingletonInitNear: () => void) {
     super();
@@ -24,6 +25,24 @@ export class BosComponent extends HTMLElement {
 
       return <Widget src={src} props={props} />;
     };
+  }
+
+  set src(val: string) {
+    this.#src = val;
+    this._render();
+  }
+
+  get src() {
+    return this.#src;
+  }
+
+  set props(val: any) {
+    this.#props = val;
+    this._render();
+  }
+
+  get props() {
+    return this.#props;
   }
 
   connectedCallback() {
@@ -43,25 +62,7 @@ export class BosComponent extends HTMLElement {
     this._adapterStylesMountPoint.innerHTML = disableInheritanceRule;
     shadowRoot.appendChild(this._adapterStylesMountPoint);
 
-    const { props } = this._getCustomProps();
-
-    // ToDo: custom setter will be applied for initially declared properties only
-    Object.keys(props).forEach((propName) => {
-      // @ts-ignore
-      this["_" + propName] = props[propName];
-      Object.defineProperty(this, propName, {
-        enumerable: true,
-        // @ts-ignore
-        get: () => this["_" + propName],
-        set: (value) => {
-          // @ts-ignore
-          this["_" + propName] = value;
-
-          this._render();
-        },
-      });
-    });
-
+    // Initial render
     this._render();
   }
 
@@ -69,27 +70,10 @@ export class BosComponent extends HTMLElement {
     this._root.unmount();
   }
 
-  _getCustomProps(): { src: string; props: any } {
-    const { src, ...anotherProps } = this;
-
-    const keysToSkip = ["__CE_state", "__CE_definition", "__CE_shadowRoot"];
-
-    const props = Object.fromEntries(
-      Object.keys(anotherProps)
-        .filter((key) => !keysToSkip.includes(key) && !key.startsWith("_"))
-        // @ts-ignore
-        .map((key) => [key, anotherProps[key]])
-    );
-
-    return { src, props };
-  }
-
   _render() {
-    const { src, props } = this._getCustomProps();
-
     this._root.render(
       <StyleSheetManager target={this._stylesMountPoint}>
-        <this._BosWidget src={src} props={props} />
+        <this._BosWidget src={this.#src} props={this.#props} />
       </StyleSheetManager>
     );
   }

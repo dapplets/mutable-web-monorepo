@@ -3,7 +3,7 @@ import { Context } from "../core/types";
 export type BosUserLink = {
   id: string;
   parserConfigId: string;
-  expr: string;
+  expression: string;
   insertionPoint: string;
   insertionType: string;
   component: string;
@@ -14,7 +14,7 @@ const links = [
   {
     id: "1",
     parserConfigId: "dapplets.near/parser/near-social-viewer",
-    expr: 'post[id="root.near/108491730"]',
+    expression: 'post[id="root.near/108491730"]',
     insertionPoint: "like",
     insertionType: "after",
     component: "dapplets.near/widget/Dog",
@@ -22,7 +22,7 @@ const links = [
   {
     id: "2",
     parserConfigId: "dapplets.near/parser/near-social-viewer",
-    expr: 'post[id="mum001.near/108508979"]',
+    expression: 'post[id="mum001.near/108508979"]',
     insertionPoint: "like",
     insertionType: "after",
     component: "dapplets.near/widget/Cat",
@@ -30,7 +30,7 @@ const links = [
   {
     id: "3",
     parserConfigId: "dapplets.near/parser/twitter",
-    expr: 'post[id="1694995303642939408"]',
+    expression: 'post[id="1694995303642939408"]',
     insertionPoint: "southPanel",
     insertionType: "after",
     component: "dapplets.near/widget/Cat",
@@ -38,17 +38,43 @@ const links = [
   {
     id: "4",
     parserConfigId: "dapplets.near/parser/twitter",
-    expr: 'post[id="1694995241055465828"]',
+    expression: 'post[id="1694995241055465828"]',
     insertionPoint: "southPanel",
     insertionType: "after",
     component: "dapplets.near/widget/Dog",
   },
+  {
+    id: "5",
+    parserConfigId: "dapplets.near/parser/twitter",
+    expression: 'post',
+    insertionPoint: "root",
+    insertionType: "inside",
+    component: "lisofffa.near/widget/Mutation-Overlay",
+  },
+  {
+    id: "6",
+    parserConfigId: "dapplets.near/parser/twitter",
+    expression: 'post',
+    insertionPoint: "southPanel",
+    insertionType: "after",
+    component: "nikter.near/widget/Tipping",
+  }
 ];
 
 export class LinkProvider {
   async getLinksForContext(context: Context): Promise<BosUserLink[]> {
-    if (!context.id) return []; // ignore contexts without id
-    const expression = `${context.tagName}[id="${context.id}"]`;
-    return links.filter((link) => link.expr === expression);
+    // ignore contexts without id
+    if (!context.id) return [];
+
+    // Add links that match the context name
+    const output = links.filter((link) => link.expression === context.tagName);
+
+    // Add links that match the context id
+    if (context.id) {
+      const expression = `${context.tagName}[id="${context.id}"]`;
+      output.push(...links.filter((link) => link.expression === expression));
+    }
+    
+    return output;
   }
 }

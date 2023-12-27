@@ -24,6 +24,9 @@ export class BosWidgetFactory {
           initNear({
             networkId: config.networkId,
             selector: config.selector,
+            features: {
+              skipTxConfirmationPopup: true,
+            },
           });
         }
       }, [initNear]);

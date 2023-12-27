@@ -68,6 +68,12 @@ export class Engine implements IContextCallbacks {
 
           const element = this.#bosWidgetFactory.createWidget(link.component);
 
+          element.props = {
+            // context: extractParsedContext(context),
+            accountGId: 'MrConCreator/twitter',
+            itemGId: "tweet/1694995203663290832"
+          }
+
           adapter.injectElement(
             element,
             context,

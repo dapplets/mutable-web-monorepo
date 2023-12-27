@@ -3,6 +3,7 @@ import { Context } from "../types";
 export enum InsertionType {
   Before = "before",
   After = "after",
+  Inside = "inside",
 }
 
 export interface IAdapter {
