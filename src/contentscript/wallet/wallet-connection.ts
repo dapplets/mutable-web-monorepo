@@ -14,7 +14,7 @@ import {
   waitTab,
 } from '../background'
 import { generateGuid } from '../helpers'
-import { CustomConnectedWalletAccount } from './customConnectedWalletAccount'
+import { CustomConnectedWalletAccount } from './connected-wallet-account'
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/'
 const PENDING_ACCESS_KEY_PREFIX = 'pending_key' // browser storage key for a pending access key (i.e. key has been generated but we are not sure it was added yet)

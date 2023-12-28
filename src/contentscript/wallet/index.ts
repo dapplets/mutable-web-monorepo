@@ -8,8 +8,8 @@ import { createAction } from '@near-wallet-selector/wallet-utils'
 import * as nearAPI from 'near-api-js'
 import { Near } from 'near-api-js'
 import browser from 'webextension-polyfill'
-import { CustomWalletConnection } from './customWalletConnection'
-import { WebExtensionKeyStorage } from './webExtensionKeyStorage'
+import { WebExtensionKeyStorage } from './key-storage'
+import { CustomWalletConnection } from './wallet-connection'
 
 const LOCAL_STORAGE_KEY_SUFFIX = '_wallet_auth_key'
 
