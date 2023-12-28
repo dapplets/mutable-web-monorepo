@@ -13,6 +13,9 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@near-wallet-selector/core": "^8.9.1",
+    "@types/big.js": "^6.2.2",
+    "@types/bn.js": "^5.1.5",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.10.4",
     "@types/react-dom": "^18.2.18",
@@ -29,6 +32,9 @@
     "react-dom": "^18.2.0"
   },
   "dependencies": {
+    "big.js": "^6.2.1",
+    "js-sha256": "^0.10.1",
+    "json-stringify-deterministic": "^1.0.12",
     "react-singleton-hook": "^4.0.1",
     "styled-components": "^5.3.9"
   }

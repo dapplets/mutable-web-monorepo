@@ -2,7 +2,7 @@ import { ParserConfig } from "../core/parsers/json-parser";
 
 const configs = [
   {
-    namespace: "dapplets.near/parser/near-social-viewer",
+    namespace: "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
     contexts: {
       root: {
         children: ["post"],
@@ -20,7 +20,7 @@ const configs = [
     },
   },
   {
-    namespace: "dapplets.near/parser/twitter",
+    namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
     contexts: {
       root: {
         props: {

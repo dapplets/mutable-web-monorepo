@@ -1,10 +1,6 @@
 import { IAdapter, InsertionType } from "./core/adapters/interface";
 import { BosParser } from "./core/parsers/bos-parser";
-import {
-  JsonParser,
-  JsonParserConfig,
-  ParserConfig,
-} from "./core/parsers/json-parser";
+import { JsonParser, JsonParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import {
@@ -12,9 +8,14 @@ import {
   ContextObserver,
   IContextCallbacks,
 } from "./core/context-observer";
-import { LinkProvider } from "./providers/link-provider";
 import { ParserConfigProvider } from "./providers/parser-config-provider";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
+import { ILinkProvider } from "./providers/link-provider";
+import { SocialDbLinkProvider } from "./providers/social-db-link-provider";
+import { WalletSelector } from "@near-wallet-selector/core";
+import * as nearAPI from "near-api-js";
+import { getNearConfig } from "./constants";
+import { NearSigner } from "./providers/near-signer";
 
 export enum AdapterType {
   Bos = "bos",
@@ -24,12 +25,12 @@ export enum AdapterType {
 
 export type EngineConfig = {
   networkId: string;
-  selector: any;
+  selector: Promise<WalletSelector>;
 };
 
 const activatedParserConfigs = [
-  "dapplets.near/parser/near-social-viewer",
-  "dapplets.near/parser/twitter",
+  "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
+  "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
 ];
 
 export class Engine implements IContextCallbacks {
@@ -40,28 +41,27 @@ export class Engine implements IContextCallbacks {
   );
 
   #contextObserver = new ContextObserver(this);
-  #linkProvider = new LinkProvider();
+  #linkProvider: ILinkProvider | null = null;
   #parserConfigProvider = new ParserConfigProvider();
   #bosWidgetFactory: BosWidgetFactory;
+  #near: nearAPI.Near | null = null;
+  #selector: WalletSelector | null = null;
 
-  constructor(config: Partial<EngineConfig> = {}) {
+  constructor(private config: EngineConfig) {
     this.#bosWidgetFactory = new BosWidgetFactory({
-      networkId: config.networkId ?? "mainnet",
+      networkId: config.networkId,
       selector: config.selector,
       nodeName: "bos-component",
     });
   }
 
   handleContextStarted(context: Element): void {
-    this.#linkProvider
-      .getLinksForContext(context)
+    this.#linkProvider!.getLinksForContext(context)
       .then((links) => {
         for (const link of links) {
           // ToDo: do not concatenate namespaces
           const adapter = Array.from(this.adapters.values()).find(
-            (adapter) =>
-              adapter.namespace ===
-              "https://dapplets.org/ns/json/" + link.parserConfigId
+            (adapter) => adapter.namespace === link.namespace
           );
 
           if (!adapter) return;
@@ -69,10 +69,11 @@ export class Engine implements IContextCallbacks {
           const element = this.#bosWidgetFactory.createWidget(link.component);
 
           element.props = {
+            // ToDo: implement context forwarding
             // context: extractParsedContext(context),
-            accountGId: 'MrConCreator/twitter',
-            itemGId: "tweet/1694995203663290832"
-          }
+            accountGId: "MrConCreator/twitter",
+            itemGId: "tweet/1694995203663290832",
+          };
 
           adapter.injectElement(
             element,
@@ -100,6 +101,15 @@ export class Engine implements IContextCallbacks {
   }
 
   async start(): Promise<void> {
+    const nearConfig = getNearConfig(this.config.networkId);
+    this.#selector = await this.config.selector;
+    const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl);
+    this.#linkProvider = new SocialDbLinkProvider(
+      nearSigner,
+      nearConfig.contractName
+    );
+    console.log(this.#linkProvider)
+
     const adaptersToActivate = [];
 
     // Adapters enabled by default
@@ -123,6 +133,9 @@ export class Engine implements IContextCallbacks {
   }
 
   stop() {
+    this.#near = null;
+    this.#selector = null;
+    this.#linkProvider = null;
     this.#contextObserver.disconnect();
     this.adapters.forEach((adapter) => this.unregisterAdapter(adapter));
   }
@@ -175,7 +188,7 @@ export class Engine implements IContextCallbacks {
         return new DynamicHtmlAdapter(
           observingElement,
           this.document,
-          "https://dapplets.org/ns/json/" + config.namespace,
+          config.namespace,
           new JsonParser(config?.parserConfig) // ToDo: add try catch because config can be invalid
         );
 
