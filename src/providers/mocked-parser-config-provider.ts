@@ -73,7 +73,7 @@ const configs = [
   },
 ];
 
-export class ParserConfigProvider {
+export class MockedParserConfigProvider {
   async getParserConfig(namespace: string): Promise<ParserConfig | null> {
     const config = configs.find((c) => c.namespace === namespace);
     if (!config) return null;

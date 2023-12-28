@@ -8,7 +8,7 @@ import {
   ContextObserver,
   IContextCallbacks,
 } from "./core/context-observer";
-import { ParserConfigProvider } from "./providers/parser-config-provider";
+import { MockedParserConfigProvider } from "./providers/mocked-parser-config-provider";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
 import { ILinkProvider } from "./providers/link-provider";
 import { SocialDbLinkProvider } from "./providers/social-db-link-provider";
@@ -42,7 +42,7 @@ export class Engine implements IContextCallbacks {
 
   #contextObserver = new ContextObserver(this);
   #linkProvider: ILinkProvider | null = null;
-  #parserConfigProvider = new ParserConfigProvider();
+  #parserConfigProvider = new MockedParserConfigProvider();
   #bosWidgetFactory: BosWidgetFactory;
   #near: nearAPI.Near | null = null;
   #selector: WalletSelector | null = null;
