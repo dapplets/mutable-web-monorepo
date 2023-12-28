@@ -1,6 +1,6 @@
 import { IAdapter, InsertionType } from "./core/adapters/interface";
 import { BosParser } from "./core/parsers/bos-parser";
-import { JsonParser, JsonParserConfig } from "./core/parsers/json-parser";
+import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import {
@@ -8,14 +8,14 @@ import {
   ContextObserver,
   IContextCallbacks,
 } from "./core/context-observer";
-import { MockedParserConfigProvider } from "./providers/mocked-parser-config-provider";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
 import { ILinkProvider } from "./providers/link-provider";
 import { SocialDbLinkProvider } from "./providers/social-db-link-provider";
 import { WalletSelector } from "@near-wallet-selector/core";
-import * as nearAPI from "near-api-js";
 import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
+import { SocialDbParserConfigProvider } from "./providers/social-db-parser-config-provider";
+import { IParserConfigProvider } from "./providers/parser-config-provider";
 
 export enum AdapterType {
   Bos = "bos",
@@ -42,9 +42,8 @@ export class Engine implements IContextCallbacks {
 
   #contextObserver = new ContextObserver(this);
   #linkProvider: ILinkProvider | null = null;
-  #parserConfigProvider = new MockedParserConfigProvider();
+  #parserConfigProvider: IParserConfigProvider | null = null;
   #bosWidgetFactory: BosWidgetFactory;
-  #near: nearAPI.Near | null = null;
   #selector: WalletSelector | null = null;
 
   constructor(private config: EngineConfig) {
@@ -108,7 +107,11 @@ export class Engine implements IContextCallbacks {
       nearSigner,
       nearConfig.contractName
     );
-    console.log(this.#linkProvider)
+    this.#parserConfigProvider = new SocialDbParserConfigProvider(
+      nearSigner,
+      nearConfig.contractName
+    );
+    console.log(this.#parserConfigProvider);
 
     const adaptersToActivate = [];
 
@@ -120,10 +123,7 @@ export class Engine implements IContextCallbacks {
       const config = await this.#parserConfigProvider.getParserConfig(configId);
 
       if (config) {
-        const adapter = this.createAdapter(AdapterType.Json, {
-          namespace: configId,
-          parserConfig: config,
-        });
+        const adapter = this.createAdapter(AdapterType.Json, config);
         adaptersToActivate.push(adapter);
       }
     }
@@ -133,7 +133,6 @@ export class Engine implements IContextCallbacks {
   }
 
   stop() {
-    this.#near = null;
     this.#selector = null;
     this.#linkProvider = null;
     this.#contextObserver.disconnect();
@@ -159,8 +158,8 @@ export class Engine implements IContextCallbacks {
 
   createAdapter(type: AdapterType.Microdata): IAdapter;
   createAdapter(type: AdapterType.Bos): IAdapter;
-  createAdapter(type: AdapterType.Json, config: JsonParserConfig): IAdapter;
-  createAdapter(type: AdapterType, config?: JsonParserConfig): IAdapter {
+  createAdapter(type: AdapterType.Json, config: ParserConfig): IAdapter;
+  createAdapter(type: AdapterType, config?: ParserConfig): IAdapter {
     const observingElement = document.body;
 
     switch (type) {
@@ -189,7 +188,7 @@ export class Engine implements IContextCallbacks {
           observingElement,
           this.document,
           config.namespace,
-          new JsonParser(config?.parserConfig) // ToDo: add try catch because config can be invalid
+          new JsonParser(config) // ToDo: add try catch because config can be invalid
         );
 
       default:

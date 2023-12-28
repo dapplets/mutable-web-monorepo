@@ -1,10 +1,9 @@
 import { WalletSelector } from "@near-wallet-selector/core";
 import * as nearAPI from "near-api-js";
-import { NearConfig } from "../constants";
 import { QueryResponseKind } from "near-api-js/lib/providers/provider";
 import Big from "big.js";
 
-const TGas = Big(10).pow(12);
+export const TGas = Big(10).pow(12);
 
 /**
  * NearSigner is a wrapper around near-api-js JsonRpcProvider and WalletSelector

@@ -1,11 +1,7 @@
 import { IParser } from "./interface";
 
-export type JsonParserConfig = {
-  namespace: string;
-  parserConfig: ParserConfig;
-};
-
 export type ParserConfig = {
+  namespace: string;
   contexts: {
     [name: string]: {
       selector?: string;
