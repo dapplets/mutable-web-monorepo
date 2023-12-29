@@ -51,7 +51,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   injectElement(
     injectingElement: Element,
     context: Context,
-    insertionPoint: string,
+    insertionPoint: string | "root",
     insertionType: InsertionType
   ) {
     const contextElement = this.#elementByContext.get(context);
@@ -60,11 +60,19 @@ export class DynamicHtmlAdapter implements IAdapter {
       throw new Error("Context element not found");
     }
 
-    const insPointElement = this.parser.findInsertionPoint(
-      contextElement,
-      context.tagName,
-      insertionPoint
-    );
+    let insPointElement: Element | null = null;
+
+    // ToDo: move to separate adapter?
+    // Generic insertion point for "the ear"
+    if (insertionPoint === "root") {
+      insPointElement = contextElement;
+    } else {
+      insPointElement = this.parser.findInsertionPoint(
+        contextElement,
+        context.tagName,
+        insertionPoint
+      );
+    }
 
     if (!insPointElement) {
       throw new Error("Insertion point not found");

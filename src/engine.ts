@@ -16,6 +16,7 @@ import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
 import { SocialDbParserConfigProvider } from "./providers/social-db-parser-config-provider";
 import { IParserConfigProvider } from "./providers/parser-config-provider";
+import { Context } from "./core/types";
 
 export enum AdapterType {
   Bos = "bos",
@@ -33,6 +34,8 @@ const activatedParserConfigs = [
   "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
 ];
 
+const ContextActionsGroupSrc = "dapplets.near/widget/ContextActionsGroup";
+
 export class Engine implements IContextCallbacks {
   adapters: Set<IAdapter> = new Set();
   document: XMLDocument = document.implementation.createDocument(
@@ -45,6 +48,8 @@ export class Engine implements IContextCallbacks {
   #parserConfigProvider: IParserConfigProvider | null = null;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector | null = null;
+
+  #contextActionGroups: WeakMap<Context, Element> = new WeakMap();
 
   constructor(private config: EngineConfig) {
     this.#bosWidgetFactory = new BosWidgetFactory({
@@ -74,12 +79,33 @@ export class Engine implements IContextCallbacks {
             itemGId: "tweet/1694995203663290832",
           };
 
-          adapter.injectElement(
-            element,
-            context,
-            link.insertionPoint,
-            link.insertionType as InsertionType
-          );
+          // ToDo: generalize layout managers for insertion points at the core level
+          // Generic insertion point for all contexts
+          if (link.insertionPoint === "root") {
+            if (!this.#contextActionGroups.has(context)) {
+              const groupElement = this.#bosWidgetFactory.createWidget(
+                ContextActionsGroupSrc
+              );
+              this.#contextActionGroups.set(context, groupElement);
+
+              adapter.injectElement(
+                groupElement,
+                context,
+                link.insertionPoint,
+                link.insertionType as InsertionType
+              );
+            }
+
+            const groupElement = this.#contextActionGroups.get(context)!;
+            groupElement.appendChild(element);
+          } else {
+            adapter.injectElement(
+              element,
+              context,
+              link.insertionPoint,
+              link.insertionType as InsertionType
+            );
+          }
         }
       })
       .catch((err) => console.error(err));
@@ -112,6 +138,7 @@ export class Engine implements IContextCallbacks {
       nearConfig.contractName
     );
     console.log(this.#parserConfigProvider);
+    console.log(this.#linkProvider);
 
     const adaptersToActivate = [];
 

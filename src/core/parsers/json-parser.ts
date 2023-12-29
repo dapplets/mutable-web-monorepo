@@ -95,9 +95,6 @@ export class JsonParser implements IParser {
     contextName: string,
     insertionPoint: string
   ): Element | null {
-    // Generic insertion point for "the ear"
-    if (insertionPoint === "root") return element;
-
     const contextConfig = this.config.contexts[contextName];
     const selector = contextConfig.insertionPoints?.[insertionPoint];
     if (!selector) return null;
