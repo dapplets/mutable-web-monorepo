@@ -51,7 +51,7 @@ function handleInsertStyles(element) {
 module.exports = {
   entry: {
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
-    contentscript: path.join(__dirname, 'src/contentscript/index.ts')
+    contentscript: path.join(__dirname, 'src/contentscript/index.tsx')
   },
   output: {
     path: path.join(__dirname, 'build'),
