@@ -1,4 +1,4 @@
-import { EthersProviderContext, Widget } from "near-social-vm";
+import { Widget } from "near-social-vm";
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { StyleSheetManager } from "styled-components";
@@ -8,24 +8,9 @@ export class BosComponent extends HTMLElement {
   private _stylesMountPoint = document.createElement("div");
   private _componentMountPoint = document.createElement("div");
   private _root = createRoot(this._componentMountPoint);
-  private _BosWidget: React.FC<{ src: string; props: any }>;
 
   #src: string = "";
   #props: any = {};
-
-  constructor(useSingletonInitNear: () => void) {
-    super();
-
-    this._BosWidget = ({ src, props }: { src: string; props: any }) => {
-      useSingletonInitNear();
-
-      if (!EthersProviderContext.Provider) {
-        return null;
-      }
-
-      return <Widget src={src} props={props} />;
-    };
-  }
 
   set src(val: string) {
     this.#src = val;
@@ -73,7 +58,7 @@ export class BosComponent extends HTMLElement {
   _render() {
     this._root.render(
       <StyleSheetManager target={this._stylesMountPoint}>
-        <this._BosWidget src={this.#src} props={this.#props} />
+        <Widget src={this.#src} props={this.#props} />
       </StyleSheetManager>
     );
   }
