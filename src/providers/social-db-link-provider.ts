@@ -1,3 +1,4 @@
+import Big from "big.js";
 import { BosUserLink, ILinkProvider } from "./link-provider";
 import { NearSigner } from "./near-signer";
 import { sha256 } from "js-sha256";
@@ -81,9 +82,18 @@ export class SocialDbLinkProvider implements ILinkProvider {
       .pop();
     const nextIndex = (lastIndex === undefined ? 0 : lastIndex + 1).toString();
 
-    await this._signer.call(this._contractName, "set", {
-      data: { [accountId]: { link: { [indexKey]: { [nextIndex]: link } } } },
-    });
+    const gas = undefined; // default gas
+    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+
+    await this._signer.call(
+      this._contractName,
+      "set",
+      {
+        data: { [accountId]: { link: { [indexKey]: { [nextIndex]: link } } } },
+      },
+      gas,
+      deposit
+    );
   }
 }
 
