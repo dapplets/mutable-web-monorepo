@@ -15,7 +15,8 @@ export class SocialDbLinkProvider implements ILinkProvider {
   constructor(private _signer: NearSigner, private _contractName: string) {}
 
   async getLinksForContext(context: IContextNode): Promise<BosUserLink[]> {
-    if (!context.id) {
+    // JSON-configured parsers require id for the context
+    if (!context.id && context.namespaceURI!.startsWith("https://dapplets.org/ns/json/")) {
       return [];
     }
     

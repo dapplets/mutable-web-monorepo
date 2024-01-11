@@ -18,6 +18,7 @@ import {
 } from "./core/tree/types";
 import { DomTreeBuilder } from "./core/tree/dom-tree/dom-tree-builder";
 import { PureTreeBuilder } from "./core/tree/pure-tree/pure-tree-builder";
+import { BosComponent } from "./bos/bos-widget";
 
 export enum AdapterType {
   Bos = "bos",
@@ -42,7 +43,8 @@ export class Engine implements IContextListener {
   #parserConfigProvider: IParserConfigProvider;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
-  #contextActionGroups: WeakMap<IContextNode, Element> = new WeakMap();
+  #contextActionGroups: WeakMap<IContextNode, BosComponent> = new WeakMap();
+  #elementsByContext: WeakMap<IContextNode, Set<BosComponent>> = new WeakMap();
 
   adapters: Set<IAdapter> = new Set();
   treeBuilder: ITreeBuilder = new PureTreeBuilder(this); //new DomTreeBuilder(this);
@@ -81,19 +83,21 @@ export class Engine implements IContextListener {
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {
     if (!this.started) return;
-
-    // ToDo: move to tree builder
-    if (
-      context.parsedContext?.id !== oldParsedContext?.id && // id changed
-      context.parsedContext?.id // id exists
-    ) {
-      this.handleContextStarted(context);
-    }
+    this.#elementsByContext.get(context)?.forEach((element) => {
+      element.props = {
+        ...element.props,
+        // ToDo: unify context forwarding
+        context: context.parsedContext, // for web2
+        ...context.parsedContext, // for bos gateways
+      };
+    });
   }
 
   handleContextFinished(context: IContextNode): void {
     if (!this.started) return;
-    // console.log("contextfinished", context);
+    this.#elementsByContext.get(context)?.forEach((element) => {
+      element.remove();
+    });
   }
 
   _processUserLink(context: IContextNode, link: BosUserLink) {
@@ -133,9 +137,10 @@ export class Engine implements IContextListener {
 
     element.props = {
       // ToDo: rerender component on context change
-      context: context.parsedContext,
       createUserLink,
-      ...context.parsedContext,
+      // ToDo: unify context forwarding
+      context: context.parsedContext, // for web2
+      ...context.parsedContext, // for bos gateways
     };
 
     // ToDo: generalize layout managers for insertion points at the core level
@@ -158,13 +163,23 @@ export class Engine implements IContextListener {
       const groupElement = this.#contextActionGroups.get(context)!;
       groupElement.appendChild(element);
     } else {
-      adapter.injectElement(
-        element,
-        context,
-        link.insertionPoint,
-        link.insertionType as InsertionType
-      );
+      try {
+        adapter.injectElement(
+          element,
+          context,
+          link.insertionPoint,
+          link.insertionType as InsertionType
+        );
+      } catch (err) {
+        console.error(err);
+      }
     }
+
+    if (!this.#elementsByContext.has(context)) {
+      this.#elementsByContext.set(context, new Set());
+    }
+
+    this.#elementsByContext.get(context)!.add(element);
   }
 
   async start(): Promise<void> {
