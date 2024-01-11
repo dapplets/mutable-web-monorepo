@@ -1,4 +1,4 @@
-import { Context } from "../core/types";
+import { IContextNode } from "../core/tree/types";
 import { BosUserLink, ILinkProvider } from "./link-provider";
 
 const links: BosUserLink[] = [
@@ -53,7 +53,7 @@ const links: BosUserLink[] = [
 ];
 
 export class MockedLinkProvider implements ILinkProvider {
-  async getLinksForContext(context: Context): Promise<BosUserLink[]> {
+  async getLinksForContext(context: IContextNode): Promise<BosUserLink[]> {
     // ignore contexts without id
     if (!context.id) return [];
 

@@ -1,28 +1,28 @@
 import { IParser } from "../parsers/interface";
-import { Context } from "../types";
+import { IContextNode, ITreeBuilder } from "../tree/types";
 import { IAdapter, InsertionType } from "./interface";
 
 export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
-  protected document: Document;
+  protected treeBuilder: ITreeBuilder;
   protected parser: IParser;
   public namespace: string;
-  public context: Context;
+  public context: IContextNode;
 
   #observerByElement: Map<Element, MutationObserver> = new Map();
-  #elementByContext: WeakMap<Context, Element> = new WeakMap();
-  #contextByElement: Map<Element, Context> = new Map();
+  #elementByContext: WeakMap<IContextNode, Element> = new WeakMap();
+  #contextByElement: Map<Element, IContextNode> = new Map();
 
   #isStarted = false; // ToDo: find another way to check if adapter is started
 
   constructor(
     element: Element,
-    document: Document,
+    treeBuilder: ITreeBuilder,
     namespace: string,
     parser: IParser
   ) {
     this.element = element;
-    this.document = document;
+    this.treeBuilder = treeBuilder;
     this.namespace = namespace;
     this.parser = parser;
     this.context = this._createContextForElement(element, "root");
@@ -50,10 +50,14 @@ export class DynamicHtmlAdapter implements IAdapter {
 
   injectElement(
     injectingElement: Element,
-    context: Context,
+    context: IContextNode,
     insertionPoint: string | "root",
     insertionType: InsertionType
   ) {
+    if (!Object.values(InsertionType).includes(insertionType)) {
+      throw new Error(`Unknown insertion type "${insertionType}"`);
+    }
+
     const contextElement = this.#elementByContext.get(context);
 
     if (!contextElement) {
@@ -75,7 +79,9 @@ export class DynamicHtmlAdapter implements IAdapter {
     }
 
     if (!insPointElement) {
-      throw new Error("Insertion point not found");
+      throw new Error(
+        `Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`
+      );
     }
 
     switch (insertionType) {
@@ -93,8 +99,14 @@ export class DynamicHtmlAdapter implements IAdapter {
     }
   }
 
-  _createContextForElement(element: Element, contextName: string) {
-    const context = this.document.createElementNS(this.namespace, contextName);
+  _createContextForElement(
+    element: Element,
+    contextName: string
+  ): IContextNode {
+    const context = this.treeBuilder.createNode(
+      this.namespace,
+      contextName
+    ) as IContextNode;
 
     const observer = new MutationObserver(() =>
       this._handleMutations(element, context)
@@ -117,31 +129,18 @@ export class DynamicHtmlAdapter implements IAdapter {
     return context;
   }
 
-  private _handleMutations(element: Element, context: Context) {
-    const records = this.parser.parseContext(element, context.tagName);
+  private _handleMutations(element: Element, context: IContextNode) {
+    const parsedContext = this.parser.parseContext(element, context.tagName);
     const pairs = this.parser.findChildElements(element, context.tagName);
 
-    this._updateContext(records, context);
+    this.treeBuilder.updateParsedContext(context, parsedContext);
     this._appendNewChildContexts(pairs, context);
     this._removeOldChildContexts(pairs, context);
   }
 
-  private _updateContext(records: [string, string | null][], context: Context) {
-    for (const [prop, value] of records) {
-      if (value === context.getAttribute(prop)) {
-        continue;
-      } else if (value !== null && value !== undefined) {
-        // ToDo: nested objects will be lost
-        context.setAttribute(prop, value);
-      } else {
-        context.removeAttribute(prop);
-      }
-    }
-  }
-
   private _appendNewChildContexts(
     childPairs: { element: Element; contextName: string }[],
-    parentContext: Context
+    parentContext: IContextNode
   ) {
     for (const { element, contextName } of childPairs) {
       if (!this.#contextByElement.has(element)) {
@@ -149,7 +148,7 @@ export class DynamicHtmlAdapter implements IAdapter {
           element,
           contextName
         );
-        parentContext.appendChild(childContext);
+        this.treeBuilder.appendChild(parentContext, childContext);
         this.#contextByElement.set(element, childContext);
       }
     }
@@ -157,7 +156,7 @@ export class DynamicHtmlAdapter implements IAdapter {
 
   private _removeOldChildContexts(
     childPairs: { element: Element; contextName: string }[],
-    parentContext: Context
+    parentContext: IContextNode
   ) {
     const childElementsSet = new Set(childPairs.map((pair) => pair.element));
     for (const [element, context] of this.#contextByElement) {
@@ -165,7 +164,7 @@ export class DynamicHtmlAdapter implements IAdapter {
         !childElementsSet.has(element) &&
         context.parentNode === parentContext
       ) {
-        parentContext.removeChild(context);
+        this.treeBuilder.removeChild(parentContext, context);
         this.#contextByElement.delete(element);
         this.#observerByElement.get(element)?.disconnect();
         this.#observerByElement.delete(element);

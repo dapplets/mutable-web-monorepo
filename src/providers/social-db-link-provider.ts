@@ -3,29 +3,43 @@ import { BosUserLink, ILinkProvider } from "./link-provider";
 import { NearSigner } from "./near-signer";
 import { sha256 } from "js-sha256";
 import jsonStringify from "json-stringify-deterministic";
+import { IContextNode } from "../core/tree/types";
+
+type LinkExpressionIndex = {
+  namespace: string | null;
+  contextType: string;
+  contextId: string | null;
+};
 
 export class SocialDbLinkProvider implements ILinkProvider {
   constructor(private _signer: NearSigner, private _contractName: string) {}
 
-  async getLinksForContext(context: Element): Promise<BosUserLink[]> {
-    // Ignore contexts without id
-    if (!context.id) return [];
-
+  async getLinksForContext(context: IContextNode): Promise<BosUserLink[]> {
+    if (!context.id) {
+      return [];
+    }
+    
     // Links for all contexts of the specific type
     const contextTypeLinks = {
       namespace: context.namespaceURI,
-      contextType: context.nodeName,
+      contextType: context.tagName.replace("--", "/widget/"), // ToDo: how to escape slashes?
       contextId: null,
     };
 
-    // Links for specific contexts
-    const contextIdLinks = {
-      namespace: context.namespaceURI,
-      contextType: context.nodeName,
-      contextId: context.id,
-    };
+    const rawKeys: LinkExpressionIndex[] = [contextTypeLinks];
 
-    const keys = [contextTypeLinks, contextIdLinks]
+    // Links for specific contexts
+    if (context.parsedContext?.id) {
+      const contextIdLinks = {
+        namespace: context.namespaceURI,
+        contextType: context.tagName.replace("--", "/widget/"), // ToDo: how to escape slashes?
+        contextId: context.parsedContext?.id,
+      };
+
+      rawKeys.push(contextIdLinks);
+    }
+
+    const keys = rawKeys
       .map((indexKeyData) => sha256(jsonStringify(indexKeyData)))
       .map((indexKey) => `*/link/${indexKey}/**`);
 

@@ -1,4 +1,4 @@
-import { Context } from "../types";
+import { IContextNode } from "../tree/types";
 
 export enum InsertionType {
   Before = "before",
@@ -8,14 +8,14 @@ export enum InsertionType {
 
 export interface IAdapter {
   namespace: string;
-  context: Context;
+  context: IContextNode;
 
   start(): void;
   stop(): void;
 
   injectElement(
     element: Element,
-    context: Context,
+    context: IContextNode,
     insertionPoint: string,
     insertionType: InsertionType
   ): void;

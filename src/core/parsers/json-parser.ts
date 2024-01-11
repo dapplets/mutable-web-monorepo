@@ -53,13 +53,13 @@ export class JsonParser implements IParser {
 
   parseContext(element: Element, contextName: string) {
     const contextProperties = this.config.contexts[contextName].props;
-    if (!contextProperties) return [];
+    if (!contextProperties) return {};
 
-    const parsed: [string, string | null][] = [];
+    const parsed: any = {};
 
     for (const [prop, cssOrXpathQuery] of Object.entries(contextProperties)) {
       const value = query(cssOrXpathQuery, element)?.toString() ?? null;
-      parsed.push([prop, value]);
+      parsed[prop] = value;
     }
 
     return parsed;

@@ -1,7 +1,7 @@
-import { JsonParser } from "../src/parsers/json-parser";
-import { DynamicHtmlAdapter } from "../src/adapters/dynamic-html-adapter";
-import { Context } from "../src/types";
-import { IAdapter, InsertionType } from "../src/adapters/interface";
+import { JsonParser } from "../src/core/parsers/json-parser";
+import { DynamicHtmlAdapter } from "../src/core/adapters/dynamic-html-adapter";
+import { IContextNode } from "../src/core/types";
+import { IAdapter, InsertionType } from "../src/core/adapters/interface";
 
 const config = {
   contexts: {
@@ -36,7 +36,7 @@ describe("JSON adapter", () => {
   let element: HTMLElement;
   let ns: string;
   let adapter: IAdapter;
-  let ctx: Context;
+  let ctx: IContextNode;
 
   beforeEach(() => {
     element = document.createElement("div");

@@ -3,11 +3,6 @@ import { BosParser } from "./core/parsers/bos-parser";
 import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
-import {
-  ContextChangedDetails,
-  ContextObserver,
-  IContextCallbacks,
-} from "./core/context-observer";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
 import { BosUserLink, ILinkProvider } from "./providers/link-provider";
 import { SocialDbLinkProvider } from "./providers/social-db-link-provider";
@@ -16,8 +11,13 @@ import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
 import { SocialDbParserConfigProvider } from "./providers/social-db-parser-config-provider";
 import { IParserConfigProvider } from "./providers/parser-config-provider";
-import { Context } from "./core/types";
-import { extractParsedContext } from "./core/utils";
+import {
+  IContextListener,
+  IContextNode,
+  ITreeBuilder,
+} from "./core/tree/types";
+import { DomTreeBuilder } from "./core/tree/dom-tree/dom-tree-builder";
+import { PureTreeBuilder } from "./core/tree/pure-tree/pure-tree-builder";
 
 export enum AdapterType {
   Bos = "bos",
@@ -37,24 +37,20 @@ const activatedParserConfigs = [
 
 const ContextActionsGroupSrc = "dapplets.near/widget/ContextActionsGroup";
 
-export class Engine implements IContextCallbacks {
-  adapters: Set<IAdapter> = new Set();
-  document: XMLDocument = document.implementation.createDocument(
-    null,
-    "semantictree"
-  );
-
-  #contextObserver = new ContextObserver(this);
+export class Engine implements IContextListener {
   #linkProvider: ILinkProvider;
   #parserConfigProvider: IParserConfigProvider;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
+  #contextActionGroups: WeakMap<IContextNode, Element> = new WeakMap();
 
-  #contextActionGroups: WeakMap<Context, Element> = new WeakMap();
+  adapters: Set<IAdapter> = new Set();
+  treeBuilder: ITreeBuilder = new PureTreeBuilder(this); //new DomTreeBuilder(this);
+  started: boolean = false;
 
   constructor(private config: EngineConfig) {
     this.#bosWidgetFactory = new BosWidgetFactory({
-      nodeName: "bos-component",
+      tagName: "bos-component",
     });
     const nearConfig = getNearConfig(this.config.networkId);
     this.#selector = this.config.selector;
@@ -71,7 +67,9 @@ export class Engine implements IContextCallbacks {
     console.log(this.#linkProvider);
   }
 
-  handleContextStarted(context: Element): void {
+  handleContextStarted(context: IContextNode): void {
+    if (!this.started) return;
+
     this.#linkProvider!.getLinksForContext(context)
       .then((links) => {
         for (const link of links) {
@@ -81,21 +79,24 @@ export class Engine implements IContextCallbacks {
       .catch((err) => console.error(err));
   }
 
-  handleContextChanged(context: Element, details: ContextChangedDetails): void {
+  handleContextChanged(context: IContextNode, oldParsedContext: any): void {
+    if (!this.started) return;
+
+    // ToDo: move to tree builder
     if (
-      details.attributeName === "id" &&
-      details.oldValue === null &&
-      context.id !== details.oldValue
+      context.parsedContext?.id !== oldParsedContext?.id && // id changed
+      context.parsedContext?.id // id exists
     ) {
       this.handleContextStarted(context);
     }
   }
 
-  handleContextFinished(context: Element): void {
+  handleContextFinished(context: IContextNode): void {
+    if (!this.started) return;
     // console.log("contextfinished", context);
   }
 
-  _processUserLink(context: Element, link: BosUserLink) {
+  _processUserLink(context: IContextNode, link: BosUserLink) {
     // ToDo: do not concatenate namespaces
     const adapter = Array.from(this.adapters.values()).find(
       (adapter) => adapter.namespace === link.namespace
@@ -105,6 +106,7 @@ export class Engine implements IContextCallbacks {
 
     const element = this.#bosWidgetFactory.createWidget(link.component);
 
+    // ToDo: extract to separate method and currify
     const createUserLink = async (linkFromBos: Partial<BosUserLink>) => {
       const {
         namespace,
@@ -131,13 +133,14 @@ export class Engine implements IContextCallbacks {
 
     element.props = {
       // ToDo: rerender component on context change
-      context: extractParsedContext(context).values, // { values, type }
+      context: context.parsedContext,
       createUserLink,
+      ...context.parsedContext,
     };
 
     // ToDo: generalize layout managers for insertion points at the core level
     // Generic insertion point for all contexts
-    if (link.insertionPoint === "root") {
+    if (link.insertionPoint === "root" && link.insertionType === "inside") {
       if (!this.#contextActionGroups.has(context)) {
         const groupElement = this.#bosWidgetFactory.createWidget(
           ContextActionsGroupSrc
@@ -165,6 +168,8 @@ export class Engine implements IContextCallbacks {
   }
 
   async start(): Promise<void> {
+    this.started = true;
+
     const adaptersToActivate = [];
 
     // Adapters enabled by default
@@ -180,30 +185,24 @@ export class Engine implements IContextCallbacks {
       }
     }
 
-    this.#contextObserver.observe(this.document.documentElement);
     adaptersToActivate.forEach((adapter) => this.registerAdapter(adapter));
   }
 
   stop() {
-    this.#contextObserver.disconnect();
+    this.started = false;
     this.adapters.forEach((adapter) => this.unregisterAdapter(adapter));
   }
 
   registerAdapter(adapter: IAdapter) {
-    this.document.documentElement.appendChild(adapter.context);
+    this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context);
     this.adapters.add(adapter);
     adapter.start();
   }
 
   unregisterAdapter(adapter: IAdapter) {
     adapter.stop();
-    this.document.documentElement.removeChild(adapter.context);
+    this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context);
     this.adapters.delete(adapter);
-  }
-
-  getSerializedXmlTree(): string {
-    const serializer = new XMLSerializer();
-    return serializer.serializeToString(this.document);
   }
 
   createAdapter(type: AdapterType.Microdata): IAdapter;
@@ -216,7 +215,7 @@ export class Engine implements IContextCallbacks {
       case AdapterType.Bos:
         return new DynamicHtmlAdapter(
           observingElement,
-          this.document,
+          this.treeBuilder,
           "https://dapplets.org/ns/bos",
           new BosParser()
         );
@@ -224,7 +223,7 @@ export class Engine implements IContextCallbacks {
       case AdapterType.Microdata:
         return new DynamicHtmlAdapter(
           observingElement,
-          this.document,
+          this.treeBuilder,
           "https://dapplets.org/ns/microdata",
           new MicrodataParser()
         );
@@ -236,7 +235,7 @@ export class Engine implements IContextCallbacks {
 
         return new DynamicHtmlAdapter(
           observingElement,
-          this.document,
+          this.treeBuilder,
           config.namespace,
           new JsonParser(config) // ToDo: add try catch because config can be invalid
         );

@@ -1,7 +1,5 @@
-import { Context } from "../types";
-
 export interface IParser {
-  parseContext(element: Element, contextName: string): [string, any][];
+  parseContext(element: Element, contextName: string): any;
 
   findChildElements(
     element: Element,

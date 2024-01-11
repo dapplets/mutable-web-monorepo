@@ -4,17 +4,17 @@ import { IParser } from "./interface";
 export class MicrodataParser implements IParser {
   parseContext(element: Element) {
     const childElements = getChildContextElements(element, "itemprop");
-    const result: [string, string | null][] = [];
+    const result: any = {};
 
     for (const childElement of childElements) {
       const propName = childElement.getAttribute("itemprop")!;
       const propValue = MicrodataParser.getPropertyValue(childElement) ?? null;
-      result.push([propName, propValue]);
+      result[propName] = propValue;
     }
 
     if (element.hasAttribute("itemid")) {
       const id = element.getAttribute("itemid")!;
-      result.push(["id", id]);
+      result["id"] = id;
     }
 
     return result;

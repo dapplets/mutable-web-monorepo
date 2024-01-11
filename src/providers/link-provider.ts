@@ -1,4 +1,4 @@
-import { Context } from "../core/types";
+import { IContextNode } from "../core/tree/types";
 
 export type BosUserLink = {
   namespace: string;
@@ -11,6 +11,6 @@ export type BosUserLink = {
 };
 
 export interface ILinkProvider {
-  getLinksForContext(context: Context): Promise<BosUserLink[]>;
+  getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
   createLink(link: BosUserLink): Promise<void>;
 }

@@ -3,9 +3,7 @@ import { getChildContextElements } from "./utils";
 
 export class BosParser implements IParser {
   parseContext(element: Element) {
-    return Object.entries(
-      JSON.parse(element.getAttribute("data-props") ?? "{}")
-    );
+    return JSON.parse(element.getAttribute("data-props") ?? "{}");
   }
 
   findChildElements(element: Element) {
