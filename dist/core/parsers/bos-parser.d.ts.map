@@ -1,0 +1,1 @@
+{"version":3,"file":"bos-parser.d.ts","sourceRoot":"","sources":["../../../src/core/parsers/bos-parser.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,aAAa,CAAC;AAGtC,qBAAa,SAAU,YAAW,OAAO;IACvC,YAAY,CAAC,OAAO,EAAE,OAAO;IAI7B,iBAAiB,CAAC,OAAO,EAAE,OAAO;;;;IAWlC,kBAAkB,CAChB,OAAO,EAAE,OAAO,EAChB,CAAC,EAAE,MAAM,EACT,cAAc,EAAE,MAAM,GACrB,OAAO,GAAG,IAAI;CAGlB"}

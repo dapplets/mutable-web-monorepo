@@ -1,0 +1,1 @@
+{"version":3,"file":"parser-config-provider.d.ts","sourceRoot":"","sources":["../../src/providers/parser-config-provider.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,6BAA6B,CAAC;AAE3D,MAAM,WAAW,qBAAqB;IACpC,eAAe,CAAC,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,YAAY,GAAG,IAAI,CAAC,CAAC;IACjE,kBAAkB,CAAC,YAAY,EAAE,YAAY,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC/D"}
