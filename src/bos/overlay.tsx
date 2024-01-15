@@ -4,15 +4,13 @@ import { StyleSheetManager } from "styled-components";
 
 const BootstrapCssUrl =
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
-const BootstrapIconsUrl =
-  "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css";
 
 export interface OverlayProps {
   children: React.ReactNode;
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ children }) => {
-  const [{ overlay, container, stylesMountPoint, bootstrapLightDomIcons }] =
+  const [{ overlay, container, stylesMountPoint }] =
     React.useState(() => {
       const overlay = document.createElement("mutable-web-overlay");
 
@@ -48,26 +46,15 @@ export const Overlay: React.FC<OverlayProps> = ({ children }) => {
       bootstrapStyles.href = BootstrapCssUrl;
       shadowRoot.appendChild(bootstrapStyles);
 
-      // Bootstrap Icons
-      // ToDo: don't use CDN
-      const bootstrapIcons = document.createElement("link");
-      bootstrapIcons.rel = "stylesheet";
-      bootstrapIcons.href = BootstrapIconsUrl;
-      shadowRoot.appendChild(bootstrapIcons);
-
-      const bootstrapLightDomIcons = bootstrapIcons.cloneNode();
-
       shadowRoot.appendChild(container);
 
-      return { overlay, container, stylesMountPoint, bootstrapLightDomIcons };
+      return { overlay, container, stylesMountPoint };
     });
 
   React.useEffect(() => {
     document.body.appendChild(overlay);
-    document.head.appendChild(bootstrapLightDomIcons);
     return () => {
       document.body.removeChild(overlay);
-      document.head.removeChild(bootstrapLightDomIcons);
     };
   }, [overlay]);
 
