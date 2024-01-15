@@ -60,7 +60,7 @@ export class SocialDbLinkProvider implements ILinkProvider {
             contextType: link.contextType,
             contextId: link.contextId,
             insertionPoint: link.insertionPoint,
-            insertionType: link.insertionType,
+            // insertionType: link.insertionType,
             component: link.component,
           };
           userLinksOutput.push(userLink);

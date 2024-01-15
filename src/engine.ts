@@ -46,8 +46,8 @@ export class Engine implements IContextListener {
   #parserConfigProvider: IParserConfigProvider;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
-  #contextActionGroups: WeakMap<IContextNode, BosComponent> = new WeakMap();
-  #elementsByContext: WeakMap<IContextNode, Set<BosComponent>> = new WeakMap();
+  #elementsByContext: WeakMap<IContextNode, Map<string, BosComponent>> =
+    new WeakMap();
 
   adapters: Set<IAdapter> = new Set();
   treeBuilder: ITreeBuilder = new PureTreeBuilder(this); //new DomTreeBuilder(this);
@@ -105,6 +105,8 @@ export class Engine implements IContextListener {
               context: context.parsedContext,
             }, // ToDo: add props
           })),
+          injectWidget: (bosWidgetId: string) =>
+            this._createUserLink(bosWidgetId, context),
         };
 
         try {
@@ -115,11 +117,21 @@ export class Engine implements IContextListener {
             insPoint.name,
             insertionType
           );
+
+          if (!this.#elementsByContext.has(context)) {
+            this.#elementsByContext.set(context, new Map());
+          }
+
+          this.#elementsByContext
+            .get(context)!
+            .set(insPoint.name, layoutManagerElement);
         } catch (err) {
           console.error(err);
         }
       }
     }
+
+    // ToDo: update #elementsByContext map
   }
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {
@@ -129,7 +141,7 @@ export class Engine implements IContextListener {
         ...element.props,
         // ToDo: unify context forwarding
         context: context.parsedContext, // for web2
-        ...context.parsedContext, // for bos gateways
+        // ...context.parsedContext, // for bos gateways
       };
     });
   }
@@ -141,86 +153,34 @@ export class Engine implements IContextListener {
     });
   }
 
-  _processUserLink(context: IContextNode, link: BosUserLink) {
-    // ToDo: do not concatenate namespaces
-    const adapter = Array.from(this.adapters.values()).find(
-      (adapter) => adapter.namespace === link.namespace
-    );
+  async _createUserLink(bosWidgetId: string, context: IContextNode) {
+    // ToDo: fetch metadata of the BOS component
+    const insertionPoint = "root";
 
-    if (!adapter) return;
+    const newLink: BosUserLink = {
+      namespace: context.namespaceURI!,
+      contextType: context.tagName,
+      contextId: context.id,
+      insertionPoint: insertionPoint,
+      component: bosWidgetId,
+    };
 
-    const element = this.#bosWidgetFactory.createWidget(link.component);
+    await this.#linkProvider!.createLink(newLink);
 
-    // ToDo: extract to separate method and currify
-    const createUserLink = async (linkFromBos: Partial<BosUserLink>) => {
-      const {
-        namespace,
-        contextType,
-        contextId,
-        insertionPoint,
-        insertionType,
-        component,
-      } = linkFromBos;
+    const layoutManager = this.#elementsByContext
+      .get(context)
+      ?.get(insertionPoint);
 
-      const newLink: BosUserLink = {
-        namespace: namespace !== undefined ? namespace : link.namespace,
-        contextType: contextType !== undefined ? contextType : link.contextType,
-        contextId: contextId !== undefined ? contextId : context.id,
-        insertionPoint: insertionPoint!,
-        insertionType: insertionType!,
-        component: component!,
+    // Add new widget to the layout manager
+    if (layoutManager) {
+      layoutManager.props = {
+        ...layoutManager.props,
+        widgets: [
+          ...layoutManager.props.widgets,
+          { src: bosWidgetId, props: {} },
+        ],
       };
-
-      await this.#linkProvider!.createLink(newLink);
-
-      this._processUserLink(context, newLink);
-    };
-
-    element.props = {
-      // ToDo: rerender component on context change
-      createUserLink,
-      // ToDo: unify context forwarding
-      context: context.parsedContext, // for web2
-      ...context.parsedContext, // for bos gateways
-    };
-
-    // ToDo: generalize layout managers for insertion points at the core level
-    // Generic insertion point for all contexts
-    if (link.insertionPoint === "root" && link.insertionType === "inside") {
-      if (!this.#contextActionGroups.has(context)) {
-        const groupElement = this.#bosWidgetFactory.createWidget(
-          ContextActionsGroupSrc
-        );
-        this.#contextActionGroups.set(context, groupElement);
-
-        adapter.injectElement(
-          groupElement,
-          context,
-          link.insertionPoint,
-          InsertionType.Before
-        );
-      }
-
-      const groupElement = this.#contextActionGroups.get(context)!;
-      groupElement.appendChild(element);
-    } else {
-      try {
-        adapter.injectElement(
-          element,
-          context,
-          link.insertionPoint,
-          link.insertionType as InsertionType
-        );
-      } catch (err) {
-        console.error(err);
-      }
     }
-
-    if (!this.#elementsByContext.has(context)) {
-      this.#elementsByContext.set(context, new Set());
-    }
-
-    this.#elementsByContext.get(context)!.add(element);
   }
 
   async start(): Promise<void> {
