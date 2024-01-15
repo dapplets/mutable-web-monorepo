@@ -1,5 +1,5 @@
 import { getChildContextElements } from "./utils";
-import { IParser } from "./interface";
+import { IParser, InsertionPoint } from "./interface";
 
 export class MicrodataParser implements IParser {
   parseContext(element: Element) {
@@ -33,6 +33,12 @@ export class MicrodataParser implements IParser {
     insertionPoint: string
   ): Element | null {
     return element.querySelector(`[itemtype="${insertionPoint}"]`);
+  }
+
+  getInsertionPoints(element: Element): InsertionPoint[] {
+    return getChildContextElements(element, "itemtype").map((el) => ({
+      name: el.getAttribute("itemtype")!,
+    }));
   }
 
   static getPropertyValue(element: Element) {

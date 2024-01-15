@@ -1,3 +1,4 @@
+import { InsertionPoint } from "../parsers/interface";
 import { IContextNode } from "../tree/types";
 
 export enum InsertionType {
@@ -19,4 +20,6 @@ export interface IAdapter {
     insertionPoint: string,
     insertionType: InsertionType
   ): void;
+
+  getInsertionPoints(context: IContextNode): InsertionPoint[];
 }

@@ -1,8 +1,10 @@
 import { ParserConfig } from "../core/parsers/json-parser";
+import { IParserConfigProvider } from "./parser-config-provider";
 
 const configs = [
   {
-    namespace: "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
+    namespace:
+      "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
     contexts: {
       root: {
         children: ["post"],
@@ -47,8 +49,19 @@ const configs = [
           url: "concat('https://twitter.com/', substring-before(substring-after(string(.//time/../@href), '/'), '/'), '/status/', substring-after(string(.//time/../@href), 'status/'))",
         },
         insertionPoints: {
-          southPanel: "div[role=group] > *:last-child",
-          avatar: "div.r-18kxxzh.r-1wbh5a2.r-13qz1uu > *:last-child",
+          root: {
+            selector: ":scope > div",
+            bosLayoutManager: "bos.dapplets.near/widget/ContextActionsGroup",
+            insertionType: "before",
+          },
+          southPanel: {
+            selector: "div[role=group] > *:last-child",
+            insertionType: "after",
+          },
+          avatar: {
+            selector: "div.r-18kxxzh.r-1wbh5a2.r-13qz1uu > *:last-child",
+            insertionType: "after",
+          },
         },
       },
       profile: {
@@ -63,20 +76,28 @@ const configs = [
           url: "concat('https://twitter.com/', substring-after(string(.//*[@data-testid='UserName']/div/div/div[2]//span), '@'))",
         },
         insertionPoints: {
-          southPanel:
-            "div.css-175oi2r.r-obd0qt.r-18u37iz.r-1w6e6rj.r-1h0z5md.r-dnmrzs > a",
-          avatar:
-            "div.r-1ifxtd0.r-ymttw5.r-ttdzmv div.r-ggadg3.r-u8s1d.r-8jfcpp",
+          southPanel: {
+            selector: "[data-testid=placementTracking]",
+            insertionType: "after",
+          },
+          avatar: {
+            selector: "div.r-1ifxtd0.r-ymttw5.r-ttdzmv div.r-ggadg3.r-u8s1d.r-8jfcpp",
+            insertionType: "inside",
+          }
         },
       },
     },
   },
 ];
 
-export class MockedParserConfigProvider {
+export class MockedParserConfigProvider implements IParserConfigProvider {
   async getParserConfig(namespace: string): Promise<ParserConfig | null> {
     const config = configs.find((c) => c.namespace === namespace);
     if (!config) return null;
     return config as any; // ToDo: fix type
+  }
+
+  async createParserConfig(parserConfig: ParserConfig): Promise<void> {
+    throw new Error("Method not implemented.");
   }
 }

@@ -19,6 +19,7 @@ import {
 import { DomTreeBuilder } from "./core/tree/dom-tree/dom-tree-builder";
 import { PureTreeBuilder } from "./core/tree/pure-tree/pure-tree-builder";
 import { BosComponent } from "./bos/bos-widget";
+import { MockedParserConfigProvider } from "./providers/mocked-parser-config-provider";
 
 export enum AdapterType {
   Bos = "bos",
@@ -37,6 +38,8 @@ const activatedParserConfigs = [
 ];
 
 const ContextActionsGroupSrc = "bos.dapplets.near/widget/ContextActionsGroup";
+const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
+const DefaultInsertionType: InsertionType = InsertionType.Inside;
 
 export class Engine implements IContextListener {
   #linkProvider: ILinkProvider;
@@ -71,16 +74,52 @@ export class Engine implements IContextListener {
     console.log(this.#linkProvider);
   }
 
-  handleContextStarted(context: IContextNode): void {
+  async handleContextStarted(context: IContextNode): Promise<void> {
     if (!this.started) return;
+    if (!context.id) return;
 
-    this.#linkProvider!.getLinksForContext(context)
-      .then((links) => {
-        for (const link of links) {
-          this._processUserLink(context, link);
+    const links = await this.#linkProvider!.getLinksForContext(context);
+
+    // ToDo: don't iterate over all adapters
+    for (const adapter of this.adapters) {
+      const insertionPoints = adapter.getInsertionPoints(context);
+
+      // Insert layout manager to every insertion point
+      for (const insPoint of insertionPoints) {
+        const bosWidgetId = insPoint.bosLayoutManager ?? DefaultLayoutManager;
+        const insertionType = insPoint.insertionType ?? DefaultInsertionType;
+        const layoutManagerElement =
+          this.#bosWidgetFactory.createWidget(bosWidgetId);
+
+        const suitableLinks = links.filter(
+          (link) => link.insertionPoint === insPoint.name
+        );
+
+        layoutManagerElement.props = {
+          // ToDo: unify context forwarding
+          context: context.parsedContext,
+          contextType: context.tagName,
+          widgets: suitableLinks.map((link) => ({
+            src: link.component,
+            props: {
+              context: context.parsedContext,
+            }, // ToDo: add props
+          })),
+        };
+
+        try {
+          // Inject layout manager
+          adapter.injectElement(
+            layoutManagerElement,
+            context,
+            insPoint.name,
+            insertionType
+          );
+        } catch (err) {
+          console.error(err);
         }
-      })
-      .catch((err) => console.error(err));
+      }
+    }
   }
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {

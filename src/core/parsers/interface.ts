@@ -1,3 +1,11 @@
+import { InsertionType } from "../adapters/interface";
+
+export type InsertionPoint = {
+  name: string;
+  insertionType?: InsertionType;
+  bosLayoutManager?: string;
+};
+
 export interface IParser {
   parseContext(element: Element, contextName: string): any;
 
@@ -11,4 +19,6 @@ export interface IParser {
     contextName: string,
     insertionPoint: string
   ): Element | null;
+
+  getInsertionPoints(element: Element, contextName: string): InsertionPoint[];
 }

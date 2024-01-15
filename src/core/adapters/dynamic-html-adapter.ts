@@ -1,4 +1,4 @@
-import { IParser } from "../parsers/interface";
+import { IParser, InsertionPoint } from "../parsers/interface";
 import { IContextNode, ITreeBuilder } from "../tree/types";
 import { IAdapter, InsertionType } from "./interface";
 
@@ -64,18 +64,16 @@ export class DynamicHtmlAdapter implements IAdapter {
       throw new Error("Context element not found");
     }
 
-    let insPointElement: Element | null = null;
+    let insPointElement: Element | null = this.parser.findInsertionPoint(
+      contextElement,
+      context.tagName,
+      insertionPoint
+    );
 
     // ToDo: move to separate adapter?
     // Generic insertion point for "the ear"
-    if (insertionPoint === "root") {
+    if (!insPointElement && insertionPoint === "root") {
       insPointElement = contextElement;
-    } else {
-      insPointElement = this.parser.findInsertionPoint(
-        contextElement,
-        context.tagName,
-        insertionPoint
-      );
     }
 
     if (!insPointElement) {
@@ -97,6 +95,12 @@ export class DynamicHtmlAdapter implements IAdapter {
       default:
         throw new Error("Unknown insertion type");
     }
+  }
+
+  getInsertionPoints(context: IContextNode): InsertionPoint[] {
+    const htmlElement = this.#elementByContext.get(context)!;
+    if (!htmlElement) return [];
+    return this.parser.getInsertionPoints(htmlElement, context.tagName);
   }
 
   _createContextForElement(

@@ -1,4 +1,5 @@
-import { IParser } from "./interface";
+import { InsertionType } from "../adapters/interface";
+import { IParser, InsertionPoint } from "./interface";
 
 export type ParserConfig = {
   namespace: string;
@@ -9,7 +10,13 @@ export type ParserConfig = {
         [prop: string]: string;
       };
       insertionPoints?: {
-        [insPointName: string]: string;
+        [insPointName: string]:
+          | string
+          | {
+              selector?: string;
+              bosLayoutManager?: string;
+              insertionType?: InsertionType;
+            };
       };
       children?: string[];
     };
@@ -96,8 +103,33 @@ export class JsonParser implements IParser {
     insertionPoint: string
   ): Element | null {
     const contextConfig = this.config.contexts[contextName];
-    const selector = contextConfig.insertionPoints?.[insertionPoint];
-    if (!selector) return null;
-    return element.querySelector(selector);
+    const selectorOrObject = contextConfig.insertionPoints?.[insertionPoint];
+
+    if (typeof selectorOrObject === "string") {
+      return element.querySelector(selectorOrObject);
+    } else if (selectorOrObject?.selector) {
+      return element.querySelector(selectorOrObject.selector);
+    } else {
+      return null;
+    }
+  }
+
+  getInsertionPoints(_: Element, contextName: string): InsertionPoint[] {
+    const contextConfig = this.config.contexts[contextName];
+    if (!contextConfig.insertionPoints) return [];
+
+    return Object.entries(contextConfig.insertionPoints).map(
+      ([name, selectorOrObject]) => ({
+        name,
+        insertionType:
+          typeof selectorOrObject === "string"
+            ? undefined
+            : selectorOrObject.insertionType,
+        bosLayoutManager:
+          typeof selectorOrObject === "string"
+            ? undefined
+            : selectorOrObject.bosLayoutManager,
+      })
+    );
   }
 }

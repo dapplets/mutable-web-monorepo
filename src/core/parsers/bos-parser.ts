@@ -1,20 +1,19 @@
-import { IParser } from "./interface";
+import { IParser, InsertionPoint } from "./interface";
 import { getChildContextElements } from "./utils";
+
+const CompAttr = "data-component";
+const PropsAttr = "data-props";
 
 export class BosParser implements IParser {
   parseContext(element: Element) {
-    return JSON.parse(element.getAttribute("data-props") ?? "{}");
+    return JSON.parse(element.getAttribute(PropsAttr) ?? "{}");
   }
 
   findChildElements(element: Element) {
-    return getChildContextElements(element, "data-component").map(
-      (element) => ({
-        element,
-        contextName: element
-          .getAttribute("data-component")!
-          .replace("/widget/", "--"), // ToDo: how to escape slashes?
-      })
-    );
+    return getChildContextElements(element, CompAttr).map((element) => ({
+      element,
+      contextName: element.getAttribute(CompAttr)!.replace("/widget/", "--"), // ToDo: how to escape slashes?
+    }));
   }
 
   findInsertionPoint(
@@ -22,6 +21,12 @@ export class BosParser implements IParser {
     _: string,
     insertionPoint: string
   ): Element | null {
-    return element.querySelector(`[data-component="${insertionPoint}"]`);
+    return element.querySelector(`[${CompAttr}="${insertionPoint}"]`);
+  }
+
+  getInsertionPoints(element: Element): InsertionPoint[] {
+    return getChildContextElements(element, CompAttr).map((el) => ({
+      name: el.getAttribute(CompAttr)!.replace("/widget/", "--"),
+    }));
   }
 }
