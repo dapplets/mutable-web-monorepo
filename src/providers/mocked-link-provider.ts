@@ -8,7 +8,7 @@ const links: BosUserLink[] = [
     contextId: "root.near/108491730",
     insertionPoint: "like",
     insertionType: "after",
-    component: "dapplets.near/widget/Dog",
+    component: "bos.dapplets.near/widget/Dog",
   },
   {
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
@@ -16,7 +16,7 @@ const links: BosUserLink[] = [
     contextId: "mum001.near/108508979",
     insertionPoint: "like",
     insertionType: "after",
-    component: "dapplets.near/widget/Cat",
+    component: "bos.dapplets.near/widget/Cat",
   },
   {
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
@@ -24,7 +24,7 @@ const links: BosUserLink[] = [
     contextId: "1694995303642939408",
     insertionPoint: "southPanel",
     insertionType: "after",
-    component: "dapplets.near/widget/Cat",
+    component: "bos.dapplets.near/widget/Cat",
   },
   {
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
@@ -32,7 +32,7 @@ const links: BosUserLink[] = [
     contextId: "1694995241055465828",
     insertionPoint: "southPanel",
     insertionType: "after",
-    component: "dapplets.near/widget/Dog",
+    component: "bos.dapplets.near/widget/Dog",
   },
   {
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",

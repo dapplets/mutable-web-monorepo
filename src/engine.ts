@@ -36,7 +36,7 @@ const activatedParserConfigs = [
   "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
 ];
 
-const ContextActionsGroupSrc = "dapplets.near/widget/ContextActionsGroup";
+const ContextActionsGroupSrc = "bos.dapplets.near/widget/ContextActionsGroup";
 
 export class Engine implements IContextListener {
   #linkProvider: ILinkProvider;
@@ -52,6 +52,8 @@ export class Engine implements IContextListener {
 
   constructor(private config: EngineConfig) {
     this.#bosWidgetFactory = new BosWidgetFactory({
+      networkId: this.config.networkId,
+      selector: this.config.selector,
       tagName: "bos-component",
     });
     const nearConfig = getNearConfig(this.config.networkId);
@@ -156,7 +158,7 @@ export class Engine implements IContextListener {
           groupElement,
           context,
           link.insertionPoint,
-          link.insertionType as InsertionType
+          InsertionType.Before
         );
       }
 
