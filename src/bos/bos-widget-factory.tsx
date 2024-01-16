@@ -29,7 +29,7 @@ export class BosWidgetFactory {
               skipTxConfirmationPopup: true,
             },
             customElements: {
-              Overlay: ({ children }: any) => {
+              DappletOverlay: ({ children }: any) => {
                 const child = children.filter(
                   (c: any) => typeof c !== "string" || !!c.trim()
                 )[0];
