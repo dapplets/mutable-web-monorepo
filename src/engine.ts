@@ -4,22 +4,18 @@ import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { BosUserLink, ILinkProvider } from "./providers/link-provider";
-import { SocialDbLinkProvider } from "./providers/social-db-link-provider";
+import { BosUserLink, IProvider } from "./providers/provider";
 import { WalletSelector } from "@near-wallet-selector/core";
 import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
-import { SocialDbParserConfigProvider } from "./providers/social-db-parser-config-provider";
-import { IParserConfigProvider } from "./providers/parser-config-provider";
+import { SocialDbProvider } from "./providers/social-db-provider";
 import {
   IContextListener,
   IContextNode,
   ITreeBuilder,
 } from "./core/tree/types";
-import { DomTreeBuilder } from "./core/tree/dom-tree/dom-tree-builder";
 import { PureTreeBuilder } from "./core/tree/pure-tree/pure-tree-builder";
 import { BosComponent } from "./bos/bos-widget";
-import { MockedParserConfigProvider } from "./providers/mocked-parser-config-provider";
 
 export enum AdapterType {
   Bos = "bos",
@@ -41,8 +37,7 @@ const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
 const DefaultInsertionType: InsertionType = InsertionType.Inside;
 
 export class Engine implements IContextListener {
-  #linkProvider: ILinkProvider;
-  #parserConfigProvider: IParserConfigProvider;
+  #provider: IProvider;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
   #elementsByContext: WeakMap<IContextNode, Map<string, BosComponent>> =
@@ -61,23 +56,15 @@ export class Engine implements IContextListener {
     const nearConfig = getNearConfig(this.config.networkId);
     this.#selector = this.config.selector;
     const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl);
-    this.#linkProvider = new SocialDbLinkProvider(
-      nearSigner,
-      nearConfig.contractName
-    );
-    this.#parserConfigProvider = new SocialDbParserConfigProvider(
-      nearSigner,
-      nearConfig.contractName
-    );
-    console.log(this.#parserConfigProvider);
-    console.log(this.#linkProvider);
+    this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName);
+    console.log(this.#provider);
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
     if (!this.started) return;
     if (!context.id) return;
 
-    const links = await this.#linkProvider!.getLinksForContext(context);
+    const links = await this.#provider.getLinksForContext(context);
 
     // ToDo: don't iterate over all adapters
     for (const adapter of this.adapters) {
@@ -156,7 +143,6 @@ export class Engine implements IContextListener {
     // ToDo: fetch metadata of the BOS component
     console.log({ bosWidgetId, context });
 
-    
     const insertionPoint = "root";
 
     const newLink: Omit<BosUserLink, "id"> = {
@@ -167,7 +153,7 @@ export class Engine implements IContextListener {
       component: bosWidgetId,
     };
 
-    await this.#linkProvider!.createLink(newLink);
+    await this.#provider.createLink(newLink);
 
     const layoutManager = this.#elementsByContext
       .get(context)
@@ -195,7 +181,7 @@ export class Engine implements IContextListener {
     adaptersToActivate.push(this.createAdapter(AdapterType.Microdata));
 
     for (const configId of activatedParserConfigs) {
-      const config = await this.#parserConfigProvider.getParserConfig(configId);
+      const config = await this.#provider.getParserConfig(configId);
 
       if (config) {
         const adapter = this.createAdapter(AdapterType.Json, config);
