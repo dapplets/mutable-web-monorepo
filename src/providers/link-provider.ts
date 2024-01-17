@@ -1,6 +1,7 @@
 import { IContextNode } from "../core/tree/types";
 
 export type BosUserLink = {
+  id: string;
   namespace: string;
   contextType: string; // ToDo: replace with expression
   contextId: string | null; // ToDo: replace with expression
@@ -11,5 +12,5 @@ export type BosUserLink = {
 
 export interface ILinkProvider {
   getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
-  createLink(link: BosUserLink): Promise<void>;
+  createLink(link: Omit<BosUserLink, "id">): Promise<BosUserLink>;
 }

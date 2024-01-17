@@ -1,26 +1,48 @@
-import { NearSigner, TGas } from "./near-signer";
+import { NearSigner } from "./near-signer";
 import { IParserConfigProvider } from "./parser-config-provider";
 import { ParserConfig } from "../core/parsers/json-parser";
 import Big from "big.js";
 
 const JsonParserNamespace = "https://dapplets.org/ns/json/";
 
+const ProjectIdKey = "dapplets.near";
+const ParserKey = "parser";
+const SettingsKey = "settings";
+const SelfKey = "";
+
+/**
+ * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
+ * More info about the schema is here:
+ * https://github.com/NearSocial/standards/blob/8713aed325226db5cf97ab9744ba78b561cc377b/types/settings/Settings.md
+ *
+ * Example of a data stored in the contract is here:
+ * /docs/social-db-reference.json
+ */
 export class SocialDbParserConfigProvider implements IParserConfigProvider {
   constructor(private _signer: NearSigner, private _contractName: string) {}
 
   async getParserConfig(ns: string): Promise<ParserConfig | null> {
     const { accountId, parserLocalId } = this._extractParserIdFromNamespace(ns);
 
+    const authorizedAccountId = await this._signer.getAccountId();
+
+    if (!authorizedAccountId) throw new Error("User is not logged in");
+    if (authorizedAccountId !== accountId) throw new Error("No access");
+
     const queryResult = await this._signer.view(this._contractName, "get", {
-      keys: [`${accountId}/parser/${parserLocalId}/**`],
+      keys: [
+        `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
+      ],
     });
 
-    const parserConfig =
-      queryResult[accountId]?.["parser"]?.[parserLocalId]?.[""];
+    const parserConfigJson =
+      queryResult[accountId]?.[SettingsKey]?.[ProjectIdKey]?.[ParserKey]?.[
+        parserLocalId
+      ]?.[SelfKey];
 
-    if (!parserConfig) return null;
+    if (!parserConfigJson) return null;
 
-    return JSON.parse(parserConfig);
+    return JSON.parse(parserConfigJson);
   }
 
   async createParserConfig(config: ParserConfig): Promise<void> {
@@ -37,7 +59,15 @@ export class SocialDbParserConfigProvider implements IParserConfigProvider {
       {
         data: {
           [accountId]: {
-            parser: { [parserLocalId]: { "": JSON.stringify(config) } },
+            [SettingsKey]: {
+              [ProjectIdKey]: {
+                [ParserKey]: {
+                  [parserLocalId]: {
+                    [SelfKey]: JSON.stringify(config),
+                  },
+                },
+              },
+            },
           },
         },
       },

@@ -1,53 +1,56 @@
 import { IContextNode } from "../core/tree/types";
+import { generateGuid } from "../core/utils";
 import { BosUserLink, ILinkProvider } from "./link-provider";
 
 const links: BosUserLink[] = [
   {
-    namespace: "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
+    id: "1",
+    namespace:
+      "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
     contextType: "post",
     contextId: "root.near/108491730",
     insertionPoint: "like",
-    // insertionType: "after",
     component: "bos.dapplets.near/widget/Dog",
   },
   {
-    namespace: "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
+    id: "2",
+    namespace:
+      "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
     contextType: "post",
     contextId: "mum001.near/108508979",
     insertionPoint: "like",
-    // insertionType: "after",
     component: "bos.dapplets.near/widget/Cat",
   },
   {
+    id: "3",
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
     contextType: "post",
     contextId: "1694995303642939408",
     insertionPoint: "southPanel",
-    // insertionType: "after",
     component: "bos.dapplets.near/widget/Cat",
   },
   {
+    id: "4",
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
     contextType: "post",
     contextId: "1694995241055465828",
     insertionPoint: "southPanel",
-    // insertionType: "after",
     component: "bos.dapplets.near/widget/Dog",
   },
   {
+    id: "5",
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
     contextType: "post",
     contextId: null,
     insertionPoint: "root",
-    // insertionType: "inside",
     component: "lisofffa.near/widget/Mutation-Overlay",
   },
   {
+    id: "6",
     namespace: "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
     contextType: "post",
     contextId: null,
     insertionPoint: "southPanel",
-    // insertionType: "after",
     component: "nikter.near/widget/Tipping",
   },
 ];
@@ -78,7 +81,10 @@ export class MockedLinkProvider implements ILinkProvider {
     return output;
   }
 
-  async createLink(link: BosUserLink): Promise<void> {
-    links.push(link);
+  async createLink(link: Omit<BosUserLink, "id">): Promise<BosUserLink> {
+    const linkId = generateGuid();
+    const newLink: BosUserLink = { id: linkId, ...link };
+    links.push(newLink);
+    return newLink;
   }
 }

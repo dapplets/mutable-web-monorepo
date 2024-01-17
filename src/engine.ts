@@ -33,11 +33,10 @@ export type EngineConfig = {
 };
 
 const activatedParserConfigs = [
-  "https://dapplets.org/ns/json/dapplets.near/parser/near-social-viewer",
-  "https://dapplets.org/ns/json/dapplets.near/parser/twitter",
+  // "https://dapplets.org/ns/json/bos.dapplets.near/parser/near-social-viewer",
+  "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter",
 ];
 
-const ContextActionsGroupSrc = "bos.dapplets.near/widget/ContextActionsGroup";
 const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
 const DefaultInsertionType: InsertionType = InsertionType.Inside;
 
@@ -155,9 +154,12 @@ export class Engine implements IContextListener {
 
   async _createUserLink(bosWidgetId: string, context: IContextNode) {
     // ToDo: fetch metadata of the BOS component
+    console.log({ bosWidgetId, context });
+
+    
     const insertionPoint = "root";
 
-    const newLink: BosUserLink = {
+    const newLink: Omit<BosUserLink, "id"> = {
       namespace: context.namespaceURI!,
       contextType: context.tagName,
       contextId: context.id,

@@ -1,0 +1,82 @@
+{
+  "bos.dapplets.near": {
+    "settings": {
+      "dapplets.near": {
+        "parser": {
+          "twitter": {
+            "": "{}",
+            "metadata": {
+              "name": "Twitter Parser"
+            }
+          },
+          "near-social": {
+            "": "{}",
+            "metadata": {
+              "name": "Near Social Parser"
+            }
+          }
+        },
+        "mutation": {
+          "default": {
+            "include": {
+              "dapplets.near": { "widget": { "Dog": "" } },
+              "bos.dapplets.near": { "widget": { "Cat": "" } },
+              "nikter.near": { "widget": { "Tipping": "" } }
+            },
+            "metadata": {
+              "name": "Dapplets Official Mutation"
+            }
+          }
+        },
+        "linkTemplate": {
+          "bos.dapplets.near": {
+            "widget": {
+              "Cat": {
+                "2e16e3d0026c0839cb7db09bdce7682c": {
+                  "namespace": "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter",
+                  "contextType": "post",
+                  "insertionPoint": "southPanel",
+                  "contextId": ""
+                },
+                "bf195ffd239fa561362a72b1007393ca": {
+                  "namespace": "https://dapplets.org/ns/bos",
+                  "contextType": "mob.near/widget/N.Post",
+                  "insertionPoint": "mob.near/widget/N.LikeButton",
+                  "context": {
+                    "authorId": "",
+                    "postId": ""
+                  }
+                }
+              }
+            }
+          }
+        },
+        "link": {
+          "bos.dapplets.near": {
+            "widget": {
+              "Cat": {
+                "2e16e3d0026c0839cb7db09bdce7682c": {
+                  "mutation": "dapplets.near/mutation/default",
+                  "namespace": "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter",
+                  "contextType": "post",
+                  "insertionPoint": "southPanel",
+                  "contextId": "123123123123"
+                },
+                "59dd1069d5618981b5dfc75cdf08f29e": {
+                  "mutation": "dapplets.near/mutation/default",
+                  "namespace": "https://dapplets.org/ns/bos",
+                  "contextType": "mob.near/widget/N.Post",
+                  "insertionPoint": "mob.near/widget/N.LikeButton",
+                  "context": {
+                    "authorId": "mob.near",
+                    "postId": "12312837123"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
