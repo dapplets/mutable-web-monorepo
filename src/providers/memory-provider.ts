@@ -1,7 +1,7 @@
 import { ParserConfig } from "../core/parsers/json-parser";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
-import { BosUserLink, IProvider } from "./provider";
+import { BosUserLink, IProvider, LinkTemplate } from "./provider";
 
 const links: BosUserLink[] = [
   {
@@ -11,7 +11,7 @@ const links: BosUserLink[] = [
     contextType: "post",
     contextId: "root.near/108491730",
     insertionPoint: "like",
-    component: "bos.dapplets.near/widget/Dog",
+    bosWidgetId: "bos.dapplets.near/widget/Dog",
   },
   {
     id: "2",
@@ -20,7 +20,7 @@ const links: BosUserLink[] = [
     contextType: "post",
     contextId: "mum001.near/108508979",
     insertionPoint: "like",
-    component: "bos.dapplets.near/widget/Cat",
+    bosWidgetId: "bos.dapplets.near/widget/Cat",
   },
   {
     id: "3",
@@ -28,7 +28,7 @@ const links: BosUserLink[] = [
     contextType: "post",
     contextId: "1694995303642939408",
     insertionPoint: "southPanel",
-    component: "bos.dapplets.near/widget/Cat",
+    bosWidgetId: "bos.dapplets.near/widget/Cat",
   },
   {
     id: "4",
@@ -36,7 +36,7 @@ const links: BosUserLink[] = [
     contextType: "post",
     contextId: "1694995241055465828",
     insertionPoint: "southPanel",
-    component: "bos.dapplets.near/widget/Dog",
+    bosWidgetId: "bos.dapplets.near/widget/Dog",
   },
   {
     id: "5",
@@ -44,7 +44,7 @@ const links: BosUserLink[] = [
     contextType: "post",
     contextId: null,
     insertionPoint: "root",
-    component: "lisofffa.near/widget/Mutation-Overlay",
+    bosWidgetId: "lisofffa.near/widget/Mutation-Overlay",
   },
   {
     id: "6",
@@ -52,7 +52,7 @@ const links: BosUserLink[] = [
     contextType: "post",
     contextId: null,
     insertionPoint: "southPanel",
-    component: "nikter.near/widget/Tipping",
+    bosWidgetId: "nikter.near/widget/Tipping",
   },
 ];
 
@@ -147,6 +147,9 @@ const configs = [
 ];
 
 export class MemoryProvider implements IProvider {
+  createLinkTemplate(linkTemplate: Omit<LinkTemplate, "id">): Promise<LinkTemplate> {
+    throw new Error("Method not implemented.");
+  }
   async getParserConfig(namespace: string): Promise<ParserConfig | null> {
     const config = configs.find((c) => c.namespace === namespace);
     if (!config) return null;
@@ -187,5 +190,9 @@ export class MemoryProvider implements IProvider {
     const newLink: BosUserLink = { id: linkId, ...link };
     links.push(newLink);
     return newLink;
+  }
+  
+  async getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]> {
+    return [];
   }
 }

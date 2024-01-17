@@ -7,8 +7,17 @@ export type BosUserLink = {
   contextType: string; // ToDo: replace with expression
   contextId: string | null; // ToDo: replace with expression
   insertionPoint: string;
-  component: string;
+  bosWidgetId: string;
   // ToDo: add props
+};
+
+export type LinkTemplate = {
+  id: string;
+  namespace: string;
+  contextType: string;
+  contextId: string | null;
+  insertionPoint: string;
+  bosWidgetId: string;
 };
 
 export interface IProvider {
@@ -16,4 +25,8 @@ export interface IProvider {
   createLink(link: Omit<BosUserLink, "id">): Promise<BosUserLink>;
   getParserConfig(namespace: string): Promise<ParserConfig | null>;
   createParserConfig(parserConfig: ParserConfig): Promise<void>;
+  getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]>;
+  createLinkTemplate(
+    linkTemplate: Omit<LinkTemplate, "id">
+  ): Promise<LinkTemplate>;
 }

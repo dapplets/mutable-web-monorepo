@@ -86,7 +86,7 @@ export class Engine implements IContextListener {
           context: context.parsedContext,
           contextType: context.tagName,
           widgets: suitableLinks.map((link) => ({
-            src: link.component,
+            src: link.bosWidgetId,
             props: {
               context: context.parsedContext,
             }, // ToDo: add props
@@ -143,21 +143,48 @@ export class Engine implements IContextListener {
     // ToDo: fetch metadata of the BOS component
     console.log({ bosWidgetId, context });
 
-    const insertionPoint = "root";
+    const templates = await this.#provider.getLinkTemplates(bosWidgetId);
+
+    const suitableTemplates = templates.filter((template) => {
+      if (template.contextType !== context.tagName) return false;
+
+      // ToDo: get rid of magic values
+      // context id required
+      if (template.contextId === "" && !context.id) return false;
+
+      // template for specific context
+      if (
+        template.contextId !== null &&
+        template.contextId !== "" &&
+        context.id !== template.contextId
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+    if (suitableTemplates.length === 0) {
+      // ToDo: suggest user to select insertion point manually
+      throw new Error("No link templates found");
+    }
+
+    // ToDo: suggest user to select insertion point manually
+    const template = suitableTemplates[0];
 
     const newLink: Omit<BosUserLink, "id"> = {
       namespace: context.namespaceURI!,
       contextType: context.tagName,
-      contextId: context.id,
-      insertionPoint: insertionPoint,
-      component: bosWidgetId,
+      contextId: template.contextId === null ? null : context.id, // ToDo: get rid of magic values
+      insertionPoint: template.insertionPoint,
+      bosWidgetId: bosWidgetId,
     };
 
     await this.#provider.createLink(newLink);
 
     const layoutManager = this.#elementsByContext
       .get(context)
-      ?.get(insertionPoint);
+      ?.get(template.insertionPoint);
 
     // Add new widget to the layout manager
     if (layoutManager) {

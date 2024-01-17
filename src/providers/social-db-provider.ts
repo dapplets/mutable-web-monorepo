@@ -2,7 +2,7 @@ import Big from "big.js";
 
 import { NearSigner } from "./near-signer";
 import { ParserConfig } from "../core/parsers/json-parser";
-import { BosUserLink, IProvider } from "./provider";
+import { BosUserLink, IProvider, LinkTemplate } from "./provider";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
 
@@ -14,6 +14,7 @@ const SettingsKey = "settings";
 const LinkKey = "link";
 const WidgetKey = "widget";
 const SelfKey = "";
+const LinkTemplateKey = "linkTemplate";
 
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
@@ -91,6 +92,7 @@ export class SocialDbProvider implements IProvider {
     }
 
     // ToDo: index links by context/widget/contextType/etc.
+    // ToDo: fix GasLimitExceeded error using Social DB API
     // Fetch all links from every user
     const resp = await this._signer.view(this._contractName, "get", {
       keys: [`*/${SettingsKey}/${ProjectIdKey}/${LinkKey}/*/${WidgetKey}/*/**`],
@@ -99,18 +101,24 @@ export class SocialDbProvider implements IProvider {
     const userLinksOutput: BosUserLink[] = [];
 
     for (const accountId in resp) {
-      const userLinks = resp[accountId][SettingsKey][ProjectIdKey][LinkKey];
-      for (const linkId in userLinks) {
-        const link = userLinks[linkId];
-        const userLink: BosUserLink = {
-          id: linkId,
-          namespace: link.namespace,
-          contextType: link.contextType,
-          contextId: link.contextId,
-          insertionPoint: link.insertionPoint,
-          component: link.component,
-        };
-        userLinksOutput.push(userLink);
+      const widgetOwners = resp[accountId][SettingsKey][ProjectIdKey][LinkKey];
+      for (const widgetOwnerId in widgetOwners) {
+        const widgets = widgetOwners[widgetOwnerId][WidgetKey];
+        for (const widgetLocalId in widgets) {
+          const userLinks = widgets[widgetLocalId];
+          for (const linkId in userLinks) {
+            const link = userLinks[linkId];
+            const userLink: BosUserLink = {
+              id: linkId,
+              namespace: link.namespace,
+              contextType: link.contextType,
+              contextId: link.contextId,
+              insertionPoint: link.insertionPoint,
+              bosWidgetId: `${widgetOwnerId}/${WidgetKey}/${widgetLocalId}`,
+            };
+            userLinksOutput.push(userLink);
+          }
+        }
       }
     }
 
@@ -119,6 +127,7 @@ export class SocialDbProvider implements IProvider {
 
   async createLink(link: Omit<BosUserLink, "id">): Promise<BosUserLink> {
     const linkId = generateGuid();
+    const [widgetOwnerId, , bosWidgetLocalId] = link.bosWidgetId.split("/");
 
     const accountId = await this._signer.getAccountId();
 
@@ -134,7 +143,22 @@ export class SocialDbProvider implements IProvider {
         data: {
           [accountId]: {
             [SettingsKey]: {
-              [ProjectIdKey]: { [LinkKey]: { [linkId]: link } },
+              [ProjectIdKey]: {
+                [LinkKey]: {
+                  [widgetOwnerId]: {
+                    [WidgetKey]: {
+                      [bosWidgetLocalId]: {
+                        [linkId]: {
+                          namespace: link.namespace,
+                          contextType: link.contextType,
+                          contextId: link.contextId ?? null,
+                          insertionPoint: link.insertionPoint,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -144,6 +168,87 @@ export class SocialDbProvider implements IProvider {
     );
 
     return { id: linkId, ...link };
+  }
+
+  async getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]> {
+    const [ownerId, , bosWidgetLocalId] = bosWidgetId.split("/");
+    const resp = await this._signer.view(this._contractName, "get", {
+      keys: [
+        `${ownerId}/${SettingsKey}/${ProjectIdKey}/${LinkTemplateKey}/${ownerId}/${WidgetKey}/${bosWidgetLocalId}/**`,
+      ],
+    });
+
+    const linkTemplates =
+      resp[ownerId]?.[SettingsKey]?.[ProjectIdKey]?.[LinkTemplateKey]?.[
+        ownerId
+      ]?.[WidgetKey]?.[bosWidgetLocalId];
+
+    if (!linkTemplates) return [];
+
+    const linksOutput: LinkTemplate[] = [];
+
+    for (const linkTemplateId in linkTemplates) {
+      const link = linkTemplates[linkTemplateId];
+      const userLink: LinkTemplate = {
+        id: linkTemplateId,
+        namespace: link.namespace,
+        contextType: link.contextType,
+        contextId: link.contextId,
+        insertionPoint: link.insertionPoint,
+        bosWidgetId: `${ownerId}/${WidgetKey}/${bosWidgetLocalId}`,
+      };
+      linksOutput.push(userLink);
+    }
+
+    return linksOutput;
+  }
+
+  async createLinkTemplate(
+    linkTemplate: Omit<LinkTemplate, "id">
+  ): Promise<LinkTemplate> {
+    const linkTemplateId = generateGuid();
+    const [widgetOwnerId, , bosWidgetLocalId] =
+      linkTemplate.bosWidgetId.split("/");
+
+    const accountId = await this._signer.getAccountId();
+
+    if (!accountId) throw new Error("User is not logged in");
+
+    const gas = undefined; // default gas
+    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+
+    await this._signer.call(
+      this._contractName,
+      "set",
+      {
+        data: {
+          [accountId]: {
+            [SettingsKey]: {
+              [ProjectIdKey]: {
+                [LinkTemplateKey]: {
+                  [widgetOwnerId]: {
+                    [WidgetKey]: {
+                      [bosWidgetLocalId]: {
+                        [linkTemplateId]: {
+                          namespace: linkTemplate.namespace,
+                          contextType: linkTemplate.contextType,
+                          contextId: linkTemplate.contextId,
+                          insertionPoint: linkTemplate.insertionPoint,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      gas,
+      deposit
+    );
+
+    return { id: linkTemplateId, ...linkTemplate };
   }
 
   private _extractParserIdFromNamespace(namespace: string): {
