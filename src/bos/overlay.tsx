@@ -7,7 +7,7 @@ const BootstrapCssUrl =
 
 const overlay = document.createElement("mutable-web-overlay");
 
-overlay.style.background = "#000000aa";
+overlay.style.background = "#ffffff88";
 overlay.style.position = "fixed";
 // overlay.style.display = "none";
 overlay.style.top = "0";
