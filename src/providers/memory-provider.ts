@@ -147,7 +147,9 @@ const configs = [
 ];
 
 export class MemoryProvider implements IProvider {
-  createLinkTemplate(linkTemplate: Omit<LinkTemplate, "id">): Promise<LinkTemplate> {
+  createLinkTemplate(
+    linkTemplate: Omit<LinkTemplate, "id">
+  ): Promise<LinkTemplate> {
     throw new Error("Method not implemented.");
   }
   async getParserConfig(namespace: string): Promise<ParserConfig | null> {
@@ -191,8 +193,16 @@ export class MemoryProvider implements IProvider {
     links.push(newLink);
     return newLink;
   }
-  
+
   async getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]> {
     return [];
+  }
+
+  async deleteUserLink(
+    userLink: Pick<BosUserLink, "id" | "bosWidgetId">
+  ): Promise<void> {
+    const index = links.findIndex((l) => l.id === userLink.id);
+    if (index === -1) return;
+    links.splice(index, 1);
   }
 }

@@ -170,6 +170,50 @@ export class SocialDbProvider implements IProvider {
     return { id: linkId, ...link };
   }
 
+  async deleteUserLink(
+    userLink: Pick<BosUserLink, "id" | "bosWidgetId">
+  ): Promise<void> {
+    const [widgetOwnerId, , bosWidgetLocalId] = userLink.bosWidgetId.split("/");
+    const accountId = await this._signer.getAccountId();
+
+    if (!accountId) throw new Error("User is not logged in");
+
+    const gas = undefined; // default gas
+    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+
+    await this._signer.call(
+      this._contractName,
+      "set",
+      {
+        data: {
+          [accountId]: {
+            [SettingsKey]: {
+              [ProjectIdKey]: {
+                [LinkKey]: {
+                  [widgetOwnerId]: {
+                    [WidgetKey]: {
+                      [bosWidgetLocalId]: {
+                        [userLink.id]: {
+                          [SelfKey]: null,
+                          namespace: null,
+                          contextType: null,
+                          contextId: null,
+                          insertionPoint: null,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      gas,
+      deposit
+    );
+  }
+
   async getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]> {
     const [ownerId, , bosWidgetLocalId] = bosWidgetId.split("/");
     const resp = await this._signer.view(this._contractName, "get", {

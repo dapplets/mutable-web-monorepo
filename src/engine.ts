@@ -86,6 +86,7 @@ export class Engine implements IContextListener {
           context: context.parsedContext,
           contextType: context.tagName,
           widgets: suitableLinks.map((link) => ({
+            linkId: link.id,
             src: link.bosWidgetId,
             props: {
               context: context.parsedContext,
@@ -93,6 +94,13 @@ export class Engine implements IContextListener {
           })),
           injectWidget: (bosWidgetId: string) =>
             this._createUserLink(bosWidgetId, context),
+          removeWidget: (bosWidgetId: string, userLinkId: string) =>
+            this._deleteUserLink(
+              bosWidgetId,
+              userLinkId,
+              context,
+              insPoint.name
+            ),
         };
 
         try {
@@ -140,9 +148,6 @@ export class Engine implements IContextListener {
   }
 
   async _createUserLink(bosWidgetId: string, context: IContextNode) {
-    // ToDo: fetch metadata of the BOS component
-    console.log({ bosWidgetId, context });
-
     const templates = await this.#provider.getLinkTemplates(bosWidgetId);
 
     const suitableTemplates = templates.filter((template) => {
@@ -194,6 +199,34 @@ export class Engine implements IContextListener {
           ...layoutManager.props.widgets,
           { src: bosWidgetId, props: {} },
         ],
+      };
+    }
+  }
+
+  async _deleteUserLink(
+    bosWidgetId: string,
+    userLinkId: string,
+    context: IContextNode,
+    insertionPoint: string
+  ) {
+    await this.#provider.deleteUserLink({
+      id: userLinkId,
+      bosWidgetId: bosWidgetId,
+    });
+
+    // ToDo: pass layout manager as argument of this function?
+    const layoutManager = this.#elementsByContext
+      .get(context)
+      ?.get(insertionPoint);
+
+    // Remove widget from the layout manager
+    if (layoutManager) {
+      layoutManager.props = {
+        ...layoutManager.props,
+        widgets: layoutManager.props.widgets.filter(
+          (widget: { src: string; props: any; linkId: string }) =>
+            widget.linkId !== userLinkId
+        ),
       };
     }
   }

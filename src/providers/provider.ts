@@ -29,4 +29,7 @@ export interface IProvider {
   createLinkTemplate(
     linkTemplate: Omit<LinkTemplate, "id">
   ): Promise<LinkTemplate>;
+  deleteUserLink(
+    userLink: Pick<BosUserLink, "id" | "bosWidgetId">
+  ): Promise<void>;
 }
