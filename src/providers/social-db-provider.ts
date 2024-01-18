@@ -93,6 +93,7 @@ export class SocialDbProvider implements IProvider {
 
     // ToDo: index links by context/widget/contextType/etc.
     // ToDo: fix GasLimitExceeded error using Social DB API
+    // ToDo: cache the query
     // Fetch all links from every user
     const resp = await this._signer.view(this._contractName, "get", {
       keys: [`*/${SettingsKey}/${ProjectIdKey}/${LinkKey}/*/${WidgetKey}/*/**`],
@@ -108,6 +109,12 @@ export class SocialDbProvider implements IProvider {
           const userLinks = widgets[widgetLocalId];
           for (const linkId in userLinks) {
             const link = userLinks[linkId];
+
+            // Include only suitable links
+            if (link.namespace && link.namespace !== context.namespaceURI) continue;
+            if (link.contextType && link.contextType !== context.tagName) continue;
+            if (link.contextId && link.contextId !== context.id) continue;
+
             const userLink: BosUserLink = {
               id: linkId,
               namespace: link.namespace,
