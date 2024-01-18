@@ -91,15 +91,13 @@ export class ContextManager {
     // ToDo: suggest user to select insertion point manually
     const template = suitableTemplates[0];
 
-    const newLink: Omit<BosUserLink, "id"> = {
+    const createdLink = await this.#provider.createLink({
       namespace: context.namespaceURI!,
       contextType: context.tagName,
       contextId: template.contextId === null ? null : context.id, // ToDo: get rid of magic values
       insertionPoint: template.insertionPoint,
-      bosWidgetId: bosWidgetId,
-    };
-
-    const createdLink = await this.#provider.createLink(newLink);
+      bosWidgetId: bosWidgetId
+    });
 
     this.addUserLink(createdLink);
   }

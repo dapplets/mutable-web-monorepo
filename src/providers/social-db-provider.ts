@@ -30,11 +30,6 @@ export class SocialDbProvider implements IProvider {
   async getParserConfig(ns: string): Promise<ParserConfig | null> {
     const { accountId, parserLocalId } = this._extractParserIdFromNamespace(ns);
 
-    const authorizedAccountId = await this._signer.getAccountId();
-
-    if (!authorizedAccountId) throw new Error("User is not logged in");
-    if (authorizedAccountId !== accountId) throw new Error("No access");
-
     const queryResult = await this._signer.view(this._contractName, "get", {
       keys: [
         `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
@@ -111,8 +106,10 @@ export class SocialDbProvider implements IProvider {
             const link = userLinks[linkId];
 
             // Include only suitable links
-            if (link.namespace && link.namespace !== context.namespaceURI) continue;
-            if (link.contextType && link.contextType !== context.tagName) continue;
+            if (link.namespace && link.namespace !== context.namespaceURI)
+              continue;
+            if (link.contextType && link.contextType !== context.tagName)
+              continue;
             if (link.contextId && link.contextId !== context.id) continue;
 
             const userLink: BosUserLink = {
@@ -122,6 +119,7 @@ export class SocialDbProvider implements IProvider {
               contextId: link.contextId,
               insertionPoint: link.insertionPoint,
               bosWidgetId: `${widgetOwnerId}/${WidgetKey}/${widgetLocalId}`,
+              authorId: accountId,
             };
             userLinksOutput.push(userLink);
           }
@@ -132,7 +130,9 @@ export class SocialDbProvider implements IProvider {
     return userLinksOutput;
   }
 
-  async createLink(link: Omit<BosUserLink, "id">): Promise<BosUserLink> {
+  async createLink(
+    link: Omit<BosUserLink, "id" | "authorId">
+  ): Promise<BosUserLink> {
     const linkId = generateGuid();
     const [widgetOwnerId, , bosWidgetLocalId] = link.bosWidgetId.split("/");
 
@@ -174,7 +174,7 @@ export class SocialDbProvider implements IProvider {
       deposit
     );
 
-    return { id: linkId, ...link };
+    return { id: linkId, ...link, authorId: accountId };
   }
 
   async deleteUserLink(

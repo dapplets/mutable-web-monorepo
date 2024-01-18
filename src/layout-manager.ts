@@ -2,6 +2,22 @@ import { BosComponent } from "./bos/bos-widget";
 import { ContextManager } from "./context-manager";
 import { BosUserLink, UserLinkId } from "./providers/provider";
 
+export interface LayoutManagerProps {
+  context: any;
+  contextType: string;
+  widgets: {
+    linkId: UserLinkId;
+    linkAuthorId: string;
+    src: string;
+    props: any;
+  }[];
+  isEditMode: boolean;
+  createUserLink: (bosWidgetId: string) => Promise<void>;
+  deleteUserLink: (userLinkId: UserLinkId) => Promise<void>;
+  enableEditMode: () => void;
+  disableEditMode: () => void;
+}
+
 export class LayoutManager {
   #contextManager: ContextManager;
   #layoutManager: BosComponent;
@@ -36,16 +52,16 @@ export class LayoutManager {
   }
 
   forceUpdate() {
-    const contextManager = this.#contextManager;
     const context = this.#contextManager.context;
     const links = Array.from(this.#userLinks.values());
 
-    this.#layoutManager.props = {
+    this._setProps({
       // ToDo: unify context forwarding
       context: context.parsedContext,
       contextType: context.tagName,
       widgets: links.map((link) => ({
         linkId: link.id,
+        linkAuthorId: link.authorId,
         src: link.bosWidgetId,
         props: {
           context: context.parsedContext,
@@ -58,7 +74,11 @@ export class LayoutManager {
       deleteUserLink: this._deleteUserLink.bind(this),
       enableEditMode: this._enableEditMode.bind(this),
       disableEditMode: this._disableEditMode.bind(this),
-    };
+    });
+  }
+
+  _setProps(props: LayoutManagerProps) {
+    this.#layoutManager.props = props;
   }
 
   // Widget API methods

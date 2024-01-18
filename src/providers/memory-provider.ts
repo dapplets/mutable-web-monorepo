@@ -12,6 +12,7 @@ const links: BosUserLink[] = [
     contextId: "root.near/108491730",
     insertionPoint: "like",
     bosWidgetId: "bos.dapplets.near/widget/Dog",
+    authorId: "bos.dapplets.near",
   },
   {
     id: "2",
@@ -21,6 +22,7 @@ const links: BosUserLink[] = [
     contextId: "mum001.near/108508979",
     insertionPoint: "like",
     bosWidgetId: "bos.dapplets.near/widget/Cat",
+    authorId: "bos.dapplets.near",
   },
   {
     id: "3",
@@ -29,6 +31,7 @@ const links: BosUserLink[] = [
     contextId: "1694995303642939408",
     insertionPoint: "southPanel",
     bosWidgetId: "bos.dapplets.near/widget/Cat",
+    authorId: "bos.dapplets.near",
   },
   {
     id: "4",
@@ -37,6 +40,7 @@ const links: BosUserLink[] = [
     contextId: "1694995241055465828",
     insertionPoint: "southPanel",
     bosWidgetId: "bos.dapplets.near/widget/Dog",
+    authorId: "bos.dapplets.near",
   },
   {
     id: "5",
@@ -45,6 +49,7 @@ const links: BosUserLink[] = [
     contextId: null,
     insertionPoint: "root",
     bosWidgetId: "lisofffa.near/widget/Mutation-Overlay",
+    authorId: "bos.dapplets.near",
   },
   {
     id: "6",
@@ -53,6 +58,7 @@ const links: BosUserLink[] = [
     contextId: null,
     insertionPoint: "southPanel",
     bosWidgetId: "nikter.near/widget/Tipping",
+    authorId: "bos.dapplets.near",
   },
 ];
 
