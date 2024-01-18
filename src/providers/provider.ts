@@ -1,8 +1,10 @@
 import { IContextNode } from "../core/tree/types";
 import { ParserConfig } from "../core/parsers/json-parser";
 
+export type UserLinkId = string;
+
 export type BosUserLink = {
-  id: string;
+  id: UserLinkId;
   namespace: string;
   contextType: string; // ToDo: replace with expression
   contextId: string | null; // ToDo: replace with expression

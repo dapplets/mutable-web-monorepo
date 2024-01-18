@@ -1,10 +1,10 @@
-import { IAdapter, InsertionType } from "./core/adapters/interface";
+import { IAdapter } from "./core/adapters/interface";
 import { BosParser } from "./core/parsers/bos-parser";
 import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { BosUserLink, IProvider } from "./providers/provider";
+import { IProvider } from "./providers/provider";
 import { WalletSelector } from "@near-wallet-selector/core";
 import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
@@ -15,8 +15,7 @@ import {
   ITreeBuilder,
 } from "./core/tree/types";
 import { PureTreeBuilder } from "./core/tree/pure-tree/pure-tree-builder";
-import { BosComponent } from "./bos/bos-widget";
-import { WidgetApi } from "./widget-api";
+import { ContextManager } from "./context-manager";
 
 export enum AdapterType {
   Bos = "bos",
@@ -34,15 +33,11 @@ const activatedParserConfigs = [
   "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter",
 ];
 
-const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
-const DefaultInsertionType: InsertionType = InsertionType.Inside;
-
 export class Engine implements IContextListener {
   #provider: IProvider;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
-  #elementsByContext: WeakMap<IContextNode, Map<string, BosComponent>> =
-    new WeakMap();
+  #contextManagers: WeakMap<IContextNode, ContextManager> = new WeakMap();
 
   adapters: Set<IAdapter> = new Set();
   treeBuilder: ITreeBuilder = new PureTreeBuilder(this); //new DomTreeBuilder(this);
@@ -65,86 +60,40 @@ export class Engine implements IContextListener {
     if (!this.started) return;
     if (!context.id) return;
 
+    // ToDo: do not iterate over all adapters
+    const adapter = Array.from(this.adapters).find((adapter) => {
+      return adapter.getInsertionPoints(context).length > 0;
+    });
+
+    if (!adapter) return;
+
+    const contextManager = new ContextManager(
+      context,
+      adapter,
+      this.#bosWidgetFactory,
+      this.#provider
+    );
+
+    this.#contextManagers.set(context, contextManager);
+
+    contextManager.injectLayoutManagers();
+
     const links = await this.#provider.getLinksForContext(context);
 
-    // ToDo: don't iterate over all adapters
-    for (const adapter of this.adapters) {
-      const insertionPoints = adapter.getInsertionPoints(context);
-
-      // Insert layout manager to every insertion point
-      for (const insPoint of insertionPoints) {
-        const bosWidgetId = insPoint.bosLayoutManager ?? DefaultLayoutManager;
-        const insertionType = insPoint.insertionType ?? DefaultInsertionType;
-        const layoutManagerElement =
-          this.#bosWidgetFactory.createWidget(bosWidgetId);
-
-        const suitableLinks = links.filter(
-          (link) => link.insertionPoint === insPoint.name
-        );
-
-        const widgetApi = new WidgetApi(
-          this.#provider,
-          context,
-          insPoint.name,
-          layoutManagerElement
-        );
-
-        layoutManagerElement.props = {
-          // ToDo: unify context forwarding
-          context: context.parsedContext,
-          contextType: context.tagName,
-          widgets: suitableLinks.map((link) => ({
-            linkId: link.id,
-            src: link.bosWidgetId,
-            props: {
-              context: context.parsedContext,
-            }, // ToDo: add props
-          })),
-          ...widgetApi, // ToDo: move to separate namespace?
-        };
-
-        try {
-          // Inject layout manager
-          adapter.injectElement(
-            layoutManagerElement,
-            context,
-            insPoint.name,
-            insertionType
-          );
-
-          if (!this.#elementsByContext.has(context)) {
-            this.#elementsByContext.set(context, new Map());
-          }
-
-          this.#elementsByContext
-            .get(context)!
-            .set(insPoint.name, layoutManagerElement);
-        } catch (err) {
-          console.error(err);
-        }
-      }
-    }
-
-    // ToDo: update #elementsByContext map
+    links.forEach((link) => contextManager.addUserLink(link));
   }
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {
     if (!this.started) return;
-    this.#elementsByContext.get(context)?.forEach((element) => {
-      element.props = {
-        ...element.props,
-        // ToDo: unify context forwarding
-        context: context.parsedContext, // for web2
-        // ...context.parsedContext, // for bos gateways
-      };
-    });
+
+    this.#contextManagers.get(context)?.forceUpdate();
   }
 
   handleContextFinished(context: IContextNode): void {
     if (!this.started) return;
-    this.#elementsByContext.get(context)?.forEach((element) => {
-      element.remove();
-    });
+
+    // ToDo: will layout managers be removed from the DOM?
+    this.#contextManagers.delete(context);
   }
 
   async start(): Promise<void> {
