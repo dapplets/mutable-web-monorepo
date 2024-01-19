@@ -73,6 +73,7 @@ export class ContextManager {
 
       // template for specific context
       if (
+        template.contextId !== undefined &&
         template.contextId !== null &&
         template.contextId !== "" &&
         context.id !== template.contextId
@@ -94,9 +95,12 @@ export class ContextManager {
     const createdLink = await this.#provider.createLink({
       namespace: context.namespaceURI!,
       contextType: context.tagName,
-      contextId: template.contextId === null ? null : context.id, // ToDo: get rid of magic values
+      contextId:
+        template.contextId === null || template.contextId === undefined
+          ? null
+          : context.id, // ToDo: get rid of magic values
       insertionPoint: template.insertionPoint,
-      bosWidgetId: bosWidgetId
+      bosWidgetId: bosWidgetId,
     });
 
     this.addUserLink(createdLink);

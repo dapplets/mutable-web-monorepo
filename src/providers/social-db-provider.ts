@@ -116,7 +116,7 @@ export class SocialDbProvider implements IProvider {
               id: linkId,
               namespace: link.namespace,
               contextType: link.contextType,
-              contextId: link.contextId,
+              contextId: link.contextId ?? null,
               insertionPoint: link.insertionPoint,
               bosWidgetId: `${widgetOwnerId}/${WidgetKey}/${widgetLocalId}`,
               authorId: accountId,
@@ -283,7 +283,7 @@ export class SocialDbProvider implements IProvider {
                         [linkTemplateId]: {
                           namespace: linkTemplate.namespace,
                           contextType: linkTemplate.contextType,
-                          contextId: linkTemplate.contextId,
+                          contextId: linkTemplate.contextId ?? null,
                           insertionPoint: linkTemplate.insertionPoint,
                         },
                       },
@@ -300,6 +300,50 @@ export class SocialDbProvider implements IProvider {
     );
 
     return { id: linkTemplateId, ...linkTemplate };
+  }
+
+  async deleteLinkTemplate(
+    linkTemplate: Pick<BosUserLink, "id" | "bosWidgetId">
+  ): Promise<void> {
+    const [widgetOwnerId, , bosWidgetLocalId] = linkTemplate.bosWidgetId.split("/");
+    const accountId = await this._signer.getAccountId();
+
+    if (!accountId) throw new Error("User is not logged in");
+
+    const gas = undefined; // default gas
+    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+
+    await this._signer.call(
+      this._contractName,
+      "set",
+      {
+        data: {
+          [accountId]: {
+            [SettingsKey]: {
+              [ProjectIdKey]: {
+                [LinkTemplateKey]: {
+                  [widgetOwnerId]: {
+                    [WidgetKey]: {
+                      [bosWidgetLocalId]: {
+                        [linkTemplate.id]: {
+                          [SelfKey]: null,
+                          namespace: null,
+                          contextType: null,
+                          contextId: null,
+                          insertionPoint: null,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      gas,
+      deposit
+    );
   }
 
   private _extractParserIdFromNamespace(namespace: string): {
