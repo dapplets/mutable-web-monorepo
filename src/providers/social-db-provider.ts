@@ -6,7 +6,8 @@ import { BosUserLink, IProvider, LinkTemplate } from "./provider";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
 
-const JsonParserNamespace = "https://dapplets.org/ns/json/";
+const DappletsNamespace = "https://dapplets.org/ns/";
+const SupportedParserTypes = ["json", "bos"];
 
 const ProjectIdKey = "dapplets.near";
 const ParserKey = "parser";
@@ -347,22 +348,27 @@ export class SocialDbProvider implements IProvider {
   }
 
   private _extractParserIdFromNamespace(namespace: string): {
+    parserType: string;
     accountId: string;
     parserLocalId: string;
   } {
-    if (!namespace.startsWith(JsonParserNamespace)) {
+    if (!namespace.startsWith(DappletsNamespace)) {
       throw new Error("Invalid namespace");
     }
 
-    const parserGlobalId = namespace.replace(JsonParserNamespace, "");
+    const parserGlobalId = namespace.replace(DappletsNamespace, "");
 
     // Example: example.near/parser/social-network
-    const [accountId, entityType, parserLocalId] = parserGlobalId.split("/");
+    const [parserType, accountId, entityType, parserLocalId] = parserGlobalId.split("/");
 
     if (entityType !== "parser" || !accountId || !parserLocalId) {
       throw new Error("Invalid namespace");
     }
 
-    return { accountId, parserLocalId };
+    if (!SupportedParserTypes.includes(parserType)) {
+      throw new Error(`Parser type "${parserType}" is not supported`);
+    }
+
+    return { parserType, accountId, parserLocalId };
   }
 }

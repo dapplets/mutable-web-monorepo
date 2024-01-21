@@ -1,5 +1,5 @@
 import { IAdapter } from "./core/adapters/interface";
-import { BosParser } from "./core/parsers/bos-parser";
+import { BosParser, BosParserConfig } from "./core/parsers/bos-parser";
 import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
@@ -27,11 +27,6 @@ export type EngineConfig = {
   networkId: string;
   selector: WalletSelector;
 };
-
-const activatedParserConfigs = [
-  // "https://dapplets.org/ns/json/bos.dapplets.near/parser/near-social-viewer",
-  "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter",
-];
 
 export class Engine implements IContextListener {
   #provider: IProvider;
@@ -102,16 +97,31 @@ export class Engine implements IContextListener {
     const adaptersToActivate = [];
 
     // Adapters enabled by default
-    adaptersToActivate.push(this.createAdapter(AdapterType.Bos));
-    adaptersToActivate.push(this.createAdapter(AdapterType.Microdata));
+    // adaptersToActivate.push(this.createAdapter(AdapterType.Bos));
+    // adaptersToActivate.push(this.createAdapter(AdapterType.Microdata));
 
-    for (const configId of activatedParserConfigs) {
-      const config = await this.#provider.getParserConfig(configId);
+    // ToDo: load adapters suitable for current page from the provider
 
-      if (config) {
-        const adapter = this.createAdapter(AdapterType.Json, config);
-        adaptersToActivate.push(adapter);
-      }
+    // Adapter for Twitter
+    if (window.location.hostname === "twitter.com") {
+      const twitterNs =
+        "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter";
+      const twitterConfig = await this.#provider.getParserConfig(twitterNs);
+      adaptersToActivate.push(
+        this.createAdapter(AdapterType.Json, twitterConfig!)
+      );
+    }
+
+    // Adapter for near.social
+    if (window.location.hostname === "localhost") {
+      const nearSocialNs =
+        "https://dapplets.org/ns/bos/bos.dapplets.near/parser/near-social";
+      const nearSocialConfig = await this.#provider.getParserConfig(
+        nearSocialNs
+      );
+      adaptersToActivate.push(
+        this.createAdapter(AdapterType.Bos, nearSocialConfig as any)
+      );
     }
 
     adaptersToActivate.forEach((adapter) => this.registerAdapter(adapter));
@@ -135,18 +145,22 @@ export class Engine implements IContextListener {
   }
 
   createAdapter(type: AdapterType.Microdata): IAdapter;
-  createAdapter(type: AdapterType.Bos): IAdapter;
+  createAdapter(type: AdapterType.Bos, config: BosParserConfig): IAdapter;
   createAdapter(type: AdapterType.Json, config: ParserConfig): IAdapter;
-  createAdapter(type: AdapterType, config?: ParserConfig): IAdapter {
+  createAdapter(type: AdapterType, config?: any): IAdapter {
     const observingElement = document.body;
 
     switch (type) {
       case AdapterType.Bos:
+        if (!config?.namespace) {
+          throw new Error("Json adapter requires id");
+        }
+
         return new DynamicHtmlAdapter(
           observingElement,
           this.treeBuilder,
-          "https://dapplets.org/ns/bos",
-          new BosParser()
+          config.namespace,
+          new BosParser(config)
         );
 
       case AdapterType.Microdata:

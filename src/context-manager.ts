@@ -5,7 +5,7 @@ import { LayoutManager } from "./layout-manager";
 import { BosUserLink, IProvider } from "./providers/provider";
 
 const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
-const DefaultInsertionType: InsertionType = InsertionType.Inside;
+const DefaultInsertionType: InsertionType = InsertionType.Before;
 
 export type InsertionPointName = string;
 

@@ -89,8 +89,11 @@ export class DynamicHtmlAdapter implements IAdapter {
       case InsertionType.After:
         insPointElement.after(injectingElement);
         break;
-      case InsertionType.Inside:
+      case InsertionType.End:
         insPointElement.appendChild(injectingElement);
+        break;
+      case InsertionType.Begin:
+        insPointElement.insertBefore(injectingElement, insPointElement.firstChild);
         break;
       default:
         throw new Error("Unknown insertion type");

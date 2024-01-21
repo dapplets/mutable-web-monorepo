@@ -1,5 +1,6 @@
 import { IContextNode } from "../core/tree/types";
 import { ParserConfig } from "../core/parsers/json-parser";
+import { BosParserConfig } from "../core/parsers/bos-parser";
 
 export type UserLinkId = string;
 
@@ -26,8 +27,13 @@ export type LinkTemplate = {
 export interface IProvider {
   getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
   createLink(link: Omit<BosUserLink, "id" | "authorId">): Promise<BosUserLink>;
-  getParserConfig(namespace: string): Promise<ParserConfig | null>;
-  createParserConfig(parserConfig: ParserConfig): Promise<void>;
+  // ToDo: generic parser config
+  getParserConfig(
+    namespace: string
+  ): Promise<ParserConfig | BosParserConfig | null>;
+  createParserConfig(
+    parserConfig: ParserConfig | BosParserConfig
+  ): Promise<void>;
   getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]>;
   createLinkTemplate(
     linkTemplate: Omit<LinkTemplate, "id">

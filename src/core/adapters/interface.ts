@@ -4,7 +4,8 @@ import { IContextNode } from "../tree/types";
 export enum InsertionType {
   Before = "before",
   After = "after",
-  Inside = "inside",
+  Begin = "begin",
+  End = "end",
 }
 
 export interface IAdapter {
