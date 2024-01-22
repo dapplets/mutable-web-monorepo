@@ -14,7 +14,7 @@ export class BosComponent extends HTMLElement {
 
   set src(val: string) {
     this.#src = val;
-    this.setAttribute("data-component", val); // For debugging
+    // this.setAttribute("data-component", val); // For debugging
     this._render();
   }
 
@@ -24,7 +24,7 @@ export class BosComponent extends HTMLElement {
 
   set props(val: any) {
     this.#props = val;
-    this.setAttribute("data-props", JSON.stringify(val)); // For debugging
+    // this.setAttribute("data-props", JSON.stringify(val)); // For debugging
     this._render();
   }
 
