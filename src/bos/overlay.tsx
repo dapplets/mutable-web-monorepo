@@ -1,5 +1,5 @@
 import * as React from "react";
-import { createPortal} from "react-dom";
+import { createPortal } from "react-dom";
 import { StyleSheetManager } from "styled-components";
 
 const BootstrapCssUrl =
@@ -9,7 +9,7 @@ const overlay = document.createElement("mutable-web-overlay");
 
 overlay.style.background = "#ffffff88";
 overlay.style.position = "fixed";
-// overlay.style.display = "none";
+overlay.style.display = "none";
 overlay.style.top = "0";
 overlay.style.left = "0";
 overlay.style.width = "100%";
@@ -41,17 +41,19 @@ shadowRoot.appendChild(bootstrapStyles);
 
 shadowRoot.appendChild(container);
 
+document.body.appendChild(overlay);
+
 export interface OverlayProps {
   children: React.ReactNode;
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ children }) => {
   React.useEffect(() => {
-    document.body.appendChild(overlay);
+    overlay.style.display = "block";
     return () => {
-      document.body.removeChild(overlay);
+      overlay.style.display = "none";
     };
-  }, [overlay]);
+  }, []);
 
   return createPortal(
     <StyleSheetManager target={stylesMountPoint}>{children}</StyleSheetManager>,
