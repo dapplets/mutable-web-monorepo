@@ -112,7 +112,10 @@ export class Engine implements IContextListener {
     }
 
     // Adapter for near.social
-    if (window.location.hostname === "localhost") {
+    if (
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "mutable-near-social.netlify.app"
+    ) {
       const nearSocialNs =
         "https://dapplets.org/ns/bos/bos.dapplets.near/parser/near-social";
       const nearSocialConfig = await this.#provider.getParserConfig(
