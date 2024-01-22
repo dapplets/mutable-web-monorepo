@@ -65,6 +65,10 @@ export class LayoutManager {
         src: link.bosWidgetId,
         props: {
           context: context.parsedContext,
+          link: {
+            id: link.id,
+            authorId: link.authorId,
+          },
         }, // ToDo: add props
       })),
       isEditMode: this.#isEditMode,
