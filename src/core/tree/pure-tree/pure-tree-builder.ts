@@ -1,4 +1,4 @@
-import stringify from "json-stringify-deterministic";
+import { isDeepEqual } from "../../utils";
 import { IContextListener, IContextNode, ITreeBuilder } from "../types";
 import { PureContextNode } from "./pure-context-node";
 
@@ -29,12 +29,12 @@ export class PureTreeBuilder implements ITreeBuilder {
   updateParsedContext(context: IContextNode, newParsedContext: any) {
     const oldParsedContext = context.parsedContext;
 
-    if (oldParsedContext?.id !== newParsedContext.id) {
+    if (oldParsedContext?.id !== newParsedContext?.id) {
       this.#contextListener.handleContextFinished(context);
       context.parsedContext = newParsedContext;
       context.id = newParsedContext.id;
       this.#contextListener.handleContextStarted(context);
-    } else if (stringify(oldParsedContext) !== stringify(newParsedContext)) { // deep equal check
+    } else if (!isDeepEqual(oldParsedContext, newParsedContext)) {
       context.parsedContext = newParsedContext;
       this.#contextListener.handleContextChanged(context, oldParsedContext);
     }

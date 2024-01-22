@@ -1,5 +1,3 @@
-import Big from "big.js";
-
 import { NearSigner } from "./near-signer";
 import { ParserConfig } from "../core/parsers/json-parser";
 import { BosUserLink, IProvider, LinkTemplate } from "./provider";
@@ -53,7 +51,7 @@ export class SocialDbProvider implements IProvider {
     );
 
     const gas = undefined; // default gas
-    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+    const deposit = "20000000000000000000000"; // 0.02 NEAR
 
     await this._signer.call(
       this._contractName,
@@ -142,7 +140,7 @@ export class SocialDbProvider implements IProvider {
     if (!accountId) throw new Error("User is not logged in");
 
     const gas = undefined; // default gas
-    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+    const deposit = "20000000000000000000000"; // 0.02 NEAR
 
     await this._signer.call(
       this._contractName,
@@ -187,7 +185,7 @@ export class SocialDbProvider implements IProvider {
     if (!accountId) throw new Error("User is not logged in");
 
     const gas = undefined; // default gas
-    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+    const deposit = "20000000000000000000000"; // 0.02 NEAR
 
     await this._signer.call(
       this._contractName,
@@ -267,7 +265,7 @@ export class SocialDbProvider implements IProvider {
     if (!accountId) throw new Error("User is not logged in");
 
     const gas = undefined; // default gas
-    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+    const deposit = "20000000000000000000000"; // 0.02 NEAR
 
     await this._signer.call(
       this._contractName,
@@ -312,7 +310,7 @@ export class SocialDbProvider implements IProvider {
     if (!accountId) throw new Error("User is not logged in");
 
     const gas = undefined; // default gas
-    const deposit = Big(10).pow(19).mul(2000).toFixed(0); // storage deposit ToDo: calculate it dynamically
+    const deposit = "20000000000000000000000"; // 0.02 NEAR // ToDo: storage deposit ToDo: calculate it dynamically
 
     await this._signer.call(
       this._contractName,

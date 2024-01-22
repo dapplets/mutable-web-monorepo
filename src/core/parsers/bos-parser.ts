@@ -1,6 +1,5 @@
 import { InsertionType } from "../adapters/interface";
 import { IParser, InsertionPoint } from "./interface";
-import { render } from "mustache";
 
 const CompAttr = "data-component";
 const PropsAttr = "data-props";
@@ -50,7 +49,7 @@ export class BosParser implements IParser {
     const bosProps = JSON.parse(element.getAttribute(PropsAttr) ?? "{}");
 
     for (const [prop, mustacheTemplate] of Object.entries(contextProperties)) {
-      const value = render(mustacheTemplate, { props: bosProps });
+      const value = replaceMustaches(mustacheTemplate, { props: bosProps });
       parsed[prop] = value;
     }
 
@@ -108,4 +107,41 @@ export class BosParser implements IParser {
       })
     );
   }
+}
+
+/**
+ * Executes a template string by replacing placeholders with corresponding values from the provided data object.
+ *
+ * @param {string} template - The template string containing placeholders in the format '{{key.subkey}}'.
+ * @param {Object} data - The data object containing values to replace the placeholders in the template.
+ * @returns {string} - The result string after replacing placeholders with actual values.
+ *
+ * @example
+ * const template = "{{props.a}}/{{props.b.c}}";
+ * const data = {
+ *   props: {
+ *     a: 1,
+ *     b: {
+ *       c: 2
+ *     }
+ *   }
+ * };
+ * const result = exec(template, data);
+ * console.log(result); // "1/2"
+ */
+export function replaceMustaches(template: string, data: any): string {
+  return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
+    const keys = key.split(".");
+    let value = data;
+
+    for (const k of keys) {
+      if (value.hasOwnProperty(k)) {
+        value = value[k];
+      } else {
+        return match;
+      }
+    }
+
+    return String(value);
+  });
 }

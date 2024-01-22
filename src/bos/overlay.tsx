@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as ReactDOM from "react-dom";
+import { createPortal } from "react-dom";
 import { StyleSheetManager } from "styled-components";
 
 const BootstrapCssUrl =
@@ -53,7 +53,7 @@ export const Overlay: React.FC<OverlayProps> = ({ children }) => {
     };
   }, [overlay]);
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <StyleSheetManager target={stylesMountPoint}>{children}</StyleSheetManager>,
     container
   );
