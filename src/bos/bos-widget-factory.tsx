@@ -1,8 +1,4 @@
-import { useInitNear } from "near-social-vm";
-import * as React from "react";
-import { singletonHook } from "react-singleton-hook";
 import { BosComponent } from "./bos-widget";
-import { Overlay } from "./overlay";
 
 export type BosWidgetFactoryConfig = {
   networkId: string;
@@ -16,36 +12,7 @@ export class BosWidgetFactory {
   constructor(config: BosWidgetFactoryConfig) {
     this._tagName = config.tagName;
 
-    // The singleton prevents the creation of new VM instances.
-    const useSingletonInitNear = singletonHook(null, () => {
-      const { initNear } = useInitNear();
-
-      React.useEffect(() => {
-        if (initNear) {
-          initNear({
-            networkId: config.networkId,
-            selector: Promise.resolve(config.selector), // near-social-vm expects a promise
-            features: {
-              skipTxConfirmationPopup: true,
-            },
-            customElements: {
-              DappletOverlay: ({ children }: any) => {
-                const child = children.filter(
-                  (c: any) => typeof c !== "string" || !!c.trim()
-                )[0];
-                return <Overlay>{child}</Overlay>;
-              },
-            },
-          });
-        }
-      }, [initNear]);
-    });
-
-    const ExtendedBosComponent = class extends BosComponent {
-      constructor() {
-        super(useSingletonInitNear);
-      }
-    };
+    const ExtendedBosComponent = class extends BosComponent {};
 
     customElements.define(this._tagName, ExtendedBosComponent);
   }

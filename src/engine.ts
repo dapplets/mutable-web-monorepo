@@ -48,7 +48,6 @@ export class Engine implements IContextListener {
     this.#selector = this.config.selector;
     const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl);
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName);
-    console.log(this.#provider);
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -125,6 +124,11 @@ export class Engine implements IContextListener {
     }
 
     adaptersToActivate.forEach((adapter) => this.registerAdapter(adapter));
+
+    console.log("Mutable Web Engine started!", {
+      engine: this,
+      provider: this.#provider,
+    });
   }
 
   stop() {
