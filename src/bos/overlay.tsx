@@ -1,5 +1,6 @@
 import * as React from "react";
-import { createPortal } from "react-dom";
+import { createPortal} from "react-dom";
+import { StyleSheetManager } from "styled-components";
 
 const BootstrapCssUrl =
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
@@ -53,7 +54,7 @@ export const Overlay: React.FC<OverlayProps> = ({ children }) => {
   }, [overlay]);
 
   return createPortal(
-    children,
+    <StyleSheetManager target={stylesMountPoint}>{children}</StyleSheetManager>,
     container
   );
 };
