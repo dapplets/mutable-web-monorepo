@@ -1,5 +1,8 @@
 import { setupWalletSelector } from '@near-wallet-selector/core'
-import { Engine } from 'mutable-web-engine'
+import { Engine, Overlay } from 'mutable-web-engine'
+import { useInitNear } from 'near-social-vm'
+import React, { FC, useEffect } from 'react'
+import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
 import { ExtensionStorage } from './extension-storage'
 import { setupWallet } from './wallet'
@@ -30,7 +33,35 @@ const selectorPromise = setupWalletSelector({
   return selector
 })
 
+const App: FC = () => {
+  const { initNear } = useInitNear()
+
+  useEffect(() => {
+    if (initNear) {
+      initNear({
+        networkId: NetworkId,
+        selector: selectorPromise,
+        features: {
+          skipTxConfirmationPopup: true,
+        },
+        customElements: {
+          DappletOverlay: ({ children }: { children: React.ReactNode[] }) => {
+            const child = children.filter((c) => typeof c !== 'string' || !!c.trim())[0]
+            return <Overlay>{child}</Overlay>
+          },
+        },
+      })
+    }
+  }, [initNear])
+
+  return null
+}
+
 async function main() {
+  // Execute useInitNear hook before start the engine
+  // It's necessary for widgets from near-social-vm
+  createRoot(document.createElement('div')).render(<App />)
+
   const selector = await selectorPromise
 
   const engine = new Engine({
@@ -39,8 +70,6 @@ async function main() {
   })
 
   await engine.start()
-
-  console.log('Mutable Web Engine started!', engine)
 
   browser.runtime.onMessage.addListener((message) => {
     if (!message || !message.type) return
