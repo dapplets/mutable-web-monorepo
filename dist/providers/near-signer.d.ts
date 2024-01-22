@@ -1,7 +1,6 @@
 import { WalletSelector } from "@near-wallet-selector/core";
 import * as nearAPI from "near-api-js";
-import Big from "big.js";
-export declare const TGas: Big.Big;
+export declare const DefaultGas = "30000000000000";
 /**
  * NearSigner is a wrapper around near-api-js JsonRpcProvider and WalletSelector
  * that provides a simple interface for calling and viewing contract methods.

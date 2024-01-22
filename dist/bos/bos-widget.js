@@ -52,7 +52,7 @@ class BosComponent extends HTMLElement {
     }
     set src(val) {
         __classPrivateFieldSet(this, _BosComponent_src, val, "f");
-        this.setAttribute("data-component", val); // For debugging
+        // this.setAttribute("data-component", val); // For debugging
         this._render();
     }
     get src() {
@@ -60,7 +60,7 @@ class BosComponent extends HTMLElement {
     }
     set props(val) {
         __classPrivateFieldSet(this, _BosComponent_props, val, "f");
-        this.setAttribute("data-props", JSON.stringify(val)); // For debugging
+        // this.setAttribute("data-props", JSON.stringify(val)); // For debugging
         this._render();
     }
     get props() {

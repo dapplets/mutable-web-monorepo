@@ -1,8 +1,10 @@
+import { InsertionPoint } from "../parsers/interface";
 import { IContextNode } from "../tree/types";
 export declare enum InsertionType {
     Before = "before",
     After = "after",
-    Inside = "inside"
+    Begin = "begin",
+    End = "end"
 }
 export interface IAdapter {
     namespace: string;
@@ -10,5 +12,6 @@ export interface IAdapter {
     start(): void;
     stop(): void;
     injectElement(element: Element, context: IContextNode, insertionPoint: string, insertionType: InsertionType): void;
+    getInsertionPoints(context: IContextNode): InsertionPoint[];
 }
 //# sourceMappingURL=interface.d.ts.map

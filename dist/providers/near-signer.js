@@ -31,14 +31,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NearSigner = exports.TGas = void 0;
+exports.NearSigner = exports.DefaultGas = void 0;
 const nearAPI = __importStar(require("near-api-js"));
-const big_js_1 = __importDefault(require("big.js"));
-exports.TGas = (0, big_js_1.default)(10).pow(12);
+exports.DefaultGas = "30000000000000"; // 30 TGas
 /**
  * NearSigner is a wrapper around near-api-js JsonRpcProvider and WalletSelector
  * that provides a simple interface for calling and viewing contract methods.
@@ -89,7 +85,7 @@ class NearSigner {
                             params: {
                                 methodName,
                                 args,
-                                gas: gas !== null && gas !== void 0 ? gas : exports.TGas.mul(30).toFixed(0),
+                                gas: gas !== null && gas !== void 0 ? gas : exports.DefaultGas,
                                 deposit: deposit !== null && deposit !== void 0 ? deposit : "0",
                             },
                         },

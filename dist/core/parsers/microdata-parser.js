@@ -27,6 +27,11 @@ class MicrodataParser {
     findInsertionPoint(element, _, insertionPoint) {
         return element.querySelector(`[itemtype="${insertionPoint}"]`);
     }
+    getInsertionPoints(element) {
+        return (0, utils_1.getChildContextElements)(element, "itemtype").map((el) => ({
+            name: el.getAttribute("itemtype"),
+        }));
+    }
     static getPropertyValue(element) {
         var _a, _b, _c;
         if (element.hasAttribute("itemscope")) {

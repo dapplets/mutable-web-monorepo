@@ -1,5 +1,7 @@
 import { BosComponent } from "./bos-widget";
 export type BosWidgetFactoryConfig = {
+    networkId: string;
+    selector: any;
     tagName: string;
 };
 export declare class BosWidgetFactory {

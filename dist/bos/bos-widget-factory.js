@@ -5,7 +5,9 @@ const bos_widget_1 = require("./bos-widget");
 class BosWidgetFactory {
     constructor(config) {
         this._tagName = config.tagName;
-        customElements.define(this._tagName, bos_widget_1.BosComponent);
+        const ExtendedBosComponent = class extends bos_widget_1.BosComponent {
+        };
+        customElements.define(this._tagName, ExtendedBosComponent);
     }
     createWidget(src) {
         const element = document.createElement(this._tagName);

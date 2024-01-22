@@ -51,14 +51,11 @@ class DynamicHtmlAdapter {
         if (!contextElement) {
             throw new Error("Context element not found");
         }
-        let insPointElement = null;
+        let insPointElement = this.parser.findInsertionPoint(contextElement, context.tagName, insertionPoint);
         // ToDo: move to separate adapter?
         // Generic insertion point for "the ear"
-        if (insertionPoint === "root") {
+        if (!insPointElement && insertionPoint === "root") {
             insPointElement = contextElement;
-        }
-        else {
-            insPointElement = this.parser.findInsertionPoint(contextElement, context.tagName, insertionPoint);
         }
         if (!insPointElement) {
             throw new Error(`Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`);
@@ -70,12 +67,21 @@ class DynamicHtmlAdapter {
             case interface_1.InsertionType.After:
                 insPointElement.after(injectingElement);
                 break;
-            case interface_1.InsertionType.Inside:
+            case interface_1.InsertionType.End:
                 insPointElement.appendChild(injectingElement);
+                break;
+            case interface_1.InsertionType.Begin:
+                insPointElement.insertBefore(injectingElement, insPointElement.firstChild);
                 break;
             default:
                 throw new Error("Unknown insertion type");
         }
+    }
+    getInsertionPoints(context) {
+        const htmlElement = __classPrivateFieldGet(this, _DynamicHtmlAdapter_elementByContext, "f").get(context);
+        if (!htmlElement)
+            return [];
+        return this.parser.getInsertionPoints(htmlElement, context.tagName);
     }
     _createContextForElement(element, contextName) {
         const context = this.treeBuilder.createNode(this.namespace, contextName);

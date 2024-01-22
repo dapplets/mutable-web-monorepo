@@ -64,10 +64,30 @@ class JsonParser {
     findInsertionPoint(element, contextName, insertionPoint) {
         var _a;
         const contextConfig = this.config.contexts[contextName];
-        const selector = (_a = contextConfig.insertionPoints) === null || _a === void 0 ? void 0 : _a[insertionPoint];
-        if (!selector)
+        const selectorOrObject = (_a = contextConfig.insertionPoints) === null || _a === void 0 ? void 0 : _a[insertionPoint];
+        if (typeof selectorOrObject === "string") {
+            return element.querySelector(selectorOrObject);
+        }
+        else if (selectorOrObject === null || selectorOrObject === void 0 ? void 0 : selectorOrObject.selector) {
+            return element.querySelector(selectorOrObject.selector);
+        }
+        else {
             return null;
-        return element.querySelector(selector);
+        }
+    }
+    getInsertionPoints(_, contextName) {
+        const contextConfig = this.config.contexts[contextName];
+        if (!contextConfig.insertionPoints)
+            return [];
+        return Object.entries(contextConfig.insertionPoints).map(([name, selectorOrObject]) => ({
+            name,
+            insertionType: typeof selectorOrObject === "string"
+                ? undefined
+                : selectorOrObject.insertionType,
+            bosLayoutManager: typeof selectorOrObject === "string"
+                ? undefined
+                : selectorOrObject.bosLayoutManager,
+        }));
     }
 }
 exports.JsonParser = JsonParser;

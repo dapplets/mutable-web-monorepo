@@ -5,5 +5,6 @@ var InsertionType;
 (function (InsertionType) {
     InsertionType["Before"] = "before";
     InsertionType["After"] = "after";
-    InsertionType["Inside"] = "inside";
+    InsertionType["Begin"] = "begin";
+    InsertionType["End"] = "end";
 })(InsertionType || (exports.InsertionType = InsertionType = {}));

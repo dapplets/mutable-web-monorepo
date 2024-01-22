@@ -1,5 +1,5 @@
 import { IParser, InsertionPoint } from "./interface";
-export declare class MicrodataParser implements IParser {
+export declare class NaiveBosParser implements IParser {
     parseContext(element: Element): any;
     findChildElements(element: Element): {
         element: Element;
@@ -7,6 +7,5 @@ export declare class MicrodataParser implements IParser {
     }[];
     findInsertionPoint(element: Element, _: string, insertionPoint: string): Element | null;
     getInsertionPoints(element: Element): InsertionPoint[];
-    static getPropertyValue(element: Element): string | undefined;
 }
-//# sourceMappingURL=microdata-parser.d.ts.map
+//# sourceMappingURL=naive-bos-parser.d.ts.map

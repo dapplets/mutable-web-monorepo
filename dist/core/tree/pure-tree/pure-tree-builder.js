@@ -10,13 +10,10 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 var _PureTreeBuilder_contextListener;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PureTreeBuilder = void 0;
-const json_stringify_deterministic_1 = __importDefault(require("json-stringify-deterministic"));
+const utils_1 = require("../../utils");
 const pure_context_node_1 = require("./pure-context-node");
 class PureTreeBuilder {
     constructor(contextListener) {
@@ -37,13 +34,13 @@ class PureTreeBuilder {
     }
     updateParsedContext(context, newParsedContext) {
         const oldParsedContext = context.parsedContext;
-        if ((oldParsedContext === null || oldParsedContext === void 0 ? void 0 : oldParsedContext.id) !== newParsedContext.id) {
+        if ((oldParsedContext === null || oldParsedContext === void 0 ? void 0 : oldParsedContext.id) !== (newParsedContext === null || newParsedContext === void 0 ? void 0 : newParsedContext.id)) {
             __classPrivateFieldGet(this, _PureTreeBuilder_contextListener, "f").handleContextFinished(context);
             context.parsedContext = newParsedContext;
             context.id = newParsedContext.id;
             __classPrivateFieldGet(this, _PureTreeBuilder_contextListener, "f").handleContextStarted(context);
         }
-        else if ((0, json_stringify_deterministic_1.default)(oldParsedContext) !== (0, json_stringify_deterministic_1.default)(newParsedContext)) { // deep equal check
+        else if (!(0, utils_1.isDeepEqual)(oldParsedContext, newParsedContext)) {
             context.parsedContext = newParsedContext;
             __classPrivateFieldGet(this, _PureTreeBuilder_contextListener, "f").handleContextChanged(context, oldParsedContext);
         }

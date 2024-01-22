@@ -1,4 +1,4 @@
-import { IParser } from "../parsers/interface";
+import { IParser, InsertionPoint } from "../parsers/interface";
 import { IContextNode, ITreeBuilder } from "../tree/types";
 import { IAdapter, InsertionType } from "./interface";
 export declare class DynamicHtmlAdapter implements IAdapter {
@@ -12,6 +12,7 @@ export declare class DynamicHtmlAdapter implements IAdapter {
     start(): void;
     stop(): void;
     injectElement(injectingElement: Element, context: IContextNode, insertionPoint: string | "root", insertionType: InsertionType): void;
+    getInsertionPoints(context: IContextNode): InsertionPoint[];
     _createContextForElement(element: Element, contextName: string): IContextNode;
     private _handleMutations;
     private _appendNewChildContexts;
