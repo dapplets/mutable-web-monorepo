@@ -11,6 +11,7 @@ import { IContextNode } from "../core/tree/types";
  * /docs/social-db-reference.json
  */
 export declare class SocialDbProvider implements IProvider {
+    #private;
     private _signer;
     private _contractName;
     constructor(_signer: NearSigner, _contractName: string);
@@ -23,5 +24,6 @@ export declare class SocialDbProvider implements IProvider {
     createLinkTemplate(linkTemplate: Omit<LinkTemplate, "id">): Promise<LinkTemplate>;
     deleteLinkTemplate(linkTemplate: Pick<BosUserLink, "id" | "bosWidgetId">): Promise<void>;
     private _extractParserIdFromNamespace;
+    private _buildNestedData;
 }
 //# sourceMappingURL=social-db-provider.d.ts.map
