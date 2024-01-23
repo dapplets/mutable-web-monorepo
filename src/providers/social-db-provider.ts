@@ -3,6 +3,7 @@ import { ParserConfig } from "../core/parsers/json-parser";
 import { BosUserLink, IProvider, LinkTemplate } from "./provider";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
+import { SocialDbClient } from "./social-db-client";
 
 const DappletsNamespace = "https://dapplets.org/ns/";
 const SupportedParserTypes = ["json", "bos"];
@@ -24,16 +25,18 @@ const LinkTemplateKey = "linkTemplate";
  * /docs/social-db-reference.json
  */
 export class SocialDbProvider implements IProvider {
-  constructor(private _signer: NearSigner, private _contractName: string) {}
+  #client: SocialDbClient;
+
+  constructor(private _signer: NearSigner, private _contractName: string) {
+    this.#client = new SocialDbClient(_signer, _contractName);
+  }
 
   async getParserConfig(ns: string): Promise<ParserConfig | null> {
     const { accountId, parserLocalId } = this._extractParserIdFromNamespace(ns);
 
-    const queryResult = await this._signer.view(this._contractName, "get", {
-      keys: [
-        `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
-      ],
-    });
+    const queryResult = await this.#client.get([
+      `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
+    ]);
 
     const parserConfigJson =
       queryResult[accountId]?.[SettingsKey]?.[ProjectIdKey]?.[ParserKey]?.[
@@ -50,30 +53,19 @@ export class SocialDbProvider implements IProvider {
       config.namespace
     );
 
-    const gas = undefined; // default gas
-    const deposit = "20000000000000000000000"; // 0.02 NEAR
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      ParserKey,
+      parserLocalId,
+    ];
 
-    await this._signer.call(
-      this._contractName,
-      "set",
-      {
-        data: {
-          [accountId]: {
-            [SettingsKey]: {
-              [ProjectIdKey]: {
-                [ParserKey]: {
-                  [parserLocalId]: {
-                    [SelfKey]: JSON.stringify(config),
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      gas,
-      deposit
-    );
+    const storedParserConfig = {
+      [SelfKey]: JSON.stringify(config),
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedParserConfig));
   }
 
   async getLinksForContext(context: IContextNode): Promise<BosUserLink[]> {
@@ -89,9 +81,9 @@ export class SocialDbProvider implements IProvider {
     // ToDo: fix GasLimitExceeded error using Social DB API
     // ToDo: cache the query
     // Fetch all links from every user
-    const resp = await this._signer.view(this._contractName, "get", {
-      keys: [`*/${SettingsKey}/${ProjectIdKey}/${LinkKey}/*/${WidgetKey}/*/**`],
-    });
+    const resp = await this.#client.get([
+      `*/${SettingsKey}/${ProjectIdKey}/${LinkKey}/*/${WidgetKey}/*/**`,
+    ]);
 
     const userLinksOutput: BosUserLink[] = [];
 
@@ -139,39 +131,25 @@ export class SocialDbProvider implements IProvider {
 
     if (!accountId) throw new Error("User is not logged in");
 
-    const gas = undefined; // default gas
-    const deposit = "20000000000000000000000"; // 0.02 NEAR
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      LinkKey,
+      widgetOwnerId,
+      WidgetKey,
+      bosWidgetLocalId,
+      linkId,
+    ];
 
-    await this._signer.call(
-      this._contractName,
-      "set",
-      {
-        data: {
-          [accountId]: {
-            [SettingsKey]: {
-              [ProjectIdKey]: {
-                [LinkKey]: {
-                  [widgetOwnerId]: {
-                    [WidgetKey]: {
-                      [bosWidgetLocalId]: {
-                        [linkId]: {
-                          namespace: link.namespace,
-                          contextType: link.contextType,
-                          contextId: link.contextId ?? null,
-                          insertionPoint: link.insertionPoint,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      gas,
-      deposit
-    );
+    const storedUserLink = {
+      namespace: link.namespace,
+      contextType: link.contextType,
+      contextId: link.contextId ?? null,
+      insertionPoint: link.insertionPoint,
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedUserLink));
 
     return { id: linkId, ...link, authorId: accountId };
   }
@@ -184,49 +162,33 @@ export class SocialDbProvider implements IProvider {
 
     if (!accountId) throw new Error("User is not logged in");
 
-    const gas = undefined; // default gas
-    const deposit = "20000000000000000000000"; // 0.02 NEAR
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      LinkKey,
+      widgetOwnerId,
+      WidgetKey,
+      bosWidgetLocalId,
+      userLink.id,
+    ];
 
-    await this._signer.call(
-      this._contractName,
-      "set",
-      {
-        data: {
-          [accountId]: {
-            [SettingsKey]: {
-              [ProjectIdKey]: {
-                [LinkKey]: {
-                  [widgetOwnerId]: {
-                    [WidgetKey]: {
-                      [bosWidgetLocalId]: {
-                        [userLink.id]: {
-                          [SelfKey]: null,
-                          namespace: null,
-                          contextType: null,
-                          contextId: null,
-                          insertionPoint: null,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      gas,
-      deposit
-    );
+    const storedUserLink = {
+      [SelfKey]: null,
+      namespace: null,
+      contextType: null,
+      contextId: null,
+      insertionPoint: null,
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedUserLink));
   }
 
   async getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]> {
     const [ownerId, , bosWidgetLocalId] = bosWidgetId.split("/");
-    const resp = await this._signer.view(this._contractName, "get", {
-      keys: [
-        `${ownerId}/${SettingsKey}/${ProjectIdKey}/${LinkTemplateKey}/${ownerId}/${WidgetKey}/${bosWidgetLocalId}/**`,
-      ],
-    });
+    const resp = await this.#client.get([
+      `${ownerId}/${SettingsKey}/${ProjectIdKey}/${LinkTemplateKey}/${ownerId}/${WidgetKey}/${bosWidgetLocalId}/**`,
+    ]);
 
     const linkTemplates =
       resp[ownerId]?.[SettingsKey]?.[ProjectIdKey]?.[LinkTemplateKey]?.[
@@ -264,39 +226,25 @@ export class SocialDbProvider implements IProvider {
 
     if (!accountId) throw new Error("User is not logged in");
 
-    const gas = undefined; // default gas
-    const deposit = "20000000000000000000000"; // 0.02 NEAR
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      LinkTemplateKey,
+      widgetOwnerId,
+      WidgetKey,
+      bosWidgetLocalId,
+      linkTemplateId,
+    ];
 
-    await this._signer.call(
-      this._contractName,
-      "set",
-      {
-        data: {
-          [accountId]: {
-            [SettingsKey]: {
-              [ProjectIdKey]: {
-                [LinkTemplateKey]: {
-                  [widgetOwnerId]: {
-                    [WidgetKey]: {
-                      [bosWidgetLocalId]: {
-                        [linkTemplateId]: {
-                          namespace: linkTemplate.namespace,
-                          contextType: linkTemplate.contextType,
-                          contextId: linkTemplate.contextId ?? null,
-                          insertionPoint: linkTemplate.insertionPoint,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      gas,
-      deposit
-    );
+    const storedLinkTemplate = {
+      namespace: linkTemplate.namespace,
+      contextType: linkTemplate.contextType,
+      contextId: linkTemplate.contextId ?? null,
+      insertionPoint: linkTemplate.insertionPoint,
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedLinkTemplate));
 
     return { id: linkTemplateId, ...linkTemplate };
   }
@@ -304,45 +252,32 @@ export class SocialDbProvider implements IProvider {
   async deleteLinkTemplate(
     linkTemplate: Pick<BosUserLink, "id" | "bosWidgetId">
   ): Promise<void> {
-    const [widgetOwnerId, , bosWidgetLocalId] = linkTemplate.bosWidgetId.split("/");
+    const [widgetOwnerId, , bosWidgetLocalId] =
+      linkTemplate.bosWidgetId.split("/");
     const accountId = await this._signer.getAccountId();
 
     if (!accountId) throw new Error("User is not logged in");
 
-    const gas = undefined; // default gas
-    const deposit = "20000000000000000000000"; // 0.02 NEAR // ToDo: storage deposit ToDo: calculate it dynamically
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      LinkTemplateKey,
+      widgetOwnerId,
+      WidgetKey,
+      bosWidgetLocalId,
+      linkTemplate.id,
+    ];
 
-    await this._signer.call(
-      this._contractName,
-      "set",
-      {
-        data: {
-          [accountId]: {
-            [SettingsKey]: {
-              [ProjectIdKey]: {
-                [LinkTemplateKey]: {
-                  [widgetOwnerId]: {
-                    [WidgetKey]: {
-                      [bosWidgetLocalId]: {
-                        [linkTemplate.id]: {
-                          [SelfKey]: null,
-                          namespace: null,
-                          contextType: null,
-                          contextId: null,
-                          insertionPoint: null,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      gas,
-      deposit
-    );
+    const storedLinkTemplate = {
+      [SelfKey]: null,
+      namespace: null,
+      contextType: null,
+      contextId: null,
+      insertionPoint: null,
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedLinkTemplate));
   }
 
   private _extractParserIdFromNamespace(namespace: string): {
@@ -357,7 +292,8 @@ export class SocialDbProvider implements IProvider {
     const parserGlobalId = namespace.replace(DappletsNamespace, "");
 
     // Example: example.near/parser/social-network
-    const [parserType, accountId, entityType, parserLocalId] = parserGlobalId.split("/");
+    const [parserType, accountId, entityType, parserLocalId] =
+      parserGlobalId.split("/");
 
     if (entityType !== "parser" || !accountId || !parserLocalId) {
       throw new Error("Invalid namespace");
@@ -368,5 +304,18 @@ export class SocialDbProvider implements IProvider {
     }
 
     return { parserType, accountId, parserLocalId };
+  }
+
+  private _buildNestedData(keys: string[], data: any): any {
+    const [firstKey, ...anotherKeys] = keys;
+    if (anotherKeys.length === 0) {
+      return {
+        [firstKey]: data,
+      };
+    } else {
+      return {
+        [firstKey]: this._buildNestedData(anotherKeys, data),
+      };
+    }
   }
 }
