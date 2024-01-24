@@ -3,6 +3,8 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { StyleSheetManager } from "styled-components";
 
+const EventsToStopPropagation = ["click", "keydown", "keyup", "keypress"];
+
 export class BosComponent extends HTMLElement {
   private _adapterStylesMountPoint = document.createElement("style");
   private _stylesMountPoint = document.createElement("div");
@@ -35,9 +37,9 @@ export class BosComponent extends HTMLElement {
   connectedCallback() {
     const shadowRoot = this.attachShadow({ mode: "closed" });
 
-    // Prevent propagation of clicks from BOS-component to parent
-    this._componentMountPoint.addEventListener("click", (e) => {
-      e.stopPropagation();
+    // Prevent event propagation from BOS-component to parent
+    EventsToStopPropagation.forEach((eventName) => {
+      this.addEventListener(eventName, (e) => e.stopPropagation());
     });
 
     shadowRoot.appendChild(this._componentMountPoint);

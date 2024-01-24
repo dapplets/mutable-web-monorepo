@@ -2,6 +2,8 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 import { StyleSheetManager } from "styled-components";
 
+const EventsToStopPropagation = ["click", "keydown", "keyup", "keypress"];
+
 const BootstrapCssUrl =
   "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
 
@@ -40,6 +42,11 @@ bootstrapStyles.href = BootstrapCssUrl;
 shadowRoot.appendChild(bootstrapStyles);
 
 shadowRoot.appendChild(container);
+
+// Prevent event propagation from BOS-component to parent
+EventsToStopPropagation.forEach((eventName) => {
+  overlay.addEventListener(eventName, (e) => e.stopPropagation());
+});
 
 document.body.appendChild(overlay);
 
