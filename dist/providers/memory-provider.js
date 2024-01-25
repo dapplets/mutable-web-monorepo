@@ -151,6 +151,9 @@ const configs = [
     },
 ];
 class MemoryProvider {
+    getParserConfigsForContext(context) {
+        throw new Error("Method not implemented.");
+    }
     createLinkTemplate(linkTemplate) {
         throw new Error("Method not implemented.");
     }

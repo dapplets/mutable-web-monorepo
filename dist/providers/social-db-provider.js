@@ -19,11 +19,17 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 var _SocialDbProvider_client;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocialDbProvider = void 0;
 const utils_1 = require("../core/utils");
 const social_db_client_1 = require("./social-db-client");
+const constants_1 = require("../constants");
+const js_sha256_1 = require("js-sha256");
+const json_stringify_deterministic_1 = __importDefault(require("json-stringify-deterministic"));
 const DappletsNamespace = "https://dapplets.org/ns/";
 const SupportedParserTypes = ["json", "bos"];
 const ProjectIdKey = "dapplets.near";
@@ -33,6 +39,38 @@ const LinkKey = "link";
 const WidgetKey = "widget";
 const SelfKey = "";
 const LinkTemplateKey = "linkTemplate";
+const ParserContextsKey = "contexts";
+const WildcardKey = "*";
+/**
+ * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
+ */
+function base64EncodeURL(byteArray) {
+    return btoa(Array.from(new Uint8Array(byteArray))
+        .map((val) => {
+        return String.fromCharCode(val);
+    })
+        .join(""))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/\=/g, "");
+}
+/**
+ * Hashes object using deterministic serializator, SHA-256 and base64url encoding
+ */
+function hashObject(obj) {
+    const json = (0, json_stringify_deterministic_1.default)(obj);
+    const hashBytes = js_sha256_1.sha256.create().update(json).arrayBuffer();
+    return base64EncodeURL(hashBytes);
+}
+function getValueByKey(keys, obj) {
+    const [firstKey, ...anotherKeys] = keys;
+    if (anotherKeys.length === 0) {
+        return obj[firstKey];
+    }
+    else {
+        return getValueByKey(anotherKeys, obj[firstKey]);
+    }
+}
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
  * More info about the schema is here:
@@ -44,9 +82,41 @@ const LinkTemplateKey = "linkTemplate";
 class SocialDbProvider {
     constructor(_signer, _contractName) {
         this._signer = _signer;
-        this._contractName = _contractName;
         _SocialDbProvider_client.set(this, void 0);
         __classPrivateFieldSet(this, _SocialDbProvider_client, new social_db_client_1.SocialDbClient(_signer, _contractName), "f");
+    }
+    // #region Read methods
+    getParserConfigsForContext(context) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // ToDo: implement adapters loading for another types of contexts
+            if (context.namespaceURI !== constants_1.DappletsEngineNs)
+                return [];
+            const contextHashKey = hashObject({
+                namespace: context.namespaceURI,
+                contextType: context.tagName,
+                contextId: context.id,
+            });
+            const keys = [
+                WildcardKey, // from any user
+                SettingsKey,
+                ProjectIdKey,
+                ParserKey,
+                WildcardKey, // any parser
+                ParserContextsKey,
+                contextHashKey,
+            ];
+            const availableKeys = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([keys.join("/")]);
+            const parserKeys = availableKeys
+                .map((key) => key.substring(0, key.lastIndexOf("/"))) // discard contextHashKey
+                .map((key) => key.substring(0, key.lastIndexOf("/"))); // discard ParserContextsKey
+            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get(parserKeys);
+            const parsers = [];
+            for (const key of parserKeys) {
+                const json = getValueByKey(key.split("/"), queryResult);
+                parsers.push(JSON.parse(json));
+            }
+            return parsers;
+        });
     }
     getParserConfig(ns) {
         var _a, _b, _c, _d, _e;
@@ -205,6 +275,8 @@ class SocialDbProvider {
             return linksOutput;
         });
     }
+    // #endregion
+    // #region Write methods
     createLinkTemplate(linkTemplate) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -259,6 +331,29 @@ class SocialDbProvider {
             yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(keys, storedLinkTemplate));
         });
     }
+    setContextIdsForParser(parserGlobalId, contextsToBeAdded, contextsToBeDeleted) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split("/");
+            if (parserKey !== ParserKey) {
+                throw new Error("Invalid parser ID");
+            }
+            const addingKeys = contextsToBeAdded.map(hashObject);
+            const deletingKeys = contextsToBeDeleted.map(hashObject);
+            const savingData = Object.assign(Object.assign({}, Object.fromEntries(addingKeys.map((k) => [k, ""]))), Object.fromEntries(deletingKeys.map((k) => [k, null])));
+            // Key example:
+            // bos.dapplets.near/settings/dapplets.near/parser/social-network/contexts
+            const parentKeys = [
+                parserOwnerId,
+                SettingsKey,
+                ProjectIdKey,
+                ParserKey,
+                parserLocalId,
+                ParserContextsKey,
+            ];
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(parentKeys, savingData));
+        });
+    }
+    // #endregion
     _extractParserIdFromNamespace(namespace) {
         if (!namespace.startsWith(DappletsNamespace)) {
             throw new Error("Invalid namespace");

@@ -1,7 +1,8 @@
 import { NearSigner } from "./near-signer";
 import { ParserConfig } from "../core/parsers/json-parser";
-import { BosUserLink, IProvider, LinkTemplate } from "./provider";
+import { BosUserLink, DependantContext, IProvider, LinkTemplate } from "./provider";
 import { IContextNode } from "../core/tree/types";
+import { BosParserConfig } from "../core/parsers/bos-parser";
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
  * More info about the schema is here:
@@ -13,9 +14,9 @@ import { IContextNode } from "../core/tree/types";
 export declare class SocialDbProvider implements IProvider {
     #private;
     private _signer;
-    private _contractName;
     constructor(_signer: NearSigner, _contractName: string);
-    getParserConfig(ns: string): Promise<ParserConfig | null>;
+    getParserConfigsForContext(context: IContextNode): Promise<(ParserConfig | BosParserConfig)[]>;
+    getParserConfig(ns: string): Promise<ParserConfig | BosParserConfig | null>;
     createParserConfig(config: ParserConfig): Promise<void>;
     getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
     createLink(link: Omit<BosUserLink, "id" | "authorId">): Promise<BosUserLink>;
@@ -23,6 +24,7 @@ export declare class SocialDbProvider implements IProvider {
     getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]>;
     createLinkTemplate(linkTemplate: Omit<LinkTemplate, "id">): Promise<LinkTemplate>;
     deleteLinkTemplate(linkTemplate: Pick<BosUserLink, "id" | "bosWidgetId">): Promise<void>;
+    setContextIdsForParser(parserGlobalId: string, contextsToBeAdded: DependantContext[], contextsToBeDeleted: DependantContext[]): Promise<void>;
     private _extractParserIdFromNamespace;
     private _buildNestedData;
 }

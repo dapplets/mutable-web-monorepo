@@ -13,12 +13,14 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _PureTreeBuilder_contextListener;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PureTreeBuilder = void 0;
+const constants_1 = require("../../../constants");
 const utils_1 = require("../../utils");
 const pure_context_node_1 = require("./pure-context-node");
 class PureTreeBuilder {
     constructor(contextListener) {
         _PureTreeBuilder_contextListener.set(this, void 0);
-        this.root = this.createNode(null, "root");
+        // ToDo: move to engine, it's not a core responsibility
+        this.root = this.createNode(constants_1.DappletsEngineNs, "website"); // default ns
         __classPrivateFieldSet(this, _PureTreeBuilder_contextListener, contextListener, "f");
     }
     appendChild(parent, child) {

@@ -8,4 +8,5 @@ export declare const NearConfigs: {
     [networkId: string]: NearConfig;
 };
 export declare const getNearConfig: (networkId: string) => NearConfig;
+export declare const DappletsEngineNs = "https://dapplets.org/ns/engine";
 //# sourceMappingURL=constants.d.ts.map

@@ -1,1 +1,1 @@
-{"version":3,"file":"overlay.d.ts","sourceRoot":"","sources":["../../src/bos/overlay.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AA6C/B,MAAM,WAAW,YAAY;IAC3B,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B;AAED,eAAO,MAAM,OAAO,EAAE,KAAK,CAAC,EAAE,CAAC,YAAY,CAY1C,CAAC"}
+{"version":3,"file":"overlay.d.ts","sourceRoot":"","sources":["../../src/bos/overlay.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAoD/B,MAAM,WAAW,YAAY;IAC3B,QAAQ,EAAE,KAAK,CAAC,SAAS,CAAC;CAC3B;AAED,eAAO,MAAM,OAAO,EAAE,KAAK,CAAC,EAAE,CAAC,YAAY,CAY1C,CAAC"}

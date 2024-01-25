@@ -40,6 +40,7 @@ const near_social_vm_1 = require("near-social-vm");
 const React = __importStar(require("react"));
 const client_1 = require("react-dom/client");
 const styled_components_1 = require("styled-components");
+const EventsToStopPropagation = ["click", "keydown", "keyup", "keypress"];
 class BosComponent extends HTMLElement {
     constructor() {
         super(...arguments);
@@ -68,9 +69,9 @@ class BosComponent extends HTMLElement {
     }
     connectedCallback() {
         const shadowRoot = this.attachShadow({ mode: "closed" });
-        // Prevent propagation of clicks from BOS-component to parent
-        this._componentMountPoint.addEventListener("click", (e) => {
-            e.stopPropagation();
+        // Prevent event propagation from BOS-component to parent
+        EventsToStopPropagation.forEach((eventName) => {
+            this.addEventListener(eventName, (e) => e.stopPropagation());
         });
         shadowRoot.appendChild(this._componentMountPoint);
         shadowRoot.appendChild(this._stylesMountPoint);

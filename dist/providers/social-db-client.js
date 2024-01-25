@@ -41,6 +41,18 @@ const bigMax = (a, b) => {
     }
     return a || b;
 };
+function collectKeys(obj) {
+    const keys = [];
+    for (const key in obj) {
+        if (obj[key] === true) {
+            keys.push(key);
+        }
+        else {
+            keys.push(...collectKeys(obj[key]).map((subKey) => `${key}/${subKey}`));
+        }
+    }
+    return keys;
+}
 class SocialDbClient {
     constructor(_signer, _contractName) {
         this._signer = _signer;
@@ -49,6 +61,14 @@ class SocialDbClient {
     get(keys) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this._signer.view(this._contractName, "get", { keys });
+        });
+    }
+    keys(keys) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const response = yield this._signer.view(this._contractName, "keys", {
+                keys,
+            });
+            return collectKeys(response);
         });
     }
     set(data) {

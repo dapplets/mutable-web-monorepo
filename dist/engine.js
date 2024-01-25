@@ -46,7 +46,6 @@ class Engine {
         _Engine_selector.set(this, void 0);
         _Engine_contextManagers.set(this, new WeakMap());
         this.adapters = new Set();
-        this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this); //new DomTreeBuilder(this);
         this.started = false;
         __classPrivateFieldSet(this, _Engine_bosWidgetFactory, new bos_widget_factory_1.BosWidgetFactory({
             networkId: this.config.networkId,
@@ -57,13 +56,32 @@ class Engine {
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
         const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), nearConfig.nodeUrl);
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
+        this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this);
+        // ToDo: instantiate root context with data initially
+        // ToDo: looks like circular dependency
+        this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
+            id: window.location.hostname,
+            // ToDo: add mutationId
+        });
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!this.started)
-                return;
+            // if (!this.started) return;
             if (!context.id)
                 return;
+            // Find and load adapters for the given context
+            // ToDo: parallelize
+            const configs = yield __classPrivateFieldGet(this, _Engine_provider, "f").getParserConfigsForContext(context);
+            for (const config of configs) {
+                const type = this.getParserType(config.namespace);
+                if (!type) {
+                    console.error("Unsupported parser namespace");
+                    continue;
+                }
+                const adapter = this.createAdapter(type, config);
+                this.registerAdapter(adapter);
+                console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
+            }
             // ToDo: do not iterate over all adapters
             const adapter = Array.from(this.adapters).find((adapter) => {
                 return adapter.getInsertionPoints(context).length > 0;
@@ -92,25 +110,6 @@ class Engine {
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             this.started = true;
-            const adaptersToActivate = [];
-            // Adapters enabled by default
-            // adaptersToActivate.push(this.createAdapter(AdapterType.Bos));
-            // adaptersToActivate.push(this.createAdapter(AdapterType.Microdata));
-            // ToDo: load adapters suitable for current page from the provider
-            // Adapter for Twitter
-            if (window.location.hostname === "twitter.com") {
-                const twitterNs = "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter";
-                const twitterConfig = yield __classPrivateFieldGet(this, _Engine_provider, "f").getParserConfig(twitterNs);
-                adaptersToActivate.push(this.createAdapter(AdapterType.Json, twitterConfig));
-            }
-            // Adapter for near.social
-            if (window.location.hostname === "localhost" ||
-                window.location.hostname === "mutable-near-social.netlify.app") {
-                const nearSocialNs = "https://dapplets.org/ns/bos/bos.dapplets.near/parser/near-social";
-                const nearSocialConfig = yield __classPrivateFieldGet(this, _Engine_provider, "f").getParserConfig(nearSocialNs);
-                adaptersToActivate.push(this.createAdapter(AdapterType.Bos, nearSocialConfig));
-            }
-            adaptersToActivate.forEach((adapter) => this.registerAdapter(adapter));
             console.log("Mutable Web Engine started!", {
                 engine: this,
                 provider: __classPrivateFieldGet(this, _Engine_provider, "f"),
@@ -130,6 +129,20 @@ class Engine {
         adapter.stop();
         this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context);
         this.adapters.delete(adapter);
+    }
+    getParserType(ns) {
+        if (ns.startsWith("https://dapplets.org/ns/json")) {
+            return AdapterType.Json;
+        }
+        else if (ns.startsWith("https://dapplets.org/ns/bos")) {
+            return AdapterType.Bos;
+        }
+        else if (ns.startsWith("https://dapplets.org/ns/microdata")) {
+            return AdapterType.Microdata;
+        }
+        else {
+            return null;
+        }
     }
     createAdapter(type, config) {
         const observingElement = document.body;

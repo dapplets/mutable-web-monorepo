@@ -1,6 +1,4 @@
 import { IAdapter } from "./core/adapters/interface";
-import { BosParserConfig } from "./core/parsers/bos-parser";
-import { ParserConfig } from "./core/parsers/json-parser";
 import { WalletSelector } from "@near-wallet-selector/core";
 import { IContextListener, IContextNode, ITreeBuilder } from "./core/tree/types";
 export declare enum AdapterType {
@@ -26,8 +24,7 @@ export declare class Engine implements IContextListener {
     stop(): void;
     registerAdapter(adapter: IAdapter): void;
     unregisterAdapter(adapter: IAdapter): void;
-    createAdapter(type: AdapterType.Microdata): IAdapter;
-    createAdapter(type: AdapterType.Bos, config: BosParserConfig): IAdapter;
-    createAdapter(type: AdapterType.Json, config: ParserConfig): IAdapter;
+    getParserType(ns: string): AdapterType | null;
+    createAdapter(type: AdapterType, config?: any): IAdapter;
 }
 //# sourceMappingURL=engine.d.ts.map

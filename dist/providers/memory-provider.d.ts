@@ -1,7 +1,9 @@
+import { BosParserConfig } from "../core/parsers/bos-parser";
 import { ParserConfig } from "../core/parsers/json-parser";
 import { IContextNode } from "../core/tree/types";
 import { BosUserLink, IProvider, LinkTemplate } from "./provider";
 export declare class MemoryProvider implements IProvider {
+    getParserConfigsForContext(context: IContextNode): Promise<(ParserConfig | BosParserConfig)[]>;
     createLinkTemplate(linkTemplate: Omit<LinkTemplate, "id">): Promise<LinkTemplate>;
     getParserConfig(namespace: string): Promise<ParserConfig | null>;
     createParserConfig(parserConfig: ParserConfig): Promise<void>;

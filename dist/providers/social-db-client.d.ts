@@ -10,6 +10,7 @@ export declare class SocialDbClient {
     private _contractName;
     constructor(_signer: NearSigner, _contractName: string);
     get(keys: string[]): Promise<Value>;
+    keys(keys: string[]): Promise<string[]>;
     set(data: Value): Promise<void>;
     private _getAccountStorage;
 }

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getNearConfig = exports.NearConfigs = void 0;
+exports.DappletsEngineNs = exports.getNearConfig = exports.NearConfigs = void 0;
 exports.NearConfigs = {
     mainnet: {
         networkId: "mainnet",
@@ -16,3 +16,4 @@ const getNearConfig = (networkId) => {
     return config;
 };
 exports.getNearConfig = getNearConfig;
+exports.DappletsEngineNs = "https://dapplets.org/ns/engine";
