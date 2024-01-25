@@ -1,9 +1,18 @@
 import { NearSigner } from "./near-signer";
 import { ParserConfig } from "../core/parsers/json-parser";
-import { BosUserLink, IProvider, LinkTemplate } from "./provider";
+import {
+  BosUserLink,
+  DependantContext,
+  IProvider,
+  LinkTemplate,
+} from "./provider";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
 import { SocialDbClient } from "./social-db-client";
+import { BosParserConfig } from "../core/parsers/bos-parser";
+import { DappletsEngineNs } from "../constants";
+import { sha256 } from "js-sha256";
+import serializeToDeterministicJson from "json-stringify-deterministic";
 
 const DappletsNamespace = "https://dapplets.org/ns/";
 const SupportedParserTypes = ["json", "bos"];
@@ -15,6 +24,44 @@ const LinkKey = "link";
 const WidgetKey = "widget";
 const SelfKey = "";
 const LinkTemplateKey = "linkTemplate";
+const ParserContextsKey = "contexts";
+const WildcardKey = "*";
+
+/**
+ * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
+ */
+function base64EncodeURL(
+  byteArray: ArrayLike<number> | ArrayBufferLike
+): string {
+  return btoa(
+    Array.from(new Uint8Array(byteArray))
+      .map((val) => {
+        return String.fromCharCode(val);
+      })
+      .join("")
+  )
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/\=/g, "");
+}
+
+/**
+ * Hashes object using deterministic serializator, SHA-256 and base64url encoding
+ */
+function hashObject(obj: any): string {
+  const json = serializeToDeterministicJson(obj);
+  const hashBytes = sha256.create().update(json).arrayBuffer();
+  return base64EncodeURL(hashBytes);
+}
+
+function getValueByKey(keys: string[], obj: any): any {
+  const [firstKey, ...anotherKeys] = keys;
+  if (anotherKeys.length === 0) {
+    return obj[firstKey];
+  } else {
+    return getValueByKey(anotherKeys, obj[firstKey]);
+  }
+}
 
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
@@ -27,11 +74,54 @@ const LinkTemplateKey = "linkTemplate";
 export class SocialDbProvider implements IProvider {
   #client: SocialDbClient;
 
-  constructor(private _signer: NearSigner, private _contractName: string) {
+  constructor(private _signer: NearSigner, _contractName: string) {
     this.#client = new SocialDbClient(_signer, _contractName);
   }
 
-  async getParserConfig(ns: string): Promise<ParserConfig | null> {
+  // #region Read methods
+
+  async getParserConfigsForContext(
+    context: IContextNode
+  ): Promise<(ParserConfig | BosParserConfig)[]> {
+    // ToDo: implement adapters loading for another types of contexts
+    if (context.namespaceURI !== DappletsEngineNs) return [];
+
+    const contextHashKey = hashObject({
+      namespace: context.namespaceURI,
+      contextType: context.tagName,
+      contextId: context.id,
+    });
+
+    const keys = [
+      WildcardKey, // from any user
+      SettingsKey,
+      ProjectIdKey,
+      ParserKey,
+      WildcardKey, // any parser
+      ParserContextsKey,
+      contextHashKey,
+    ];
+
+    const availableKeys = await this.#client.keys([keys.join("/")]);
+    const parserKeys = availableKeys
+      .map((key) => key.substring(0, key.lastIndexOf("/"))) // discard contextHashKey
+      .map((key) => key.substring(0, key.lastIndexOf("/"))); // discard ParserContextsKey
+
+    const queryResult = await this.#client.get(parserKeys);
+
+    const parsers = [];
+
+    for (const key of parserKeys) {
+      const json = getValueByKey(key.split("/"), queryResult);
+      parsers.push(JSON.parse(json));
+    }
+
+    return parsers;
+  }
+
+  async getParserConfig(
+    ns: string
+  ): Promise<ParserConfig | BosParserConfig | null> {
     const { accountId, parserLocalId } = this._extractParserIdFromNamespace(ns);
 
     const queryResult = await this.#client.get([
@@ -215,6 +305,10 @@ export class SocialDbProvider implements IProvider {
     return linksOutput;
   }
 
+  // #endregion
+
+  // #region Write methods
+
   async createLinkTemplate(
     linkTemplate: Omit<LinkTemplate, "id">
   ): Promise<LinkTemplate> {
@@ -279,6 +373,41 @@ export class SocialDbProvider implements IProvider {
 
     await this.#client.set(this._buildNestedData(keys, storedLinkTemplate));
   }
+
+  async setContextIdsForParser(
+    parserGlobalId: string,
+    contextsToBeAdded: DependantContext[],
+    contextsToBeDeleted: DependantContext[]
+  ): Promise<void> {
+    const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split("/");
+
+    if (parserKey !== ParserKey) {
+      throw new Error("Invalid parser ID");
+    }
+
+    const addingKeys = contextsToBeAdded.map(hashObject);
+    const deletingKeys = contextsToBeDeleted.map(hashObject);
+
+    const savingData = {
+      ...Object.fromEntries(addingKeys.map((k) => [k, ""])),
+      ...Object.fromEntries(deletingKeys.map((k) => [k, null])),
+    };
+
+    // Key example:
+    // bos.dapplets.near/settings/dapplets.near/parser/social-network/contexts
+    const parentKeys = [
+      parserOwnerId,
+      SettingsKey,
+      ProjectIdKey,
+      ParserKey,
+      parserLocalId,
+      ParserContextsKey,
+    ];
+
+    await this.#client.set(this._buildNestedData(parentKeys, savingData));
+  }
+
+  // #endregion
 
   private _extractParserIdFromNamespace(namespace: string): {
     parserType: string;

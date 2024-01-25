@@ -1,3 +1,4 @@
+import { BosParserConfig } from "../core/parsers/bos-parser";
 import { ParserConfig } from "../core/parsers/json-parser";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
@@ -153,6 +154,11 @@ const configs = [
 ];
 
 export class MemoryProvider implements IProvider {
+  getParserConfigsForContext(
+    context: IContextNode
+  ): Promise<(ParserConfig | BosParserConfig)[]> {
+    throw new Error("Method not implemented.");
+  }
   createLinkTemplate(
     linkTemplate: Omit<LinkTemplate, "id">
   ): Promise<LinkTemplate> {

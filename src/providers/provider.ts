@@ -4,6 +4,12 @@ import { BosParserConfig } from "../core/parsers/bos-parser";
 
 export type UserLinkId = string;
 
+export type DependantContext = {
+  namespace: string;
+  contextType: string;
+  contextId: string | null;
+};
+
 export type BosUserLink = {
   id: UserLinkId;
   namespace: string;
@@ -25,6 +31,9 @@ export type LinkTemplate = {
 };
 
 export interface IProvider {
+  getParserConfigsForContext(
+    context: IContextNode
+  ): Promise<(ParserConfig | BosParserConfig)[]>;
   getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
   createLink(link: Omit<BosUserLink, "id" | "authorId">): Promise<BosUserLink>;
   // ToDo: generic parser config

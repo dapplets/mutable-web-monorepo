@@ -19,3 +19,5 @@ export const getNearConfig = (networkId: string): NearConfig => {
   if (!config) throw new Error(`Unknown networkId ${networkId}`);
   return config;
 };
+
+export const DappletsEngineNs = "https://dapplets.org/ns/engine";

@@ -52,11 +52,33 @@ const bigMax = (a: Big, b: Big) => {
   return a || b;
 };
 
+function collectKeys(obj: any): string[] {
+  const keys = [];
+  for (const key in obj) {
+    if (obj[key] === true) {
+      keys.push(key);
+    } else {
+      keys.push(
+        ...collectKeys(obj[key]).map((subKey: string) => `${key}/${subKey}`)
+      );
+    }
+  }
+  return keys;
+}
+
 export class SocialDbClient {
   constructor(private _signer: NearSigner, private _contractName: string) {}
 
   async get(keys: string[]): Promise<Value> {
     return await this._signer.view(this._contractName, "get", { keys });
+  }
+
+  async keys(keys: string[]): Promise<string[]> {
+    const response = await this._signer.view(this._contractName, "keys", {
+      keys,
+    });
+
+    return collectKeys(response);
   }
 
   async set(data: Value): Promise<void> {

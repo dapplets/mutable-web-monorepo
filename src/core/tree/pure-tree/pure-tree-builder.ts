@@ -1,3 +1,4 @@
+import { DappletsEngineNs } from "../../../constants";
 import { isDeepEqual } from "../../utils";
 import { IContextListener, IContextNode, ITreeBuilder } from "../types";
 import { PureContextNode } from "./pure-context-node";
@@ -8,7 +9,8 @@ export class PureTreeBuilder implements ITreeBuilder {
   #contextListener: IContextListener;
 
   constructor(contextListener: IContextListener) {
-    this.root = this.createNode(null, "root");
+    // ToDo: move to engine, it's not a core responsibility
+    this.root = this.createNode(DappletsEngineNs, "website"); // default ns
     this.#contextListener = contextListener;
   }
 

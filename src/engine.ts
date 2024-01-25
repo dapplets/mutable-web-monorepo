@@ -35,7 +35,7 @@ export class Engine implements IContextListener {
   #contextManagers: WeakMap<IContextNode, ContextManager> = new WeakMap();
 
   adapters: Set<IAdapter> = new Set();
-  treeBuilder: ITreeBuilder = new PureTreeBuilder(this); //new DomTreeBuilder(this);
+  treeBuilder: ITreeBuilder;
   started: boolean = false;
 
   constructor(private config: EngineConfig) {
@@ -48,11 +48,34 @@ export class Engine implements IContextListener {
     this.#selector = this.config.selector;
     const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl);
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName);
+    this.treeBuilder = new PureTreeBuilder(this);
+
+    // ToDo: instantiate root context with data initially
+    // ToDo: looks like circular dependency
+    this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
+      id: window.location.hostname,
+      // ToDo: add mutationId
+    });
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
-    if (!this.started) return;
+    // if (!this.started) return;
     if (!context.id) return;
+
+    // Find and load adapters for the given context
+    // ToDo: parallelize
+    const configs = await this.#provider.getParserConfigsForContext(context);
+    for (const config of configs) {
+      const type = this.getParserType(config.namespace);
+      if (!type) {
+        console.error("Unsupported parser namespace");
+        continue;
+      }
+      const adapter = this.createAdapter(type, config);
+      this.registerAdapter(adapter);
+
+      console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
+    }
 
     // ToDo: do not iterate over all adapters
     const adapter = Array.from(this.adapters).find((adapter) => {
@@ -93,41 +116,6 @@ export class Engine implements IContextListener {
   async start(): Promise<void> {
     this.started = true;
 
-    const adaptersToActivate = [];
-
-    // Adapters enabled by default
-    // adaptersToActivate.push(this.createAdapter(AdapterType.Bos));
-    // adaptersToActivate.push(this.createAdapter(AdapterType.Microdata));
-
-    // ToDo: load adapters suitable for current page from the provider
-
-    // Adapter for Twitter
-    if (window.location.hostname === "twitter.com") {
-      const twitterNs =
-        "https://dapplets.org/ns/json/bos.dapplets.near/parser/twitter";
-      const twitterConfig = await this.#provider.getParserConfig(twitterNs);
-      adaptersToActivate.push(
-        this.createAdapter(AdapterType.Json, twitterConfig!)
-      );
-    }
-
-    // Adapter for near.social
-    if (
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "mutable-near-social.netlify.app"
-    ) {
-      const nearSocialNs =
-        "https://dapplets.org/ns/bos/bos.dapplets.near/parser/near-social";
-      const nearSocialConfig = await this.#provider.getParserConfig(
-        nearSocialNs
-      );
-      adaptersToActivate.push(
-        this.createAdapter(AdapterType.Bos, nearSocialConfig as any)
-      );
-    }
-
-    adaptersToActivate.forEach((adapter) => this.registerAdapter(adapter));
-
     console.log("Mutable Web Engine started!", {
       engine: this,
       provider: this.#provider,
@@ -151,9 +139,18 @@ export class Engine implements IContextListener {
     this.adapters.delete(adapter);
   }
 
-  createAdapter(type: AdapterType.Microdata): IAdapter;
-  createAdapter(type: AdapterType.Bos, config: BosParserConfig): IAdapter;
-  createAdapter(type: AdapterType.Json, config: ParserConfig): IAdapter;
+  getParserType(ns: string): AdapterType | null {
+    if (ns.startsWith("https://dapplets.org/ns/json")) {
+      return AdapterType.Json;
+    } else if (ns.startsWith("https://dapplets.org/ns/bos")) {
+      return AdapterType.Bos;
+    } else if (ns.startsWith("https://dapplets.org/ns/microdata")) {
+      return AdapterType.Microdata;
+    } else {
+      return null;
+    }
+  }
+
   createAdapter(type: AdapterType, config?: any): IAdapter {
     const observingElement = document.body;
 
