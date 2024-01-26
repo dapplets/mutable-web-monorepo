@@ -64,18 +64,19 @@ export class Engine implements IContextListener {
 
     // Find and load adapters for the given context
     // ToDo: parallelize
-    const configs = await this.#provider.getParserConfigsForContext(context);
-    for (const config of configs) {
-      const type = this.getParserType(config.namespace);
-      if (!type) {
-        console.error("Unsupported parser namespace");
-        continue;
-      }
-      const adapter = this.createAdapter(type, config);
-      this.registerAdapter(adapter);
+    this.#provider.getParserConfigsForContext(context).then((configs) => {
+      for (const config of configs) {
+        const type = this.getParserType(config.namespace);
+        if (!type) {
+          console.error("Unsupported parser namespace");
+          continue;
+        }
+        const adapter = this.createAdapter(type, config);
+        this.registerAdapter(adapter);
 
-      console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
-    }
+        console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
+      }
+    });
 
     // ToDo: do not iterate over all adapters
     const adapter = Array.from(this.adapters).find((adapter) => {
@@ -93,8 +94,6 @@ export class Engine implements IContextListener {
 
     this.#contextManagers.set(context, contextManager);
 
-    contextManager.injectLayoutManagers();
-
     const links = await this.#provider.getLinksForContext(context);
 
     links.forEach((link) => contextManager.addUserLink(link));
@@ -111,6 +110,14 @@ export class Engine implements IContextListener {
 
     // ToDo: will layout managers be removed from the DOM?
     this.#contextManagers.delete(context);
+  }
+
+  handleInsPointStarted(context: IContextNode, newInsPoint: string): void {
+    this.#contextManagers.get(context)?.injectLayoutManager(newInsPoint);
+  }
+
+  handleInsPointFinished(context: IContextNode, oldInsPoint: string): void {
+    // ToDo: do nothing because IP unmounted?
   }
 
   async start(): Promise<void> {

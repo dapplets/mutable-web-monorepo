@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { IContextListener, IContextNode, ITreeBuilder } from "../types";
 
 export class DomTreeBuilder implements ITreeBuilder {

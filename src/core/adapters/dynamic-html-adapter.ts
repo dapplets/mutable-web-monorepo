@@ -72,9 +72,9 @@ export class DynamicHtmlAdapter implements IAdapter {
 
     // ToDo: move to separate adapter?
     // Generic insertion point for "the ear"
-    if (!insPointElement && insertionPoint === "root") {
-      insPointElement = contextElement;
-    }
+    // if (!insPointElement && insertionPoint === "root") {
+    //   insPointElement = contextElement;
+    // }
 
     if (!insPointElement) {
       throw new Error(
@@ -93,7 +93,10 @@ export class DynamicHtmlAdapter implements IAdapter {
         insPointElement.appendChild(injectingElement);
         break;
       case InsertionType.Begin:
-        insPointElement.insertBefore(injectingElement, insPointElement.firstChild);
+        insPointElement.insertBefore(
+          injectingElement,
+          insPointElement.firstChild
+        );
         break;
       default:
         throw new Error("Unknown insertion type");
@@ -139,8 +142,10 @@ export class DynamicHtmlAdapter implements IAdapter {
   private _handleMutations(element: Element, context: IContextNode) {
     const parsedContext = this.parser.parseContext(element, context.tagName);
     const pairs = this.parser.findChildElements(element, context.tagName);
+    const insPoints = this._findAvailableInsPoints(element, context.tagName);
 
     this.treeBuilder.updateParsedContext(context, parsedContext);
+    this.treeBuilder.updateInsertionPoints(context, insPoints);
     this._appendNewChildContexts(pairs, context);
     this._removeOldChildContexts(pairs, context);
   }
@@ -177,5 +182,20 @@ export class DynamicHtmlAdapter implements IAdapter {
         this.#observerByElement.delete(element);
       }
     }
+  }
+
+  // ToDo: move to parser?
+  private _findAvailableInsPoints(
+    element: Element,
+    contextName: string
+  ): string[] {
+    const parser = this.parser;
+    const definedInsPoints = parser.getInsertionPoints(element, contextName);
+
+    const availableInsPoints = definedInsPoints
+      .filter((ip) => !!parser.findInsertionPoint(element, contextName, ip.name))
+      .map((ip) => ip.name);
+
+    return availableInsPoints;
   }
 }

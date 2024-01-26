@@ -90,6 +90,9 @@ export class BosParser implements IParser {
       return element.querySelector(
         `[${CompAttr}="${insPointConfig.component}"]`
       );
+    } else if (insPointConfig) {
+      // if `component` is not defined use self
+      return element;
     } else {
       return null;
     }

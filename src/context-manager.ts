@@ -2,7 +2,7 @@ import { BosWidgetFactory } from "./bos/bos-widget-factory";
 import { IAdapter, InsertionType } from "./core/adapters/interface";
 import { IContextNode } from "./core/tree/types";
 import { LayoutManager } from "./layout-manager";
-import { BosUserLink, IProvider } from "./providers/provider";
+import { BosUserLink, IProvider, UserLinkId } from "./providers/provider";
 
 const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
 const DefaultInsertionType: InsertionType = InsertionType.Before;
@@ -16,6 +16,7 @@ export class ContextManager {
   #widgetFactory: BosWidgetFactory;
   #layoutManagers: Map<InsertionPointName, LayoutManager> = new Map();
   #provider: IProvider;
+  #userLinks: Map<UserLinkId, BosUserLink> = new Map();
 
   constructor(
     context: IContextNode,
@@ -52,10 +53,13 @@ export class ContextManager {
     if (link.contextType && link.contextType !== this.context.tagName) return;
     if (link.contextId && link.contextId !== this.context.id) return;
 
+    this.#userLinks.set(link.id, link); // save link for further layout managers
+
     this.#layoutManagers.get(link.insertionPoint)?.addUserLink(link);
   }
 
   removeUserLink(link: BosUserLink) {
+    this.#userLinks.delete(link.id);
     this.#layoutManagers.get(link.insertionPoint)?.removeUserLink(link.id);
   }
 
@@ -115,31 +119,39 @@ export class ContextManager {
     this.removeUserLink(userLink);
   }
 
-  injectLayoutManagers() {
+  injectLayoutManager(insPointName: string) {
     const insertionPoints = this.#adapter.getInsertionPoints(this.context);
+    const insPoint = insertionPoints.find((ip) => ip.name === insPointName);
 
-    // Insert layout manager to every insertion point
-    for (const insPoint of insertionPoints) {
-      const bosWidgetId = insPoint.bosLayoutManager ?? DefaultLayoutManager;
-      const insertionType = insPoint.insertionType ?? DefaultInsertionType;
-      const layoutManagerElement =
-        this.#widgetFactory.createWidget(bosWidgetId);
+    if (!insPoint) {
+      return;
+    }
 
-      const layoutManager = new LayoutManager(layoutManagerElement, this);
+    const bosWidgetId = insPoint.bosLayoutManager ?? DefaultLayoutManager;
+    const insertionType = insPoint.insertionType ?? DefaultInsertionType;
+    const layoutManagerElement = this.#widgetFactory.createWidget(bosWidgetId);
 
-      try {
-        // Inject layout manager
-        this.#adapter.injectElement(
-          layoutManagerElement,
-          this.context,
-          insPoint.name,
-          insertionType
-        );
+    const layoutManager = new LayoutManager(layoutManagerElement, this);
 
-        this.#layoutManagers.set(insPoint.name, layoutManager);
-      } catch (err) {
-        console.error(err);
-      }
+    try {
+      // Inject layout manager
+      this.#adapter.injectElement(
+        layoutManagerElement,
+        this.context,
+        insPoint.name,
+        insertionType
+      );
+
+      this.#layoutManagers.set(insPoint.name, layoutManager);
+
+      const suitableLinks = Array.from(this.#userLinks.values()).filter(
+        (link) => link.insertionPoint === insPoint.name
+      );
+
+      // Add existing links to layout managers injected later (for lazy loading websites)
+      suitableLinks.forEach((link) => layoutManager.addUserLink(link));
+    } catch (err) {
+      console.error(err);
     }
   }
 }
