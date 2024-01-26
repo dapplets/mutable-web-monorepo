@@ -54,9 +54,9 @@ class DynamicHtmlAdapter {
         let insPointElement = this.parser.findInsertionPoint(contextElement, context.tagName, insertionPoint);
         // ToDo: move to separate adapter?
         // Generic insertion point for "the ear"
-        if (!insPointElement && insertionPoint === "root") {
-            insPointElement = contextElement;
-        }
+        // if (!insPointElement && insertionPoint === "root") {
+        //   insPointElement = contextElement;
+        // }
         if (!insPointElement) {
             throw new Error(`Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`);
         }
@@ -103,7 +103,9 @@ class DynamicHtmlAdapter {
     _handleMutations(element, context) {
         const parsedContext = this.parser.parseContext(element, context.tagName);
         const pairs = this.parser.findChildElements(element, context.tagName);
+        const insPoints = this._findAvailableInsPoints(element, context.tagName);
         this.treeBuilder.updateParsedContext(context, parsedContext);
+        this.treeBuilder.updateInsertionPoints(context, insPoints);
         this._appendNewChildContexts(pairs, context);
         this._removeOldChildContexts(pairs, context);
     }
@@ -128,6 +130,15 @@ class DynamicHtmlAdapter {
                 __classPrivateFieldGet(this, _DynamicHtmlAdapter_observerByElement, "f").delete(element);
             }
         }
+    }
+    // ToDo: move to parser?
+    _findAvailableInsPoints(element, contextName) {
+        const parser = this.parser;
+        const definedInsPoints = parser.getInsertionPoints(element, contextName);
+        const availableInsPoints = definedInsPoints
+            .filter((ip) => !!parser.findInsertionPoint(element, contextName, ip.name))
+            .map((ip) => ip.name);
+        return availableInsPoints;
     }
 }
 exports.DynamicHtmlAdapter = DynamicHtmlAdapter;

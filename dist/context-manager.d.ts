@@ -14,6 +14,6 @@ export declare class ContextManager {
     removeUserLink(link: BosUserLink): void;
     createUserLink(bosWidgetId: string): Promise<void>;
     deleteUserLink(userLink: BosUserLink): Promise<void>;
-    injectLayoutManagers(): void;
+    injectLayoutManager(insPointName: string): void;
 }
 //# sourceMappingURL=context-manager.d.ts.map

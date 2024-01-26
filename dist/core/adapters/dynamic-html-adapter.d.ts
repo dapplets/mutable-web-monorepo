@@ -17,5 +17,6 @@ export declare class DynamicHtmlAdapter implements IAdapter {
     private _handleMutations;
     private _appendNewChildContexts;
     private _removeOldChildContexts;
+    private _findAvailableInsPoints;
 }
 //# sourceMappingURL=dynamic-html-adapter.d.ts.map

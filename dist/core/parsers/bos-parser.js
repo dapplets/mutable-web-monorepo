@@ -53,6 +53,10 @@ class BosParser {
         if (insPointConfig === null || insPointConfig === void 0 ? void 0 : insPointConfig.component) {
             return element.querySelector(`[${CompAttr}="${insPointConfig.component}"]`);
         }
+        else if (insPointConfig) {
+            // if `component` is not defined use self
+            return element;
+        }
         else {
             return null;
         }

@@ -20,6 +20,8 @@ export declare class Engine implements IContextListener {
     handleContextStarted(context: IContextNode): Promise<void>;
     handleContextChanged(context: IContextNode, oldParsedContext: any): void;
     handleContextFinished(context: IContextNode): void;
+    handleInsPointStarted(context: IContextNode, newInsPoint: string): void;
+    handleInsPointFinished(context: IContextNode, oldInsPoint: string): void;
     start(): Promise<void>;
     stop(): void;
     registerAdapter(adapter: IAdapter): void;

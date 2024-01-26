@@ -7,5 +7,6 @@ export declare class PureTreeBuilder implements ITreeBuilder {
     removeChild(parent: IContextNode, child: IContextNode): void;
     createNode(namespaceURI: string | null, tagName: string): IContextNode;
     updateParsedContext(context: IContextNode, newParsedContext: any): void;
+    updateInsertionPoints(context: IContextNode, foundIPs: string[]): void;
 }
 //# sourceMappingURL=pure-tree-builder.d.ts.map

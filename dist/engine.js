@@ -71,17 +71,18 @@ class Engine {
                 return;
             // Find and load adapters for the given context
             // ToDo: parallelize
-            const configs = yield __classPrivateFieldGet(this, _Engine_provider, "f").getParserConfigsForContext(context);
-            for (const config of configs) {
-                const type = this.getParserType(config.namespace);
-                if (!type) {
-                    console.error("Unsupported parser namespace");
-                    continue;
+            __classPrivateFieldGet(this, _Engine_provider, "f").getParserConfigsForContext(context).then((configs) => {
+                for (const config of configs) {
+                    const type = this.getParserType(config.namespace);
+                    if (!type) {
+                        console.error("Unsupported parser namespace");
+                        continue;
+                    }
+                    const adapter = this.createAdapter(type, config);
+                    this.registerAdapter(adapter);
+                    console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
                 }
-                const adapter = this.createAdapter(type, config);
-                this.registerAdapter(adapter);
-                console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
-            }
+            });
             // ToDo: do not iterate over all adapters
             const adapter = Array.from(this.adapters).find((adapter) => {
                 return adapter.getInsertionPoints(context).length > 0;
@@ -90,7 +91,6 @@ class Engine {
                 return;
             const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_provider, "f"));
             __classPrivateFieldGet(this, _Engine_contextManagers, "f").set(context, contextManager);
-            contextManager.injectLayoutManagers();
             const links = yield __classPrivateFieldGet(this, _Engine_provider, "f").getLinksForContext(context);
             links.forEach((link) => contextManager.addUserLink(link));
         });
@@ -106,6 +106,13 @@ class Engine {
             return;
         // ToDo: will layout managers be removed from the DOM?
         __classPrivateFieldGet(this, _Engine_contextManagers, "f").delete(context);
+    }
+    handleInsPointStarted(context, newInsPoint) {
+        var _a;
+        (_a = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context)) === null || _a === void 0 ? void 0 : _a.injectLayoutManager(newInsPoint);
+    }
+    handleInsPointFinished(context, oldInsPoint) {
+        // ToDo: do nothing because IP unmounted?
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {

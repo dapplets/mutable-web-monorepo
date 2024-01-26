@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layoutManagers, _ContextManager_provider;
+var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layoutManagers, _ContextManager_provider, _ContextManager_userLinks;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextManager = void 0;
 const interface_1 = require("./core/adapters/interface");
@@ -32,6 +32,7 @@ class ContextManager {
         _ContextManager_widgetFactory.set(this, void 0);
         _ContextManager_layoutManagers.set(this, new Map());
         _ContextManager_provider.set(this, void 0);
+        _ContextManager_userLinks.set(this, new Map());
         this.context = context;
         __classPrivateFieldSet(this, _ContextManager_adapter, adapter, "f");
         __classPrivateFieldSet(this, _ContextManager_widgetFactory, widgetFactory, "f");
@@ -59,10 +60,12 @@ class ContextManager {
             return;
         if (link.contextId && link.contextId !== this.context.id)
             return;
+        __classPrivateFieldGet(this, _ContextManager_userLinks, "f").set(link.id, link); // save link for further layout managers
         (_a = __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").get(link.insertionPoint)) === null || _a === void 0 ? void 0 : _a.addUserLink(link);
     }
     removeUserLink(link) {
         var _a;
+        __classPrivateFieldGet(this, _ContextManager_userLinks, "f").delete(link.id);
         (_a = __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").get(link.insertionPoint)) === null || _a === void 0 ? void 0 : _a.removeUserLink(link.id);
     }
     createUserLink(bosWidgetId) {
@@ -112,25 +115,29 @@ class ContextManager {
             this.removeUserLink(userLink);
         });
     }
-    injectLayoutManagers() {
+    injectLayoutManager(insPointName) {
         var _a, _b;
         const insertionPoints = __classPrivateFieldGet(this, _ContextManager_adapter, "f").getInsertionPoints(this.context);
-        // Insert layout manager to every insertion point
-        for (const insPoint of insertionPoints) {
-            const bosWidgetId = (_a = insPoint.bosLayoutManager) !== null && _a !== void 0 ? _a : DefaultLayoutManager;
-            const insertionType = (_b = insPoint.insertionType) !== null && _b !== void 0 ? _b : DefaultInsertionType;
-            const layoutManagerElement = __classPrivateFieldGet(this, _ContextManager_widgetFactory, "f").createWidget(bosWidgetId);
-            const layoutManager = new layout_manager_1.LayoutManager(layoutManagerElement, this);
-            try {
-                // Inject layout manager
-                __classPrivateFieldGet(this, _ContextManager_adapter, "f").injectElement(layoutManagerElement, this.context, insPoint.name, insertionType);
-                __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").set(insPoint.name, layoutManager);
-            }
-            catch (err) {
-                console.error(err);
-            }
+        const insPoint = insertionPoints.find((ip) => ip.name === insPointName);
+        if (!insPoint) {
+            return;
+        }
+        const bosWidgetId = (_a = insPoint.bosLayoutManager) !== null && _a !== void 0 ? _a : DefaultLayoutManager;
+        const insertionType = (_b = insPoint.insertionType) !== null && _b !== void 0 ? _b : DefaultInsertionType;
+        const layoutManagerElement = __classPrivateFieldGet(this, _ContextManager_widgetFactory, "f").createWidget(bosWidgetId);
+        const layoutManager = new layout_manager_1.LayoutManager(layoutManagerElement, this);
+        try {
+            // Inject layout manager
+            __classPrivateFieldGet(this, _ContextManager_adapter, "f").injectElement(layoutManagerElement, this.context, insPoint.name, insertionType);
+            __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").set(insPoint.name, layoutManager);
+            const suitableLinks = Array.from(__classPrivateFieldGet(this, _ContextManager_userLinks, "f").values()).filter((link) => link.insertionPoint === insPoint.name);
+            // Add existing links to layout managers injected later (for lazy loading websites)
+            suitableLinks.forEach((link) => layoutManager.addUserLink(link));
+        }
+        catch (err) {
+            console.error(err);
         }
     }
 }
 exports.ContextManager = ContextManager;
-_ContextManager_adapter = new WeakMap(), _ContextManager_widgetFactory = new WeakMap(), _ContextManager_layoutManagers = new WeakMap(), _ContextManager_provider = new WeakMap();
+_ContextManager_adapter = new WeakMap(), _ContextManager_widgetFactory = new WeakMap(), _ContextManager_layoutManagers = new WeakMap(), _ContextManager_provider = new WeakMap(), _ContextManager_userLinks = new WeakMap();

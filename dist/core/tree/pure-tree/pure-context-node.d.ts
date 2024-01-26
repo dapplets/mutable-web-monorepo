@@ -6,6 +6,7 @@ export declare class PureContextNode implements IContextNode {
     parentNode: IContextNode | null;
     parsedContext?: any;
     children: IContextNode[];
+    insPoints: string[];
     constructor(namespaceURI: string | null, tagName: string);
     removeChild(child: IContextNode): void;
     appendChild(child: IContextNode): void;

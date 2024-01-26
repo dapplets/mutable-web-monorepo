@@ -6,6 +6,7 @@ class PureContextNode {
         this.id = null;
         this.parentNode = null;
         this.children = [];
+        this.insPoints = [];
         this.namespaceURI = namespaceURI;
         this.tagName = tagName;
     }
