@@ -83,6 +83,7 @@ class BosComponent extends HTMLElement {
         display: flex; 
         align-items: center;
         justify-content: center;
+        position: relative;
       }
     `;
         this._adapterStylesMountPoint.innerHTML = resetCssRules;
