@@ -1,5 +1,6 @@
 import { BosComponent } from "./bos/bos-widget";
 import { ContextManager } from "./context-manager";
+import { IContextNode } from "./core/tree/types";
 import { BosUserLink, UserLinkId } from "./providers/provider";
 export interface LayoutManagerProps {
     context: any;
@@ -16,6 +17,12 @@ export interface LayoutManagerProps {
     enableEditMode: () => void;
     disableEditMode: () => void;
 }
+interface ContextTreeProps {
+    namespace: string | null;
+    type: string;
+    parsed: any;
+    parent: ContextTreeProps | null;
+}
 export declare class LayoutManager {
     #private;
     constructor(layoutManager: BosComponent, contextManager: ContextManager);
@@ -29,5 +36,7 @@ export declare class LayoutManager {
     _deleteUserLink(userLinkId: UserLinkId): Promise<void>;
     _enableEditMode(): void;
     _disableEditMode(): void;
+    static _buildContextTree(context: IContextNode): ContextTreeProps;
 }
+export {};
 //# sourceMappingURL=layout-manager.d.ts.map

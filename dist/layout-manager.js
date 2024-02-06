@@ -52,7 +52,7 @@ class LayoutManager {
                 linkAuthorId: link.authorId,
                 src: link.bosWidgetId,
                 props: {
-                    context: context.parsedContext,
+                    context: LayoutManager._buildContextTree(context),
                     link: {
                         id: link.id,
                         authorId: link.authorId,
@@ -86,6 +86,18 @@ class LayoutManager {
     }
     _disableEditMode() {
         return __classPrivateFieldGet(this, _LayoutManager_contextManager, "f").disableEditMode();
+    }
+    // Utils
+    // ToDo: maybe it's better to rename props in IContextNode?
+    static _buildContextTree(context) {
+        return {
+            namespace: context.namespaceURI,
+            type: context.tagName,
+            parsed: context.parsedContext,
+            parent: context.parentNode
+                ? this._buildContextTree(context.parentNode)
+                : null,
+        };
     }
 }
 exports.LayoutManager = LayoutManager;
