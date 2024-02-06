@@ -1,5 +1,6 @@
 import { BosComponent } from "./bos/bos-widget";
 import { ContextManager } from "./context-manager";
+import { IContextNode } from "./core/tree/types";
 import { BosUserLink, UserLinkId } from "./providers/provider";
 
 export interface LayoutManagerProps {
@@ -16,6 +17,13 @@ export interface LayoutManagerProps {
   deleteUserLink: (userLinkId: UserLinkId) => Promise<void>;
   enableEditMode: () => void;
   disableEditMode: () => void;
+}
+
+interface ContextTreeProps {
+  namespace: string | null;
+  type: string;
+  parsed: any;
+  parent: ContextTreeProps | null;
 }
 
 export class LayoutManager {
@@ -64,7 +72,7 @@ export class LayoutManager {
         linkAuthorId: link.authorId,
         src: link.bosWidgetId,
         props: {
-          context: context.parsedContext,
+          context: LayoutManager._buildContextTree(context),
           link: {
             id: link.id,
             authorId: link.authorId,
@@ -105,5 +113,19 @@ export class LayoutManager {
 
   _disableEditMode() {
     return this.#contextManager.disableEditMode();
+  }
+
+  // Utils
+
+  // ToDo: maybe it's better to rename props in IContextNode?
+  static _buildContextTree(context: IContextNode): ContextTreeProps {
+    return {
+      namespace: context.namespaceURI,
+      type: context.tagName,
+      parsed: context.parsedContext,
+      parent: context.parentNode
+        ? this._buildContextTree(context.parentNode)
+        : null,
+    };
   }
 }
