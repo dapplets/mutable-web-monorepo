@@ -34,7 +34,7 @@ export async function waitTab(url: string) {
     return true
   }
 
-  return new Promise<browser.Tabs.Tab>((res, rej) => {
+  return new Promise<browser.Tabs.Tab>((res) => {
     const handler = async (tabId: number) => {
       const tab = await browser.tabs.get(tabId)
       const receivedUrl = new URL(tab.url)

@@ -68,26 +68,43 @@ async function main() {
     networkId: NetworkId,
     selector,
   })
-
   await engine.start()
 
   browser.runtime.onMessage.addListener((message) => {
     if (!message || !message.type) return
-
-    if (message.type === 'PING') {
+    if (message.type === 'PING')
       // Used for background. When user clicks on the extension icon, content script may be not injected.
       // It's a way to check liveness of the content script
       return Promise.resolve('PONG')
-    } else if (message.type === 'OPEN_POPUP') {
-      selectorPromise.then((selector) => {
-        selector.wallet().then((wallet) => {
+    else if (message.type === 'GET_ACCOUNTS')
+      return selectorPromise
+        .then((selector) => selector.wallet())
+        .then((wallet) => wallet.getAccounts())
+    else if (message.type === 'CONNECT')
+      return selectorPromise
+        .then((selector) => selector.wallet())
+        .then((wallet) =>
           wallet.signIn({
             contractId: DefaultContractId,
             accounts: [],
           })
+        )
+    else if (message.type === 'DISCONNECT')
+      return selectorPromise
+        .then((selector) => selector.wallet())
+        .then((wallet) => wallet.signOut())
+    else if (message.type === 'COPY_ADDRESS')
+      return selectorPromise
+        .then((selector) => selector.wallet())
+        .then((wallet) => wallet.getAccounts())
+        .then((account) => {
+          const accountName = account[0]?.accountId
+          if (!accountName) return
+          const type = 'text/plain'
+          const blob = new Blob([accountName], { type })
+          const data = [new ClipboardItem({ [type]: blob })]
+          navigator.clipboard.write(data)
         })
-      })
-    }
   })
 }
 
