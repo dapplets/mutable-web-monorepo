@@ -1,16 +1,28 @@
 import { BosComponent } from "./bos/bos-widget";
 import { ContextManager } from "./context-manager";
 import { IContextNode } from "./core/tree/types";
-import { BosUserLink, UserLinkId } from "./providers/provider";
+import {
+  AppId,
+  AppMetadata,
+  BosUserLink,
+  UserLinkId,
+} from "./providers/provider";
 
 export interface LayoutManagerProps {
   context: any;
   contextType: string;
+  apps: { id: string }[];
   widgets: {
     linkId: UserLinkId;
     linkAuthorId: string;
     src: string;
-    props: any;
+    props: {
+      context: ContextTreeProps;
+      link: {
+        id: UserLinkId;
+        authorId: string;
+      };
+    };
   }[];
   isEditMode: boolean;
   createUserLink: (bosWidgetId: string) => Promise<void>;
@@ -30,6 +42,7 @@ export class LayoutManager {
   #contextManager: ContextManager;
   #layoutManager: BosComponent;
   #userLinks: Map<UserLinkId, BosUserLink> = new Map();
+  #apps: Map<AppId, AppMetadata> = new Map();
   #isEditMode: boolean;
 
   constructor(layoutManager: BosComponent, contextManager: ContextManager) {
@@ -49,6 +62,16 @@ export class LayoutManager {
     this.forceUpdate();
   }
 
+  addAppMetadata(appMetadata: AppMetadata) {
+    this.#apps.set(appMetadata.id, appMetadata);
+    this.forceUpdate();
+  }
+
+  removeAppMetadata(globalAppId: AppId) {
+    this.#apps.delete(globalAppId);
+    this.forceUpdate();
+  }
+
   enableEditMode() {
     this.#isEditMode = true;
     this.forceUpdate();
@@ -62,11 +85,16 @@ export class LayoutManager {
   forceUpdate() {
     const context = this.#contextManager.context;
     const links = Array.from(this.#userLinks.values());
+    const apps = Array.from(this.#apps.values());
 
     this._setProps({
       // ToDo: unify context forwarding
       context: context.parsedContext,
       contextType: context.tagName,
+      apps: apps.map((app) => ({
+        id: app.id,
+        componentId: app.componentId,
+      })),
       widgets: links.map((link) => ({
         linkId: link.id,
         linkAuthorId: link.authorId,
@@ -95,8 +123,8 @@ export class LayoutManager {
 
   // Widget API methods
 
-  _createUserLink(bosWidgetId: string) {
-    return this.#contextManager.createUserLink(bosWidgetId);
+  async _createUserLink(globalAppId: string): Promise<void> {
+    return this.#contextManager.createUserLink(globalAppId);
   }
 
   _deleteUserLink(userLinkId: UserLinkId) {

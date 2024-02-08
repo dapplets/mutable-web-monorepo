@@ -126,6 +126,12 @@ export class SocialDbClient {
     );
   }
 
+  async delete(keys: string[]): Promise<void> {
+    const data = await this.get(keys);
+    const nullData = SocialDbClient._nullifyData(data);
+    await this.set(nullData);
+  }
+
   private async _getAccountStorage(
     accountId: string
   ): Promise<StorageView | null> {
@@ -141,5 +147,16 @@ export class SocialDbClient {
       usedBytes: resp.used_bytes,
       availableBytes: resp.available_bytes,
     };
+  }
+
+  // Utils
+
+  static _nullifyData(data: any): any {
+    return Object.fromEntries(
+      Object.entries(data).map(([key, val]) => {
+        const nullVal = typeof val === "object" ? this._nullifyData(val) : null;
+        return [key, nullVal];
+      })
+    );
   }
 }

@@ -3,6 +3,7 @@ import { ParserConfig } from "../core/parsers/json-parser";
 import { BosParserConfig } from "../core/parsers/bos-parser";
 
 export type UserLinkId = string;
+export type AppId = string;
 
 export type DependantContext = {
   namespace: string;
@@ -13,41 +14,53 @@ export type DependantContext = {
 export type BosUserLink = {
   id: UserLinkId;
   namespace: string;
-  contextType: string; // ToDo: replace with expression
-  contextId: string | null; // ToDo: replace with expression
   insertionPoint: string;
   bosWidgetId: string;
   authorId: string;
   // ToDo: add props
 };
 
-export type LinkTemplate = {
-  id: string;
-  namespace: string;
-  contextType: string;
-  contextId: string | null;
-  insertionPoint: string;
-  bosWidgetId: string;
+export type AppMetadataTarget = {
+  if: Record<string, any>;
+  injectTo: string;
+};
+
+export type AppMetadata = {
+  id: AppId;
+  authorId: string;
+  appLocalId: string;
+  namespaces: { [alias: string]: string };
+  componentId: string;
+  targets: AppMetadataTarget[];
 };
 
 export interface IProvider {
+  // Read
+
   getParserConfigsForContext(
     context: IContextNode
   ): Promise<(ParserConfig | BosParserConfig)[]>;
-  getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
-  createLink(link: Omit<BosUserLink, "id" | "authorId">): Promise<BosUserLink>;
-  // ToDo: generic parser config
   getParserConfig(
     namespace: string
   ): Promise<ParserConfig | BosParserConfig | null>;
+  getAppsForContext(
+    context: IContextNode,
+    globalAppIds: AppId[]
+  ): Promise<AppMetadata[]>;
+  getLinksForContext(
+    context: IContextNode,
+    globalAppIds: AppId[]
+  ): Promise<BosUserLink[]>;
+  getApplication(globalAppId: string): Promise<AppMetadata | null>;
+  getAllAppIds(): Promise<string[]>;
+
+  // Write
+
+  createLink(globalAppId: string, context: IContextNode): Promise<BosUserLink>;
+  deleteUserLink(userLinkId: UserLinkId): Promise<void>;
+  createApplication(appMetadata: AppMetadata): Promise<AppMetadata>;
+  // ToDo: generalize parser config types
   createParserConfig(
     parserConfig: ParserConfig | BosParserConfig
-  ): Promise<void>;
-  getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]>;
-  createLinkTemplate(
-    linkTemplate: Omit<LinkTemplate, "id">
-  ): Promise<LinkTemplate>;
-  deleteUserLink(
-    userLink: Pick<BosUserLink, "id" | "bosWidgetId">
   ): Promise<void>;
 }

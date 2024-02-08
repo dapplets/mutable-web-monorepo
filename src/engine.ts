@@ -4,7 +4,7 @@ import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { IProvider } from "./providers/provider";
+import { AppId, IProvider } from "./providers/provider";
 import { WalletSelector } from "@near-wallet-selector/core";
 import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
@@ -33,6 +33,7 @@ export class Engine implements IContextListener {
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
   #contextManagers: WeakMap<IContextNode, ContextManager> = new WeakMap();
+  #activeApps: AppId[] = [];
 
   adapters: Set<IAdapter> = new Set();
   treeBuilder: ITreeBuilder;
@@ -94,9 +95,13 @@ export class Engine implements IContextListener {
 
     this.#contextManagers.set(context, contextManager);
 
-    const links = await this.#provider.getLinksForContext(context);
+    const [links, apps] = await Promise.all([
+      this.#provider.getLinksForContext(context, this.#activeApps),
+      this.#provider.getAppsForContext(context, this.#activeApps),
+    ]);
 
     links.forEach((link) => contextManager.addUserLink(link));
+    apps.forEach((app) => contextManager.addAppMetadata(app));
   }
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {
@@ -121,6 +126,10 @@ export class Engine implements IContextListener {
   }
 
   async start(): Promise<void> {
+    // ToDo: load apps from mutations
+    const apps = await this.#provider.getAllAppIds();
+    this.#activeApps = apps;
+
     this.started = true;
 
     console.log("Mutable Web Engine started!", {
@@ -131,6 +140,7 @@ export class Engine implements IContextListener {
 
   stop() {
     this.started = false;
+    this.#activeApps = [];
     this.adapters.forEach((adapter) => this.unregisterAdapter(adapter));
   }
 

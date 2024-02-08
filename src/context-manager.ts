@@ -2,7 +2,13 @@ import { BosWidgetFactory } from "./bos/bos-widget-factory";
 import { IAdapter, InsertionType } from "./core/adapters/interface";
 import { IContextNode } from "./core/tree/types";
 import { LayoutManager } from "./layout-manager";
-import { BosUserLink, IProvider, UserLinkId } from "./providers/provider";
+import {
+  AppId,
+  AppMetadata,
+  BosUserLink,
+  IProvider,
+  UserLinkId,
+} from "./providers/provider";
 
 const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
 const DefaultInsertionType: InsertionType = InsertionType.Before;
@@ -17,6 +23,7 @@ export class ContextManager {
   #layoutManagers: Map<InsertionPointName, LayoutManager> = new Map();
   #provider: IProvider;
   #userLinks: Map<UserLinkId, BosUserLink> = new Map();
+  #apps: Map<AppId, AppMetadata> = new Map();
 
   constructor(
     context: IContextNode,
@@ -49,12 +56,7 @@ export class ContextManager {
   }
 
   addUserLink(link: BosUserLink) {
-    // Check if link is suitable for this context
-    if (link.contextType && link.contextType !== this.context.tagName) return;
-    if (link.contextId && link.contextId !== this.context.id) return;
-
     this.#userLinks.set(link.id, link); // save link for further layout managers
-
     this.#layoutManagers.get(link.insertionPoint)?.addUserLink(link);
   }
 
@@ -63,58 +65,27 @@ export class ContextManager {
     this.#layoutManagers.get(link.insertionPoint)?.removeUserLink(link.id);
   }
 
-  async createUserLink(bosWidgetId: string) {
-    const context = this.context;
+  addAppMetadata(appMetadata: AppMetadata) {
+    this.#apps.set(appMetadata.id, appMetadata); // save app for further layout managers
+    this.#layoutManagers.forEach((lm) => lm.addAppMetadata(appMetadata));
+  }
 
-    const templates = await this.#provider.getLinkTemplates(bosWidgetId);
+  removeAppMetadata(app: AppMetadata) {
+    this.#apps.delete(app.id);
+    this.#layoutManagers.forEach((lm) => lm.removeAppMetadata(app.id));
+  }
 
-    const suitableTemplates = templates.filter((template) => {
-      if (template.contextType !== context.tagName) return false;
-
-      // ToDo: get rid of magic values
-      // context id required
-      if (template.contextId === "" && !context.id) return false;
-
-      // template for specific context
-      if (
-        template.contextId !== undefined &&
-        template.contextId !== null &&
-        template.contextId !== "" &&
-        context.id !== template.contextId
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-
-    if (suitableTemplates.length === 0) {
-      // ToDo: suggest user to select insertion point manually
-      throw new Error("No link templates found");
-    }
-
-    // ToDo: suggest user to select insertion point manually
-    const template = suitableTemplates[0];
-
-    const createdLink = await this.#provider.createLink({
-      namespace: context.namespaceURI!,
-      contextType: context.tagName,
-      contextId:
-        template.contextId === null || template.contextId === undefined
-          ? null
-          : context.id, // ToDo: get rid of magic values
-      insertionPoint: template.insertionPoint,
-      bosWidgetId: bosWidgetId,
-    });
+  async createUserLink(globalAppId: AppId) {
+    const createdLink = await this.#provider.createLink(
+      globalAppId,
+      this.context
+    );
 
     this.addUserLink(createdLink);
   }
 
   async deleteUserLink(userLink: BosUserLink) {
-    await this.#provider.deleteUserLink({
-      id: userLink.id,
-      bosWidgetId: userLink.bosWidgetId,
-    });
+    await this.#provider.deleteUserLink(userLink.id);
 
     this.removeUserLink(userLink);
   }
@@ -150,6 +121,9 @@ export class ContextManager {
 
       // Add existing links to layout managers injected later (for lazy loading websites)
       suitableLinks.forEach((link) => layoutManager.addUserLink(link));
+
+      // Add existing apps to the layout manager
+      this.#apps.forEach((app) => layoutManager.addAppMetadata(app));
     } catch (err) {
       console.error(err);
     }

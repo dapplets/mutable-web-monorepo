@@ -2,9 +2,12 @@ import { NearSigner } from "./near-signer";
 import { ParserConfig } from "../core/parsers/json-parser";
 import {
   BosUserLink,
+  AppMetadata,
   DependantContext,
   IProvider,
-  LinkTemplate,
+  UserLinkId,
+  AppMetadataTarget,
+  AppId,
 } from "./provider";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
@@ -21,11 +24,13 @@ const ProjectIdKey = "dapplets.near";
 const ParserKey = "parser";
 const SettingsKey = "settings";
 const LinkKey = "link";
-const WidgetKey = "widget";
 const SelfKey = "";
-const LinkTemplateKey = "linkTemplate";
 const ParserContextsKey = "contexts";
+const AppKey = "app";
 const WildcardKey = "*";
+const RecursiveWildcardKey = "**";
+const IndexesKey = "indexes";
+const KeyDelimiter = "/";
 
 /**
  * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
@@ -102,17 +107,17 @@ export class SocialDbProvider implements IProvider {
       contextHashKey,
     ];
 
-    const availableKeys = await this.#client.keys([keys.join("/")]);
+    const availableKeys = await this.#client.keys([keys.join(KeyDelimiter)]);
     const parserKeys = availableKeys
-      .map((key) => key.substring(0, key.lastIndexOf("/"))) // discard contextHashKey
-      .map((key) => key.substring(0, key.lastIndexOf("/"))); // discard ParserContextsKey
+      .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))) // discard contextHashKey
+      .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))); // discard ParserContextsKey
 
     const queryResult = await this.#client.get(parserKeys);
 
     const parsers = [];
 
     for (const key of parserKeys) {
-      const json = getValueByKey(key.split("/"), queryResult);
+      const json = getValueByKey(key.split(KeyDelimiter), queryResult);
       parsers.push(JSON.parse(json));
     }
 
@@ -138,6 +143,264 @@ export class SocialDbProvider implements IProvider {
     return JSON.parse(parserConfigJson);
   }
 
+  async getAllAppIds(): Promise<string[]> {
+    const keys = [WildcardKey, SettingsKey, ProjectIdKey, AppKey, WildcardKey];
+    const appKeys = await this.#client.keys([keys.join(KeyDelimiter)]);
+
+    return appKeys.map((key) => {
+      const [authorId, , , , localAppId] = key.split(KeyDelimiter);
+      return [authorId, AppKey, localAppId].join(KeyDelimiter);
+    });
+  }
+
+  async getAppsForContext(
+    context: IContextNode,
+    globalAppIds: AppId[]
+  ): Promise<AppMetadata[]> {
+    const allApps = await Promise.all(
+      globalAppIds.map((id) => this.getApplication(id))
+    );
+
+    const suitableApps: AppMetadata[] = [];
+
+    for (const app of allApps) {
+      if (!app) continue;
+
+      const suitableTargets = [];
+
+      for (const target of app.targets) {
+        if (!target.if) continue;
+
+        const isSuitable = SocialDbProvider._tryFillAppTargetWithContext(
+          target.if,
+          app.namespaces,
+          context
+        );
+
+        if (isSuitable) {
+          suitableTargets.push(target);
+        }
+      }
+
+      if (suitableTargets.length > 0) {
+        suitableApps.push({ ...app, targets: suitableTargets });
+      }
+    }
+
+    return suitableApps;
+  }
+
+  async getLinksForContext(
+    context: IContextNode,
+    globalAppIds: AppId[]
+  ): Promise<BosUserLink[]> {
+    const allApps = await Promise.all(
+      globalAppIds.map((id) => this.getApplication(id))
+    );
+
+    const appLinks: BosUserLink[] = [];
+
+    for (const app of allApps) {
+      if (!app) continue;
+
+      const targetByHash = new Map<string, AppMetadataTarget>();
+
+      for (const target of app.targets) {
+        const filledTarget = SocialDbProvider._tryFillAppTargetWithContext(
+          target.if,
+          app.namespaces,
+          context
+        );
+
+        if (filledTarget) {
+          targetByHash.set(hashObject(filledTarget), target);
+        }
+      }
+
+      if (targetByHash.size === 0) return [];
+
+      const keys = Array.from(targetByHash.keys()).map((hash) =>
+        [
+          WildcardKey, // from any user
+          SettingsKey,
+          ProjectIdKey,
+          LinkKey,
+          app.authorId,
+          AppKey,
+          app.appLocalId,
+          WildcardKey, // any user link id
+          IndexesKey,
+          hash,
+        ].join(KeyDelimiter)
+      );
+
+      const resp = await this.#client.keys(keys);
+
+      appLinks.push(
+        ...resp.map((key) => {
+          const [authorId, , , , , , , id, , hash] = key.split(KeyDelimiter);
+          const target = targetByHash.get(hash)!;
+
+          const { alias, value: insertionPoint } =
+            SocialDbProvider._parseNsValue(target.injectTo);
+
+          return {
+            id,
+            namespace: alias ? app.namespaces[alias] : DappletsEngineNs, // ToDo: default ns?
+            authorId,
+            bosWidgetId: app.componentId,
+            insertionPoint,
+          }; // ToDo: add filter values?
+        })
+      );
+    }
+
+    return appLinks;
+  }
+
+  async getApplication(globalAppId: string): Promise<AppMetadata | null> {
+    const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter);
+
+    const queryResult = await this.#client.get([
+      `${authorId}/${SettingsKey}/${ProjectIdKey}/${AppKey}/${appLocalId}`,
+    ]);
+
+    const appMetadataJson =
+      queryResult[authorId]?.[SettingsKey]?.[ProjectIdKey]?.[AppKey]?.[
+        appLocalId
+      ];
+
+    if (!appMetadataJson) return null;
+
+    return {
+      ...JSON.parse(appMetadataJson),
+      id: globalAppId,
+      appLocalId,
+      authorId,
+    };
+  }
+
+  // #endregion
+
+  // #region Write methods
+
+  async createLink(
+    globalAppId: string,
+    context: IContextNode
+  ): Promise<BosUserLink> {
+    const linkId = generateGuid();
+
+    const accountId = await this._signer.getAccountId();
+
+    if (!accountId) throw new Error("User is not logged in");
+
+    const appMetadata = await this.getApplication(globalAppId);
+
+    if (!appMetadata) {
+      throw new Error("The app doesn't exist");
+    }
+
+    let filledTarget: Record<string, any> | null = null;
+    let suitableTarget: AppMetadataTarget | null = null;
+
+    for (const target of appMetadata.targets) {
+      filledTarget = SocialDbProvider._tryFillAppTargetWithContext(
+        target.if,
+        appMetadata.namespaces,
+        context
+      );
+
+      if (filledTarget) {
+        suitableTarget = target;
+        break;
+      }
+    }
+
+    if (!filledTarget || !suitableTarget) {
+      throw new Error("No suitable target found");
+    }
+
+    const index = hashObject(filledTarget);
+
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      LinkKey,
+      appMetadata.authorId,
+      AppKey,
+      appMetadata.appLocalId,
+      linkId,
+    ];
+
+    const storedAppLink = {
+      indexes: {
+        [index]: "",
+      },
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedAppLink));
+
+    const { alias, value: insertionPoint } = SocialDbProvider._parseNsValue(
+      suitableTarget.injectTo
+    );
+
+    return {
+      id: linkId,
+      namespace: alias ? appMetadata.namespaces[alias] : DappletsEngineNs, // ToDo: default ns?
+      authorId: accountId,
+      bosWidgetId: appMetadata.componentId,
+      insertionPoint,
+      // indexes: [index]
+    };
+  }
+
+  async deleteUserLink(linkId: UserLinkId): Promise<void> {
+    const accountId = await this._signer.getAccountId();
+
+    if (!accountId) throw new Error("User is not logged in");
+
+    // ToDo: check link ownership?
+
+    const keys = [
+      accountId,
+      SettingsKey,
+      ProjectIdKey,
+      LinkKey,
+      WildcardKey, // any app author, ToDo: it works if linkId is globally unique
+      AppKey,
+      WildcardKey,  // any app local id, ToDo: it works if linkId is globally unique
+      linkId,
+      RecursiveWildcardKey,
+    ];
+
+    await this.#client.delete([keys.join(KeyDelimiter)]);
+  }
+
+  async createApplication(
+    appMetadata: Omit<AppMetadata, "authorId" | "appLocalId">
+  ): Promise<AppMetadata> {
+    const [authorId, , appLocalId] = appMetadata.id.split(KeyDelimiter);
+
+    const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
+
+    const storedAppMetadata = {
+      [SelfKey]: JSON.stringify({
+        namespaces: appMetadata.namespaces,
+        componentId: appMetadata.componentId,
+        targets: appMetadata.targets,
+      }),
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedAppMetadata));
+
+    return {
+      ...appMetadata,
+      appLocalId,
+      authorId,
+    };
+  }
+
   async createParserConfig(config: ParserConfig): Promise<void> {
     const { accountId, parserLocalId } = this._extractParserIdFromNamespace(
       config.namespace
@@ -158,228 +421,13 @@ export class SocialDbProvider implements IProvider {
     await this.#client.set(this._buildNestedData(keys, storedParserConfig));
   }
 
-  async getLinksForContext(context: IContextNode): Promise<BosUserLink[]> {
-    // JSON-configured parsers require id for the context
-    if (
-      !context.id &&
-      context.namespaceURI!.startsWith("https://dapplets.org/ns/json/")
-    ) {
-      return [];
-    }
-
-    // ToDo: index links by context/widget/contextType/etc.
-    // ToDo: fix GasLimitExceeded error using Social DB API
-    // ToDo: cache the query
-    // Fetch all links from every user
-    const resp = await this.#client.get([
-      `*/${SettingsKey}/${ProjectIdKey}/${LinkKey}/*/${WidgetKey}/*/**`,
-    ]);
-
-    const userLinksOutput: BosUserLink[] = [];
-
-    for (const accountId in resp) {
-      const widgetOwners = resp[accountId][SettingsKey][ProjectIdKey][LinkKey];
-      for (const widgetOwnerId in widgetOwners) {
-        const widgets = widgetOwners[widgetOwnerId][WidgetKey];
-        for (const widgetLocalId in widgets) {
-          const userLinks = widgets[widgetLocalId];
-          for (const linkId in userLinks) {
-            const link = userLinks[linkId];
-
-            // Include only suitable links
-            if (link.namespace && link.namespace !== context.namespaceURI)
-              continue;
-            if (link.contextType && link.contextType !== context.tagName)
-              continue;
-            if (link.contextId && link.contextId !== context.id) continue;
-
-            const userLink: BosUserLink = {
-              id: linkId,
-              namespace: link.namespace,
-              contextType: link.contextType,
-              contextId: link.contextId ?? null,
-              insertionPoint: link.insertionPoint,
-              bosWidgetId: `${widgetOwnerId}/${WidgetKey}/${widgetLocalId}`,
-              authorId: accountId,
-            };
-            userLinksOutput.push(userLink);
-          }
-        }
-      }
-    }
-
-    return userLinksOutput;
-  }
-
-  async createLink(
-    link: Omit<BosUserLink, "id" | "authorId">
-  ): Promise<BosUserLink> {
-    const linkId = generateGuid();
-    const [widgetOwnerId, , bosWidgetLocalId] = link.bosWidgetId.split("/");
-
-    const accountId = await this._signer.getAccountId();
-
-    if (!accountId) throw new Error("User is not logged in");
-
-    const keys = [
-      accountId,
-      SettingsKey,
-      ProjectIdKey,
-      LinkKey,
-      widgetOwnerId,
-      WidgetKey,
-      bosWidgetLocalId,
-      linkId,
-    ];
-
-    const storedUserLink = {
-      namespace: link.namespace,
-      contextType: link.contextType,
-      contextId: link.contextId ?? null,
-      insertionPoint: link.insertionPoint,
-    };
-
-    await this.#client.set(this._buildNestedData(keys, storedUserLink));
-
-    return { id: linkId, ...link, authorId: accountId };
-  }
-
-  async deleteUserLink(
-    userLink: Pick<BosUserLink, "id" | "bosWidgetId">
-  ): Promise<void> {
-    const [widgetOwnerId, , bosWidgetLocalId] = userLink.bosWidgetId.split("/");
-    const accountId = await this._signer.getAccountId();
-
-    if (!accountId) throw new Error("User is not logged in");
-
-    const keys = [
-      accountId,
-      SettingsKey,
-      ProjectIdKey,
-      LinkKey,
-      widgetOwnerId,
-      WidgetKey,
-      bosWidgetLocalId,
-      userLink.id,
-    ];
-
-    const storedUserLink = {
-      [SelfKey]: null,
-      namespace: null,
-      contextType: null,
-      contextId: null,
-      insertionPoint: null,
-    };
-
-    await this.#client.set(this._buildNestedData(keys, storedUserLink));
-  }
-
-  async getLinkTemplates(bosWidgetId: string): Promise<LinkTemplate[]> {
-    const [ownerId, , bosWidgetLocalId] = bosWidgetId.split("/");
-    const resp = await this.#client.get([
-      `${ownerId}/${SettingsKey}/${ProjectIdKey}/${LinkTemplateKey}/${ownerId}/${WidgetKey}/${bosWidgetLocalId}/**`,
-    ]);
-
-    const linkTemplates =
-      resp[ownerId]?.[SettingsKey]?.[ProjectIdKey]?.[LinkTemplateKey]?.[
-        ownerId
-      ]?.[WidgetKey]?.[bosWidgetLocalId];
-
-    if (!linkTemplates) return [];
-
-    const linksOutput: LinkTemplate[] = [];
-
-    for (const linkTemplateId in linkTemplates) {
-      const link = linkTemplates[linkTemplateId];
-      const userLink: LinkTemplate = {
-        id: linkTemplateId,
-        namespace: link.namespace,
-        contextType: link.contextType,
-        contextId: link.contextId,
-        insertionPoint: link.insertionPoint,
-        bosWidgetId: `${ownerId}/${WidgetKey}/${bosWidgetLocalId}`,
-      };
-      linksOutput.push(userLink);
-    }
-
-    return linksOutput;
-  }
-
-  // #endregion
-
-  // #region Write methods
-
-  async createLinkTemplate(
-    linkTemplate: Omit<LinkTemplate, "id">
-  ): Promise<LinkTemplate> {
-    const linkTemplateId = generateGuid();
-    const [widgetOwnerId, , bosWidgetLocalId] =
-      linkTemplate.bosWidgetId.split("/");
-
-    const accountId = await this._signer.getAccountId();
-
-    if (!accountId) throw new Error("User is not logged in");
-
-    const keys = [
-      accountId,
-      SettingsKey,
-      ProjectIdKey,
-      LinkTemplateKey,
-      widgetOwnerId,
-      WidgetKey,
-      bosWidgetLocalId,
-      linkTemplateId,
-    ];
-
-    const storedLinkTemplate = {
-      namespace: linkTemplate.namespace,
-      contextType: linkTemplate.contextType,
-      contextId: linkTemplate.contextId ?? null,
-      insertionPoint: linkTemplate.insertionPoint,
-    };
-
-    await this.#client.set(this._buildNestedData(keys, storedLinkTemplate));
-
-    return { id: linkTemplateId, ...linkTemplate };
-  }
-
-  async deleteLinkTemplate(
-    linkTemplate: Pick<BosUserLink, "id" | "bosWidgetId">
-  ): Promise<void> {
-    const [widgetOwnerId, , bosWidgetLocalId] =
-      linkTemplate.bosWidgetId.split("/");
-    const accountId = await this._signer.getAccountId();
-
-    if (!accountId) throw new Error("User is not logged in");
-
-    const keys = [
-      accountId,
-      SettingsKey,
-      ProjectIdKey,
-      LinkTemplateKey,
-      widgetOwnerId,
-      WidgetKey,
-      bosWidgetLocalId,
-      linkTemplate.id,
-    ];
-
-    const storedLinkTemplate = {
-      [SelfKey]: null,
-      namespace: null,
-      contextType: null,
-      contextId: null,
-      insertionPoint: null,
-    };
-
-    await this.#client.set(this._buildNestedData(keys, storedLinkTemplate));
-  }
-
   async setContextIdsForParser(
     parserGlobalId: string,
     contextsToBeAdded: DependantContext[],
     contextsToBeDeleted: DependantContext[]
   ): Promise<void> {
-    const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split("/");
+    const [parserOwnerId, parserKey, parserLocalId] =
+      parserGlobalId.split(KeyDelimiter);
 
     if (parserKey !== ParserKey) {
       throw new Error("Invalid parser ID");
@@ -422,7 +470,7 @@ export class SocialDbProvider implements IProvider {
 
     // Example: example.near/parser/social-network
     const [parserType, accountId, entityType, parserLocalId] =
-      parserGlobalId.split("/");
+      parserGlobalId.split(KeyDelimiter);
 
     if (entityType !== "parser" || !accountId || !parserLocalId) {
       throw new Error("Invalid namespace");
@@ -444,6 +492,87 @@ export class SocialDbProvider implements IProvider {
     } else {
       return {
         [firstKey]: this._buildNestedData(anotherKeys, data),
+      };
+    }
+  }
+
+  // Utils
+
+  static _tryFillAppTargetWithContext(
+    ifTarget: Record<string, any>,
+    aliases: Record<string, string>,
+    context: IContextNode
+  ): Record<string, any> | null {
+    const resolvedObject: Record<string, any> = {};
+
+    for (const nsProp in ifTarget) {
+      const value = ifTarget[nsProp];
+
+      const { alias: propAlias, value: prop } = this._parseNsValue(nsProp);
+      const { alias: exprAlias, value: expr } = this._parseNsValue(value);
+
+      // ToDo: refactor
+      if (propAlias) {
+        if (context.namespaceURI !== aliases[propAlias]) {
+          return null;
+        }
+
+        if (!context.parsedContext) {
+          return null;
+        }
+
+        if (expr === "*") {
+          if (
+            context.parsedContext[prop] === undefined ||
+            context.parsedContext[prop] === null
+          ) {
+            return null;
+          } else {
+            resolvedObject[nsProp] = context.parsedContext[prop];
+          }
+        } else {
+          if (context.parsedContext[prop] !== expr) {
+            return null;
+          } else {
+            resolvedObject[nsProp] = value;
+          }
+        }
+      } else {
+        // default ns
+        if (prop === "contextType") {
+          if (exprAlias && aliases[exprAlias] !== context.namespaceURI) {
+            return null;
+          }
+
+          if (expr !== context.tagName) {
+            return null;
+          }
+
+          resolvedObject[nsProp] = value;
+        } else {
+          return null;
+        }
+      }
+    }
+
+    return resolvedObject;
+  }
+
+  static _parseNsValue(nsProp: string): {
+    alias: string | null;
+    value: string;
+  } {
+    const parts = nsProp.split(":");
+
+    if (parts.length === 1) {
+      return {
+        alias: null,
+        value: parts[0],
+      };
+    } else {
+      return {
+        alias: parts[0],
+        value: parts[1],
       };
     }
   }
