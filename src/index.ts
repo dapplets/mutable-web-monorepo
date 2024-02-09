@@ -1,3 +1,3 @@
 export * from "./engine";
-export { Overlay } from "./bos/overlay";
+export { DappletOverlay } from "./custom-elements/dapplet-overlay";
 export { Mutation } from "./providers/provider";
