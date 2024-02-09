@@ -32,7 +32,7 @@ const getAccount = async (tabId: number): Promise<string | undefined> => {
 const setClipboard = async (tab: browser.Tabs.Tab): Promise<void> =>
   browser.tabs.sendMessage(tab.id, { type: 'COPY_ADDRESS' })
 
-const connectWallet = (tab: browser.Tabs.Tab): Promise<void> =>
+const connectWallet = (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab): Promise<void> =>
   browser.tabs
     .sendMessage(tab.id, { type: 'CONNECT' })
     .then(() => getAccount(tab.id))
@@ -50,17 +50,20 @@ const copyOrDisconnect = (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab
 
 const recreateMenuForDisconnectedState = (): void => {
   browser.contextMenus.removeAll()
+  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
+  browser.contextMenus.onClicked.removeListener(connectWallet)
   browser.contextMenus.create({
     title: 'Connect NEAR wallet',
     id: 'connect',
     contexts: ['action'],
   })
-  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-  browser.contextMenus.onClicked.addListener((info, tab) => connectWallet(tab))
+  browser.contextMenus.onClicked.addListener(connectWallet)
 }
 
 const recreateMenuForConnectedState = (accountName: string): void => {
   browser.contextMenus.removeAll()
+  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
+  browser.contextMenus.onClicked.removeListener(connectWallet)
   const parent = browser.contextMenus.create({
     title: accountName,
     id: 'wallet',
@@ -78,7 +81,6 @@ const recreateMenuForConnectedState = (accountName: string): void => {
     id: 'disconnect',
     contexts: ['action'],
   })
-  browser.contextMenus.onClicked.removeListener((info, tab) => connectWallet(tab))
   browser.contextMenus.onClicked.addListener(copyOrDisconnect)
 }
 
@@ -88,7 +90,7 @@ const updateActionMenu = async (tabId: number): Promise<void> => {
   // If it's a system tab where the extension doesn't work
   if (!(tab?.url.startsWith('https://') || tab?.url.startsWith('http://'))) {
     browser.contextMenus.removeAll()
-    browser.contextMenus.onClicked.removeListener((info, tab) => connectWallet(tab))
+    browser.contextMenus.onClicked.removeListener(connectWallet)
     browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
     return
   }
@@ -101,7 +103,7 @@ const updateActionMenu = async (tabId: number): Promise<void> => {
 
   if (!isContentScriptInjected) {
     browser.contextMenus.removeAll()
-    browser.contextMenus.onClicked.removeListener((info, tab) => connectWallet(tab))
+    browser.contextMenus.onClicked.removeListener(connectWallet)
     browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
     return
   }
