@@ -8,6 +8,7 @@ import {
   UserLinkId,
   AppMetadataTarget,
   AppId,
+  Mutation,
 } from "./provider";
 import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
@@ -27,6 +28,7 @@ const LinkKey = "link";
 const SelfKey = "";
 const ParserContextsKey = "contexts";
 const AppKey = "app";
+const MutationKey = "mutation";
 const WildcardKey = "*";
 const RecursiveWildcardKey = "**";
 const IndexesKey = "indexes";
@@ -62,9 +64,9 @@ function hashObject(obj: any): string {
 function getValueByKey(keys: string[], obj: any): any {
   const [firstKey, ...anotherKeys] = keys;
   if (anotherKeys.length === 0) {
-    return obj[firstKey];
+    return obj?.[firstKey];
   } else {
-    return getValueByKey(anotherKeys, obj[firstKey]);
+    return getValueByKey(anotherKeys, obj?.[firstKey]);
   }
 }
 
@@ -261,23 +263,78 @@ export class SocialDbProvider implements IProvider {
   async getApplication(globalAppId: string): Promise<AppMetadata | null> {
     const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter);
 
+    const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
     const queryResult = await this.#client.get([
-      `${authorId}/${SettingsKey}/${ProjectIdKey}/${AppKey}/${appLocalId}`,
+      [...keys, RecursiveWildcardKey].join(KeyDelimiter),
     ]);
 
-    const appMetadataJson =
-      queryResult[authorId]?.[SettingsKey]?.[ProjectIdKey]?.[AppKey]?.[
-        appLocalId
-      ];
+    const mutation = getValueByKey(keys, queryResult);
 
-    if (!appMetadataJson) return null;
+    if (!mutation?.[SelfKey]) return null;
 
     return {
-      ...JSON.parse(appMetadataJson),
+      ...JSON.parse(mutation[SelfKey]),
       id: globalAppId,
       appLocalId,
       authorId,
     };
+  }
+
+  async getMutation(globalMutationId: string): Promise<Mutation | null> {
+    const [authorId, , mutationLocalId] = globalMutationId.split(KeyDelimiter);
+
+    const keys = [
+      authorId,
+      SettingsKey,
+      ProjectIdKey,
+      MutationKey,
+      mutationLocalId,
+    ];
+    const queryResult = await this.#client.get([
+      [...keys, RecursiveWildcardKey].join(KeyDelimiter),
+    ]);
+
+    const mutation = getValueByKey(keys, queryResult);
+
+    if (!mutation) return null;
+
+    return {
+      id: globalMutationId,
+      metadata: mutation.metadata,
+      apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+    };
+  }
+
+  async getMutations(): Promise<Mutation[]> {
+    const keys = [
+      WildcardKey, // any author id
+      SettingsKey,
+      ProjectIdKey,
+      MutationKey,
+      WildcardKey, // any mutation local id
+    ];
+
+    const queryResult = await this.#client.get([
+      [...keys, RecursiveWildcardKey].join(KeyDelimiter),
+    ]);
+
+    const mutationsByKey = SocialDbProvider._splitObjectByDepth(
+      queryResult,
+      keys.length
+    );
+
+    const mutations = Object.entries(mutationsByKey).map(
+      ([key, value]: [string, any]) => {
+        const [accountId, , , , localMutationId] = key.split(KeyDelimiter);
+        return {
+          id: `${accountId}/mutation/${localMutationId}`,
+          metadata: value.metadata,
+          apps: JSON.parse(value.apps),
+        };
+      }
+    );
+
+    return mutations;
   }
 
   // #endregion
@@ -369,7 +426,7 @@ export class SocialDbProvider implements IProvider {
       LinkKey,
       WildcardKey, // any app author, ToDo: it works if linkId is globally unique
       AppKey,
-      WildcardKey,  // any app local id, ToDo: it works if linkId is globally unique
+      WildcardKey, // any app local id, ToDo: it works if linkId is globally unique
       linkId,
       RecursiveWildcardKey,
     ];
@@ -399,6 +456,27 @@ export class SocialDbProvider implements IProvider {
       appLocalId,
       authorId,
     };
+  }
+
+  async createMutation(mutation: Mutation): Promise<Mutation> {
+    const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter);
+
+    const keys = [
+      authorId,
+      SettingsKey,
+      ProjectIdKey,
+      MutationKey,
+      mutationLocalId,
+    ];
+
+    const storedAppMetadata = {
+      metadata: mutation.metadata,
+      apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
+    };
+
+    await this.#client.set(this._buildNestedData(keys, storedAppMetadata));
+
+    return mutation;
   }
 
   async createParserConfig(config: ParserConfig): Promise<void> {
@@ -575,5 +653,25 @@ export class SocialDbProvider implements IProvider {
         value: parts[1],
       };
     }
+  }
+
+  static _splitObjectByDepth(obj: any, depth = 0, path: string[] = []): any {
+    if (depth === 0 || typeof obj !== "object" || obj === null) {
+      return { [path.join(KeyDelimiter)]: obj };
+    }
+
+    const result: any = {};
+    for (const key in obj) {
+      const newPath = [...path, key];
+      const nestedResult = this._splitObjectByDepth(
+        obj[key],
+        depth - 1,
+        newPath
+      );
+      for (const nestedKey in nestedResult) {
+        result[nestedKey] = nestedResult[nestedKey];
+      }
+    }
+    return result;
   }
 }

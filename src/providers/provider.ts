@@ -4,6 +4,7 @@ import { BosParserConfig } from "../core/parsers/bos-parser";
 
 export type UserLinkId = string;
 export type AppId = string;
+export type MutationId = string;
 
 export type DependantContext = {
   namespace: string;
@@ -34,6 +35,18 @@ export type AppMetadata = {
   targets: AppMetadataTarget[];
 };
 
+export type Mutation = {
+  id: MutationId;
+  metadata?: {
+    name?: string;
+    description?: string;
+    image?: {
+      ipfs_cid?: string;
+    };
+  };
+  apps: string[];
+};
+
 export interface IProvider {
   // Read
 
@@ -53,6 +66,8 @@ export interface IProvider {
   ): Promise<BosUserLink[]>;
   getApplication(globalAppId: string): Promise<AppMetadata | null>;
   getAllAppIds(): Promise<string[]>;
+  getMutation(globalMutationId: string): Promise<Mutation | null>;
+  getMutations(): Promise<Mutation[]>;
 
   // Write
 

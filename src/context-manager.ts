@@ -128,4 +128,9 @@ export class ContextManager {
       console.error(err);
     }
   }
+
+  destroy() {
+    this.#layoutManagers.forEach(lm => lm.destroy());
+    this.#layoutManagers.clear();
+  }
 }

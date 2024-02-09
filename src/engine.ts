@@ -4,7 +4,7 @@ import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { AppId, IProvider } from "./providers/provider";
+import { AppId, IProvider, Mutation, MutationId } from "./providers/provider";
 import { WalletSelector } from "@near-wallet-selector/core";
 import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
@@ -28,15 +28,17 @@ export type EngineConfig = {
   selector: WalletSelector;
 };
 
+const DefaultMutationId = "bos.dapplets.near/mutation/Sandbox";
+
 export class Engine implements IContextListener {
   #provider: IProvider;
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
-  #contextManagers: WeakMap<IContextNode, ContextManager> = new WeakMap();
-  #activeApps: AppId[] = [];
+  #contextManagers: Map<IContextNode, ContextManager> = new Map();
+  #currentMutation: Mutation | null = null;
 
   adapters: Set<IAdapter> = new Set();
-  treeBuilder: ITreeBuilder;
+  treeBuilder: ITreeBuilder | null = null;
   started: boolean = false;
 
   constructor(private config: EngineConfig) {
@@ -49,14 +51,6 @@ export class Engine implements IContextListener {
     this.#selector = this.config.selector;
     const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl);
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName);
-    this.treeBuilder = new PureTreeBuilder(this);
-
-    // ToDo: instantiate root context with data initially
-    // ToDo: looks like circular dependency
-    this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
-      id: window.location.hostname,
-      // ToDo: add mutationId
-    });
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -95,9 +89,11 @@ export class Engine implements IContextListener {
 
     this.#contextManagers.set(context, contextManager);
 
+    const activatedApps = this.#currentMutation?.apps ?? [];
+
     const [links, apps] = await Promise.all([
-      this.#provider.getLinksForContext(context, this.#activeApps),
-      this.#provider.getAppsForContext(context, this.#activeApps),
+      this.#provider.getLinksForContext(context, activatedApps),
+      this.#provider.getAppsForContext(context, activatedApps),
     ]);
 
     links.forEach((link) => contextManager.addUserLink(link));
@@ -125,12 +121,20 @@ export class Engine implements IContextListener {
     // ToDo: do nothing because IP unmounted?
   }
 
-  async start(): Promise<void> {
-    // ToDo: load apps from mutations
-    const apps = await this.#provider.getAllAppIds();
-    this.#activeApps = apps;
+  async start(mutationId = DefaultMutationId): Promise<void> {
+    const mutation = await this.#provider.getMutation(mutationId);
+    if (!mutation) throw new Error("Mutation doesn't exist");
 
     this.started = true;
+    this.#currentMutation = mutation;
+    this.treeBuilder = new PureTreeBuilder(this);
+
+    // ToDo: instantiate root context with data initially
+    // ToDo: looks like circular dependency
+    this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
+      id: window.location.hostname,
+      // ToDo: add mutationId
+    });
 
     console.log("Mutable Web Engine started!", {
       engine: this,
@@ -140,17 +144,36 @@ export class Engine implements IContextListener {
 
   stop() {
     this.started = false;
-    this.#activeApps = [];
     this.adapters.forEach((adapter) => this.unregisterAdapter(adapter));
+    this.#contextManagers.forEach((cm) => cm.destroy());
+    this.adapters.clear();
+    this.#contextManagers.clear();
+    this.treeBuilder = null;
+    this.#currentMutation = null;
+  }
+
+  async getMutations(): Promise<Mutation[]> {
+    return this.#provider.getMutations();
+  }
+
+  async switchMutation(mutationId: string): Promise<void> {
+    this.stop();
+    await this.start(mutationId);
+  }
+
+  async getCurrentMutation(): Promise<Mutation | null> {
+    return this.#currentMutation;
   }
 
   registerAdapter(adapter: IAdapter) {
+    if (!this.treeBuilder) throw new Error("Tree builder is not inited");
     this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context);
     this.adapters.add(adapter);
     adapter.start();
   }
 
   unregisterAdapter(adapter: IAdapter) {
+    if (!this.treeBuilder) throw new Error("Tree builder is not inited");
     adapter.stop();
     this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context);
     this.adapters.delete(adapter);
@@ -169,6 +192,8 @@ export class Engine implements IContextListener {
   }
 
   createAdapter(type: AdapterType, config?: any): IAdapter {
+    if (!this.treeBuilder) throw new Error("Tree builder is not inited");
+
     const observingElement = document.body;
 
     switch (type) {

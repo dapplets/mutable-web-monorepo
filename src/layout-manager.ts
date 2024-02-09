@@ -117,6 +117,10 @@ export class LayoutManager {
     });
   }
 
+  destroy() {
+    this.#layoutManager.remove();
+  }
+
   _setProps(props: LayoutManagerProps) {
     this.#layoutManager.props = props;
   }
