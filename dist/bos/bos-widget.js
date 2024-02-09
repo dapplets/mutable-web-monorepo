@@ -88,6 +88,8 @@ class BosComponent extends HTMLElement {
     `;
         this._adapterStylesMountPoint.innerHTML = resetCssRules;
         shadowRoot.appendChild(this._adapterStylesMountPoint);
+        // For full-width components
+        this._componentMountPoint.style.flex = "1";
         // Initial render
         this._render();
     }
