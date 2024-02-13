@@ -99,7 +99,6 @@ export class ContextManager {
     }
 
     const bosWidgetId = insPoint.bosLayoutManager ?? DefaultLayoutManager;
-    const insertionType = insPoint.insertionType ?? DefaultInsertionType;
     const layoutManagerElement = this.#widgetFactory.createWidget(bosWidgetId);
 
     const layoutManager = new LayoutManager(layoutManagerElement, this);
@@ -109,8 +108,7 @@ export class ContextManager {
       this.#adapter.injectElement(
         layoutManagerElement,
         this.context,
-        insPoint.name,
-        insertionType
+        insPoint.name
       );
 
       this.#layoutManagers.set(insPoint.name, layoutManager);

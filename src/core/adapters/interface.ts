@@ -18,8 +18,7 @@ export interface IAdapter {
   injectElement(
     element: Element,
     context: IContextNode,
-    insertionPoint: string,
-    insertionType: InsertionType
+    insertionPoint: string
   ): void;
 
   getInsertionPoints(context: IContextNode): InsertionPoint[];
