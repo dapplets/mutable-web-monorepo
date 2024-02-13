@@ -1,5 +1,3 @@
-import { InsertionPoint } from "../parsers/interface";
-
 export type ParsedContext = {
   [key: string]: any;
 };
@@ -7,10 +5,10 @@ export type ParsedContext = {
 export interface IContextNode {
   id: string | null;
   tagName: string;
-  namespaceURI: string | null;
+  namespaceURI: string;
   parentNode: IContextNode | null;
 
-  parsedContext?: ParsedContext;
+  parsedContext: ParsedContext;
   insPoints: string[];
 
   removeChild(child: IContextNode): void;

@@ -93,7 +93,7 @@ export class LayoutManager {
       contextType: context.tagName,
       apps: apps.map((app) => ({
         id: app.id,
-        componentId: app.componentId,
+        componentId: app.targets[0]?.componentId, // ToDo: use app metadata instead of widget metadata
       })),
       widgets: links.map((link) => ({
         linkId: link.id,

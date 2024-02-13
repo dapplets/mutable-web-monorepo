@@ -3,13 +3,13 @@ import { IContextNode } from "../types";
 export class PureContextNode implements IContextNode {
   public id: string | null = null;
   public tagName: string;
-  public namespaceURI: string | null;
+  public namespaceURI: string;
   public parentNode: IContextNode | null = null;
-  public parsedContext?: any;
+  public parsedContext: any = {};
   public children: IContextNode[] = [];
   public insPoints: string[] = [];
 
-  constructor(namespaceURI: string | null, tagName: string) {
+  constructor(namespaceURI: string, tagName: string) {
     this.namespaceURI = namespaceURI;
     this.tagName = tagName;
   }

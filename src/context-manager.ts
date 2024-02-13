@@ -2,11 +2,11 @@ import { BosWidgetFactory } from "./bos/bos-widget-factory";
 import { IAdapter, InsertionType } from "./core/adapters/interface";
 import { IContextNode } from "./core/tree/types";
 import { LayoutManager } from "./layout-manager";
+import { MutationManager } from "./mutation-manager";
 import {
   AppId,
   AppMetadata,
   BosUserLink,
-  IProvider,
   UserLinkId,
 } from "./providers/provider";
 
@@ -21,7 +21,7 @@ export class ContextManager {
   #adapter: IAdapter;
   #widgetFactory: BosWidgetFactory;
   #layoutManagers: Map<InsertionPointName, LayoutManager> = new Map();
-  #provider: IProvider;
+  #mutationManager: MutationManager;
   #userLinks: Map<UserLinkId, BosUserLink> = new Map();
   #apps: Map<AppId, AppMetadata> = new Map();
 
@@ -29,12 +29,12 @@ export class ContextManager {
     context: IContextNode,
     adapter: IAdapter,
     widgetFactory: BosWidgetFactory,
-    provider: IProvider
+    mutationManager: MutationManager
   ) {
     this.context = context;
     this.#adapter = adapter;
     this.#widgetFactory = widgetFactory;
-    this.#provider = provider;
+    this.#mutationManager = mutationManager;
   }
 
   forceUpdate() {
@@ -76,7 +76,7 @@ export class ContextManager {
   }
 
   async createUserLink(globalAppId: AppId) {
-    const createdLink = await this.#provider.createLink(
+    const createdLink = await this.#mutationManager.createLink(
       globalAppId,
       this.context
     );
@@ -85,7 +85,7 @@ export class ContextManager {
   }
 
   async deleteUserLink(userLink: BosUserLink) {
-    await this.#provider.deleteUserLink(userLink.id);
+    await this.#mutationManager.deleteUserLink(userLink.id);
 
     this.removeUserLink(userLink);
   }
@@ -130,7 +130,7 @@ export class ContextManager {
   }
 
   destroy() {
-    this.#layoutManagers.forEach(lm => lm.destroy());
+    this.#layoutManagers.forEach((lm) => lm.destroy());
     this.#layoutManagers.clear();
   }
 }

@@ -1,22 +1,23 @@
+import { sha256 } from "js-sha256";
+import serializeToDeterministicJson from "json-stringify-deterministic";
+
 import { NearSigner } from "./near-signer";
 import { ParserConfig } from "../core/parsers/json-parser";
 import {
-  BosUserLink,
   AppMetadata,
-  DependantContext,
+  ContextFilter,
   IProvider,
   UserLinkId,
-  AppMetadataTarget,
   AppId,
   Mutation,
+  IndexedLink,
+  LinkIndexObject,
+  MutationId,
 } from "./provider";
-import { IContextNode } from "../core/tree/types";
 import { generateGuid } from "../core/utils";
 import { SocialDbClient } from "./social-db-client";
 import { BosParserConfig } from "../core/parsers/bos-parser";
 import { DappletsEngineNs } from "../constants";
-import { sha256 } from "js-sha256";
-import serializeToDeterministicJson from "json-stringify-deterministic";
 
 const DappletsNamespace = "https://dapplets.org/ns/";
 const SupportedParserTypes = ["json", "bos"];
@@ -33,42 +34,6 @@ const WildcardKey = "*";
 const RecursiveWildcardKey = "**";
 const IndexesKey = "indexes";
 const KeyDelimiter = "/";
-
-/**
- * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
- */
-function base64EncodeURL(
-  byteArray: ArrayLike<number> | ArrayBufferLike
-): string {
-  return btoa(
-    Array.from(new Uint8Array(byteArray))
-      .map((val) => {
-        return String.fromCharCode(val);
-      })
-      .join("")
-  )
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/\=/g, "");
-}
-
-/**
- * Hashes object using deterministic serializator, SHA-256 and base64url encoding
- */
-function hashObject(obj: any): string {
-  const json = serializeToDeterministicJson(obj);
-  const hashBytes = sha256.create().update(json).arrayBuffer();
-  return base64EncodeURL(hashBytes);
-}
-
-function getValueByKey(keys: string[], obj: any): any {
-  const [firstKey, ...anotherKeys] = keys;
-  if (anotherKeys.length === 0) {
-    return obj?.[firstKey];
-  } else {
-    return getValueByKey(anotherKeys, obj?.[firstKey]);
-  }
-}
 
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
@@ -88,16 +53,12 @@ export class SocialDbProvider implements IProvider {
   // #region Read methods
 
   async getParserConfigsForContext(
-    context: IContextNode
+    contextFilter: ContextFilter
   ): Promise<(ParserConfig | BosParserConfig)[]> {
     // ToDo: implement adapters loading for another types of contexts
-    if (context.namespaceURI !== DappletsEngineNs) return [];
+    if (contextFilter.namespace !== DappletsEngineNs) return [];
 
-    const contextHashKey = hashObject({
-      namespace: context.namespaceURI,
-      contextType: context.tagName,
-      contextId: context.id,
-    });
+    const contextHashKey = SocialDbProvider._hashObject(contextFilter);
 
     const keys = [
       WildcardKey, // from any user
@@ -119,7 +80,10 @@ export class SocialDbProvider implements IProvider {
     const parsers = [];
 
     for (const key of parserKeys) {
-      const json = getValueByKey(key.split(KeyDelimiter), queryResult);
+      const json = SocialDbProvider._getValueByKey(
+        key.split(KeyDelimiter),
+        queryResult
+      );
       parsers.push(JSON.parse(json));
     }
 
@@ -145,7 +109,7 @@ export class SocialDbProvider implements IProvider {
     return JSON.parse(parserConfigJson);
   }
 
-  async getAllAppIds(): Promise<string[]> {
+  async getAllAppIds(): Promise<AppId[]> {
     const keys = [WildcardKey, SettingsKey, ProjectIdKey, AppKey, WildcardKey];
     const appKeys = await this.#client.keys([keys.join(KeyDelimiter)]);
 
@@ -155,112 +119,29 @@ export class SocialDbProvider implements IProvider {
     });
   }
 
-  async getAppsForContext(
-    context: IContextNode,
-    globalAppIds: AppId[]
-  ): Promise<AppMetadata[]> {
-    const allApps = await Promise.all(
-      globalAppIds.map((id) => this.getApplication(id))
-    );
+  async getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]> {
+    const index = SocialDbProvider._hashObject(indexObject);
 
-    const suitableApps: AppMetadata[] = [];
+    const key = [
+      WildcardKey, // from any user
+      SettingsKey,
+      ProjectIdKey,
+      LinkKey,
+      WildcardKey, // any user link id
+      IndexesKey,
+      index,
+    ].join(KeyDelimiter);
 
-    for (const app of allApps) {
-      if (!app) continue;
+    // ToDo: batch requests
+    const resp = await this.#client.keys([key]);
 
-      const suitableTargets = [];
-
-      for (const target of app.targets) {
-        if (!target.if) continue;
-
-        const isSuitable = SocialDbProvider._tryFillAppTargetWithContext(
-          target.if,
-          app.namespaces,
-          context
-        );
-
-        if (isSuitable) {
-          suitableTargets.push(target);
-        }
-      }
-
-      if (suitableTargets.length > 0) {
-        suitableApps.push({ ...app, targets: suitableTargets });
-      }
-    }
-
-    return suitableApps;
+    return resp.map((key) => {
+      const [authorId, , , , id] = key.split(KeyDelimiter);
+      return { id, authorId };
+    });
   }
 
-  async getLinksForContext(
-    context: IContextNode,
-    globalAppIds: AppId[]
-  ): Promise<BosUserLink[]> {
-    const allApps = await Promise.all(
-      globalAppIds.map((id) => this.getApplication(id))
-    );
-
-    const appLinks: BosUserLink[] = [];
-
-    for (const app of allApps) {
-      if (!app) continue;
-
-      const targetByHash = new Map<string, AppMetadataTarget>();
-
-      for (const target of app.targets) {
-        const filledTarget = SocialDbProvider._tryFillAppTargetWithContext(
-          target.if,
-          app.namespaces,
-          context
-        );
-
-        if (filledTarget) {
-          targetByHash.set(hashObject(filledTarget), target);
-        }
-      }
-
-      if (targetByHash.size === 0) return [];
-
-      const keys = Array.from(targetByHash.keys()).map((hash) =>
-        [
-          WildcardKey, // from any user
-          SettingsKey,
-          ProjectIdKey,
-          LinkKey,
-          app.authorId,
-          AppKey,
-          app.appLocalId,
-          WildcardKey, // any user link id
-          IndexesKey,
-          hash,
-        ].join(KeyDelimiter)
-      );
-
-      const resp = await this.#client.keys(keys);
-
-      appLinks.push(
-        ...resp.map((key) => {
-          const [authorId, , , , , , , id, , hash] = key.split(KeyDelimiter);
-          const target = targetByHash.get(hash)!;
-
-          const { alias, value: insertionPoint } =
-            SocialDbProvider._parseNsValue(target.injectTo);
-
-          return {
-            id,
-            namespace: alias ? app.namespaces[alias] : DappletsEngineNs, // ToDo: default ns?
-            authorId,
-            bosWidgetId: app.componentId,
-            insertionPoint,
-          }; // ToDo: add filter values?
-        })
-      );
-    }
-
-    return appLinks;
-  }
-
-  async getApplication(globalAppId: string): Promise<AppMetadata | null> {
+  async getApplication(globalAppId: AppId): Promise<AppMetadata | null> {
     const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter);
 
     const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
@@ -268,7 +149,7 @@ export class SocialDbProvider implements IProvider {
       [...keys, RecursiveWildcardKey].join(KeyDelimiter),
     ]);
 
-    const mutation = getValueByKey(keys, queryResult);
+    const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
 
     if (!mutation?.[SelfKey]) return null;
 
@@ -280,7 +161,7 @@ export class SocialDbProvider implements IProvider {
     };
   }
 
-  async getMutation(globalMutationId: string): Promise<Mutation | null> {
+  async getMutation(globalMutationId: MutationId): Promise<Mutation | null> {
     const [authorId, , mutationLocalId] = globalMutationId.split(KeyDelimiter);
 
     const keys = [
@@ -294,7 +175,7 @@ export class SocialDbProvider implements IProvider {
       [...keys, RecursiveWildcardKey].join(KeyDelimiter),
     ]);
 
-    const mutation = getValueByKey(keys, queryResult);
+    const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
 
     if (!mutation) return null;
 
@@ -326,8 +207,12 @@ export class SocialDbProvider implements IProvider {
     const mutations = Object.entries(mutationsByKey).map(
       ([key, value]: [string, any]) => {
         const [accountId, , , , localMutationId] = key.split(KeyDelimiter);
+        const mutationId = [accountId, MutationKey, localMutationId].join(
+          KeyDelimiter
+        );
+
         return {
-          id: `${accountId}/mutation/${localMutationId}`,
+          id: mutationId,
           metadata: value.metadata,
           apps: JSON.parse(value.apps),
         };
@@ -341,54 +226,16 @@ export class SocialDbProvider implements IProvider {
 
   // #region Write methods
 
-  async createLink(
-    globalAppId: string,
-    context: IContextNode
-  ): Promise<BosUserLink> {
+  async createLink(indexObject: LinkIndexObject): Promise<IndexedLink> {
     const linkId = generateGuid();
 
     const accountId = await this._signer.getAccountId();
 
     if (!accountId) throw new Error("User is not logged in");
 
-    const appMetadata = await this.getApplication(globalAppId);
+    const index = SocialDbProvider._hashObject(indexObject);
 
-    if (!appMetadata) {
-      throw new Error("The app doesn't exist");
-    }
-
-    let filledTarget: Record<string, any> | null = null;
-    let suitableTarget: AppMetadataTarget | null = null;
-
-    for (const target of appMetadata.targets) {
-      filledTarget = SocialDbProvider._tryFillAppTargetWithContext(
-        target.if,
-        appMetadata.namespaces,
-        context
-      );
-
-      if (filledTarget) {
-        suitableTarget = target;
-        break;
-      }
-    }
-
-    if (!filledTarget || !suitableTarget) {
-      throw new Error("No suitable target found");
-    }
-
-    const index = hashObject(filledTarget);
-
-    const keys = [
-      accountId,
-      SettingsKey,
-      ProjectIdKey,
-      LinkKey,
-      appMetadata.authorId,
-      AppKey,
-      appMetadata.appLocalId,
-      linkId,
-    ];
+    const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId];
 
     const storedAppLink = {
       indexes: {
@@ -396,19 +243,13 @@ export class SocialDbProvider implements IProvider {
       },
     };
 
-    await this.#client.set(this._buildNestedData(keys, storedAppLink));
-
-    const { alias, value: insertionPoint } = SocialDbProvider._parseNsValue(
-      suitableTarget.injectTo
+    await this.#client.set(
+      SocialDbProvider._buildNestedData(keys, storedAppLink)
     );
 
     return {
       id: linkId,
-      namespace: alias ? appMetadata.namespaces[alias] : DappletsEngineNs, // ToDo: default ns?
       authorId: accountId,
-      bosWidgetId: appMetadata.componentId,
-      insertionPoint,
-      // indexes: [index]
     };
   }
 
@@ -424,9 +265,6 @@ export class SocialDbProvider implements IProvider {
       SettingsKey,
       ProjectIdKey,
       LinkKey,
-      WildcardKey, // any app author, ToDo: it works if linkId is globally unique
-      AppKey,
-      WildcardKey, // any app local id, ToDo: it works if linkId is globally unique
       linkId,
       RecursiveWildcardKey,
     ];
@@ -443,13 +281,13 @@ export class SocialDbProvider implements IProvider {
 
     const storedAppMetadata = {
       [SelfKey]: JSON.stringify({
-        namespaces: appMetadata.namespaces,
-        componentId: appMetadata.componentId,
         targets: appMetadata.targets,
       }),
     };
 
-    await this.#client.set(this._buildNestedData(keys, storedAppMetadata));
+    await this.#client.set(
+      SocialDbProvider._buildNestedData(keys, storedAppMetadata)
+    );
 
     return {
       ...appMetadata,
@@ -474,7 +312,9 @@ export class SocialDbProvider implements IProvider {
       apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
     };
 
-    await this.#client.set(this._buildNestedData(keys, storedAppMetadata));
+    await this.#client.set(
+      SocialDbProvider._buildNestedData(keys, storedAppMetadata)
+    );
 
     return mutation;
   }
@@ -496,13 +336,15 @@ export class SocialDbProvider implements IProvider {
       [SelfKey]: JSON.stringify(config),
     };
 
-    await this.#client.set(this._buildNestedData(keys, storedParserConfig));
+    await this.#client.set(
+      SocialDbProvider._buildNestedData(keys, storedParserConfig)
+    );
   }
 
   async setContextIdsForParser(
     parserGlobalId: string,
-    contextsToBeAdded: DependantContext[],
-    contextsToBeDeleted: DependantContext[]
+    contextsToBeAdded: ContextFilter[],
+    contextsToBeDeleted: ContextFilter[]
   ): Promise<void> {
     const [parserOwnerId, parserKey, parserLocalId] =
       parserGlobalId.split(KeyDelimiter);
@@ -511,8 +353,8 @@ export class SocialDbProvider implements IProvider {
       throw new Error("Invalid parser ID");
     }
 
-    const addingKeys = contextsToBeAdded.map(hashObject);
-    const deletingKeys = contextsToBeDeleted.map(hashObject);
+    const addingKeys = contextsToBeAdded.map(SocialDbProvider._hashObject);
+    const deletingKeys = contextsToBeDeleted.map(SocialDbProvider._hashObject);
 
     const savingData = {
       ...Object.fromEntries(addingKeys.map((k) => [k, ""])),
@@ -530,10 +372,14 @@ export class SocialDbProvider implements IProvider {
       ParserContextsKey,
     ];
 
-    await this.#client.set(this._buildNestedData(parentKeys, savingData));
+    await this.#client.set(
+      SocialDbProvider._buildNestedData(parentKeys, savingData)
+    );
   }
 
   // #endregion
+
+  // #region Private methods
 
   private _extractParserIdFromNamespace(namespace: string): {
     parserType: string;
@@ -561,7 +407,11 @@ export class SocialDbProvider implements IProvider {
     return { parserType, accountId, parserLocalId };
   }
 
-  private _buildNestedData(keys: string[], data: any): any {
+  // #endregion
+
+  // #region Utils
+
+  static _buildNestedData(keys: string[], data: any): any {
     const [firstKey, ...anotherKeys] = keys;
     if (anotherKeys.length === 0) {
       return {
@@ -570,87 +420,6 @@ export class SocialDbProvider implements IProvider {
     } else {
       return {
         [firstKey]: this._buildNestedData(anotherKeys, data),
-      };
-    }
-  }
-
-  // Utils
-
-  static _tryFillAppTargetWithContext(
-    ifTarget: Record<string, any>,
-    aliases: Record<string, string>,
-    context: IContextNode
-  ): Record<string, any> | null {
-    const resolvedObject: Record<string, any> = {};
-
-    for (const nsProp in ifTarget) {
-      const value = ifTarget[nsProp];
-
-      const { alias: propAlias, value: prop } = this._parseNsValue(nsProp);
-      const { alias: exprAlias, value: expr } = this._parseNsValue(value);
-
-      // ToDo: refactor
-      if (propAlias) {
-        if (context.namespaceURI !== aliases[propAlias]) {
-          return null;
-        }
-
-        if (!context.parsedContext) {
-          return null;
-        }
-
-        if (expr === "*") {
-          if (
-            context.parsedContext[prop] === undefined ||
-            context.parsedContext[prop] === null
-          ) {
-            return null;
-          } else {
-            resolvedObject[nsProp] = context.parsedContext[prop];
-          }
-        } else {
-          if (context.parsedContext[prop] !== expr) {
-            return null;
-          } else {
-            resolvedObject[nsProp] = value;
-          }
-        }
-      } else {
-        // default ns
-        if (prop === "contextType") {
-          if (exprAlias && aliases[exprAlias] !== context.namespaceURI) {
-            return null;
-          }
-
-          if (expr !== context.tagName) {
-            return null;
-          }
-
-          resolvedObject[nsProp] = value;
-        } else {
-          return null;
-        }
-      }
-    }
-
-    return resolvedObject;
-  }
-
-  static _parseNsValue(nsProp: string): {
-    alias: string | null;
-    value: string;
-  } {
-    const parts = nsProp.split(":");
-
-    if (parts.length === 1) {
-      return {
-        alias: null,
-        value: parts[0],
-      };
-    } else {
-      return {
-        alias: parts[0],
-        value: parts[1],
       };
     }
   }
@@ -674,4 +443,42 @@ export class SocialDbProvider implements IProvider {
     }
     return result;
   }
+
+  /**
+   * Hashes object using deterministic serializator, SHA-256 and base64url encoding
+   */
+  static _hashObject(obj: any): string {
+    const json = serializeToDeterministicJson(obj);
+    const hashBytes = sha256.create().update(json).arrayBuffer();
+    return this._base64EncodeURL(hashBytes);
+  }
+
+  /**
+   * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
+   */
+  static _base64EncodeURL(
+    byteArray: ArrayLike<number> | ArrayBufferLike
+  ): string {
+    return btoa(
+      Array.from(new Uint8Array(byteArray))
+        .map((val) => {
+          return String.fromCharCode(val);
+        })
+        .join("")
+    )
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/\=/g, "");
+  }
+
+  static _getValueByKey(keys: string[], obj: any): any {
+    const [firstKey, ...anotherKeys] = keys;
+    if (anotherKeys.length === 0) {
+      return obj?.[firstKey];
+    } else {
+      return this._getValueByKey(anotherKeys, obj?.[firstKey]);
+    }
+  }
+
+  // #endregion
 }

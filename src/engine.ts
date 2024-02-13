@@ -1,10 +1,10 @@
 import { IAdapter } from "./core/adapters/interface";
-import { BosParser, BosParserConfig } from "./core/parsers/bos-parser";
-import { JsonParser, ParserConfig } from "./core/parsers/json-parser";
+import { BosParser } from "./core/parsers/bos-parser";
+import { JsonParser } from "./core/parsers/json-parser";
 import { MicrodataParser } from "./core/parsers/microdata-parser";
 import { DynamicHtmlAdapter } from "./core/adapters/dynamic-html-adapter";
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { AppId, IProvider, Mutation, MutationId } from "./providers/provider";
+import { IProvider, Mutation } from "./providers/provider";
 import { WalletSelector } from "@near-wallet-selector/core";
 import { getNearConfig } from "./constants";
 import { NearSigner } from "./providers/near-signer";
@@ -16,6 +16,7 @@ import {
 } from "./core/tree/types";
 import { PureTreeBuilder } from "./core/tree/pure-tree/pure-tree-builder";
 import { ContextManager } from "./context-manager";
+import { MutationManager } from "./mutation-manager";
 
 export enum AdapterType {
   Bos = "bos",
@@ -35,7 +36,7 @@ export class Engine implements IContextListener {
   #bosWidgetFactory: BosWidgetFactory;
   #selector: WalletSelector;
   #contextManagers: Map<IContextNode, ContextManager> = new Map();
-  #currentMutation: Mutation | null = null;
+  #mutationManager: MutationManager;
 
   adapters: Set<IAdapter> = new Set();
   treeBuilder: ITreeBuilder | null = null;
@@ -51,27 +52,34 @@ export class Engine implements IContextListener {
     this.#selector = this.config.selector;
     const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl);
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName);
+    this.#mutationManager = new MutationManager(this.#provider);
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
     // if (!this.started) return;
     if (!context.id) return;
 
+    // We don't wait adapters here
     // Find and load adapters for the given context
-    // ToDo: parallelize
-    this.#provider.getParserConfigsForContext(context).then((configs) => {
-      for (const config of configs) {
-        const type = this.getParserType(config.namespace);
-        if (!type) {
-          console.error("Unsupported parser namespace");
-          continue;
-        }
-        const adapter = this.createAdapter(type, config);
-        this.registerAdapter(adapter);
+    this.#provider
+      .getParserConfigsForContext({
+        namespace: context.namespaceURI,
+        contextType: context.tagName,
+        contextId: context.id,
+      })
+      .then((configs) => {
+        for (const config of configs) {
+          const type = this.getParserType(config.namespace);
+          if (!type) {
+            console.error("Unsupported parser namespace");
+            continue;
+          }
+          const adapter = this.createAdapter(type, config);
+          this.registerAdapter(adapter);
 
-        console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
-      }
-    });
+          console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
+        }
+      });
 
     // ToDo: do not iterate over all adapters
     const adapter = Array.from(this.adapters).find((adapter) => {
@@ -84,16 +92,14 @@ export class Engine implements IContextListener {
       context,
       adapter,
       this.#bosWidgetFactory,
-      this.#provider
+      this.#mutationManager
     );
 
     this.#contextManagers.set(context, contextManager);
 
-    const activatedApps = this.#currentMutation?.apps ?? [];
-
     const [links, apps] = await Promise.all([
-      this.#provider.getLinksForContext(context, activatedApps),
-      this.#provider.getAppsForContext(context, activatedApps),
+      this.#mutationManager.getLinksForContext(context),
+      this.#mutationManager.filterSuitableApps(context),
     ]);
 
     links.forEach((link) => contextManager.addUserLink(link));
@@ -122,11 +128,10 @@ export class Engine implements IContextListener {
   }
 
   async start(mutationId = DefaultMutationId): Promise<void> {
-    const mutation = await this.#provider.getMutation(mutationId);
-    if (!mutation) throw new Error("Mutation doesn't exist");
+    // load mutation and apps
+    await this.#mutationManager.switchMutation(mutationId);
 
     this.started = true;
-    this.#currentMutation = mutation;
     this.treeBuilder = new PureTreeBuilder(this);
 
     // ToDo: instantiate root context with data initially
@@ -149,7 +154,6 @@ export class Engine implements IContextListener {
     this.adapters.clear();
     this.#contextManagers.clear();
     this.treeBuilder = null;
-    this.#currentMutation = null;
   }
 
   async getMutations(): Promise<Mutation[]> {
@@ -162,7 +166,7 @@ export class Engine implements IContextListener {
   }
 
   async getCurrentMutation(): Promise<Mutation | null> {
-    return this.#currentMutation;
+    return this.#mutationManager?.mutation ?? null;
   }
 
   registerAdapter(adapter: IAdapter) {

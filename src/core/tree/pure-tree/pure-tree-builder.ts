@@ -25,7 +25,7 @@ export class PureTreeBuilder implements ITreeBuilder {
     this.#listeners.handleContextFinished(child);
   }
 
-  createNode(namespaceURI: string | null, tagName: string): IContextNode {
+  createNode(namespaceURI: string, tagName: string): IContextNode {
     return new PureContextNode(namespaceURI, tagName);
   }
 
