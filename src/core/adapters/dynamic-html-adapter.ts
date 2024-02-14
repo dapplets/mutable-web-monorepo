@@ -2,6 +2,8 @@ import { IParser, InsertionPoint } from "../parsers/interface";
 import { IContextNode, ITreeBuilder } from "../tree/types";
 import { IAdapter, InsertionType } from "./interface";
 
+const DefaultInsertionType: InsertionType = InsertionType.Before;
+
 export class DynamicHtmlAdapter implements IAdapter {
   protected element: Element;
   protected treeBuilder: ITreeBuilder;
@@ -69,19 +71,21 @@ export class DynamicHtmlAdapter implements IAdapter {
       );
     }
 
-    let insPointElement: Element | null = this.parser.findInsertionPoint(
+    const insPointElement: Element | null = this.parser.findInsertionPoint(
       contextElement,
       context.tagName,
       insertionPoint
     );
 
+    const insertionType = insPoint.insertionType ?? DefaultInsertionType;
+
     if (!insPointElement) {
       throw new Error(
-        `Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insPoint.insertionType}" insertion type`
+        `Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`
       );
     }
 
-    switch (insPoint.insertionType) {
+    switch (insertionType) {
       case InsertionType.Before:
         insPointElement.before(injectingElement);
         break;
