@@ -13,6 +13,10 @@ import {
   UserLinkId,
 } from "./providers/provider";
 
+export type AppWithTargetLinks = AppMetadata & {
+  targets: { links: BosUserLink[] }[];
+};
+
 export class MutationManager {
   public mutation: Mutation | null = null;
 
@@ -25,6 +29,39 @@ export class MutationManager {
 
   // #region Read methods
 
+  async getAppsAndLinksForContext(
+    context: IContextNode
+  ): Promise<AppWithTargetLinks[]> {
+    const promises: Promise<AppWithTargetLinks>[] = [];
+
+    for (const app of this.#activeApps) {
+      const suitableTargets = app.targets.filter((target) =>
+        MutationManager._isTargetMet(target, context)
+      );
+
+      if (suitableTargets.length > 0) {
+        // ToDo: batch requests
+        const targetPromises = suitableTargets.map((target) =>
+          this._getUserLinksForTarget(app.id, target, context).then(
+            (links) => ({ ...target, links })
+          )
+        );
+
+        const appPromise = Promise.all(targetPromises).then((targets) => ({
+          ...app,
+          targets,
+        }));
+
+        promises.push(appPromise);
+      }
+    }
+
+    const appLinksNested = await Promise.all(promises);
+
+    return appLinksNested;
+  }
+
+  // ToDo: replace with getAppsAndLinksForContext
   async filterSuitableApps(context: IContextNode): Promise<AppMetadata[]> {
     const suitableApps: AppMetadata[] = [];
 
@@ -41,17 +78,14 @@ export class MutationManager {
     return suitableApps;
   }
 
+  // ToDo: replace with getAppsAndLinksForContext
   async getLinksForContext(context: IContextNode): Promise<BosUserLink[]> {
     const promises: Promise<BosUserLink[]>[] = [];
 
     for (const app of this.#activeApps) {
-      if (!app) continue;
-
       const suitableTargets = app.targets.filter((target) =>
         MutationManager._isTargetMet(target, context)
       );
-
-      if (!suitableTargets.length) continue;
 
       // ToDo: batch requests
       suitableTargets.forEach((target) => {
@@ -116,6 +150,16 @@ export class MutationManager {
       target,
       context
     );
+
+    // ToDo: this limitation on the frontend side only
+    if (target.injectOnce) {
+      const existingLinks = await this.#provider.getLinksByIndex(indexObject);
+      if (existingLinks.length > 0) {
+        throw new Error(
+          `The widget is injected already. The "injectOnce" parameter limits multiple insertion of widgets`
+        );
+      }
+    }
 
     const indexedLink = await this.#provider.createLink(indexObject);
 

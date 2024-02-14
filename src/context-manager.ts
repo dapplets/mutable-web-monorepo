@@ -1,5 +1,5 @@
 import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { IAdapter, InsertionType } from "./core/adapters/interface";
+import { IAdapter } from "./core/adapters/interface";
 import { IContextNode } from "./core/tree/types";
 import { LayoutManager } from "./layout-manager";
 import { MutationManager } from "./mutation-manager";
@@ -11,7 +11,6 @@ import {
 } from "./providers/provider";
 
 const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
-const DefaultInsertionType: InsertionType = InsertionType.Before;
 
 export type InsertionPointName = string;
 
@@ -66,6 +65,7 @@ export class ContextManager {
   }
 
   addAppMetadata(appMetadata: AppMetadata) {
+    // ToDo: use getAppsAndLinksForContext to filter `injectOnce` targets
     this.#apps.set(appMetadata.id, appMetadata); // save app for further layout managers
     this.#layoutManagers.forEach((lm) => lm.addAppMetadata(appMetadata));
   }
