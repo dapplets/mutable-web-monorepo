@@ -25,52 +25,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 var _SocialDbProvider_client;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocialDbProvider = void 0;
+const js_sha256_1 = require("js-sha256");
+const json_stringify_deterministic_1 = __importDefault(require("json-stringify-deterministic"));
 const utils_1 = require("../core/utils");
 const social_db_client_1 = require("./social-db-client");
 const constants_1 = require("../constants");
-const js_sha256_1 = require("js-sha256");
-const json_stringify_deterministic_1 = __importDefault(require("json-stringify-deterministic"));
 const DappletsNamespace = "https://dapplets.org/ns/";
 const SupportedParserTypes = ["json", "bos"];
 const ProjectIdKey = "dapplets.near";
 const ParserKey = "parser";
 const SettingsKey = "settings";
 const LinkKey = "link";
-const WidgetKey = "widget";
 const SelfKey = "";
-const LinkTemplateKey = "linkTemplate";
 const ParserContextsKey = "contexts";
+const AppKey = "app";
+const MutationKey = "mutation";
 const WildcardKey = "*";
-/**
- * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
- */
-function base64EncodeURL(byteArray) {
-    return btoa(Array.from(new Uint8Array(byteArray))
-        .map((val) => {
-        return String.fromCharCode(val);
-    })
-        .join(""))
-        .replace(/\+/g, "-")
-        .replace(/\//g, "_")
-        .replace(/\=/g, "");
-}
-/**
- * Hashes object using deterministic serializator, SHA-256 and base64url encoding
- */
-function hashObject(obj) {
-    const json = (0, json_stringify_deterministic_1.default)(obj);
-    const hashBytes = js_sha256_1.sha256.create().update(json).arrayBuffer();
-    return base64EncodeURL(hashBytes);
-}
-function getValueByKey(keys, obj) {
-    const [firstKey, ...anotherKeys] = keys;
-    if (anotherKeys.length === 0) {
-        return obj[firstKey];
-    }
-    else {
-        return getValueByKey(anotherKeys, obj[firstKey]);
-    }
-}
+const RecursiveWildcardKey = "**";
+const IndexesKey = "indexes";
+const KeyDelimiter = "/";
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
  * More info about the schema is here:
@@ -86,16 +59,12 @@ class SocialDbProvider {
         __classPrivateFieldSet(this, _SocialDbProvider_client, new social_db_client_1.SocialDbClient(_signer, _contractName), "f");
     }
     // #region Read methods
-    getParserConfigsForContext(context) {
+    getParserConfigsForContext(contextFilter) {
         return __awaiter(this, void 0, void 0, function* () {
             // ToDo: implement adapters loading for another types of contexts
-            if (context.namespaceURI !== constants_1.DappletsEngineNs)
+            if (contextFilter.namespace !== constants_1.DappletsEngineNs)
                 return [];
-            const contextHashKey = hashObject({
-                namespace: context.namespaceURI,
-                contextType: context.tagName,
-                contextId: context.id,
-            });
+            const contextHashKey = SocialDbProvider._hashObject(contextFilter);
             const keys = [
                 WildcardKey, // from any user
                 SettingsKey,
@@ -105,14 +74,14 @@ class SocialDbProvider {
                 ParserContextsKey,
                 contextHashKey,
             ];
-            const availableKeys = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([keys.join("/")]);
+            const availableKeys = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([keys.join(KeyDelimiter)]);
             const parserKeys = availableKeys
-                .map((key) => key.substring(0, key.lastIndexOf("/"))) // discard contextHashKey
-                .map((key) => key.substring(0, key.lastIndexOf("/"))); // discard ParserContextsKey
+                .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))) // discard contextHashKey
+                .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))); // discard ParserContextsKey
             const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get(parserKeys);
             const parsers = [];
             for (const key of parserKeys) {
-                const json = getValueByKey(key.split("/"), queryResult);
+                const json = SocialDbProvider._getValueByKey(key.split(KeyDelimiter), queryResult);
                 parsers.push(JSON.parse(json));
             }
             return parsers;
@@ -131,6 +100,169 @@ class SocialDbProvider {
             return JSON.parse(parserConfigJson);
         });
     }
+    getAllAppIds() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const keys = [WildcardKey, SettingsKey, ProjectIdKey, AppKey, WildcardKey];
+            const appKeys = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([keys.join(KeyDelimiter)]);
+            return appKeys.map((key) => {
+                const [authorId, , , , localAppId] = key.split(KeyDelimiter);
+                return [authorId, AppKey, localAppId].join(KeyDelimiter);
+            });
+        });
+    }
+    getLinksByIndex(indexObject) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const index = SocialDbProvider._hashObject(indexObject);
+            const key = [
+                WildcardKey, // from any user
+                SettingsKey,
+                ProjectIdKey,
+                LinkKey,
+                WildcardKey, // any user link id
+                IndexesKey,
+                index,
+            ].join(KeyDelimiter);
+            // ToDo: batch requests
+            const resp = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([key]);
+            return resp.map((key) => {
+                const [authorId, , , , id] = key.split(KeyDelimiter);
+                return { id, authorId };
+            });
+        });
+    }
+    getApplication(globalAppId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter);
+            const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
+            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
+                [...keys, RecursiveWildcardKey].join(KeyDelimiter),
+            ]);
+            const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
+            if (!(mutation === null || mutation === void 0 ? void 0 : mutation[SelfKey]))
+                return null;
+            return Object.assign(Object.assign({}, JSON.parse(mutation[SelfKey])), { id: globalAppId, appLocalId,
+                authorId });
+        });
+    }
+    getMutation(globalMutationId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [authorId, , mutationLocalId] = globalMutationId.split(KeyDelimiter);
+            const keys = [
+                authorId,
+                SettingsKey,
+                ProjectIdKey,
+                MutationKey,
+                mutationLocalId,
+            ];
+            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
+                [...keys, RecursiveWildcardKey].join(KeyDelimiter),
+            ]);
+            const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
+            if (!mutation)
+                return null;
+            return {
+                id: globalMutationId,
+                metadata: mutation.metadata,
+                apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+            };
+        });
+    }
+    getMutations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const keys = [
+                WildcardKey, // any author id
+                SettingsKey,
+                ProjectIdKey,
+                MutationKey,
+                WildcardKey, // any mutation local id
+            ];
+            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
+                [...keys, RecursiveWildcardKey].join(KeyDelimiter),
+            ]);
+            const mutationsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length);
+            const mutations = Object.entries(mutationsByKey).map(([key, value]) => {
+                const [accountId, , , , localMutationId] = key.split(KeyDelimiter);
+                const mutationId = [accountId, MutationKey, localMutationId].join(KeyDelimiter);
+                return {
+                    id: mutationId,
+                    metadata: value.metadata,
+                    apps: JSON.parse(value.apps),
+                };
+            });
+            return mutations;
+        });
+    }
+    // #endregion
+    // #region Write methods
+    createLink(indexObject) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const linkId = (0, utils_1.generateGuid)();
+            const accountId = yield this._signer.getAccountId();
+            if (!accountId)
+                throw new Error("User is not logged in");
+            const index = SocialDbProvider._hashObject(indexObject);
+            const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId];
+            const storedAppLink = {
+                indexes: {
+                    [index]: "",
+                },
+            };
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedAppLink));
+            return {
+                id: linkId,
+                authorId: accountId,
+            };
+        });
+    }
+    deleteUserLink(linkId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const accountId = yield this._signer.getAccountId();
+            if (!accountId)
+                throw new Error("User is not logged in");
+            // ToDo: check link ownership?
+            const keys = [
+                accountId,
+                SettingsKey,
+                ProjectIdKey,
+                LinkKey,
+                linkId,
+                RecursiveWildcardKey,
+            ];
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").delete([keys.join(KeyDelimiter)]);
+        });
+    }
+    createApplication(appMetadata) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [authorId, , appLocalId] = appMetadata.id.split(KeyDelimiter);
+            const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
+            const storedAppMetadata = {
+                [SelfKey]: JSON.stringify({
+                    targets: appMetadata.targets,
+                }),
+            };
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));
+            return Object.assign(Object.assign({}, appMetadata), { appLocalId,
+                authorId });
+        });
+    }
+    createMutation(mutation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter);
+            const keys = [
+                authorId,
+                SettingsKey,
+                ProjectIdKey,
+                MutationKey,
+                mutationLocalId,
+            ];
+            const storedAppMetadata = {
+                metadata: mutation.metadata,
+                apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
+            };
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));
+            return mutation;
+        });
+    }
     createParserConfig(config) {
         return __awaiter(this, void 0, void 0, function* () {
             const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.namespace);
@@ -144,201 +276,17 @@ class SocialDbProvider {
             const storedParserConfig = {
                 [SelfKey]: JSON.stringify(config),
             };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(keys, storedParserConfig));
-        });
-    }
-    getLinksForContext(context) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            // JSON-configured parsers require id for the context
-            if (!context.id &&
-                context.namespaceURI.startsWith("https://dapplets.org/ns/json/")) {
-                return [];
-            }
-            // ToDo: index links by context/widget/contextType/etc.
-            // ToDo: fix GasLimitExceeded error using Social DB API
-            // ToDo: cache the query
-            // Fetch all links from every user
-            const resp = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
-                `*/${SettingsKey}/${ProjectIdKey}/${LinkKey}/*/${WidgetKey}/*/**`,
-            ]);
-            const userLinksOutput = [];
-            for (const accountId in resp) {
-                const widgetOwners = resp[accountId][SettingsKey][ProjectIdKey][LinkKey];
-                for (const widgetOwnerId in widgetOwners) {
-                    const widgets = widgetOwners[widgetOwnerId][WidgetKey];
-                    for (const widgetLocalId in widgets) {
-                        const userLinks = widgets[widgetLocalId];
-                        for (const linkId in userLinks) {
-                            const link = userLinks[linkId];
-                            // Include only suitable links
-                            if (link.namespace && link.namespace !== context.namespaceURI)
-                                continue;
-                            if (link.contextType && link.contextType !== context.tagName)
-                                continue;
-                            if (link.contextId && link.contextId !== context.id)
-                                continue;
-                            const userLink = {
-                                id: linkId,
-                                namespace: link.namespace,
-                                contextType: link.contextType,
-                                contextId: (_a = link.contextId) !== null && _a !== void 0 ? _a : null,
-                                insertionPoint: link.insertionPoint,
-                                bosWidgetId: `${widgetOwnerId}/${WidgetKey}/${widgetLocalId}`,
-                                authorId: accountId,
-                            };
-                            userLinksOutput.push(userLink);
-                        }
-                    }
-                }
-            }
-            return userLinksOutput;
-        });
-    }
-    createLink(link) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const linkId = (0, utils_1.generateGuid)();
-            const [widgetOwnerId, , bosWidgetLocalId] = link.bosWidgetId.split("/");
-            const accountId = yield this._signer.getAccountId();
-            if (!accountId)
-                throw new Error("User is not logged in");
-            const keys = [
-                accountId,
-                SettingsKey,
-                ProjectIdKey,
-                LinkKey,
-                widgetOwnerId,
-                WidgetKey,
-                bosWidgetLocalId,
-                linkId,
-            ];
-            const storedUserLink = {
-                namespace: link.namespace,
-                contextType: link.contextType,
-                contextId: (_a = link.contextId) !== null && _a !== void 0 ? _a : null,
-                insertionPoint: link.insertionPoint,
-            };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(keys, storedUserLink));
-            return Object.assign(Object.assign({ id: linkId }, link), { authorId: accountId });
-        });
-    }
-    deleteUserLink(userLink) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const [widgetOwnerId, , bosWidgetLocalId] = userLink.bosWidgetId.split("/");
-            const accountId = yield this._signer.getAccountId();
-            if (!accountId)
-                throw new Error("User is not logged in");
-            const keys = [
-                accountId,
-                SettingsKey,
-                ProjectIdKey,
-                LinkKey,
-                widgetOwnerId,
-                WidgetKey,
-                bosWidgetLocalId,
-                userLink.id,
-            ];
-            const storedUserLink = {
-                [SelfKey]: null,
-                namespace: null,
-                contextType: null,
-                contextId: null,
-                insertionPoint: null,
-            };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(keys, storedUserLink));
-        });
-    }
-    getLinkTemplates(bosWidgetId) {
-        var _a, _b, _c, _d, _e, _f;
-        return __awaiter(this, void 0, void 0, function* () {
-            const [ownerId, , bosWidgetLocalId] = bosWidgetId.split("/");
-            const resp = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
-                `${ownerId}/${SettingsKey}/${ProjectIdKey}/${LinkTemplateKey}/${ownerId}/${WidgetKey}/${bosWidgetLocalId}/**`,
-            ]);
-            const linkTemplates = (_f = (_e = (_d = (_c = (_b = (_a = resp[ownerId]) === null || _a === void 0 ? void 0 : _a[SettingsKey]) === null || _b === void 0 ? void 0 : _b[ProjectIdKey]) === null || _c === void 0 ? void 0 : _c[LinkTemplateKey]) === null || _d === void 0 ? void 0 : _d[ownerId]) === null || _e === void 0 ? void 0 : _e[WidgetKey]) === null || _f === void 0 ? void 0 : _f[bosWidgetLocalId];
-            if (!linkTemplates)
-                return [];
-            const linksOutput = [];
-            for (const linkTemplateId in linkTemplates) {
-                const link = linkTemplates[linkTemplateId];
-                const userLink = {
-                    id: linkTemplateId,
-                    namespace: link.namespace,
-                    contextType: link.contextType,
-                    contextId: link.contextId,
-                    insertionPoint: link.insertionPoint,
-                    bosWidgetId: `${ownerId}/${WidgetKey}/${bosWidgetLocalId}`,
-                };
-                linksOutput.push(userLink);
-            }
-            return linksOutput;
-        });
-    }
-    // #endregion
-    // #region Write methods
-    createLinkTemplate(linkTemplate) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            const linkTemplateId = (0, utils_1.generateGuid)();
-            const [widgetOwnerId, , bosWidgetLocalId] = linkTemplate.bosWidgetId.split("/");
-            const accountId = yield this._signer.getAccountId();
-            if (!accountId)
-                throw new Error("User is not logged in");
-            const keys = [
-                accountId,
-                SettingsKey,
-                ProjectIdKey,
-                LinkTemplateKey,
-                widgetOwnerId,
-                WidgetKey,
-                bosWidgetLocalId,
-                linkTemplateId,
-            ];
-            const storedLinkTemplate = {
-                namespace: linkTemplate.namespace,
-                contextType: linkTemplate.contextType,
-                contextId: (_a = linkTemplate.contextId) !== null && _a !== void 0 ? _a : null,
-                insertionPoint: linkTemplate.insertionPoint,
-            };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(keys, storedLinkTemplate));
-            return Object.assign({ id: linkTemplateId }, linkTemplate);
-        });
-    }
-    deleteLinkTemplate(linkTemplate) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const [widgetOwnerId, , bosWidgetLocalId] = linkTemplate.bosWidgetId.split("/");
-            const accountId = yield this._signer.getAccountId();
-            if (!accountId)
-                throw new Error("User is not logged in");
-            const keys = [
-                accountId,
-                SettingsKey,
-                ProjectIdKey,
-                LinkTemplateKey,
-                widgetOwnerId,
-                WidgetKey,
-                bosWidgetLocalId,
-                linkTemplate.id,
-            ];
-            const storedLinkTemplate = {
-                [SelfKey]: null,
-                namespace: null,
-                contextType: null,
-                contextId: null,
-                insertionPoint: null,
-            };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(keys, storedLinkTemplate));
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedParserConfig));
         });
     }
     setContextIdsForParser(parserGlobalId, contextsToBeAdded, contextsToBeDeleted) {
         return __awaiter(this, void 0, void 0, function* () {
-            const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split("/");
+            const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split(KeyDelimiter);
             if (parserKey !== ParserKey) {
                 throw new Error("Invalid parser ID");
             }
-            const addingKeys = contextsToBeAdded.map(hashObject);
-            const deletingKeys = contextsToBeDeleted.map(hashObject);
+            const addingKeys = contextsToBeAdded.map(SocialDbProvider._hashObject);
+            const deletingKeys = contextsToBeDeleted.map(SocialDbProvider._hashObject);
             const savingData = Object.assign(Object.assign({}, Object.fromEntries(addingKeys.map((k) => [k, ""]))), Object.fromEntries(deletingKeys.map((k) => [k, null])));
             // Key example:
             // bos.dapplets.near/settings/dapplets.near/parser/social-network/contexts
@@ -350,17 +298,18 @@ class SocialDbProvider {
                 parserLocalId,
                 ParserContextsKey,
             ];
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(this._buildNestedData(parentKeys, savingData));
+            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(parentKeys, savingData));
         });
     }
     // #endregion
+    // #region Private methods
     _extractParserIdFromNamespace(namespace) {
         if (!namespace.startsWith(DappletsNamespace)) {
             throw new Error("Invalid namespace");
         }
         const parserGlobalId = namespace.replace(DappletsNamespace, "");
         // Example: example.near/parser/social-network
-        const [parserType, accountId, entityType, parserLocalId] = parserGlobalId.split("/");
+        const [parserType, accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter);
         if (entityType !== "parser" || !accountId || !parserLocalId) {
             throw new Error("Invalid namespace");
         }
@@ -369,7 +318,9 @@ class SocialDbProvider {
         }
         return { parserType, accountId, parserLocalId };
     }
-    _buildNestedData(keys, data) {
+    // #endregion
+    // #region Utils
+    static _buildNestedData(keys, data) {
         const [firstKey, ...anotherKeys] = keys;
         if (anotherKeys.length === 0) {
             return {
@@ -380,6 +331,50 @@ class SocialDbProvider {
             return {
                 [firstKey]: this._buildNestedData(anotherKeys, data),
             };
+        }
+    }
+    static _splitObjectByDepth(obj, depth = 0, path = []) {
+        if (depth === 0 || typeof obj !== "object" || obj === null) {
+            return { [path.join(KeyDelimiter)]: obj };
+        }
+        const result = {};
+        for (const key in obj) {
+            const newPath = [...path, key];
+            const nestedResult = this._splitObjectByDepth(obj[key], depth - 1, newPath);
+            for (const nestedKey in nestedResult) {
+                result[nestedKey] = nestedResult[nestedKey];
+            }
+        }
+        return result;
+    }
+    /**
+     * Hashes object using deterministic serializator, SHA-256 and base64url encoding
+     */
+    static _hashObject(obj) {
+        const json = (0, json_stringify_deterministic_1.default)(obj);
+        const hashBytes = js_sha256_1.sha256.create().update(json).arrayBuffer();
+        return this._base64EncodeURL(hashBytes);
+    }
+    /**
+     * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
+     */
+    static _base64EncodeURL(byteArray) {
+        return btoa(Array.from(new Uint8Array(byteArray))
+            .map((val) => {
+            return String.fromCharCode(val);
+        })
+            .join(""))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/\=/g, "");
+    }
+    static _getValueByKey(keys, obj) {
+        const [firstKey, ...anotherKeys] = keys;
+        if (anotherKeys.length === 0) {
+            return obj === null || obj === void 0 ? void 0 : obj[firstKey];
+        }
+        else {
+            return this._getValueByKey(anotherKeys, obj === null || obj === void 0 ? void 0 : obj[firstKey]);
         }
     }
 }

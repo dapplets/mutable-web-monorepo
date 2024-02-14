@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers;
+var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Engine = exports.AdapterType = void 0;
 const bos_parser_1 = require("./core/parsers/bos-parser");
@@ -32,20 +32,24 @@ const near_signer_1 = require("./providers/near-signer");
 const social_db_provider_1 = require("./providers/social-db-provider");
 const pure_tree_builder_1 = require("./core/tree/pure-tree/pure-tree-builder");
 const context_manager_1 = require("./context-manager");
+const mutation_manager_1 = require("./mutation-manager");
 var AdapterType;
 (function (AdapterType) {
     AdapterType["Bos"] = "bos";
     AdapterType["Microdata"] = "microdata";
     AdapterType["Json"] = "json";
 })(AdapterType || (exports.AdapterType = AdapterType = {}));
+const DefaultMutationId = "bos.dapplets.near/mutation/Sandbox";
 class Engine {
     constructor(config) {
         this.config = config;
         _Engine_provider.set(this, void 0);
         _Engine_bosWidgetFactory.set(this, void 0);
         _Engine_selector.set(this, void 0);
-        _Engine_contextManagers.set(this, new WeakMap());
+        _Engine_contextManagers.set(this, new Map());
+        _Engine_mutationManager.set(this, void 0);
         this.adapters = new Set();
+        this.treeBuilder = null;
         this.started = false;
         __classPrivateFieldSet(this, _Engine_bosWidgetFactory, new bos_widget_factory_1.BosWidgetFactory({
             networkId: this.config.networkId,
@@ -56,22 +60,22 @@ class Engine {
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
         const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), nearConfig.nodeUrl);
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
-        this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this);
-        // ToDo: instantiate root context with data initially
-        // ToDo: looks like circular dependency
-        this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
-            id: window.location.hostname,
-            // ToDo: add mutationId
-        });
+        __classPrivateFieldSet(this, _Engine_mutationManager, new mutation_manager_1.MutationManager(__classPrivateFieldGet(this, _Engine_provider, "f")), "f");
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {
             // if (!this.started) return;
             if (!context.id)
                 return;
+            // We don't wait adapters here
             // Find and load adapters for the given context
-            // ToDo: parallelize
-            __classPrivateFieldGet(this, _Engine_provider, "f").getParserConfigsForContext(context).then((configs) => {
+            __classPrivateFieldGet(this, _Engine_provider, "f")
+                .getParserConfigsForContext({
+                namespace: context.namespaceURI,
+                contextType: context.tagName,
+                contextId: context.id,
+            })
+                .then((configs) => {
                 for (const config of configs) {
                     const type = this.getParserType(config.namespace);
                     if (!type) {
@@ -89,10 +93,14 @@ class Engine {
             });
             if (!adapter)
                 return;
-            const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_provider, "f"));
+            const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_mutationManager, "f"));
             __classPrivateFieldGet(this, _Engine_contextManagers, "f").set(context, contextManager);
-            const links = yield __classPrivateFieldGet(this, _Engine_provider, "f").getLinksForContext(context);
+            const [links, apps] = yield Promise.all([
+                __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context),
+                __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context),
+            ]);
             links.forEach((link) => contextManager.addUserLink(link));
+            apps.forEach((app) => contextManager.addAppMetadata(app));
         });
     }
     handleContextChanged(context, oldParsedContext) {
@@ -114,9 +122,18 @@ class Engine {
     handleInsPointFinished(context, oldInsPoint) {
         // ToDo: do nothing because IP unmounted?
     }
-    start() {
+    start(mutationId = DefaultMutationId) {
         return __awaiter(this, void 0, void 0, function* () {
+            // load mutation and apps
+            yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutationId);
             this.started = true;
+            this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this);
+            // ToDo: instantiate root context with data initially
+            // ToDo: looks like circular dependency
+            this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
+                id: window.location.hostname,
+                // ToDo: add mutationId
+            });
             console.log("Mutable Web Engine started!", {
                 engine: this,
                 provider: __classPrivateFieldGet(this, _Engine_provider, "f"),
@@ -126,13 +143,38 @@ class Engine {
     stop() {
         this.started = false;
         this.adapters.forEach((adapter) => this.unregisterAdapter(adapter));
+        __classPrivateFieldGet(this, _Engine_contextManagers, "f").forEach((cm) => cm.destroy());
+        this.adapters.clear();
+        __classPrivateFieldGet(this, _Engine_contextManagers, "f").clear();
+        this.treeBuilder = null;
+    }
+    getMutations() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return __classPrivateFieldGet(this, _Engine_provider, "f").getMutations();
+        });
+    }
+    switchMutation(mutationId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.stop();
+            yield this.start(mutationId);
+        });
+    }
+    getCurrentMutation() {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            return (_b = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation) !== null && _b !== void 0 ? _b : null;
+        });
     }
     registerAdapter(adapter) {
+        if (!this.treeBuilder)
+            throw new Error("Tree builder is not inited");
         this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context);
         this.adapters.add(adapter);
         adapter.start();
     }
     unregisterAdapter(adapter) {
+        if (!this.treeBuilder)
+            throw new Error("Tree builder is not inited");
         adapter.stop();
         this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context);
         this.adapters.delete(adapter);
@@ -152,6 +194,8 @@ class Engine {
         }
     }
     createAdapter(type, config) {
+        if (!this.treeBuilder)
+            throw new Error("Tree builder is not inited");
         const observingElement = document.body;
         switch (type) {
             case AdapterType.Bos:
@@ -173,4 +217,4 @@ class Engine {
     }
 }
 exports.Engine = Engine;
-_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap();
+_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap();

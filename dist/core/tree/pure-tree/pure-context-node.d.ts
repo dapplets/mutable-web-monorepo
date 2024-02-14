@@ -2,12 +2,12 @@ import { IContextNode } from "../types";
 export declare class PureContextNode implements IContextNode {
     id: string | null;
     tagName: string;
-    namespaceURI: string | null;
+    namespaceURI: string;
     parentNode: IContextNode | null;
-    parsedContext?: any;
+    parsedContext: any;
     children: IContextNode[];
     insPoints: string[];
-    constructor(namespaceURI: string | null, tagName: string);
+    constructor(namespaceURI: string, tagName: string);
     removeChild(child: IContextNode): void;
     appendChild(child: IContextNode): void;
 }

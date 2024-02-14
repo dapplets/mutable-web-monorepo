@@ -5,6 +5,7 @@ class PureContextNode {
     constructor(namespaceURI, tagName) {
         this.id = null;
         this.parentNode = null;
+        this.parsedContext = {};
         this.children = [];
         this.insPoints = [];
         this.namespaceURI = namespaceURI;

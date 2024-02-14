@@ -98,6 +98,13 @@ class SocialDbClient {
             deposit.toFixed(0));
         });
     }
+    delete(keys) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const data = yield this.get(keys);
+            const nullData = SocialDbClient._nullifyData(data);
+            yield this.set(nullData);
+        });
+    }
     _getAccountStorage(accountId) {
         return __awaiter(this, void 0, void 0, function* () {
             const resp = yield this._signer.view(this._contractName, "get_account_storage", {
@@ -108,6 +115,13 @@ class SocialDbClient {
                 availableBytes: resp.available_bytes,
             };
         });
+    }
+    // Utils
+    static _nullifyData(data) {
+        return Object.fromEntries(Object.entries(data).map(([key, val]) => {
+            const nullVal = typeof val === "object" ? this._nullifyData(val) : null;
+            return [key, nullVal];
+        }));
     }
 }
 exports.SocialDbClient = SocialDbClient;

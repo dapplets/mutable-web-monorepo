@@ -12,6 +12,8 @@ export declare class SocialDbClient {
     get(keys: string[]): Promise<Value>;
     keys(keys: string[]): Promise<string[]>;
     set(data: Value): Promise<void>;
+    delete(keys: string[]): Promise<void>;
     private _getAccountStorage;
+    static _nullifyData(data: any): any;
 }
 //# sourceMappingURL=social-db-client.d.ts.map
