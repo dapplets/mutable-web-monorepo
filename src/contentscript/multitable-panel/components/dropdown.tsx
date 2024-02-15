@@ -1,6 +1,7 @@
 import { Engine, Mutation } from 'mutable-web-engine'
 import React, { DetailedHTMLProps, FC, HTMLAttributes, useEffect, useState } from 'react'
 import styled from 'styled-components'
+
 const WrapperDropdown = styled.div`
   position: relative;
 
@@ -19,6 +20,7 @@ const SelectedMutationBlock = styled.div`
   width: 100%;
   padding: 2px 6px;
 `
+
 const SelectedMutationInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -35,6 +37,7 @@ const SelectedMutationDescription = styled.div`
   width: 180px;
   display: inline-block;
 `
+
 const SelectedMutationId = styled.div`
   font-family: 'Segoe UI', sans-serif;
   font-size: 10px;
@@ -46,6 +49,7 @@ const SelectedMutationId = styled.div`
   width: 180px;
   display: inline-block;
 `
+
 const OpenListDefault = styled.span`
   cursor: pointer;
   display: flex;
@@ -72,6 +76,7 @@ const OpenListDefault = styled.span`
     }
   }
 `
+
 const OpenList = styled.span`
   cursor: pointer;
 
@@ -255,24 +260,6 @@ const AuthorMutation = styled.div`
   display: inline-block;
 `
 
-const PopularLabel = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 49px;
-  height: 13px;
-  margin-top: 3px;
-
-  font-family: 'Segoe UI', sans-serif;
-  font-size: 8px;
-  font-weight: 700;
-  color: #fff;
-  text-transform: uppercase;
-
-  background: #db504a;
-  border-radius: 10px;
-`
 const iconDropdown = (
   <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
     <g opacity="0.5">
@@ -286,6 +273,7 @@ const iconDropdown = (
     </g>
   </svg>
 )
+
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   engine: Engine
 }
