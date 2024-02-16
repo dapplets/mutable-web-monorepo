@@ -77,7 +77,7 @@ describe('dynamic-html-adapter', () => {
 
     // Act
     mockedParentNode.append(expected)
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children.length).toBe(3)
@@ -98,7 +98,7 @@ describe('dynamic-html-adapter', () => {
 
     // Act
     mockedSite.getElementsByClassName('post-selector-point')[0].remove()
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children.length).toBe(1)
@@ -118,7 +118,7 @@ describe('dynamic-html-adapter', () => {
 
     // Act
     mockedSite.querySelector('div[data-testid="UserName"]>span')!.textContent = '58392'
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.parsedContext?.username).toBe('58392')
@@ -148,7 +148,7 @@ describe('dynamic-html-adapter', () => {
 
     // Act
     imageNode.setAttribute('src', 'https://img.com/profile_images/id/QXWR_1300x1300.jpg')
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.parsedContext?.img).toBe(
@@ -178,7 +178,7 @@ describe('dynamic-html-adapter', () => {
 
     // Act
     mockedSite.getElementsByClassName('post-root-selector')[0].textContent = 'Let it be, let it be!'
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children[0]!.parsedContext!.text).toBe('Let it be, let it be!')
@@ -350,7 +350,7 @@ describe('dynamic-html-adapter', () => {
     // Arrange
     const firstInsPointNode = mockedSite.querySelector('.post-root-selector')
     firstInsPointNode?.classList.replace('post-root-selector', 'post-title-selector')
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     const newPostContext = dynamicAdapter.context.children!.find((c) => c.id === 'post')!
 
@@ -372,7 +372,7 @@ describe('dynamic-html-adapter', () => {
     mockListeners.handleInsPointFinished.mockClear()
 
     firstInsPointNode?.classList.replace('post-title-selector', 'post-root-selector')
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     const newPostContext2 = dynamicAdapter.context.children!.find((c) => c.id === 'post')!
 
@@ -409,7 +409,7 @@ describe('dynamic-html-adapter', () => {
     dynamicAdapter.stop()
 
     mockedParentNode.append(expected)
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children.length).toBe(2)
@@ -417,7 +417,7 @@ describe('dynamic-html-adapter', () => {
 
     // Act
     dynamicAdapter.start()
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children.length).toBe(3)
@@ -427,14 +427,14 @@ describe('dynamic-html-adapter', () => {
     dynamicAdapter.stop()
 
     mockedSite.getElementsByClassName('post-selector-point')[0].remove()
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children.length).toBe(3)
 
     // Act
     dynamicAdapter.start()
-    await new Promise((res) => setTimeout(res, 1000))
+    await new Promise(process.nextTick)
 
     // Assert
     expect(dynamicAdapter.context.children.length).toBe(2)
