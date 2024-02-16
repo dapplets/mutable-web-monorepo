@@ -21,8 +21,8 @@ class DomTreeBuilder {
         _DomTreeBuilder_contextListener.set(this, void 0);
         _DomTreeBuilder_observer.set(this, void 0);
         __classPrivateFieldSet(this, _DomTreeBuilder_contextListener, contextListener, "f");
-        __classPrivateFieldSet(this, _DomTreeBuilder_document, document.implementation.createDocument(null, "semantictree"), "f");
-        this.root = this.createNode(null, "root");
+        __classPrivateFieldSet(this, _DomTreeBuilder_document, document.implementation.createDocument(null, 'semantictree'), "f");
+        this.root = this.createNode(null, 'root');
         __classPrivateFieldSet(this, _DomTreeBuilder_observer, new MutationObserver(__classPrivateFieldGet(this, _DomTreeBuilder_instances, "m", _DomTreeBuilder_handleMutations).bind(this)), "f");
         __classPrivateFieldGet(this, _DomTreeBuilder_observer, "f").observe(this.root, {
             attributes: true,
@@ -65,7 +65,7 @@ class DomTreeBuilder {
 exports.DomTreeBuilder = DomTreeBuilder;
 _DomTreeBuilder_document = new WeakMap(), _DomTreeBuilder_contextListener = new WeakMap(), _DomTreeBuilder_observer = new WeakMap(), _DomTreeBuilder_instances = new WeakSet(), _DomTreeBuilder_handleMutations = function _DomTreeBuilder_handleMutations(mutations) {
     for (const mutation of mutations) {
-        if (mutation.type === "childList") {
+        if (mutation.type === 'childList') {
             for (const addedNode of mutation.addedNodes) {
                 if (addedNode instanceof Element) {
                     __classPrivateFieldGet(this, _DomTreeBuilder_contextListener, "f").handleContextStarted(addedNode);

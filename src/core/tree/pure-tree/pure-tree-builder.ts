@@ -32,6 +32,8 @@ export class PureTreeBuilder implements ITreeBuilder {
   updateParsedContext(context: IContextNode, newParsedContext: any): void {
     const oldParsedContext = context.parsedContext;
 
+    // ToDo: what to do with contexts without IDs?
+
     if (oldParsedContext?.id !== newParsedContext?.id) {
       this.#listeners.handleContextFinished(context);
       context.parsedContext = newParsedContext;
@@ -45,7 +47,7 @@ export class PureTreeBuilder implements ITreeBuilder {
 
   updateInsertionPoints(context: IContextNode, foundIPs: string[]): void {
     // IPs means insertion points
-    const existingIPs = context.insPoints;
+    const existingIPs = context.insPoints ?? [];
     context.insPoints = foundIPs;
 
     const oldIPs = existingIPs.filter((ip) => !foundIPs.includes(ip));

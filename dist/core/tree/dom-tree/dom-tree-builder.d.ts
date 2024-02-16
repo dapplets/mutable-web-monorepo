@@ -1,4 +1,4 @@
-import { IContextListener, IContextNode, ITreeBuilder } from "../types";
+import { IContextListener, IContextNode, ITreeBuilder } from '../types';
 export declare class DomTreeBuilder implements ITreeBuilder {
     #private;
     root: IContextNode;

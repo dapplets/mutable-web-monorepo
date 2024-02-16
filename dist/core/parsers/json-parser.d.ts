@@ -1,5 +1,5 @@
-import { InsertionType } from "../adapters/interface";
-import { IParser, InsertionPoint } from "./interface";
+import { InsertionType } from '../adapters/interface';
+import { IParser, InsertionPoint } from './interface';
 export type ParserConfig = {
     namespace: string;
     contexts: {

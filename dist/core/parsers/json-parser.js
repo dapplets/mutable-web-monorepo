@@ -65,7 +65,7 @@ class JsonParser {
         var _a;
         const contextConfig = this.config.contexts[contextName];
         const selectorOrObject = (_a = contextConfig.insertionPoints) === null || _a === void 0 ? void 0 : _a[insertionPoint];
-        if (typeof selectorOrObject === "string") {
+        if (typeof selectorOrObject === 'string') {
             return element.querySelector(selectorOrObject);
         }
         else if (selectorOrObject === null || selectorOrObject === void 0 ? void 0 : selectorOrObject.selector) {
@@ -81,12 +81,8 @@ class JsonParser {
             return [];
         return Object.entries(contextConfig.insertionPoints).map(([name, selectorOrObject]) => ({
             name,
-            insertionType: typeof selectorOrObject === "string"
-                ? undefined
-                : selectorOrObject.insertionType,
-            bosLayoutManager: typeof selectorOrObject === "string"
-                ? undefined
-                : selectorOrObject.bosLayoutManager,
+            insertionType: typeof selectorOrObject === 'string' ? undefined : selectorOrObject.insertionType,
+            bosLayoutManager: typeof selectorOrObject === 'string' ? undefined : selectorOrObject.bosLayoutManager,
         }));
     }
 }

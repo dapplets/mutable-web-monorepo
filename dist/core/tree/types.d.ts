@@ -8,6 +8,7 @@ export interface IContextNode {
     parentNode: IContextNode | null;
     parsedContext: ParsedContext;
     insPoints: string[];
+    children: IContextNode[];
     removeChild(child: IContextNode): void;
     appendChild(child: IContextNode): void;
 }

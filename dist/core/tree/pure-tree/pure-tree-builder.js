@@ -36,6 +36,7 @@ class PureTreeBuilder {
     }
     updateParsedContext(context, newParsedContext) {
         const oldParsedContext = context.parsedContext;
+        // ToDo: what to do with contexts without IDs?
         if ((oldParsedContext === null || oldParsedContext === void 0 ? void 0 : oldParsedContext.id) !== (newParsedContext === null || newParsedContext === void 0 ? void 0 : newParsedContext.id)) {
             __classPrivateFieldGet(this, _PureTreeBuilder_listeners, "f").handleContextFinished(context);
             context.parsedContext = newParsedContext;
@@ -48,8 +49,9 @@ class PureTreeBuilder {
         }
     }
     updateInsertionPoints(context, foundIPs) {
+        var _a;
         // IPs means insertion points
-        const existingIPs = context.insPoints;
+        const existingIPs = (_a = context.insPoints) !== null && _a !== void 0 ? _a : [];
         context.insPoints = foundIPs;
         const oldIPs = existingIPs.filter((ip) => !foundIPs.includes(ip));
         const newIPs = foundIPs.filter((ip) => !existingIPs.includes(ip));
