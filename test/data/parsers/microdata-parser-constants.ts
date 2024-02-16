@@ -1,4 +1,4 @@
-export const microdataParserElement = document.createElement("div");
+export const microdataParserElement = document.createElement('div')
 microdataParserElement.innerHTML = ` 
 <div id="root">
 <!-- Example using itemtype, itemscope, and itemprop -->
@@ -26,4 +26,4 @@ microdataParserElement.innerHTML = `
 <!-- Example using datetime attribute -->
 <time datetime="2024-01-30T12:00:00" itemprop="datePublished">January 30, 2024</time>
 </div>
-`;
+`

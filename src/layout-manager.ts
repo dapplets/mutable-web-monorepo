@@ -1,91 +1,86 @@
-import { BosComponent } from "./bos/bos-widget";
-import { ContextManager } from "./context-manager";
-import { IContextNode } from "./core/tree/types";
-import {
-  AppId,
-  AppMetadata,
-  BosUserLink,
-  UserLinkId,
-} from "./providers/provider";
+import { BosComponent } from './bos/bos-widget'
+import { ContextManager } from './context-manager'
+import { IContextNode } from './core/tree/types'
+import { AppId, AppMetadata, BosUserLink, UserLinkId } from './providers/provider'
 
 export interface LayoutManagerProps {
-  context: any;
-  contextType: string;
-  apps: { id: string }[];
+  context: any
+  contextType: string
+  apps: { id: string }[]
   widgets: {
-    linkId: UserLinkId;
-    linkAuthorId: string;
-    src: string;
+    linkId: UserLinkId
+    linkAuthorId: string
+    src: string
     props: {
-      context: ContextTreeProps;
+      context: ContextTreeProps
       link: {
-        id: UserLinkId;
-        authorId: string;
-      };
-    };
-  }[];
-  isEditMode: boolean;
-  createUserLink: (bosWidgetId: string) => Promise<void>;
-  deleteUserLink: (userLinkId: UserLinkId) => Promise<void>;
-  enableEditMode: () => void;
-  disableEditMode: () => void;
+        id: UserLinkId
+        authorId: string
+      }
+    }
+  }[]
+  isEditMode: boolean
+  createUserLink: (bosWidgetId: string) => Promise<void>
+  deleteUserLink: (userLinkId: UserLinkId) => Promise<void>
+  enableEditMode: () => void
+  disableEditMode: () => void
 }
 
 interface ContextTreeProps {
-  namespace: string | null;
-  type: string;
-  parsed: any;
-  parent: ContextTreeProps | null;
+  namespace: string | null
+  type: string
+  parsed: any
+  parent: ContextTreeProps | null
 }
 
 export class LayoutManager {
-  #contextManager: ContextManager;
-  #layoutManager: BosComponent;
-  #userLinks: Map<UserLinkId, BosUserLink> = new Map();
-  #apps: Map<AppId, AppMetadata> = new Map();
-  #isEditMode: boolean;
+  #contextManager: ContextManager
+  #layoutManager: BosComponent
+  #userLinks: Map<UserLinkId, BosUserLink> = new Map()
+  #apps: Map<AppId, AppMetadata> = new Map()
+  #isEditMode: boolean
 
   constructor(layoutManager: BosComponent, contextManager: ContextManager) {
-    this.#layoutManager = layoutManager;
-    this.#contextManager = contextManager;
-    this.#isEditMode = false;
-    this.forceUpdate();
+    this.#layoutManager = layoutManager
+    this.#contextManager = contextManager
+    this.#isEditMode = false
+    this.forceUpdate()
   }
 
   addUserLink(userLink: BosUserLink) {
-    this.#userLinks.set(userLink.id, userLink);
-    this.forceUpdate();
+    this.#userLinks.set(userLink.id, userLink)
+    this.forceUpdate()
   }
 
   removeUserLink(userLinkId: UserLinkId) {
-    this.#userLinks.delete(userLinkId);
-    this.forceUpdate();
+    this.#userLinks.delete(userLinkId)
+    this.forceUpdate()
   }
 
   addAppMetadata(appMetadata: AppMetadata) {
-    this.#apps.set(appMetadata.id, appMetadata);
-    this.forceUpdate();
+    this.#apps.set(appMetadata.id, appMetadata)
+    this.forceUpdate()
   }
 
   removeAppMetadata(globalAppId: AppId) {
-    this.#apps.delete(globalAppId);
-    this.forceUpdate();
+    this.#apps.delete(globalAppId)
+    this.forceUpdate()
   }
 
   enableEditMode() {
-    this.#isEditMode = true;
-    this.forceUpdate();
+    this.#isEditMode = true
+    this.forceUpdate()
   }
 
   disableEditMode() {
-    this.#isEditMode = false;
-    this.forceUpdate();
+    this.#isEditMode = false
+    this.forceUpdate()
   }
 
   forceUpdate() {
-    const context = this.#contextManager.context;
-    const links = Array.from(this.#userLinks.values());
-    const apps = Array.from(this.#apps.values());
+    const context = this.#contextManager.context
+    const links = Array.from(this.#userLinks.values())
+    const apps = Array.from(this.#apps.values())
 
     this._setProps({
       // ToDo: unify context forwarding
@@ -114,37 +109,37 @@ export class LayoutManager {
       deleteUserLink: this._deleteUserLink.bind(this),
       enableEditMode: this._enableEditMode.bind(this),
       disableEditMode: this._disableEditMode.bind(this),
-    });
+    })
   }
 
   destroy() {
-    this.#layoutManager.remove();
+    this.#layoutManager.remove()
   }
 
   _setProps(props: LayoutManagerProps) {
-    this.#layoutManager.props = props;
+    this.#layoutManager.props = props
   }
 
   // Widget API methods
 
   async _createUserLink(globalAppId: string): Promise<void> {
-    return this.#contextManager.createUserLink(globalAppId);
+    return this.#contextManager.createUserLink(globalAppId)
   }
 
   _deleteUserLink(userLinkId: UserLinkId) {
-    const userLink = this.#userLinks.get(userLinkId);
+    const userLink = this.#userLinks.get(userLinkId)
     if (!userLink) {
-      throw new Error(`User link ${userLinkId} not found`);
+      throw new Error(`User link ${userLinkId} not found`)
     }
-    return this.#contextManager.deleteUserLink(userLink);
+    return this.#contextManager.deleteUserLink(userLink)
   }
 
   _enableEditMode() {
-    return this.#contextManager.enableEditMode();
+    return this.#contextManager.enableEditMode()
   }
 
   _disableEditMode() {
-    return this.#contextManager.disableEditMode();
+    return this.#contextManager.disableEditMode()
   }
 
   // Utils
@@ -155,9 +150,7 @@ export class LayoutManager {
       namespace: context.namespaceURI,
       type: context.tagName,
       parsed: context.parsedContext,
-      parent: context.parentNode
-        ? this._buildContextTree(context.parentNode)
-        : null,
-    };
+      parent: context.parentNode ? this._buildContextTree(context.parentNode) : null,
+    }
   }
 }

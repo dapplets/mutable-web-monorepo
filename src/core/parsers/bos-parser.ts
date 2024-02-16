@@ -1,81 +1,81 @@
-import { InsertionType } from "../adapters/interface";
-import { IParser, InsertionPoint } from "./interface";
+import { InsertionType } from '../adapters/interface'
+import { IParser, InsertionPoint } from './interface'
 
-const CompAttr = "data-component";
-const PropsAttr = "data-props";
+const CompAttr = 'data-component'
+const PropsAttr = 'data-props'
 
 export type BosParserConfig = {
-  namespace: string;
+  namespace: string
   contexts: {
     [name: string]: {
-      component?: string;
+      component?: string
       props?: {
-        [prop: string]: string;
-      };
+        [prop: string]: string
+      }
       insertionPoints?: {
         [insPointName: string]: {
-          component?: string;
-          bosLayoutManager?: string;
-          insertionType?: InsertionType;
-        };
-      };
-      children?: string[];
-    };
-  };
-};
+          component?: string
+          bosLayoutManager?: string
+          insertionType?: InsertionType
+        }
+      }
+      children?: string[]
+    }
+  }
+}
 
 export class BosParser implements IParser {
-  protected config: BosParserConfig;
+  protected config: BosParserConfig
 
   constructor(config: BosParserConfig) {
     // ToDo: validate config
-    this.config = config;
+    this.config = config
 
-    if (!this.config.contexts["root"]) {
-      this.config.contexts["root"] = {
+    if (!this.config.contexts['root']) {
+      this.config.contexts['root'] = {
         props: {
-          id: "root",
+          id: 'root',
         },
-        children: ["post"], // ToDo:
-      };
+        children: ['post'], // ToDo:
+      }
     }
   }
 
   parseContext(element: Element, contextName: string) {
-    const contextProperties = this.config.contexts[contextName].props;
-    if (!contextProperties) return {};
+    const contextProperties = this.config.contexts[contextName].props
+    if (!contextProperties) return {}
 
-    const parsed: any = {};
-    const bosProps = JSON.parse(element.getAttribute(PropsAttr) ?? "{}");
+    const parsed: any = {}
+    const bosProps = JSON.parse(element.getAttribute(PropsAttr) ?? '{}')
 
     for (const [prop, mustacheTemplate] of Object.entries(contextProperties)) {
-      const value = replaceMustaches(mustacheTemplate, { props: bosProps });
-      parsed[prop] = value;
+      const value = replaceMustaches(mustacheTemplate, { props: bosProps })
+      parsed[prop] = value
     }
 
-    return parsed;
+    return parsed
   }
 
   findChildElements(element: Element, contextName: string) {
-    const contextConfig = this.config.contexts[contextName];
-    if (!contextConfig.children?.length) return [];
+    const contextConfig = this.config.contexts[contextName]
+    if (!contextConfig.children?.length) return []
 
-    const result: { element: Element; contextName: string }[] = [];
+    const result: { element: Element; contextName: string }[] = []
 
     for (const childContextName of contextConfig.children ?? []) {
-      const childConfig = this.config.contexts[childContextName];
-      if (!childConfig.component) continue;
+      const childConfig = this.config.contexts[childContextName]
+      if (!childConfig.component) continue
 
       const childElements = Array.from(
         element.querySelectorAll(`[${CompAttr}="${childConfig.component}"]`)
-      );
+      )
 
       for (const childElement of childElements) {
-        result.push({ element: childElement, contextName: childContextName });
+        result.push({ element: childElement, contextName: childContextName })
       }
     }
 
-    return result;
+    return result
   }
 
   findInsertionPoint(
@@ -83,32 +83,28 @@ export class BosParser implements IParser {
     contextName: string,
     insertionPoint: string
   ): Element | null {
-    const contextConfig = this.config.contexts[contextName];
-    const insPointConfig = contextConfig.insertionPoints?.[insertionPoint];
+    const contextConfig = this.config.contexts[contextName]
+    const insPointConfig = contextConfig.insertionPoints?.[insertionPoint]
 
     if (insPointConfig?.component) {
-      return element.querySelector(
-        `[${CompAttr}="${insPointConfig.component}"]`
-      );
+      return element.querySelector(`[${CompAttr}="${insPointConfig.component}"]`)
     } else if (insPointConfig) {
       // if `component` is not defined use self
-      return element;
+      return element
     } else {
-      return null;
+      return null
     }
   }
 
   getInsertionPoints(_: Element, contextName: string): InsertionPoint[] {
-    const contextConfig = this.config.contexts[contextName];
-    if (!contextConfig.insertionPoints) return [];
+    const contextConfig = this.config.contexts[contextName]
+    if (!contextConfig.insertionPoints) return []
 
-    return Object.entries(contextConfig.insertionPoints).map(
-      ([name, selectorOrObject]) => ({
-        name,
-        insertionType: selectorOrObject.insertionType,
-        bosLayoutManager: selectorOrObject.bosLayoutManager,
-      })
-    );
+    return Object.entries(contextConfig.insertionPoints).map(([name, selectorOrObject]) => ({
+      name,
+      insertionType: selectorOrObject.insertionType,
+      bosLayoutManager: selectorOrObject.bosLayoutManager,
+    }))
   }
 }
 
@@ -134,17 +130,17 @@ export class BosParser implements IParser {
  */
 export function replaceMustaches(template: string, data: any): string {
   return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-    const keys = key.split(".");
-    let value = data;
+    const keys = key.split('.')
+    let value = data
 
     for (const k of keys) {
       if (value.hasOwnProperty(k)) {
-        value = value[k];
+        value = value[k]
       } else {
-        return match;
+        return match
       }
     }
 
-    return String(value);
-  });
+    return String(value)
+  })
 }

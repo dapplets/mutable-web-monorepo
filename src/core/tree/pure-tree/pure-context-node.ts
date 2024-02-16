@@ -1,26 +1,26 @@
-import { IContextNode } from "../types";
+import { IContextNode } from '../types'
 
 export class PureContextNode implements IContextNode {
-  public id: string | null = null;
-  public tagName: string;
-  public namespaceURI: string;
-  public parentNode: IContextNode | null = null;
-  public parsedContext: any = {};
-  public children: IContextNode[] = [];
-  public insPoints: string[] = [];
+  public id: string | null = null
+  public tagName: string
+  public namespaceURI: string
+  public parentNode: IContextNode | null = null
+  public parsedContext: any = {}
+  public children: IContextNode[] = []
+  public insPoints: string[] = []
 
   constructor(namespaceURI: string, tagName: string) {
-    this.namespaceURI = namespaceURI;
-    this.tagName = tagName;
+    this.namespaceURI = namespaceURI
+    this.tagName = tagName
   }
 
   removeChild(child: IContextNode): void {
-    child.parentNode = null;
-    this.children = this.children.filter((c) => c !== child);
+    child.parentNode = null
+    this.children = this.children.filter((c) => c !== child)
   }
 
   appendChild(child: IContextNode): void {
-    child.parentNode = this;
-    this.children.push(child);
+    child.parentNode = this
+    this.children.push(child)
   }
 }

@@ -1,1 +1,1 @@
-declare module 'near-social-vm';
+declare module 'near-social-vm'

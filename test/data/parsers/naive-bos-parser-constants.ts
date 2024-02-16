@@ -1,4 +1,4 @@
-export const naiveBosParserElement = document.createElement("div");
+export const naiveBosParserElement = document.createElement('div')
 naiveBosParserElement.innerHTML = `
 <div id="root" data-props="root">
 <!-- Example using data-component and data-props attributes -->
@@ -11,4 +11,4 @@ naiveBosParserElement.innerHTML = `
   <!-- More content goes here -->
 </div>
 </div>
-`;
+`

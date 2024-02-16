@@ -1,86 +1,75 @@
-import { InsertionType } from "../../../../src/core/adapters/interface";
-import { IParser } from "../../../../src/core/parsers/interface";
-import { NaiveBosParser } from "../../../../src/core/parsers/naive-bos-parser";
-import { IContextNode } from "../../../../src/core/tree/types";
-import { describe, expect, it, beforeEach } from "@jest/globals";
-import { naiveBosParserElement } from "../../../data/parsers/naive-bos-parser-constants";
+import { InsertionType } from '../../../../src/core/adapters/interface'
+import { IParser } from '../../../../src/core/parsers/interface'
+import { NaiveBosParser } from '../../../../src/core/parsers/naive-bos-parser'
+import { IContextNode } from '../../../../src/core/tree/types'
+import { describe, expect, it, beforeEach } from '@jest/globals'
+import { naiveBosParserElement } from '../../../data/parsers/naive-bos-parser-constants'
 
-describe("naive bos parser", () => {
-  let element: HTMLElement;
+describe('naive bos parser', () => {
+  let element: HTMLElement
 
-  let naiveBosParser: IParser;
+  let naiveBosParser: IParser
 
   beforeEach(() => {
-    element = naiveBosParserElement;
-    naiveBosParser = new NaiveBosParser();
-  });
+    element = naiveBosParserElement
+    naiveBosParser = new NaiveBosParser()
+  })
 
   // todo: how check?, returned null
-  it("should return a parsed context", () => {
-    expect(naiveBosParser.parseContext(element, "root"));
-  });
+  it('should return a parsed context', () => {
+    expect(naiveBosParser.parseContext(element, 'root'))
+  })
 
-  it("should return a child", () => {
+  it('should return a child', () => {
     // Arrange
     const expected = [
       {
-        element: element.getElementsByClassName("posts-compose")[0],
-        contextName: "near--Posts.Compose",
+        element: element.getElementsByClassName('posts-compose')[0],
+        contextName: 'near--Posts.Compose',
       },
       {
-        element: element.getElementsByClassName("component-a")[0],
-        contextName: "near--ComponentA",
+        element: element.getElementsByClassName('component-a')[0],
+        contextName: 'near--ComponentA',
       },
-    ];
+    ]
 
     // Act
-    const actual = naiveBosParser.findChildElements(element, "root");
+    const actual = naiveBosParser.findChildElements(element, 'root')
 
     // Assert
-    expect(actual).toStrictEqual(expected);
-  });
+    expect(actual).toStrictEqual(expected)
+  })
 
-  it("should find insertionPoint", () => {
+  it('should find insertionPoint', () => {
     // Arrange
-    const expected = element.getElementsByClassName("posts-compose")[0];
+    const expected = element.getElementsByClassName('posts-compose')[0]
 
     // Act
-    const actual = naiveBosParser.findInsertionPoint(
-      element,
-      "",
-      "near/widget/Posts.Compose"
-    );
+    const actual = naiveBosParser.findInsertionPoint(element, '', 'near/widget/Posts.Compose')
 
     // Assert
-    expect(actual).toStrictEqual(expected);
-  });
+    expect(actual).toStrictEqual(expected)
+  })
 
-  it("should find insertionPoint", () => {
+  it('should find insertionPoint', () => {
     // Arrange
-    const expected = element.getElementsByClassName("component-a")[0];
+    const expected = element.getElementsByClassName('component-a')[0]
 
     // Act
-    const actual = naiveBosParser.findInsertionPoint(
-      element,
-      "",
-      "near/widget/ComponentA"
-    );
+    const actual = naiveBosParser.findInsertionPoint(element, '', 'near/widget/ComponentA')
 
     // Assert
-    expect(actual).toStrictEqual(expected);
-  });
+    expect(actual).toStrictEqual(expected)
+  })
 
-  it("should return insertionPoints", () => {
+  it('should return insertionPoints', () => {
     // Arrange
-    const expected = [
-      { name: "near--Posts.Compose" },
-      { name: "near--ComponentA" },
-    ];
+    const expected = [{ name: 'near--Posts.Compose' }, { name: 'near--ComponentA' }]
 
     // Act
-    const actual = naiveBosParser.getInsertionPoints(element, "root");
+    const actual = naiveBosParser.getInsertionPoints(element, 'root')
 
     // Assert
-    expect(actual).toStrictEqual(expected);
-  });
-});
+    expect(actual).toStrictEqual(expected)
+  })
+})

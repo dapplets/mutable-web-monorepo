@@ -3,19 +3,19 @@ export function getChildContextElements(
   attribute: string,
   excludeAttribute?: string
 ) {
-  const result: Element[] = [];
+  const result: Element[] = []
 
   for (const child of element.children) {
     if (child instanceof HTMLElement) {
       if (excludeAttribute && child.hasAttribute(excludeAttribute)) {
-        continue;
+        continue
       } else if (child.hasAttribute(attribute)) {
-        result.push(child);
+        result.push(child)
       } else {
-        result.push(...getChildContextElements(child, attribute));
+        result.push(...getChildContextElements(child, attribute))
       }
     }
   }
 
-  return result;
+  return result
 }

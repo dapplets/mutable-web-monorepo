@@ -1,33 +1,28 @@
-import { IParser, InsertionPoint } from "../parsers/interface";
-import { IContextNode, ITreeBuilder } from "../tree/types";
-import { IAdapter, InsertionType } from "./interface";
+import { IParser, InsertionPoint } from '../parsers/interface'
+import { IContextNode, ITreeBuilder } from '../tree/types'
+import { IAdapter, InsertionType } from './interface'
 
-const DefaultInsertionType: InsertionType = InsertionType.Before;
+const DefaultInsertionType: InsertionType = InsertionType.Before
 
 export class DynamicHtmlAdapter implements IAdapter {
-  protected element: Element;
-  protected treeBuilder: ITreeBuilder;
-  protected parser: IParser;
-  public namespace: string;
-  public context: IContextNode;
+  protected element: Element
+  protected treeBuilder: ITreeBuilder
+  protected parser: IParser
+  public namespace: string
+  public context: IContextNode
 
-  #observerByElement: Map<Element, MutationObserver> = new Map();
-  #elementByContext: WeakMap<IContextNode, Element> = new WeakMap();
-  #contextByElement: Map<Element, IContextNode> = new Map();
+  #observerByElement: Map<Element, MutationObserver> = new Map()
+  #elementByContext: WeakMap<IContextNode, Element> = new WeakMap()
+  #contextByElement: Map<Element, IContextNode> = new Map()
 
-  #isStarted = false; // ToDo: find another way to check if adapter is started
+  #isStarted = false // ToDo: find another way to check if adapter is started
 
-  constructor(
-    element: Element,
-    treeBuilder: ITreeBuilder,
-    namespace: string,
-    parser: IParser
-  ) {
-    this.element = element;
-    this.treeBuilder = treeBuilder;
-    this.namespace = namespace;
-    this.parser = parser;
-    this.context = this._createContextForElement(element, "root");
+  constructor(element: Element, treeBuilder: ITreeBuilder, namespace: string, parser: IParser) {
+    this.element = element
+    this.treeBuilder = treeBuilder
+    this.namespace = namespace
+    this.parser = parser
+    this.context = this._createContextForElement(element, 'root')
   }
 
   start() {
@@ -37,97 +32,80 @@ export class DynamicHtmlAdapter implements IAdapter {
         childList: true,
         subtree: true,
         characterData: true,
-      });
+      })
 
       // initial parsing without waiting for mutations in the DOM
-      this._handleMutations(element, this.#contextByElement.get(element)!);
-    });
-    this.#isStarted = true;
+      this._handleMutations(element, this.#contextByElement.get(element)!)
+    })
+    this.#isStarted = true
   }
 
   stop() {
-    this.#isStarted = false;
-    this.#observerByElement.forEach((observer) => observer.disconnect());
+    this.#isStarted = false
+    this.#observerByElement.forEach((observer) => observer.disconnect())
   }
 
-  injectElement(
-    injectingElement: Element,
-    context: IContextNode,
-    insertionPoint: string | "root"
-  ) {
-    const contextElement = this.#elementByContext.get(context);
+  injectElement(injectingElement: Element, context: IContextNode, insertionPoint: string | 'root') {
+    const contextElement = this.#elementByContext.get(context)
 
     if (!contextElement) {
-      throw new Error("Context element not found");
+      throw new Error('Context element not found')
     }
 
     const insPoint = this.parser
       .getInsertionPoints(contextElement, context.tagName)
-      .find((ip) => ip.name === insertionPoint);
+      .find((ip) => ip.name === insertionPoint)
 
     if (!insPoint) {
-      throw new Error(
-        `Insertion point "${insertionPoint}" is not defined in the parser`
-      );
+      throw new Error(`Insertion point "${insertionPoint}" is not defined in the parser`)
     }
 
     const insPointElement: Element | null = this.parser.findInsertionPoint(
       contextElement,
       context.tagName,
       insertionPoint
-    );
+    )
 
-    const insertionType = insPoint.insertionType ?? DefaultInsertionType;
+    const insertionType = insPoint.insertionType ?? DefaultInsertionType
 
     if (!insPointElement) {
       throw new Error(
         `Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`
-      );
+      )
     }
 
     switch (insertionType) {
       case InsertionType.Before:
-        insPointElement.before(injectingElement);
-        break;
+        insPointElement.before(injectingElement)
+        break
       case InsertionType.After:
-        insPointElement.after(injectingElement);
-        break;
+        insPointElement.after(injectingElement)
+        break
       case InsertionType.End:
-        insPointElement.appendChild(injectingElement);
-        break;
+        insPointElement.appendChild(injectingElement)
+        break
       case InsertionType.Begin:
-        insPointElement.insertBefore(
-          injectingElement,
-          insPointElement.firstChild
-        );
-        break;
+        insPointElement.insertBefore(injectingElement, insPointElement.firstChild)
+        break
       default:
-        throw new Error("Unknown insertion type");
+        throw new Error('Unknown insertion type')
     }
   }
 
   getInsertionPoints(context: IContextNode): InsertionPoint[] {
-    const htmlElement = this.#elementByContext.get(context)!;
-    if (!htmlElement) return [];
-    return this.parser.getInsertionPoints(htmlElement, context.tagName);
+    const htmlElement = this.#elementByContext.get(context)!
+    if (!htmlElement) return []
+    return this.parser.getInsertionPoints(htmlElement, context.tagName)
   }
 
-  _createContextForElement(
-    element: Element,
-    contextName: string
-  ): IContextNode {
-    const context = this.treeBuilder.createNode(
-      this.namespace,
-      contextName
-    ) as IContextNode;
+  _createContextForElement(element: Element, contextName: string): IContextNode {
+    const context = this.treeBuilder.createNode(this.namespace, contextName) as IContextNode
 
-    const observer = new MutationObserver(() =>
-      this._handleMutations(element, context)
-    );
+    const observer = new MutationObserver(() => this._handleMutations(element, context))
 
-    this.#observerByElement.set(element, observer);
-    this.#elementByContext.set(context, element);
-    this.#contextByElement.set(element, context);
+    this.#observerByElement.set(element, observer)
+    this.#elementByContext.set(context, element)
+    this.#contextByElement.set(element, context)
 
     // ToDo: duplicate code
     if (this.#isStarted) {
@@ -136,21 +114,21 @@ export class DynamicHtmlAdapter implements IAdapter {
         childList: true,
         subtree: true,
         characterData: true,
-      });
+      })
     }
 
-    return context;
+    return context
   }
 
   private _handleMutations(element: Element, context: IContextNode) {
-    const parsedContext = this.parser.parseContext(element, context.tagName);
-    const pairs = this.parser.findChildElements(element, context.tagName);
-    const insPoints = this._findAvailableInsPoints(element, context.tagName);
+    const parsedContext = this.parser.parseContext(element, context.tagName)
+    const pairs = this.parser.findChildElements(element, context.tagName)
+    const insPoints = this._findAvailableInsPoints(element, context.tagName)
 
-    this.treeBuilder.updateParsedContext(context, parsedContext);
-    this.treeBuilder.updateInsertionPoints(context, insPoints);
-    this._appendNewChildContexts(pairs, context);
-    this._removeOldChildContexts(pairs, context);
+    this.treeBuilder.updateParsedContext(context, parsedContext)
+    this.treeBuilder.updateInsertionPoints(context, insPoints)
+    this._appendNewChildContexts(pairs, context)
+    this._removeOldChildContexts(pairs, context)
   }
 
   private _appendNewChildContexts(
@@ -159,12 +137,9 @@ export class DynamicHtmlAdapter implements IAdapter {
   ) {
     for (const { element, contextName } of childPairs) {
       if (!this.#contextByElement.has(element)) {
-        const childContext = this._createContextForElement(
-          element,
-          contextName
-        );
-        this.treeBuilder.appendChild(parentContext, childContext);
-        this.#contextByElement.set(element, childContext);
+        const childContext = this._createContextForElement(element, contextName)
+        this.treeBuilder.appendChild(parentContext, childContext)
+        this.#contextByElement.set(element, childContext)
       }
     }
   }
@@ -173,34 +148,26 @@ export class DynamicHtmlAdapter implements IAdapter {
     childPairs: { element: Element; contextName: string }[],
     parentContext: IContextNode
   ) {
-    const childElementsSet = new Set(childPairs.map((pair) => pair.element));
+    const childElementsSet = new Set(childPairs.map((pair) => pair.element))
     for (const [element, context] of this.#contextByElement) {
-      if (
-        !childElementsSet.has(element) &&
-        context.parentNode === parentContext
-      ) {
-        this.treeBuilder.removeChild(parentContext, context);
-        this.#contextByElement.delete(element);
-        this.#observerByElement.get(element)?.disconnect();
-        this.#observerByElement.delete(element);
+      if (!childElementsSet.has(element) && context.parentNode === parentContext) {
+        this.treeBuilder.removeChild(parentContext, context)
+        this.#contextByElement.delete(element)
+        this.#observerByElement.get(element)?.disconnect()
+        this.#observerByElement.delete(element)
       }
     }
   }
 
   // ToDo: move to parser?
-  private _findAvailableInsPoints(
-    element: Element,
-    contextName: string
-  ): string[] {
-    const parser = this.parser;
-    const definedInsPoints = parser.getInsertionPoints(element, contextName);
+  private _findAvailableInsPoints(element: Element, contextName: string): string[] {
+    const parser = this.parser
+    const definedInsPoints = parser.getInsertionPoints(element, contextName)
 
     const availableInsPoints = definedInsPoints
-      .filter(
-        (ip) => !!parser.findInsertionPoint(element, contextName, ip.name)
-      )
-      .map((ip) => ip.name);
+      .filter((ip) => !!parser.findInsertionPoint(element, contextName, ip.name))
+      .map((ip) => ip.name)
 
-    return availableInsPoints;
+    return availableInsPoints
   }
 }

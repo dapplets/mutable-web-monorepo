@@ -1,48 +1,48 @@
-import { InsertionType } from "../../../src/core/adapters/interface";
-import { BosParserConfig } from "../../../src/core/parsers/bos-parser";
+import { InsertionType } from '../../../src/core/adapters/interface'
+import { BosParserConfig } from '../../../src/core/parsers/bos-parser'
 
 export const config: BosParserConfig = {
-  namespace: "example",
+  namespace: 'example',
   contexts: {
     main: {
-      component: "MainComponent",
+      component: 'MainComponent',
       props: {
-        prop1: "value1",
-        prop2: "value2",
+        prop1: 'value1',
+        prop2: 'value2',
       },
       insertionPoints: {
         beforeHeader: {
-          component: "BeforeHeaderComponent",
-          bosLayoutManager: "LayoutManagerA",
+          component: 'BeforeHeaderComponent',
+          bosLayoutManager: 'LayoutManagerA',
           insertionType: InsertionType.Before,
         },
         afterHeader: {
-          component: "AfterHeaderComponent",
-          bosLayoutManager: "LayoutManagerB",
+          component: 'AfterHeaderComponent',
+          bosLayoutManager: 'LayoutManagerB',
           insertionType: InsertionType.Before,
         },
         content: {
-          component: "ContentComponent",
+          component: 'ContentComponent',
           insertionType: InsertionType.After,
         },
       },
-      children: ["header", "footer"],
+      children: ['header', 'footer'],
     },
     header: {
-      component: "HeaderComponent",
+      component: 'HeaderComponent',
       props: {
-        title: "Header Title",
+        title: 'Header Title',
       },
     },
     footer: {
-      component: "FooterComponent",
+      component: 'FooterComponent',
       props: {
-        text: "Footer Text",
+        text: 'Footer Text',
       },
     },
   },
-};
-export const bosParserDataHtml = document.createElement("div");
+}
+export const bosParserDataHtml = document.createElement('div')
 bosParserDataHtml.innerHTML = `<div data-namespace="example" data-component="MainComponent" data-prop1="value1" data-prop2="value2">
   <!-- Before Header -->
   <div data-component="BeforeHeaderComponent" class="before-header" data-bos-layout-manager="LayoutManagerA" data-insertion-type="Before">
@@ -68,4 +68,4 @@ bosParserDataHtml.innerHTML = `<div data-namespace="example" data-component="Mai
   <div data-component="FooterComponent" class="footer" data-text="Footer Text">
     <!-- Footer Content -->
   </div>
-</div>`;
+</div>`
