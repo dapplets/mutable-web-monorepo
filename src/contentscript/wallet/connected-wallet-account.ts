@@ -1,10 +1,9 @@
 import { FinalExecutionOutcome } from '@near-wallet-selector/core'
 import BN from 'bn.js'
-import { baseDecode } from 'borsh'
 import { ConnectedWalletAccount } from 'near-api-js'
 import { SignAndSendTransactionOptions } from 'near-api-js/lib/account'
 import { createTransaction } from 'near-api-js/lib/transaction'
-import { PublicKey } from 'near-api-js/lib/utils'
+import { PublicKey, serialize } from 'near-api-js/lib/utils'
 import browser from 'webextension-polyfill'
 import { tabs_query, tabs_remove, tabs_update, waitTab } from '../background'
 import { generateGuid } from '../helpers'
@@ -39,7 +38,7 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
     }
 
     const block = await this.connection.provider.block({ finality: 'final' })
-    const blockHash = baseDecode(block.header.hash)
+    const blockHash = serialize.base_decode(block.header.hash)
 
     const publicKey = PublicKey.from(accessKey.public_key)
     // TODO: Cache & listen for nonce updates for given access key
@@ -82,7 +81,7 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
       throw new Error(`User rejected the transaction.`)
     }
 
-    const txHash = baseDecode(transactionHashes)
+    const txHash = serialize.base_decode(transactionHashes)
     const txStatus = await this.walletConnection._near.connection.provider.txStatus(
       txHash,
       this.accountId
