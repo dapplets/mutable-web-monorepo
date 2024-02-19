@@ -106,6 +106,8 @@ export class JsonParser implements IParser {
       return element.querySelector(selectorOrObject)
     } else if (selectorOrObject?.selector) {
       return element.querySelector(selectorOrObject.selector)
+    } else if (!selectorOrObject?.selector) {
+      return element // use context node if selector is not defined
     } else {
       return null
     }
