@@ -1,5 +1,6 @@
 import { sha256 } from 'js-sha256'
 import serializeToDeterministicJson from 'json-stringify-deterministic'
+import { Cacheable } from 'caching-decorator'
 
 import { NearSigner } from './near-signer'
 import {
@@ -73,6 +74,7 @@ export class SocialDbProvider implements IProvider {
     }
   }
 
+  @Cacheable({ ttl: 60000 })
   async getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]> {
     const index = SocialDbProvider._hashObject(indexObject)
 
