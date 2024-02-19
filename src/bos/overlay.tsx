@@ -4,8 +4,6 @@ import { StyleSheetManager } from 'styled-components'
 
 const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
 
-const BootstrapCssUrl = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css'
-
 const overlay = document.createElement('mutable-web-overlay')
 
 overlay.style.background = '#ffffff88'
@@ -32,13 +30,6 @@ shadowRoot.appendChild(stylesMountPoint)
 const disableCssInheritanceStyle = document.createElement('style')
 disableCssInheritanceStyle.innerHTML = ':host { all: initial; }'
 shadowRoot.appendChild(disableCssInheritanceStyle)
-
-// Bootstrap styles
-// ToDo: don't use CDN
-const bootstrapStyles = document.createElement('link')
-bootstrapStyles.rel = 'stylesheet'
-bootstrapStyles.href = BootstrapCssUrl
-shadowRoot.appendChild(bootstrapStyles)
 
 shadowRoot.appendChild(container)
 
