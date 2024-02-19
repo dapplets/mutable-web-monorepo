@@ -37,7 +37,7 @@ describe('dynamic-html-adapter', () => {
     const expected = {
       id: 'root',
       insPoints: ['rootPointBefore', 'rootPointAfter', 'rootPointEnd', 'rootPointBegin'],
-      namespaceURI: NS,
+      namespace: NS,
       parentNode: null,
       parsedContext: {
         fullname: 'Test-fullname',
@@ -55,7 +55,7 @@ describe('dynamic-html-adapter', () => {
 
     expect(node.id).toBe(expected.id)
     expect(node.insPoints).toStrictEqual(expected.insPoints)
-    expect(node.namespaceURI).toBe(expected.namespaceURI)
+    expect(node.namespace).toBe(expected.namespace)
     expect(node.parentNode).toBe(expected.parentNode)
     expect(node.parsedContext).toStrictEqual(expected.parsedContext)
     expect(node.tagName).toBe(expected.tagName)

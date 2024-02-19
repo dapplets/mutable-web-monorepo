@@ -59,7 +59,7 @@ export class Engine implements IContextListener {
     // Find and load adapters for the given context
     this.#provider
       .getParserConfigsForContext({
-        namespace: context.namespaceURI,
+        namespace: context.namespace,
         contextType: context.tagName,
         contextId: context.id,
       })

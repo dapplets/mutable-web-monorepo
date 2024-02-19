@@ -147,7 +147,7 @@ export class LayoutManager {
   // ToDo: maybe it's better to rename props in IContextNode?
   static _buildContextTree(context: IContextNode): ContextTreeProps {
     return {
-      namespace: context.namespaceURI,
+      namespace: context.namespace,
       type: context.tagName,
       parsed: context.parsedContext,
       parent: context.parentNode ? this._buildContextTree(context.parentNode) : null,

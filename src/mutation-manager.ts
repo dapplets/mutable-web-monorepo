@@ -227,11 +227,11 @@ export class MutationManager {
 
   static _isTargetMet(
     target: Pick<AppMetadataTarget, 'namespace' | 'contextType' | 'if'>,
-    context: Pick<IContextNode, 'namespaceURI' | 'tagName' | 'parsedContext'>
+    context: Pick<IContextNode, 'namespace' | 'tagName' | 'parsedContext'>
   ): boolean {
     // ToDo: check insertion points?
     return (
-      target.namespace === context.namespaceURI &&
+      target.namespace === context.namespace &&
       target.contextType === context.tagName &&
       this._areConditionsMet(target.if, context.parsedContext)
     )

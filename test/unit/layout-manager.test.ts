@@ -5,21 +5,21 @@ describe('LayoutManager', () => {
   it('build context tree for BOS-component props', () => {
     // Arrange
     const input = {
-      namespaceURI: 'https://dapplets.org/ns/json/dapplets.near/parser/twitter',
+      namespace: 'https://dapplets.org/ns/json/dapplets.near/parser/twitter',
       tagName: 'post',
       parsedContext: {
         id: '1232131232',
         text: 'Tweet text',
       },
       parentNode: {
-        namespaceURI: 'https://dapplets.org/ns/json/dapplets.near/parser/twitter',
+        namespace: 'https://dapplets.org/ns/json/dapplets.near/parser/twitter',
         tagName: 'global',
         parsedContext: {
           id: 'global',
           username: 'nikter',
         },
         parentNode: {
-          namespaceURI: 'https://dapplets.org/ns/engine',
+          namespace: 'https://dapplets.org/ns/engine',
           tagName: 'website',
           parsedContext: {
             id: 'twitter.com',

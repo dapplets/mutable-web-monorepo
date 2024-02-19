@@ -163,7 +163,7 @@ describe('MutationManager', () => {
       },
     }
     const context = {
-      namespaceURI: 'bos.dapplets.near/parser/near-social',
+      namespace: 'bos.dapplets.near/parser/near-social',
       tagName: 'post',
       parsedContext: {
         one: 'one',

@@ -30,8 +30,8 @@ export class DomTreeBuilder implements ITreeBuilder {
     parent.removeChild(child)
   }
 
-  createNode(namespaceURI: string | null, tagName: string): IContextNode {
-    return this.#document.createElementNS(namespaceURI, tagName) as IContextNode
+  createNode(namespace: string | null, tagName: string): IContextNode {
+    return this.#document.createElementNS(namespace, tagName) as IContextNode
   }
 
   updateParsedContext(context: IContextNode, newParsedContext: any) {
