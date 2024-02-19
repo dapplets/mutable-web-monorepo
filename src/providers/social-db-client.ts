@@ -134,8 +134,8 @@ export class SocialDbClient {
     })
 
     return {
-      usedBytes: resp.used_bytes,
-      availableBytes: resp.available_bytes,
+      usedBytes: resp?.used_bytes,
+      availableBytes: resp?.available_bytes,
     }
   }
 
