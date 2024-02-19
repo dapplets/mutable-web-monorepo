@@ -187,6 +187,7 @@ export class MutationManager {
 
     return {
       id: indexedLink.id,
+      appId: appGlobalId,
       namespace: target.namespace,
       authorId: indexedLink.authorId,
       bosWidgetId: target.componentId,
@@ -215,6 +216,7 @@ export class MutationManager {
 
     return indexedLinks.map((link) => ({
       id: link.id,
+      appId: appId,
       authorId: link.authorId,
       namespace: target.namespace,
       bosWidgetId: target.componentId, // ToDo: unify

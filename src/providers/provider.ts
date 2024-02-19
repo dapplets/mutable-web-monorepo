@@ -21,6 +21,7 @@ export type IndexedLink = {
 
 export type BosUserLink = {
   id: UserLinkId
+  appId: string
   namespace: string
   insertionPoint: string
   bosWidgetId: string

@@ -107,6 +107,7 @@ export class SocialDbProvider implements IProvider {
 
     return {
       ...JSON.parse(mutation[SelfKey]),
+      metadata: mutation.metadata,
       id: globalAppId,
       appLocalId,
       authorId,

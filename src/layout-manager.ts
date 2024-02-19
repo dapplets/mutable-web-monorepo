@@ -6,7 +6,16 @@ import { AppId, AppMetadata, BosUserLink, UserLinkId } from './providers/provide
 export interface LayoutManagerProps {
   context: any
   contextType: string
-  apps: { id: string }[]
+  apps: {
+    id: string
+    metadata?: {
+      name?: string
+      description?: string
+      image?: {
+        ipfs_cid?: string
+      }
+    }
+  }[]
   widgets: {
     linkId: UserLinkId
     linkAuthorId: string
@@ -88,7 +97,7 @@ export class LayoutManager {
       contextType: context.contextType,
       apps: apps.map((app) => ({
         id: app.id,
-        componentId: app.targets[0]?.componentId, // ToDo: use app metadata instead of widget metadata
+        metadata: app.metadata,
       })),
       widgets: links.map((link) => ({
         linkId: link.id,

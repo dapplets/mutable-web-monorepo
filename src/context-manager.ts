@@ -3,7 +3,13 @@ import { IAdapter } from './core/adapters/interface'
 import { IContextNode } from './core/tree/types'
 import { LayoutManager } from './layout-manager'
 import { MutationManager } from './mutation-manager'
-import { AppId, AppMetadata, BosUserLink, UserLinkId } from './providers/provider'
+import {
+  AppId,
+  AppMetadata,
+  AppMetadataTarget,
+  BosUserLink,
+  UserLinkId,
+} from './providers/provider'
 
 const DefaultLayoutManager = 'bos.dapplets.near/widget/DefaultLayoutManager'
 
@@ -32,21 +38,15 @@ export class ContextManager {
   }
 
   forceUpdate() {
-    this.#layoutManagers.forEach((layoutManager) => {
-      layoutManager.forceUpdate()
-    })
+    this.#layoutManagers.forEach((lm) => lm.forceUpdate())
   }
 
   enableEditMode() {
-    this.#layoutManagers.forEach((layoutManager) => {
-      layoutManager.enableEditMode()
-    })
+    this.#layoutManagers.forEach((lm) => lm.enableEditMode())
   }
 
   disableEditMode() {
-    this.#layoutManagers.forEach((layoutManager) => {
-      layoutManager.disableEditMode()
-    })
+    this.#layoutManagers.forEach((lm) => lm.disableEditMode())
   }
 
   addUserLink(link: BosUserLink) {
@@ -60,14 +60,27 @@ export class ContextManager {
   }
 
   addAppMetadata(appMetadata: AppMetadata) {
-    // ToDo: use getAppsAndLinksForContext to filter `injectOnce` targets
-    this.#apps.set(appMetadata.id, appMetadata) // save app for further layout managers
-    this.#layoutManagers.forEach((lm) => lm.addAppMetadata(appMetadata))
+    const injectableTargets = appMetadata.targets.filter((target) =>
+      this._isTargetInjectable(target, appMetadata.id)
+    )
+
+    // Exclude apps that already injected (for `injectOnce` targets)
+    if (injectableTargets.length === 0) {
+      return
+    }
+
+    const metadataWithSuitableTargets = {
+      ...appMetadata,
+      targets: injectableTargets,
+    }
+
+    this.#apps.set(appMetadata.id, metadataWithSuitableTargets) // save app for further layout managers
+    this.#layoutManagers.forEach((lm) => lm.addAppMetadata(metadataWithSuitableTargets))
   }
 
-  removeAppMetadata(app: AppMetadata) {
-    this.#apps.delete(app.id)
-    this.#layoutManagers.forEach((lm) => lm.removeAppMetadata(app.id))
+  removeAppMetadata(appGlobalId: AppId) {
+    this.#apps.delete(appGlobalId)
+    this.#layoutManagers.forEach((lm) => lm.removeAppMetadata(appGlobalId))
   }
 
   async createUserLink(globalAppId: AppId) {
@@ -118,5 +131,22 @@ export class ContextManager {
   destroy() {
     this.#layoutManagers.forEach((lm) => lm.destroy())
     this.#layoutManagers.clear()
+  }
+
+  private _isTargetInjectable(target: AppMetadataTarget, appId: string) {
+    // The limitation is only for `injectOnce` targets
+    if (!target.injectOnce) return true
+
+    // ToDo: looks that target should have an unique identifier?
+    const userLinks = Array.from(this.#userLinks.values())
+    const isInjected = !!userLinks.find(
+      (link) =>
+        link.appId === appId &&
+        link.namespace === target.namespace &&
+        link.insertionPoint === target.injectTo &&
+        link.bosWidgetId === target.componentId
+    )
+
+    return !isInjected
   }
 }
