@@ -2,7 +2,6 @@ import { InsertionType } from '../../../src/core/adapters/interface'
 import { BosParserConfig } from '../../../src/core/parsers/bos-parser'
 
 export const config: BosParserConfig = {
-  namespace: 'example',
   contexts: {
     main: {
       component: 'MainComponent',

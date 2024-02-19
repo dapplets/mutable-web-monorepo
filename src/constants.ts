@@ -20,4 +20,4 @@ export const getNearConfig = (networkId: string): NearConfig => {
   return config
 }
 
-export const DappletsEngineNs = 'https://dapplets.org/ns/engine'
+export const DappletsEngineNs = 'engine'

@@ -1,6 +1,3 @@
-import { ParserConfig } from '../core/parsers/json-parser'
-import { BosParserConfig } from '../core/parsers/bos-parser'
-
 export type UserLinkId = string
 export type AppId = string
 export type MutationId = string
@@ -15,12 +12,6 @@ export type TargetCondition = {
   contains?: string
   in?: ScalarType[]
   index?: boolean
-}
-
-export type ContextFilter = {
-  namespace: string
-  contextType: string
-  contextId: string | null
 }
 
 export type IndexedLink = {
@@ -51,6 +42,13 @@ export type AppMetadata = {
   authorId: string
   appLocalId: string
   targets: AppMetadataTarget[]
+  metadata?: {
+    name?: string
+    description?: string
+    image?: {
+      ipfs_cid?: string
+    }
+  }
 }
 
 export type Mutation = {
@@ -75,13 +73,22 @@ export type LinkIndexObject = {
   if: Record<string, ScalarType>
 }
 
+export type ParserConfigTarget = {
+  namespace: string
+  contextType: string
+  if: Record<string, TargetCondition>
+}
+
+export type ParserConfig = {
+  id: string
+  parserType: string
+  contexts: any
+  targets: ParserConfigTarget[]
+}
+
 export interface IProvider {
   // Read
-  getParserConfigsForContext(
-    contextFilter: ContextFilter
-  ): Promise<(ParserConfig | BosParserConfig)[]>
-  getParserConfig(ns: string): Promise<ParserConfig | BosParserConfig | null>
-  getAllAppIds(): Promise<AppId[]>
+  getParserConfig(globalParserId: string): Promise<ParserConfig | null>
   getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]>
   getApplication(globalAppId: AppId): Promise<AppMetadata | null>
   getMutation(globalMutationId: MutationId): Promise<Mutation | null>
@@ -93,9 +100,4 @@ export interface IProvider {
   createApplication(appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>): Promise<AppMetadata>
   createMutation(mutation: Mutation): Promise<Mutation>
   createParserConfig(config: ParserConfig): Promise<void>
-  setContextIdsForParser(
-    parserGlobalId: string,
-    contextsToBeAdded: ContextFilter[],
-    contextsToBeDeleted: ContextFilter[]
-  ): Promise<void>
 }

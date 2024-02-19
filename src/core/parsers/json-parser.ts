@@ -1,8 +1,7 @@
 import { InsertionType } from '../adapters/interface'
 import { IParser, InsertionPoint } from './interface'
 
-export type ParserConfig = {
-  namespace: string
+export type JsonParserConfig = {
   contexts: {
     [name: string]: {
       selector?: string
@@ -51,9 +50,9 @@ const query = (cssOrXPath: string, element: Element) => {
 }
 
 export class JsonParser implements IParser {
-  protected config: ParserConfig
+  protected config: JsonParserConfig
 
-  constructor(config: ParserConfig) {
+  constructor(config: JsonParserConfig) {
     // ToDo: validate config
     this.config = config
   }

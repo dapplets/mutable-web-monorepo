@@ -1,10 +1,7 @@
 import { IAdapter } from './core/adapters/interface'
-import { BosParser } from './core/parsers/bos-parser'
-import { JsonParser } from './core/parsers/json-parser'
-import { MicrodataParser } from './core/parsers/microdata-parser'
 import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
-import { IProvider, Mutation } from './providers/provider'
+import { IProvider, Mutation, ParserConfig } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
 import { getNearConfig } from './constants'
 import { NearSigner } from './providers/near-signer'
@@ -13,6 +10,8 @@ import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
 import { PureTreeBuilder } from './core/tree/pure-tree/pure-tree-builder'
 import { ContextManager } from './context-manager'
 import { MutationManager } from './mutation-manager'
+import { JsonParser } from './core/parsers/json-parser'
+import { BosParser } from './core/parsers/bos-parser'
 
 export enum AdapterType {
   Bos = 'bos',
@@ -57,25 +56,13 @@ export class Engine implements IContextListener {
 
     // We don't wait adapters here
     // Find and load adapters for the given context
-    this.#provider
-      .getParserConfigsForContext({
-        namespace: context.namespace,
-        contextType: context.contextType,
-        contextId: context.id,
-      })
-      .then((configs) => {
-        for (const config of configs) {
-          const type = this.getParserType(config.namespace)
-          if (!type) {
-            console.error('Unsupported parser namespace')
-            continue
-          }
-          const adapter = this.createAdapter(type, config)
-          this.registerAdapter(adapter)
+    const parserConfigs = this.#mutationManager.filterSuitableParsers(context)
+    for (const config of parserConfigs) {
+      const adapter = this.createAdapter(config)
+      this.registerAdapter(adapter)
 
-          console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`)
-        }
-      })
+      console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`)
+    }
 
     // ToDo: do not iterate over all adapters
     const adapter = Array.from(this.adapters).find((adapter) => {
@@ -93,10 +80,8 @@ export class Engine implements IContextListener {
 
     this.#contextManagers.set(context, contextManager)
 
-    const [links, apps] = await Promise.all([
-      this.#mutationManager.getLinksForContext(context),
-      this.#mutationManager.filterSuitableApps(context),
-    ])
+    const links = await this.#mutationManager.getLinksForContext(context)
+    const apps = this.#mutationManager.filterSuitableApps(context)
 
     links.forEach((link) => contextManager.addUserLink(link))
     apps.forEach((app) => contextManager.addAppMetadata(app))
@@ -179,54 +164,26 @@ export class Engine implements IContextListener {
     this.adapters.delete(adapter)
   }
 
-  getParserType(ns: string): AdapterType | null {
-    if (ns.startsWith('https://dapplets.org/ns/json')) {
-      return AdapterType.Json
-    } else if (ns.startsWith('https://dapplets.org/ns/bos')) {
-      return AdapterType.Bos
-    } else if (ns.startsWith('https://dapplets.org/ns/microdata')) {
-      return AdapterType.Microdata
-    } else {
-      return null
+  createAdapter(config?: ParserConfig): IAdapter {
+    if (!this.treeBuilder) {
+      throw new Error('Tree builder is not inited')
     }
-  }
 
-  createAdapter(type: AdapterType, config?: any): IAdapter {
-    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
-
-    const observingElement = document.body
-
-    switch (type) {
-      case AdapterType.Bos:
-        if (!config?.namespace) {
-          throw new Error('Json adapter requires id')
-        }
-
+    switch (config?.parserType) {
+      case 'json':
         return new DynamicHtmlAdapter(
-          observingElement,
+          document.body,
           this.treeBuilder,
-          config.namespace,
-          new BosParser(config)
+          config.id,
+          new JsonParser(config as any) // ToDo: add try catch because config can be invalid
         )
 
-      case AdapterType.Microdata:
+      case 'bos':
         return new DynamicHtmlAdapter(
-          observingElement,
+          document.body,
           this.treeBuilder,
-          'https://dapplets.org/ns/microdata',
-          new MicrodataParser()
-        )
-
-      case AdapterType.Json:
-        if (!config?.namespace) {
-          throw new Error('Json adapter requires id')
-        }
-
-        return new DynamicHtmlAdapter(
-          observingElement,
-          this.treeBuilder,
-          config.namespace,
-          new JsonParser(config) // ToDo: add try catch because config can be invalid
+          config.id,
+          new BosParser(config as any)
         )
 
       default:

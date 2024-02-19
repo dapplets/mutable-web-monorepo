@@ -5,7 +5,6 @@ const CompAttr = 'data-component'
 const PropsAttr = 'data-props'
 
 export type BosParserConfig = {
-  namespace: string
   contexts: {
     [name: string]: {
       component?: string

@@ -2,10 +2,8 @@ import { sha256 } from 'js-sha256'
 import serializeToDeterministicJson from 'json-stringify-deterministic'
 
 import { NearSigner } from './near-signer'
-import { ParserConfig } from '../core/parsers/json-parser'
 import {
   AppMetadata,
-  ContextFilter,
   IProvider,
   UserLinkId,
   AppId,
@@ -13,14 +11,12 @@ import {
   IndexedLink,
   LinkIndexObject,
   MutationId,
+  ParserConfig,
 } from './provider'
 import { generateGuid } from '../core/utils'
 import { SocialDbClient } from './social-db-client'
 import { BosParserConfig } from '../core/parsers/bos-parser'
 import { DappletsEngineNs } from '../constants'
-
-const DappletsNamespace = 'https://dapplets.org/ns/'
-const SupportedParserTypes = ['json', 'bos']
 
 const ProjectIdKey = 'dapplets.near'
 const ParserKey = 'parser'
@@ -44,56 +40,21 @@ const KeyDelimiter = '/'
  * /docs/social-db-reference.json
  */
 export class SocialDbProvider implements IProvider {
-  #client: SocialDbClient
+  client: SocialDbClient
 
   constructor(
     private _signer: NearSigner,
     _contractName: string
   ) {
-    this.#client = new SocialDbClient(_signer, _contractName)
+    this.client = new SocialDbClient(_signer, _contractName)
   }
 
   // #region Read methods
 
-  async getParserConfigsForContext(
-    contextFilter: ContextFilter
-  ): Promise<(ParserConfig | BosParserConfig)[]> {
-    // ToDo: implement adapters loading for another types of contexts
-    if (contextFilter.namespace !== DappletsEngineNs) return []
+  async getParserConfig(globalParserId: string): Promise<ParserConfig | null> {
+    const { accountId, parserLocalId } = this._extractParserIdFromNamespace(globalParserId)
 
-    const contextHashKey = SocialDbProvider._hashObject(contextFilter)
-
-    const keys = [
-      WildcardKey, // from any user
-      SettingsKey,
-      ProjectIdKey,
-      ParserKey,
-      WildcardKey, // any parser
-      ParserContextsKey,
-      contextHashKey,
-    ]
-
-    const availableKeys = await this.#client.keys([keys.join(KeyDelimiter)])
-    const parserKeys = availableKeys
-      .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))) // discard contextHashKey
-      .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))) // discard ParserContextsKey
-
-    const queryResult = await this.#client.get(parserKeys)
-
-    const parsers = []
-
-    for (const key of parserKeys) {
-      const json = SocialDbProvider._getValueByKey(key.split(KeyDelimiter), queryResult)
-      parsers.push(JSON.parse(json))
-    }
-
-    return parsers
-  }
-
-  async getParserConfig(ns: string): Promise<ParserConfig | BosParserConfig | null> {
-    const { accountId, parserLocalId } = this._extractParserIdFromNamespace(ns)
-
-    const queryResult = await this.#client.get([
+    const queryResult = await this.client.get([
       `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
     ])
 
@@ -102,17 +63,14 @@ export class SocialDbProvider implements IProvider {
 
     if (!parserConfigJson) return null
 
-    return JSON.parse(parserConfigJson)
-  }
+    const config = JSON.parse(parserConfigJson)
 
-  async getAllAppIds(): Promise<AppId[]> {
-    const keys = [WildcardKey, SettingsKey, ProjectIdKey, AppKey, WildcardKey]
-    const appKeys = await this.#client.keys([keys.join(KeyDelimiter)])
-
-    return appKeys.map((key) => {
-      const [authorId, , , , localAppId] = key.split(KeyDelimiter)
-      return [authorId, AppKey, localAppId].join(KeyDelimiter)
-    })
+    return {
+      id: globalParserId,
+      parserType: config.parserType,
+      contexts: config.contexts,
+      targets: config.targets,
+    }
   }
 
   async getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]> {
@@ -129,7 +87,7 @@ export class SocialDbProvider implements IProvider {
     ].join(KeyDelimiter)
 
     // ToDo: batch requests
-    const resp = await this.#client.keys([key])
+    const resp = await this.client.keys([key])
 
     return resp.map((key) => {
       const [authorId, , , , id] = key.split(KeyDelimiter)
@@ -141,7 +99,7 @@ export class SocialDbProvider implements IProvider {
     const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter)
 
     const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId]
-    const queryResult = await this.#client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
+    const queryResult = await this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
 
     const mutation = SocialDbProvider._getValueByKey(keys, queryResult)
 
@@ -159,7 +117,7 @@ export class SocialDbProvider implements IProvider {
     const [authorId, , mutationLocalId] = globalMutationId.split(KeyDelimiter)
 
     const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId]
-    const queryResult = await this.#client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
+    const queryResult = await this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
 
     const mutation = SocialDbProvider._getValueByKey(keys, queryResult)
 
@@ -181,7 +139,7 @@ export class SocialDbProvider implements IProvider {
       WildcardKey, // any mutation local id
     ]
 
-    const queryResult = await this.#client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
+    const queryResult = await this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
 
     const mutationsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length)
 
@@ -220,7 +178,7 @@ export class SocialDbProvider implements IProvider {
       },
     }
 
-    await this.#client.set(SocialDbProvider._buildNestedData(keys, storedAppLink))
+    await this.client.set(SocialDbProvider._buildNestedData(keys, storedAppLink))
 
     return {
       id: linkId,
@@ -237,7 +195,7 @@ export class SocialDbProvider implements IProvider {
 
     const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId, RecursiveWildcardKey]
 
-    await this.#client.delete([keys.join(KeyDelimiter)])
+    await this.client.delete([keys.join(KeyDelimiter)])
   }
 
   async createApplication(
@@ -251,9 +209,10 @@ export class SocialDbProvider implements IProvider {
       [SelfKey]: JSON.stringify({
         targets: appMetadata.targets,
       }),
+      metadata: appMetadata.metadata,
     }
 
-    await this.#client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata))
+    await this.client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata))
 
     return {
       ...appMetadata,
@@ -272,83 +231,43 @@ export class SocialDbProvider implements IProvider {
       apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
     }
 
-    await this.#client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata))
+    await this.client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata))
 
     return mutation
   }
 
   async createParserConfig(config: ParserConfig): Promise<void> {
-    const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.namespace)
+    const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.id)
 
     const keys = [accountId, SettingsKey, ProjectIdKey, ParserKey, parserLocalId]
 
     const storedParserConfig = {
-      [SelfKey]: JSON.stringify(config),
+      [SelfKey]: JSON.stringify({
+        parserType: config.parserType,
+        targets: config.targets,
+        contexts: config.contexts,
+      }),
     }
 
-    await this.#client.set(SocialDbProvider._buildNestedData(keys, storedParserConfig))
-  }
-
-  async setContextIdsForParser(
-    parserGlobalId: string,
-    contextsToBeAdded: ContextFilter[],
-    contextsToBeDeleted: ContextFilter[]
-  ): Promise<void> {
-    const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split(KeyDelimiter)
-
-    if (parserKey !== ParserKey) {
-      throw new Error('Invalid parser ID')
-    }
-
-    const addingKeys = contextsToBeAdded.map(SocialDbProvider._hashObject)
-    const deletingKeys = contextsToBeDeleted.map(SocialDbProvider._hashObject)
-
-    const savingData = {
-      ...Object.fromEntries(addingKeys.map((k) => [k, ''])),
-      ...Object.fromEntries(deletingKeys.map((k) => [k, null])),
-    }
-
-    // Key example:
-    // bos.dapplets.near/settings/dapplets.near/parser/social-network/contexts
-    const parentKeys = [
-      parserOwnerId,
-      SettingsKey,
-      ProjectIdKey,
-      ParserKey,
-      parserLocalId,
-      ParserContextsKey,
-    ]
-
-    await this.#client.set(SocialDbProvider._buildNestedData(parentKeys, savingData))
+    await this.client.set(SocialDbProvider._buildNestedData(keys, storedParserConfig))
   }
 
   // #endregion
 
   // #region Private methods
 
-  private _extractParserIdFromNamespace(namespace: string): {
-    parserType: string
+  private _extractParserIdFromNamespace(parserGlobalId: string): {
     accountId: string
     parserLocalId: string
   } {
-    if (!namespace.startsWith(DappletsNamespace)) {
-      throw new Error('Invalid namespace')
-    }
-
-    const parserGlobalId = namespace.replace(DappletsNamespace, '')
-
     // Example: example.near/parser/social-network
-    const [parserType, accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter)
+    const [accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter)
 
     if (entityType !== 'parser' || !accountId || !parserLocalId) {
       throw new Error('Invalid namespace')
     }
 
-    if (!SupportedParserTypes.includes(parserType)) {
-      throw new Error(`Parser type "${parserType}" is not supported`)
-    }
-
-    return { parserType, accountId, parserLocalId }
+    return { accountId, parserLocalId }
   }
 
   // #endregion

@@ -4,7 +4,7 @@ import { IContextListener, ITreeBuilder } from '../../../../../src/core/tree/typ
 import { PureTreeBuilder } from '../../../../../src/core/tree/pure-tree/pure-tree-builder'
 import { PureContextNode } from '../../../../../src/core/tree/pure-tree/pure-context-node'
 
-const NS = 'https://dapplets.org/NS/engine'
+const NS = 'engine'
 
 // automock dependency
 jest.mock('../../../../../src/core/tree/pure-tree/pure-context-node')

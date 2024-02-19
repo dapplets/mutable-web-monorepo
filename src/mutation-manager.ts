@@ -8,6 +8,7 @@ import {
   LinkIndexObject,
   Mutation,
   MutationId,
+  ParserConfig,
   ScalarType,
   TargetCondition,
   UserLinkId,
@@ -22,6 +23,7 @@ export class MutationManager {
 
   #provider: IProvider
   #activeApps: AppMetadata[] = []
+  #activeParsers: ParserConfig[] = []
 
   constructor(provider: IProvider) {
     this.#provider = provider
@@ -61,7 +63,7 @@ export class MutationManager {
   }
 
   // ToDo: replace with getAppsAndLinksForContext
-  async filterSuitableApps(context: IContextNode): Promise<AppMetadata[]> {
+  filterSuitableApps(context: IContextNode): AppMetadata[] {
     const suitableApps: AppMetadata[] = []
 
     for (const app of this.#activeApps) {
@@ -97,6 +99,22 @@ export class MutationManager {
     return appLinksNested.flat(2)
   }
 
+  filterSuitableParsers(context: IContextNode): ParserConfig[] {
+    const suitableParsers: ParserConfig[] = []
+
+    for (const parser of this.#activeParsers) {
+      const suitableTargets = parser.targets.filter((target) =>
+        MutationManager._isTargetMet(target, context)
+      )
+
+      if (suitableTargets.length > 0) {
+        suitableParsers.push({ ...parser, targets: suitableTargets })
+      }
+    }
+
+    return suitableParsers
+  }
+
   // #endregion
 
   // #region Write methods
@@ -106,8 +124,23 @@ export class MutationManager {
     if (!mutation) throw new Error("Mutation doesn't exist")
 
     const apps = await Promise.all(mutation.apps.map((app) => this.#provider.getApplication(app)))
+    const activeApps = apps.flatMap((app) => (app ? [app] : [])) // filter empty apps
 
-    this.#activeApps = apps.flatMap((app) => (app ? [app] : [])) // filter empty apps
+    // get parser ids from target namespaces
+    const parserIds = [
+      ...new Set(
+        activeApps
+          .map((app) => app.targets)
+          .flat()
+          .map((target) => target.namespace)
+      ),
+    ]
+
+    const parsers = await Promise.all(parserIds.map((id) => this.#provider.getParserConfig(id)))
+    const activeParsers = parsers.flatMap((parser) => (parser ? [parser] : [])) // filter empty parsers
+
+    this.#activeApps = activeApps
+    this.#activeParsers = activeParsers
     this.mutation = mutation
 
     console.log('Active apps: ', mutation.apps)

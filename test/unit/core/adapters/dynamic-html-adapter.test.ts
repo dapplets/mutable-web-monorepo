@@ -9,7 +9,7 @@ import {
   dynamicHtmlAdapterDataStr,
 } from '../../../data/adapters/dynamic-html-adapter-constants'
 
-const NS = 'https://dapplets.org/ns/engine'
+const NS = 'engine'
 
 describe('dynamic-html-adapter', () => {
   let dynamicAdapter: IAdapter
