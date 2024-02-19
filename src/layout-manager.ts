@@ -85,7 +85,7 @@ export class LayoutManager {
     this._setProps({
       // ToDo: unify context forwarding
       context: context.parsedContext,
-      contextType: context.tagName,
+      contextType: context.contextType,
       apps: apps.map((app) => ({
         id: app.id,
         componentId: app.targets[0]?.componentId, // ToDo: use app metadata instead of widget metadata
@@ -148,7 +148,7 @@ export class LayoutManager {
   static _buildContextTree(context: IContextNode): ContextTreeProps {
     return {
       namespace: context.namespace,
-      type: context.tagName,
+      type: context.contextType,
       parsed: context.parsedContext,
       parent: context.parentNode ? this._buildContextTree(context.parentNode) : null,
     }

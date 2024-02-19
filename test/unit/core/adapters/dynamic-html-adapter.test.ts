@@ -45,7 +45,7 @@ describe('dynamic-html-adapter', () => {
         img: 'https://img.com/profile_images/id/Q_300x300.jpg',
         username: '2',
       },
-      tagName: 'root',
+      contextType: 'root',
     }
 
     // Act
@@ -58,7 +58,7 @@ describe('dynamic-html-adapter', () => {
     expect(node.namespace).toBe(expected.namespace)
     expect(node.parentNode).toBe(expected.parentNode)
     expect(node.parsedContext).toStrictEqual(expected.parsedContext)
-    expect(node.tagName).toBe(expected.tagName)
+    expect(node.contextType).toBe(expected.contextType)
   })
 
   it('append node', async () => {

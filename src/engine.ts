@@ -60,7 +60,7 @@ export class Engine implements IContextListener {
     this.#provider
       .getParserConfigsForContext({
         namespace: context.namespace,
-        contextType: context.tagName,
+        contextType: context.contextType,
         contextId: context.id,
       })
       .then((configs) => {

@@ -53,7 +53,7 @@ export class DynamicHtmlAdapter implements IAdapter {
     }
 
     const insPoint = this.parser
-      .getInsertionPoints(contextElement, context.tagName)
+      .getInsertionPoints(contextElement, context.contextType)
       .find((ip) => ip.name === insertionPoint)
 
     if (!insPoint) {
@@ -62,7 +62,7 @@ export class DynamicHtmlAdapter implements IAdapter {
 
     const insPointElement: Element | null = this.parser.findInsertionPoint(
       contextElement,
-      context.tagName,
+      context.contextType,
       insertionPoint
     )
 
@@ -70,7 +70,7 @@ export class DynamicHtmlAdapter implements IAdapter {
 
     if (!insPointElement) {
       throw new Error(
-        `Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`
+        `Insertion point "${insertionPoint}" not found in "${context.contextType}" context type for "${insertionType}" insertion type`
       )
     }
 
@@ -95,7 +95,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   getInsertionPoints(context: IContextNode): InsertionPoint[] {
     const htmlElement = this.#elementByContext.get(context)!
     if (!htmlElement) return []
-    return this.parser.getInsertionPoints(htmlElement, context.tagName)
+    return this.parser.getInsertionPoints(htmlElement, context.contextType)
   }
 
   _createContextForElement(element: Element, contextName: string): IContextNode {
@@ -121,9 +121,9 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   private _handleMutations(element: Element, context: IContextNode) {
-    const parsedContext = this.parser.parseContext(element, context.tagName)
-    const pairs = this.parser.findChildElements(element, context.tagName)
-    const insPoints = this._findAvailableInsPoints(element, context.tagName)
+    const parsedContext = this.parser.parseContext(element, context.contextType)
+    const pairs = this.parser.findChildElements(element, context.contextType)
+    const insPoints = this._findAvailableInsPoints(element, context.contextType)
 
     this.treeBuilder.updateParsedContext(context, parsedContext)
     this.treeBuilder.updateInsertionPoints(context, insPoints)

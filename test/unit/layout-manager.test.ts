@@ -6,21 +6,21 @@ describe('LayoutManager', () => {
     // Arrange
     const input = {
       namespace: 'https://dapplets.org/ns/json/dapplets.near/parser/twitter',
-      tagName: 'post',
+      contextType: 'post',
       parsedContext: {
         id: '1232131232',
         text: 'Tweet text',
       },
       parentNode: {
         namespace: 'https://dapplets.org/ns/json/dapplets.near/parser/twitter',
-        tagName: 'global',
+        contextType: 'global',
         parsedContext: {
           id: 'global',
           username: 'nikter',
         },
         parentNode: {
           namespace: 'https://dapplets.org/ns/engine',
-          tagName: 'website',
+          contextType: 'website',
           parsedContext: {
             id: 'twitter.com',
           },

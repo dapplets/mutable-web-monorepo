@@ -2,16 +2,16 @@ import { IContextNode } from '../types'
 
 export class PureContextNode implements IContextNode {
   public id: string | null = null
-  public tagName: string
+  public contextType: string
   public namespace: string
   public parentNode: IContextNode | null = null
   public parsedContext: any = {}
   public children: IContextNode[] = []
   public insPoints: string[] = []
 
-  constructor(namespace: string, tagName: string) {
+  constructor(namespace: string, contextType: string) {
     this.namespace = namespace
-    this.tagName = tagName
+    this.contextType = contextType
   }
 
   removeChild(child: IContextNode): void {

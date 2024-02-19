@@ -17,7 +17,7 @@ describe('PureContextNode', () => {
     expect(node.id).toBe(null)
     expect(node.insPoints.length).toBe(0)
     expect(node.namespace).toBe(NS)
-    expect(node.tagName).toBe(contextType)
+    expect(node.contextType).toBe(contextType)
   })
 
   it('context node append child', () => {
