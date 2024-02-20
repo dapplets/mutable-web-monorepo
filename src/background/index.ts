@@ -42,33 +42,30 @@ const connectWallet = async (
   recreateMenuForConnectedState(id[0].accountId)
 }
 
-const copyOrDisconnect = async (
+const disconnect = async (
   info: browser.Menus.OnClickData,
   tab: browser.Tabs.Tab
 ): Promise<void> => {
-  if (info.menuItemId === 'disconnect') {
-    await near.signOut()
-    browser.tabs.sendMessage(tab.id, { type: 'RESTART' })
-    recreateMenuForDisconnectedState()
-  } else if (info.menuItemId === 'copy') setClipboard(tab, (await near.getAccounts())[0].accountId)
+  await near.signOut()
+  browser.tabs.sendMessage(tab.id, { type: 'RESTART' })
+  recreateMenuForDisconnectedState()
+}
+
+const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
+  setClipboard(tab, (await near.getAccounts())[0].accountId)
 }
 
 const recreateMenuForDisconnectedState = (): void => {
   browser.contextMenus.removeAll()
-  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-  browser.contextMenus.onClicked.removeListener(connectWallet)
   browser.contextMenus.create({
     title: 'Connect NEAR wallet',
     id: 'connect',
     contexts: ['action'],
   })
-  browser.contextMenus.onClicked.addListener(connectWallet)
 }
 
 const recreateMenuForConnectedState = (accountName: string): void => {
   browser.contextMenus.removeAll()
-  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-  browser.contextMenus.onClicked.removeListener(connectWallet)
   const parentContextMenuId = browser.contextMenus.create({
     title: accountName,
     id: 'wallet',
@@ -87,13 +84,28 @@ const recreateMenuForConnectedState = (accountName: string): void => {
     id: 'disconnect',
     contexts: ['action'],
   })
-  browser.contextMenus.onClicked.addListener(copyOrDisconnect)
 }
 
 const updateActionMenu = async (): Promise<void> => {
   const accounts = await near.getAccounts()
   if (accounts.length) recreateMenuForConnectedState(accounts[0].accountId)
   else recreateMenuForDisconnectedState()
+}
+
+function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) {
+  switch (info.menuItemId) {
+    case 'connect':
+      return connectWallet(info, tab)
+
+    case 'disconnect':
+      return disconnect(info, tab)
+
+    case 'copy':
+      return copy(info, tab)
+
+    default:
+      break
+  }
 }
 
 browser.runtime.onInstalled.addListener(updateActionMenu)
@@ -113,5 +125,5 @@ const setCopyAvailability = async (tabId: number) => {
 const debouncedFn = debounce(setCopyAvailability, 1000)
 
 browser.tabs.onUpdated.addListener((tabId) => debouncedFn(tabId))
-
 browser.tabs.onActivated.addListener((a) => debouncedFn(a.tabId))
+browser.contextMenus.onClicked.addListener(handleContextMenuClick)
