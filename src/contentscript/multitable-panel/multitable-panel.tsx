@@ -1,5 +1,5 @@
 import { Engine } from 'mutable-web-engine'
-import React, { FC, useEffect } from 'react'
+import React, { FC } from 'react'
 import styled from 'styled-components'
 import { Dropdown } from './components/dropdown'
 
@@ -36,18 +36,13 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
-  useEffect(() => {}, [window.innerWidth])
+  // ToDo: remove this
+  const isOverlayCollapsed = document
+    .querySelector('#dapplets-overlay-manager')
+    ?.classList.contains('dapplets-overlay-collapsed')
 
   return (
-    <WrapperPanel
-      $right={`${
-        !document
-          .querySelector('#dapplets-overlay-manager')
-          ?.classList.contains('dapplets-overlay-collapsed')
-          ? 0
-          : 468
-      }px`}
-    >
+    <WrapperPanel $right={`${!isOverlayCollapsed ? 0 : 468}px`}>
       <NorthPanel>
         <Dropdown engine={props.engine} />
       </NorthPanel>
