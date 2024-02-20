@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
 import { ExtensionStorage } from './extension-storage'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
+import { getCurrentMutationId } from './storage'
 import { setupWallet } from './wallet'
 
 const NetworkId = 'mainnet'
@@ -64,7 +65,14 @@ async function main() {
     networkId: NetworkId,
     selector,
   })
-  await engine.start()
+
+  const mutationId = await getCurrentMutationId(window.location.hostname)
+
+  if (mutationId) {
+    await engine.start(mutationId)
+  } else {
+    await engine.start()
+  }
 
   browser.runtime.onMessage.addListener((message) => {
     if (!message || !message.type) return

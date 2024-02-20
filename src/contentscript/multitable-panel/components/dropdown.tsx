@@ -1,6 +1,7 @@
 import { Engine, Mutation } from 'mutable-web-engine'
 import React, { DetailedHTMLProps, FC, HTMLAttributes, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { setCurrentMutationId } from '../../storage'
 
 const WrapperDropdown = styled.div`
   position: relative;
@@ -300,6 +301,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
     setSelectedMutation(mut)
     x(false) // ToDo: ???
     await engine.switchMutation(mut.id)
+    await setCurrentMutationId(window.location.hostname, mut.id)
   }
 
   return (
