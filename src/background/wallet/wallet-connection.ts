@@ -145,7 +145,7 @@ export class CustomWalletConnection {
     newUrl.searchParams.set(
       'transactions',
       transactions
-        .map((transaction) => serialize(SCHEMA.Transaction, transaction))
+        .map((transaction) => serialize(SCHEMA, transaction))
         .map((serialized) => Buffer.from(serialized).toString('base64'))
         .join(',')
     )
