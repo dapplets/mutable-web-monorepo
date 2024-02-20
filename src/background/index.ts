@@ -30,24 +30,38 @@ browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
 const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> =>
   browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
 
-const connectWallet = async (
-  info: browser.Menus.OnClickData,
-  tab: browser.Tabs.Tab
-): Promise<void> => {
-  const id = await near.signIn({
+const connectWallet = async (): Promise<void> => {
+  const params = {
     contractId: DEFAULT_CONTRACT_ID,
     methodNames: [],
-  })
-  browser.tabs.sendMessage(tab.id, { type: 'RESTART' })
-  recreateMenuForConnectedState(id[0].accountId)
+  }
+  const accounts = await near.signIn(params)
+
+  // send events to all tabs
+  browser.tabs.query({}).then((tabs) =>
+    tabs.map((tab) => {
+      browser.tabs.sendMessage(tab.id, {
+        type: 'SIGNED_IN',
+        params: {
+          ...params,
+          accounts,
+        },
+      })
+    })
+  )
+
+  recreateMenuForConnectedState(accounts[0].accountId)
 }
 
-const disconnect = async (
-  info: browser.Menus.OnClickData,
-  tab: browser.Tabs.Tab
-): Promise<void> => {
+const disconnect = async (): Promise<void> => {
   await near.signOut()
-  browser.tabs.sendMessage(tab.id, { type: 'RESTART' })
+
+  // send events to all tabs
+  browser.tabs.query({}).then((tabs) =>
+    tabs.map((tab) => {
+      browser.tabs.sendMessage(tab.id, { type: 'SIGNED_OUT' })
+    })
+  )
   recreateMenuForDisconnectedState()
 }
 
@@ -95,10 +109,10 @@ const updateActionMenu = async (): Promise<void> => {
 function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) {
   switch (info.menuItemId) {
     case 'connect':
-      return connectWallet(info, tab)
+      return connectWallet()
 
     case 'disconnect':
-      return disconnect(info, tab)
+      return disconnect()
 
     case 'copy':
       return copy(info, tab)
