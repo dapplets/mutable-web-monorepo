@@ -5,8 +5,7 @@ import { SignAndSendTransactionOptions } from 'near-api-js/lib/account'
 import { createTransaction } from 'near-api-js/lib/transaction'
 import { PublicKey, serialize } from 'near-api-js/lib/utils'
 import browser from 'webextension-polyfill'
-import { tabs_query, tabs_remove, tabs_update, waitTab } from '../background'
-import { generateGuid } from '../helpers'
+import { generateGuid, waitTab } from '../helpers'
 
 export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
   async signAndSendTransaction({
@@ -56,7 +55,7 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
     const callbackUrl = browser.runtime.getURL(`callback.html?request_id=${requestId}`)
 
     // ToDo: replace currentWindow with lastFocusedWindow
-    const [currentTab] = await tabs_query({ active: true, currentWindow: true })
+    const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true })
 
     let callbackTab = null
     const waitTabPromise = waitTab(callbackUrl).then((x) => (callbackTab = x))
@@ -70,8 +69,8 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
 
     if (!callbackTab) throw new Error(`User rejected the transaction.`)
 
-    await tabs_update(currentTab.id, { active: true })
-    await tabs_remove(callbackTab.id)
+    await browser.tabs.update(currentTab.id, { active: true })
+    await browser.tabs.remove(callbackTab.id)
 
     const callbackTabUrlObject = new URL(callbackTab.url)
     const transactionHashes = callbackTabUrlObject.searchParams.get('transactionHashes')
