@@ -61,7 +61,7 @@
     "@types/styled-components": "^5.1.34",
     "chrome-extension-message-wrapper": "github:dapplets/chrome-extension-message-wrapper",
     "mutable-web-engine": "github:dapplets/mutable-web-engine",
-    "near-api-js": "^3.0.2",
+    "near-api-js": "^2.1.3",
     "near-social-vm": "github:dapplets/near-social-vm",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
