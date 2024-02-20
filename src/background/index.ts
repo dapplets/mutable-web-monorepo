@@ -1,119 +1,143 @@
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
-import { waitClosingTab, waitTab } from './helpers'
+import { debounce } from './helpers'
+import { WalletImpl, WalletParams } from './wallet'
+
+const DEFAULT_CONTRACT_ID = 'social.near' // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
+
+const walletConfig: WalletParams = {
+  networkId: 'mainnet',
+  nodeUrl: 'https://rpc.mainnet.near.org',
+  walletUrl: 'https://app.mynearwallet.com',
+  helperUrl: 'https://helper.mainnet.near.org',
+  explorerUrl: 'https://explorer.near.org',
+}
+
+const near = new WalletImpl(walletConfig)
+
+export const bgFunctions = {
+  near_signIn: near.signIn.bind(near),
+  near_signOut: near.signOut.bind(near),
+  near_getAccounts: near.getAccounts.bind(near),
+  near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
+  near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
+}
 
 export type BgFunctions = typeof bgFunctions
 
-const bgFunctions = {
-  // browser.tabs.* methods are not available in content scripts
-  // so we have to use the background script as a proxy
-  tabs_query: (params) => browser.tabs.query(params),
-  tabs_update: (id, params) => browser.tabs.update(id, params),
-  tabs_create: (params) => browser.tabs.create(params),
-  tabs_remove: (id) => browser.tabs.remove(id),
-  getThisTab: (callInfo) => callInfo?.sender?.tab,
-  waitClosingTab: (tabId, windowId) => waitClosingTab(tabId, windowId),
-  waitTab: (url) => waitTab(url),
-}
-
 browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
 
-const getAccount = async (tabId: number): Promise<string | undefined> => {
-  const accounts: {
-    accountId: string
-    publicKey: string
-  }[] = await browser.tabs
-    .sendMessage(tabId, { type: 'GET_ACCOUNTS' })
-    .then((v) => v)
-    .catch(() => false)
-  return accounts[0]?.accountId
+const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> =>
+  browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
+
+const connectWallet = async (): Promise<void> => {
+  const params = {
+    contractId: DEFAULT_CONTRACT_ID,
+    methodNames: [],
+  }
+  const accounts = await near.signIn(params)
+
+  // send events to all tabs
+  browser.tabs.query({}).then((tabs) =>
+    tabs.map((tab) => {
+      browser.tabs.sendMessage(tab.id, {
+        type: 'SIGNED_IN',
+        params: {
+          ...params,
+          accounts,
+        },
+      })
+    })
+  )
+
+  recreateMenuForConnectedState(accounts[0].accountId)
 }
 
-const setClipboard = async (tab: browser.Tabs.Tab): Promise<void> =>
-  browser.tabs.sendMessage(tab.id, { type: 'COPY_ADDRESS' })
+const disconnect = async (): Promise<void> => {
+  await near.signOut()
 
-const connectWallet = (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab): Promise<void> =>
-  browser.tabs
-    .sendMessage(tab.id, { type: 'CONNECT' })
-    .then(() => getAccount(tab.id))
-    .then((accountName) => recreateMenuForConnectedState(accountName))
+  // send events to all tabs
+  browser.tabs.query({}).then((tabs) =>
+    tabs.map((tab) => {
+      browser.tabs.sendMessage(tab.id, { type: 'SIGNED_OUT' })
+    })
+  )
+  recreateMenuForDisconnectedState()
+}
 
-const disconnectWallet = (tab: browser.Tabs.Tab): Promise<void> =>
-  browser.tabs
-    .sendMessage(tab.id, { type: 'DISCONNECT' })
-    .then(() => recreateMenuForDisconnectedState())
-
-const copyOrDisconnect = (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab): void => {
-  if (info.menuItemId === 'disconnect') disconnectWallet(tab)
-  else if (info.menuItemId === 'copy') setClipboard(tab)
+const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
+  setClipboard(tab, (await near.getAccounts())[0].accountId)
 }
 
 const recreateMenuForDisconnectedState = (): void => {
   browser.contextMenus.removeAll()
-  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-  browser.contextMenus.onClicked.removeListener(connectWallet)
   browser.contextMenus.create({
     title: 'Connect NEAR wallet',
     id: 'connect',
     contexts: ['action'],
   })
-  browser.contextMenus.onClicked.addListener(connectWallet)
 }
 
 const recreateMenuForConnectedState = (accountName: string): void => {
   browser.contextMenus.removeAll()
-  browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-  browser.contextMenus.onClicked.removeListener(connectWallet)
-  const parent = browser.contextMenus.create({
+  const parentContextMenuId = browser.contextMenus.create({
     title: accountName,
     id: 'wallet',
     contexts: ['action'],
   })
   browser.contextMenus.create({
     title: 'Copy address',
-    parentId: parent,
+    parentId: parentContextMenuId,
     id: 'copy',
     contexts: ['action'],
+    enabled: false,
   })
   browser.contextMenus.create({
     title: 'Disconnect NEAR wallet',
-    parentId: parent,
+    parentId: parentContextMenuId,
     id: 'disconnect',
     contexts: ['action'],
   })
-  browser.contextMenus.onClicked.addListener(copyOrDisconnect)
 }
 
-const updateActionMenu = async (tabId: number): Promise<void> => {
-  const tab = await browser.tabs.get(tabId)
-
-  // If it's a system tab where the extension doesn't work
-  if (!(tab?.url.startsWith('https://') || tab?.url.startsWith('http://'))) {
-    browser.contextMenus.removeAll()
-    browser.contextMenus.onClicked.removeListener(connectWallet)
-    browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-    return
-  }
-
-  // The script may not be injected if the extension was just installed
-  const isContentScriptInjected = await browser.tabs
-    .sendMessage(tab.id, { type: 'PING' }) // The CS must reply 'PONG'
-    .then(() => true)
-    .catch(() => false)
-
-  if (!isContentScriptInjected) {
-    browser.contextMenus.removeAll()
-    browser.contextMenus.onClicked.removeListener(connectWallet)
-    browser.contextMenus.onClicked.removeListener(copyOrDisconnect)
-    return
-  }
-
-  // A normal site where the extension can work
-  const accountName: string | undefined = await getAccount(tab.id)
-
-  if (accountName) recreateMenuForConnectedState(accountName)
+const updateActionMenu = async (): Promise<void> => {
+  const accounts = await near.getAccounts()
+  if (accounts.length) recreateMenuForConnectedState(accounts[0].accountId)
   else recreateMenuForDisconnectedState()
 }
 
-browser.tabs.onActivated.addListener(({ tabId }) => updateActionMenu(tabId))
-browser.tabs.onUpdated.addListener((tabId) => updateActionMenu(tabId))
+function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) {
+  switch (info.menuItemId) {
+    case 'connect':
+      return connectWallet()
+
+    case 'disconnect':
+      return disconnect()
+
+    case 'copy':
+      return copy(info, tab)
+
+    default:
+      break
+  }
+}
+
+browser.runtime.onInstalled.addListener(updateActionMenu)
+
+const setCopyAvailability = async (tabId: number) => {
+  // The script may not be injected if the extension was just installed
+  const isContentScriptInjected = await browser.tabs
+    .sendMessage(tabId, { type: 'PING' }) // The CS must reply 'PONG'
+    .then(() => true)
+    .catch(() => false)
+  browser.contextMenus
+    .update('copy', { enabled: isContentScriptInjected })
+    .then(() => true)
+    .catch(() => false)
+}
+
+const debouncedFn = debounce(setCopyAvailability, 1000)
+
+browser.tabs.onUpdated.addListener((tabId) => debouncedFn(tabId))
+browser.tabs.onActivated.addListener((a) => debouncedFn(a.tabId))
+browser.contextMenus.onClicked.addListener(handleContextMenuClick)

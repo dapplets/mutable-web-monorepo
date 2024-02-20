@@ -1,4 +1,5 @@
 import { setupWalletSelector } from '@near-wallet-selector/core'
+import { EventEmitter as NEventEmitter } from 'events'
 import { DappletOverlay, Engine } from 'mutable-web-engine'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
@@ -9,25 +10,18 @@ import { MultitablePanel } from './multitable-panel/multitable-panel'
 import { getCurrentMutationId } from './storage'
 import { setupWallet } from './wallet'
 
-const NetworkId = 'mainnet'
-const DefaultContractId = 'social.near' // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
+const eventEmitter = new NEventEmitter()
+
+const NETWORK_ID = 'mainnet'
 
 // The wallet selector looks like an unnecessary abstraction layer over the background wallet
 // but we have to use it because near-social-vm uses not only a wallet object, but also a selector state
 // object and its Observable for event subscription
 const selectorPromise = setupWalletSelector({
-  network: NetworkId,
+  network: NETWORK_ID,
   // The storage is faked because it's not necessary. The selected wallet ID is hardcoded below
   storage: new ExtensionStorage(),
-  modules: [
-    setupWallet({
-      networkId: 'mainnet',
-      nodeUrl: 'https://rpc.mainnet.near.org',
-      walletUrl: 'https://app.mynearwallet.com',
-      helperUrl: 'https://helper.mainnet.near.org',
-      explorerUrl: 'https://explorer.near.org',
-    }),
-  ],
+  modules: [setupWallet({ eventEmitter })],
 }).then((selector) => {
   // Use background wallet by default
   const wallet = selector.wallet
@@ -41,7 +35,7 @@ const App: FC = () => {
   useEffect(() => {
     if (initNear) {
       initNear({
-        networkId: NetworkId,
+        networkId: NETWORK_ID,
         selector: selectorPromise,
         features: {
           skipTxConfirmationPopup: true,
@@ -62,7 +56,7 @@ async function main() {
   const selector = await selectorPromise
 
   const engine = new Engine({
-    networkId: NetworkId,
+    networkId: NETWORK_ID,
     selector,
   })
 
@@ -74,49 +68,30 @@ async function main() {
     await engine.start()
   }
 
+  await selector.wallet()
+
   browser.runtime.onMessage.addListener((message) => {
     if (!message || !message.type) return
-    if (message.type === 'PING')
+    if (message.type === 'PING') {
       // Used for background. When user clicks on the extension icon, content script may be not injected.
       // It's a way to check liveness of the content script
       return Promise.resolve('PONG')
-    else if (message.type === 'GET_ACCOUNTS')
-      return selectorPromise
-        .then((selector) => selector.wallet())
-        .then((wallet) => wallet.getAccounts())
-    else if (message.type === 'CONNECT')
-      return selectorPromise
-        .then((selector) => selector.wallet())
-        .then((wallet) =>
-          wallet.signIn({
-            contractId: DefaultContractId,
-            accounts: [],
-          })
-        )
-    else if (message.type === 'DISCONNECT')
-      return selectorPromise
-        .then((selector) => selector.wallet())
-        .then((wallet) => wallet.signOut())
-    else if (message.type === 'COPY_ADDRESS')
-      return selectorPromise
-        .then((selector) => selector.wallet())
-        .then((wallet) => wallet.getAccounts())
-        .then((account) => {
-          const accountName = account[0]?.accountId
-          if (!accountName) return
-          const type = 'text/plain'
-          const blob = new Blob([accountName], { type })
-          const data = [new ClipboardItem({ [type]: blob })]
-          navigator.clipboard.write(data)
-        })
+    } else if (message.type === 'COPY') {
+      const type = 'text/plain'
+      const blob = new Blob([message.address], { type })
+      const data = [new ClipboardItem({ [type]: blob })]
+      navigator.clipboard.write(data)
+    } else if (message.type === 'SIGNED_IN') {
+      eventEmitter.emit('signedIn', message.params)
+    } else if (message.type === 'SIGNED_OUT') {
+      eventEmitter.emit('signedOut')
+    }
   })
 
   const container = document.createElement('div')
   container.style.display = 'flex'
   document.body.appendChild(container)
-
   const root = createRoot(container)
-
   root.render(<MultitablePanel engine={engine} />)
 }
 

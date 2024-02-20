@@ -5,15 +5,7 @@ import { SCHEMA, Transaction } from '@near-js/transactions'
 import { serialize } from 'borsh'
 import { Near } from 'near-api-js'
 import browser from 'webextension-polyfill'
-import {
-  tabs_create,
-  tabs_query,
-  tabs_remove,
-  tabs_update,
-  waitClosingTab,
-  waitTab,
-} from '../background'
-import { generateGuid } from '../helpers'
+import { generateGuid, waitClosingTab, waitTab } from '../helpers'
 import { CustomConnectedWalletAccount } from './connected-wallet-account'
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/'
@@ -73,7 +65,7 @@ export class CustomWalletConnection {
     // ToDo: why this function became async?
     const expectedAccountId = await this.getAccountId()
 
-    const [currentTab] = await tabs_query({ active: true, lastFocusedWindow: true })
+    const [currentTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
     const currentTabId = currentTab.id
 
     const requestId = generateGuid()
@@ -106,7 +98,7 @@ export class CustomWalletConnection {
       })
     }
 
-    const tab = await tabs_create({ url: newUrl.toString() })
+    const tab = await browser.tabs.create({ url: newUrl.toString() })
 
     let callbackTab = null
     const waitTabPromise = waitTab(callbackUrl).then((x) => (callbackTab = x))
@@ -114,11 +106,11 @@ export class CustomWalletConnection {
 
     await Promise.race([waitTabPromise, closingTabPromise])
 
-    await tabs_update(currentTabId, { active: true })
+    await browser.tabs.update(currentTabId, { active: true })
 
     if (!callbackTab) throw new Error('Wallet connection request rejected.')
 
-    await tabs_remove(callbackTab.id)
+    await browser.tabs.remove(callbackTab.id)
 
     const urlObject = new URL(callbackTab.url)
     const success = urlObject.searchParams.get('success') === 'true'
@@ -146,7 +138,7 @@ export class CustomWalletConnection {
     meta,
     callbackUrl,
   }: RequestSignTransactionsOptions): Promise<void> {
-    const tabs = await tabs_query({ active: true, lastFocusedWindow: true })
+    const tabs = await browser.tabs.query({ active: true, lastFocusedWindow: true })
     const currentUrl = new URL(tabs?.[0]?.url)
     const newUrl = new URL('sign', this._walletBaseUrl)
 
@@ -162,7 +154,7 @@ export class CustomWalletConnection {
 
     if (meta) newUrl.searchParams.set('meta', meta)
 
-    const tab = await tabs_create({ url: newUrl.toString() })
+    const tab = await browser.tabs.create({ url: newUrl.toString() })
     await waitClosingTab(tab.id, tab.windowId)
   }
 
