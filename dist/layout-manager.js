@@ -65,14 +65,11 @@ class LayoutManager {
         this._setProps({
             // ToDo: unify context forwarding
             context: context.parsedContext,
-            contextType: context.tagName,
-            apps: apps.map((app) => {
-                var _a;
-                return ({
-                    id: app.id,
-                    componentId: (_a = app.targets[0]) === null || _a === void 0 ? void 0 : _a.componentId, // ToDo: use app metadata instead of widget metadata
-                });
-            }),
+            contextType: context.contextType,
+            apps: apps.map((app) => ({
+                id: app.id,
+                metadata: app.metadata,
+            })),
             widgets: links.map((link) => ({
                 linkId: link.id,
                 linkAuthorId: link.authorId,
@@ -122,12 +119,10 @@ class LayoutManager {
     // ToDo: maybe it's better to rename props in IContextNode?
     static _buildContextTree(context) {
         return {
-            namespace: context.namespaceURI,
-            type: context.tagName,
+            namespace: context.namespace,
+            type: context.contextType,
             parsed: context.parsedContext,
-            parent: context.parentNode
-                ? this._buildContextTree(context.parentNode)
-                : null,
+            parent: context.parentNode ? this._buildContextTree(context.parentNode) : null,
         };
     }
 }

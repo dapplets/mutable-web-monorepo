@@ -71,6 +71,9 @@ class JsonParser {
         else if (selectorOrObject === null || selectorOrObject === void 0 ? void 0 : selectorOrObject.selector) {
             return element.querySelector(selectorOrObject.selector);
         }
+        else if (!(selectorOrObject === null || selectorOrObject === void 0 ? void 0 : selectorOrObject.selector)) {
+            return element; // use context node if selector is not defined
+        }
         else {
             return null;
         }

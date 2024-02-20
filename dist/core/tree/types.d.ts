@@ -3,8 +3,8 @@ export type ParsedContext = {
 };
 export interface IContextNode {
     id: string | null;
-    tagName: string;
-    namespaceURI: string;
+    contextType: string;
+    namespace: string;
     parentNode: IContextNode | null;
     parsedContext: ParsedContext;
     insPoints: string[];
@@ -18,7 +18,7 @@ export interface ITreeBuilder {
     removeChild(parent: IContextNode, child: IContextNode): void;
     updateParsedContext(context: IContextNode, parsedContext: any): void;
     updateInsertionPoints(context: IContextNode, insPoints: string[]): void;
-    createNode(namespaceURI: string | null, tagName: string): IContextNode;
+    createNode(namespace: string | null, contextType: string): IContextNode;
 }
 export interface IContextListener {
     handleContextStarted(context: IContextNode): void;

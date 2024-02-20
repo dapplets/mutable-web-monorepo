@@ -25,7 +25,7 @@ class DynamicHtmlAdapter {
         this.treeBuilder = treeBuilder;
         this.namespace = namespace;
         this.parser = parser;
-        this.context = this._createContextForElement(element, "root");
+        this.context = this._createContextForElement(element, 'root');
     }
     start() {
         __classPrivateFieldGet(this, _DynamicHtmlAdapter_observerByElement, "f").forEach((observer, element) => {
@@ -48,18 +48,18 @@ class DynamicHtmlAdapter {
         var _a;
         const contextElement = __classPrivateFieldGet(this, _DynamicHtmlAdapter_elementByContext, "f").get(context);
         if (!contextElement) {
-            throw new Error("Context element not found");
+            throw new Error('Context element not found');
         }
         const insPoint = this.parser
-            .getInsertionPoints(contextElement, context.tagName)
+            .getInsertionPoints(contextElement, context.contextType)
             .find((ip) => ip.name === insertionPoint);
         if (!insPoint) {
             throw new Error(`Insertion point "${insertionPoint}" is not defined in the parser`);
         }
-        const insPointElement = this.parser.findInsertionPoint(contextElement, context.tagName, insertionPoint);
+        const insPointElement = this.parser.findInsertionPoint(contextElement, context.contextType, insertionPoint);
         const insertionType = (_a = insPoint.insertionType) !== null && _a !== void 0 ? _a : DefaultInsertionType;
         if (!insPointElement) {
-            throw new Error(`Insertion point "${insertionPoint}" not found in "${context.tagName}" context type for "${insertionType}" insertion type`);
+            throw new Error(`Insertion point "${insertionPoint}" not found in "${context.contextType}" context type for "${insertionType}" insertion type`);
         }
         switch (insertionType) {
             case interface_1.InsertionType.Before:
@@ -75,14 +75,14 @@ class DynamicHtmlAdapter {
                 insPointElement.insertBefore(injectingElement, insPointElement.firstChild);
                 break;
             default:
-                throw new Error("Unknown insertion type");
+                throw new Error('Unknown insertion type');
         }
     }
     getInsertionPoints(context) {
         const htmlElement = __classPrivateFieldGet(this, _DynamicHtmlAdapter_elementByContext, "f").get(context);
         if (!htmlElement)
             return [];
-        return this.parser.getInsertionPoints(htmlElement, context.tagName);
+        return this.parser.getInsertionPoints(htmlElement, context.contextType);
     }
     _createContextForElement(element, contextName) {
         const context = this.treeBuilder.createNode(this.namespace, contextName);
@@ -102,9 +102,9 @@ class DynamicHtmlAdapter {
         return context;
     }
     _handleMutations(element, context) {
-        const parsedContext = this.parser.parseContext(element, context.tagName);
-        const pairs = this.parser.findChildElements(element, context.tagName);
-        const insPoints = this._findAvailableInsPoints(element, context.tagName);
+        const parsedContext = this.parser.parseContext(element, context.contextType);
+        const pairs = this.parser.findChildElements(element, context.contextType);
+        const insPoints = this._findAvailableInsPoints(element, context.contextType);
         this.treeBuilder.updateParsedContext(context, parsedContext);
         this.treeBuilder.updateInsertionPoints(context, insPoints);
         this._appendNewChildContexts(pairs, context);
@@ -123,8 +123,7 @@ class DynamicHtmlAdapter {
         var _a;
         const childElementsSet = new Set(childPairs.map((pair) => pair.element));
         for (const [element, context] of __classPrivateFieldGet(this, _DynamicHtmlAdapter_contextByElement, "f")) {
-            if (!childElementsSet.has(element) &&
-                context.parentNode === parentContext) {
+            if (!childElementsSet.has(element) && context.parentNode === parentContext) {
                 this.treeBuilder.removeChild(parentContext, context);
                 __classPrivateFieldGet(this, _DynamicHtmlAdapter_contextByElement, "f").delete(element);
                 (_a = __classPrivateFieldGet(this, _DynamicHtmlAdapter_observerByElement, "f").get(element)) === null || _a === void 0 ? void 0 : _a.disconnect();

@@ -1,5 +1,5 @@
-import { InsertionPoint } from "../parsers/interface";
-import { IContextNode } from "../tree/types";
+import { InsertionPoint } from '../parsers/interface';
+import { IContextNode } from '../tree/types';
 export declare enum InsertionType {
     Before = "before",
     After = "after",

@@ -1,4 +1,4 @@
-import { NearSigner } from "./near-signer";
+import { NearSigner } from './near-signer';
 export type StorageUsage = string;
 export type StorageView = {
     usedBytes: StorageUsage;

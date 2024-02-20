@@ -1,5 +1,5 @@
-import { WalletSelector } from "@near-wallet-selector/core";
-import * as nearAPI from "near-api-js";
+import { WalletSelector } from '@near-wallet-selector/core';
+import * as nearAPI from 'near-api-js';
 export declare const DefaultGas = "30000000000000";
 /**
  * NearSigner is a wrapper around near-api-js JsonRpcProvider and WalletSelector

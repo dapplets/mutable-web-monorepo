@@ -34,7 +34,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NearSigner = exports.DefaultGas = void 0;
 const nearAPI = __importStar(require("near-api-js"));
-exports.DefaultGas = "30000000000000"; // 30 TGas
+exports.DefaultGas = '30000000000000'; // 30 TGas
 /**
  * NearSigner is a wrapper around near-api-js JsonRpcProvider and WalletSelector
  * that provides a simple interface for calling and viewing contract methods.
@@ -61,12 +61,12 @@ class NearSigner {
         return __awaiter(this, void 0, void 0, function* () {
             args = args || {};
             const result = (yield this.provider.query({
-                request_type: "call_function",
+                request_type: 'call_function',
                 account_id: contractName,
                 method_name: methodName,
                 args_base64: btoa(JSON.stringify(args)),
                 block_id: undefined,
-                finality: "final",
+                finality: 'final',
             }));
             return (result.result &&
                 result.result.length > 0 &&
@@ -81,12 +81,12 @@ class NearSigner {
                     receiverId: contractName,
                     actions: [
                         {
-                            type: "FunctionCall",
+                            type: 'FunctionCall',
                             params: {
                                 methodName,
                                 args,
                                 gas: gas !== null && gas !== void 0 ? gas : exports.DefaultGas,
-                                deposit: deposit !== null && deposit !== void 0 ? deposit : "0",
+                                deposit: deposit !== null && deposit !== void 0 ? deposit : '0',
                             },
                         },
                     ],

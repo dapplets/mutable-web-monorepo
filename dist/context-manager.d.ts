@@ -1,8 +1,8 @@
-import { BosWidgetFactory } from "./bos/bos-widget-factory";
-import { IAdapter } from "./core/adapters/interface";
-import { IContextNode } from "./core/tree/types";
-import { MutationManager } from "./mutation-manager";
-import { AppId, AppMetadata, BosUserLink } from "./providers/provider";
+import { BosWidgetFactory } from './bos/bos-widget-factory';
+import { IAdapter } from './core/adapters/interface';
+import { IContextNode } from './core/tree/types';
+import { MutationManager } from './mutation-manager';
+import { AppId, AppMetadata, BosUserLink } from './providers/provider';
 export type InsertionPointName = string;
 export declare class ContextManager {
     #private;
@@ -14,10 +14,11 @@ export declare class ContextManager {
     addUserLink(link: BosUserLink): void;
     removeUserLink(link: BosUserLink): void;
     addAppMetadata(appMetadata: AppMetadata): void;
-    removeAppMetadata(app: AppMetadata): void;
+    removeAppMetadata(appGlobalId: AppId): void;
     createUserLink(globalAppId: AppId): Promise<void>;
     deleteUserLink(userLink: BosUserLink): Promise<void>;
     injectLayoutManager(insPointName: string): void;
     destroy(): void;
+    private _isTargetInjectable;
 }
 //# sourceMappingURL=context-manager.d.ts.map

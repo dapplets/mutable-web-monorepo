@@ -1,12 +1,19 @@
-import { BosComponent } from "./bos/bos-widget";
-import { ContextManager } from "./context-manager";
-import { IContextNode } from "./core/tree/types";
-import { AppId, AppMetadata, BosUserLink, UserLinkId } from "./providers/provider";
+import { BosComponent } from './bos/bos-widget';
+import { ContextManager } from './context-manager';
+import { IContextNode } from './core/tree/types';
+import { AppId, AppMetadata, BosUserLink, UserLinkId } from './providers/provider';
 export interface LayoutManagerProps {
     context: any;
     contextType: string;
     apps: {
         id: string;
+        metadata?: {
+            name?: string;
+            description?: string;
+            image?: {
+                ipfs_cid?: string;
+            };
+        };
     }[];
     widgets: {
         linkId: UserLinkId;

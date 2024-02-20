@@ -23,7 +23,7 @@ var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layo
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextManager = void 0;
 const layout_manager_1 = require("./layout-manager");
-const DefaultLayoutManager = "bos.dapplets.near/widget/DefaultLayoutManager";
+const DefaultLayoutManager = 'bos.dapplets.near/widget/DefaultLayoutManager';
 class ContextManager {
     constructor(context, adapter, widgetFactory, mutationManager) {
         _ContextManager_adapter.set(this, void 0);
@@ -38,19 +38,13 @@ class ContextManager {
         __classPrivateFieldSet(this, _ContextManager_mutationManager, mutationManager, "f");
     }
     forceUpdate() {
-        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((layoutManager) => {
-            layoutManager.forceUpdate();
-        });
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.forceUpdate());
     }
     enableEditMode() {
-        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((layoutManager) => {
-            layoutManager.enableEditMode();
-        });
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.enableEditMode());
     }
     disableEditMode() {
-        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((layoutManager) => {
-            layoutManager.disableEditMode();
-        });
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.disableEditMode());
     }
     addUserLink(link) {
         var _a;
@@ -63,13 +57,18 @@ class ContextManager {
         (_a = __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").get(link.insertionPoint)) === null || _a === void 0 ? void 0 : _a.removeUserLink(link.id);
     }
     addAppMetadata(appMetadata) {
-        // ToDo: use getAppsAndLinksForContext to filter `injectOnce` targets
-        __classPrivateFieldGet(this, _ContextManager_apps, "f").set(appMetadata.id, appMetadata); // save app for further layout managers
-        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.addAppMetadata(appMetadata));
+        const injectableTargets = appMetadata.targets.filter((target) => this._isTargetInjectable(target, appMetadata.id));
+        // Exclude apps that already injected (for `injectOnce` targets)
+        if (injectableTargets.length === 0) {
+            return;
+        }
+        const metadataWithSuitableTargets = Object.assign(Object.assign({}, appMetadata), { targets: injectableTargets });
+        __classPrivateFieldGet(this, _ContextManager_apps, "f").set(appMetadata.id, metadataWithSuitableTargets); // save app for further layout managers
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.addAppMetadata(metadataWithSuitableTargets));
     }
-    removeAppMetadata(app) {
-        __classPrivateFieldGet(this, _ContextManager_apps, "f").delete(app.id);
-        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.removeAppMetadata(app.id));
+    removeAppMetadata(appGlobalId) {
+        __classPrivateFieldGet(this, _ContextManager_apps, "f").delete(appGlobalId);
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.removeAppMetadata(appGlobalId));
     }
     createUserLink(globalAppId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -110,6 +109,18 @@ class ContextManager {
     destroy() {
         __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.destroy());
         __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").clear();
+    }
+    _isTargetInjectable(target, appId) {
+        // The limitation is only for `injectOnce` targets
+        if (!target.injectOnce)
+            return true;
+        // ToDo: looks that target should have an unique identifier?
+        const userLinks = Array.from(__classPrivateFieldGet(this, _ContextManager_userLinks, "f").values());
+        const isInjected = !!userLinks.find((link) => link.appId === appId &&
+            link.namespace === target.namespace &&
+            link.insertionPoint === target.injectTo &&
+            link.bosWidgetId === target.componentId);
+        return !isInjected;
     }
 }
 exports.ContextManager = ContextManager;

@@ -1,4 +1,4 @@
-import { BosComponent } from "./bos-widget";
+import { BosComponent } from './bos-widget';
 export type BosWidgetFactoryConfig = {
     networkId: string;
     selector: any;

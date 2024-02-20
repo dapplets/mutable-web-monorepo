@@ -1,7 +1,6 @@
-import { InsertionType } from "../adapters/interface";
-import { IParser, InsertionPoint } from "./interface";
+import { InsertionType } from '../adapters/interface';
+import { IParser, InsertionPoint } from './interface';
 export type BosParserConfig = {
-    namespace: string;
     contexts: {
         [name: string]: {
             component?: string;

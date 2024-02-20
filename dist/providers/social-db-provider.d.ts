@@ -1,7 +1,6 @@
-import { NearSigner } from "./near-signer";
-import { ParserConfig } from "../core/parsers/json-parser";
-import { AppMetadata, ContextFilter, IProvider, UserLinkId, AppId, Mutation, IndexedLink, LinkIndexObject, MutationId } from "./provider";
-import { BosParserConfig } from "../core/parsers/bos-parser";
+import { NearSigner } from './near-signer';
+import { AppMetadata, IProvider, UserLinkId, AppId, Mutation, IndexedLink, LinkIndexObject, MutationId, ParserConfig } from './provider';
+import { SocialDbClient } from './social-db-client';
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
  * More info about the schema is here:
@@ -11,22 +10,19 @@ import { BosParserConfig } from "../core/parsers/bos-parser";
  * /docs/social-db-reference.json
  */
 export declare class SocialDbProvider implements IProvider {
-    #private;
     private _signer;
+    client: SocialDbClient;
     constructor(_signer: NearSigner, _contractName: string);
-    getParserConfigsForContext(contextFilter: ContextFilter): Promise<(ParserConfig | BosParserConfig)[]>;
-    getParserConfig(ns: string): Promise<ParserConfig | BosParserConfig | null>;
-    getAllAppIds(): Promise<AppId[]>;
+    getParserConfig(globalParserId: string): Promise<ParserConfig | null>;
     getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]>;
     getApplication(globalAppId: AppId): Promise<AppMetadata | null>;
     getMutation(globalMutationId: MutationId): Promise<Mutation | null>;
     getMutations(): Promise<Mutation[]>;
     createLink(indexObject: LinkIndexObject): Promise<IndexedLink>;
     deleteUserLink(linkId: UserLinkId): Promise<void>;
-    createApplication(appMetadata: Omit<AppMetadata, "authorId" | "appLocalId">): Promise<AppMetadata>;
+    createApplication(appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>): Promise<AppMetadata>;
     createMutation(mutation: Mutation): Promise<Mutation>;
     createParserConfig(config: ParserConfig): Promise<void>;
-    setContextIdsForParser(parserGlobalId: string, contextsToBeAdded: ContextFilter[], contextsToBeDeleted: ContextFilter[]): Promise<void>;
     private _extractParserIdFromNamespace;
     static _buildNestedData(keys: string[], data: any): any;
     static _splitObjectByDepth(obj: any, depth?: number, path?: string[]): any;

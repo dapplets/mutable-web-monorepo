@@ -22,9 +22,6 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Engine = exports.AdapterType = void 0;
-const bos_parser_1 = require("./core/parsers/bos-parser");
-const json_parser_1 = require("./core/parsers/json-parser");
-const microdata_parser_1 = require("./core/parsers/microdata-parser");
 const dynamic_html_adapter_1 = require("./core/adapters/dynamic-html-adapter");
 const bos_widget_factory_1 = require("./bos/bos-widget-factory");
 const constants_1 = require("./constants");
@@ -33,13 +30,15 @@ const social_db_provider_1 = require("./providers/social-db-provider");
 const pure_tree_builder_1 = require("./core/tree/pure-tree/pure-tree-builder");
 const context_manager_1 = require("./context-manager");
 const mutation_manager_1 = require("./mutation-manager");
+const json_parser_1 = require("./core/parsers/json-parser");
+const bos_parser_1 = require("./core/parsers/bos-parser");
 var AdapterType;
 (function (AdapterType) {
     AdapterType["Bos"] = "bos";
     AdapterType["Microdata"] = "microdata";
     AdapterType["Json"] = "json";
 })(AdapterType || (exports.AdapterType = AdapterType = {}));
-const DefaultMutationId = "bos.dapplets.near/mutation/Sandbox";
+const DefaultMutationId = 'bos.dapplets.near/mutation/Sandbox';
 class Engine {
     constructor(config) {
         this.config = config;
@@ -54,7 +53,7 @@ class Engine {
         __classPrivateFieldSet(this, _Engine_bosWidgetFactory, new bos_widget_factory_1.BosWidgetFactory({
             networkId: this.config.networkId,
             selector: this.config.selector,
-            tagName: "bos-component",
+            tagName: 'bos-component',
         }), "f");
         const nearConfig = (0, constants_1.getNearConfig)(this.config.networkId);
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
@@ -69,24 +68,12 @@ class Engine {
                 return;
             // We don't wait adapters here
             // Find and load adapters for the given context
-            __classPrivateFieldGet(this, _Engine_provider, "f")
-                .getParserConfigsForContext({
-                namespace: context.namespaceURI,
-                contextType: context.tagName,
-                contextId: context.id,
-            })
-                .then((configs) => {
-                for (const config of configs) {
-                    const type = this.getParserType(config.namespace);
-                    if (!type) {
-                        console.error("Unsupported parser namespace");
-                        continue;
-                    }
-                    const adapter = this.createAdapter(type, config);
-                    this.registerAdapter(adapter);
-                    console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
-                }
-            });
+            const parserConfigs = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableParsers(context);
+            for (const config of parserConfigs) {
+                const adapter = this.createAdapter(config);
+                this.registerAdapter(adapter);
+                console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
+            }
             // ToDo: do not iterate over all adapters
             const adapter = Array.from(this.adapters).find((adapter) => {
                 return adapter.getInsertionPoints(context).length > 0;
@@ -95,10 +82,8 @@ class Engine {
                 return;
             const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_mutationManager, "f"));
             __classPrivateFieldGet(this, _Engine_contextManagers, "f").set(context, contextManager);
-            const [links, apps] = yield Promise.all([
-                __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context),
-                __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context),
-            ]);
+            const links = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context);
+            const apps = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context);
             links.forEach((link) => contextManager.addUserLink(link));
             apps.forEach((app) => contextManager.addAppMetadata(app));
         });
@@ -134,7 +119,7 @@ class Engine {
                 id: window.location.hostname,
                 // ToDo: add mutationId
             });
-            console.log("Mutable Web Engine started!", {
+            console.log('Mutable Web Engine started!', {
                 engine: this,
                 provider: __classPrivateFieldGet(this, _Engine_provider, "f"),
             });
@@ -167,52 +152,30 @@ class Engine {
     }
     registerAdapter(adapter) {
         if (!this.treeBuilder)
-            throw new Error("Tree builder is not inited");
+            throw new Error('Tree builder is not inited');
         this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context);
         this.adapters.add(adapter);
         adapter.start();
     }
     unregisterAdapter(adapter) {
         if (!this.treeBuilder)
-            throw new Error("Tree builder is not inited");
+            throw new Error('Tree builder is not inited');
         adapter.stop();
         this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context);
         this.adapters.delete(adapter);
     }
-    getParserType(ns) {
-        if (ns.startsWith("https://dapplets.org/ns/json")) {
-            return AdapterType.Json;
+    createAdapter(config) {
+        if (!this.treeBuilder) {
+            throw new Error('Tree builder is not inited');
         }
-        else if (ns.startsWith("https://dapplets.org/ns/bos")) {
-            return AdapterType.Bos;
-        }
-        else if (ns.startsWith("https://dapplets.org/ns/microdata")) {
-            return AdapterType.Microdata;
-        }
-        else {
-            return null;
-        }
-    }
-    createAdapter(type, config) {
-        if (!this.treeBuilder)
-            throw new Error("Tree builder is not inited");
-        const observingElement = document.body;
-        switch (type) {
-            case AdapterType.Bos:
-                if (!(config === null || config === void 0 ? void 0 : config.namespace)) {
-                    throw new Error("Json adapter requires id");
-                }
-                return new dynamic_html_adapter_1.DynamicHtmlAdapter(observingElement, this.treeBuilder, config.namespace, new bos_parser_1.BosParser(config));
-            case AdapterType.Microdata:
-                return new dynamic_html_adapter_1.DynamicHtmlAdapter(observingElement, this.treeBuilder, "https://dapplets.org/ns/microdata", new microdata_parser_1.MicrodataParser());
-            case AdapterType.Json:
-                if (!(config === null || config === void 0 ? void 0 : config.namespace)) {
-                    throw new Error("Json adapter requires id");
-                }
-                return new dynamic_html_adapter_1.DynamicHtmlAdapter(observingElement, this.treeBuilder, config.namespace, new json_parser_1.JsonParser(config) // ToDo: add try catch because config can be invalid
+        switch (config === null || config === void 0 ? void 0 : config.parserType) {
+            case 'json':
+                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.body, this.treeBuilder, config.id, new json_parser_1.JsonParser(config) // ToDo: add try catch because config can be invalid
                 );
+            case 'bos':
+                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.body, this.treeBuilder, config.id, new bos_parser_1.BosParser(config));
             default:
-                throw new Error("Incompatible adapter type");
+                throw new Error('Incompatible adapter type');
         }
     }
 }

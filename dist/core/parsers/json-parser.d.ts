@@ -1,7 +1,6 @@
 import { InsertionType } from '../adapters/interface';
 import { IParser, InsertionPoint } from './interface';
-export type ParserConfig = {
-    namespace: string;
+export type JsonParserConfig = {
     contexts: {
         [name: string]: {
             selector?: string;
@@ -20,8 +19,8 @@ export type ParserConfig = {
     };
 };
 export declare class JsonParser implements IParser {
-    protected config: ParserConfig;
-    constructor(config: ParserConfig);
+    protected config: JsonParserConfig;
+    constructor(config: JsonParserConfig);
     parseContext(element: Element, contextName: string): any;
     findChildElements(element: Element, contextName: string): {
         element: Element;

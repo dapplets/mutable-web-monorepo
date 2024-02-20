@@ -40,15 +40,15 @@ const near_social_vm_1 = require("near-social-vm");
 const React = __importStar(require("react"));
 const client_1 = require("react-dom/client");
 const styled_components_1 = require("styled-components");
-const EventsToStopPropagation = ["click", "keydown", "keyup", "keypress"];
+const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress'];
 class BosComponent extends HTMLElement {
     constructor() {
         super(...arguments);
-        this._adapterStylesMountPoint = document.createElement("style");
-        this._stylesMountPoint = document.createElement("div");
-        this._componentMountPoint = document.createElement("div");
+        this._adapterStylesMountPoint = document.createElement('style');
+        this._stylesMountPoint = document.createElement('div');
+        this._componentMountPoint = document.createElement('div');
         this._root = (0, client_1.createRoot)(this._componentMountPoint);
-        _BosComponent_src.set(this, "");
+        _BosComponent_src.set(this, '');
         _BosComponent_props.set(this, {});
     }
     set src(val) {
@@ -68,7 +68,7 @@ class BosComponent extends HTMLElement {
         return __classPrivateFieldGet(this, _BosComponent_props, "f");
     }
     connectedCallback() {
-        const shadowRoot = this.attachShadow({ mode: "closed" });
+        const shadowRoot = this.attachShadow({ mode: 'closed' });
         // Prevent event propagation from BOS-component to parent
         EventsToStopPropagation.forEach((eventName) => {
             this.addEventListener(eventName, (e) => e.stopPropagation());
@@ -89,7 +89,7 @@ class BosComponent extends HTMLElement {
         this._adapterStylesMountPoint.innerHTML = resetCssRules;
         shadowRoot.appendChild(this._adapterStylesMountPoint);
         // For full-width components
-        this._componentMountPoint.style.flex = "1";
+        this._componentMountPoint.style.flex = '1';
         // Initial render
         this._render();
     }

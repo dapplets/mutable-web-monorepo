@@ -1,7 +1,7 @@
-import { IAdapter } from "./core/adapters/interface";
-import { Mutation } from "./providers/provider";
-import { WalletSelector } from "@near-wallet-selector/core";
-import { IContextListener, IContextNode, ITreeBuilder } from "./core/tree/types";
+import { IAdapter } from './core/adapters/interface';
+import { Mutation, ParserConfig } from './providers/provider';
+import { WalletSelector } from '@near-wallet-selector/core';
+import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types';
 export declare enum AdapterType {
     Bos = "bos",
     Microdata = "microdata",
@@ -30,7 +30,6 @@ export declare class Engine implements IContextListener {
     getCurrentMutation(): Promise<Mutation | null>;
     registerAdapter(adapter: IAdapter): void;
     unregisterAdapter(adapter: IAdapter): void;
-    getParserType(ns: string): AdapterType | null;
-    createAdapter(type: AdapterType, config?: any): IAdapter;
+    createAdapter(config?: ParserConfig): IAdapter;
 }
 //# sourceMappingURL=engine.d.ts.map

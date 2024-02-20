@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.replaceMustaches = exports.BosParser = void 0;
-const CompAttr = "data-component";
-const PropsAttr = "data-props";
+const CompAttr = 'data-component';
+const PropsAttr = 'data-props';
 class BosParser {
     constructor(config) {
         // ToDo: validate config
         this.config = config;
-        if (!this.config.contexts["root"]) {
-            this.config.contexts["root"] = {
+        if (!this.config.contexts['root']) {
+            this.config.contexts['root'] = {
                 props: {
-                    id: "root",
+                    id: 'root',
                 },
-                children: ["post"], // ToDo:
+                children: ['post'], // ToDo:
             };
         }
     }
@@ -22,7 +22,7 @@ class BosParser {
         if (!contextProperties)
             return {};
         const parsed = {};
-        const bosProps = JSON.parse((_a = element.getAttribute(PropsAttr)) !== null && _a !== void 0 ? _a : "{}");
+        const bosProps = JSON.parse((_a = element.getAttribute(PropsAttr)) !== null && _a !== void 0 ? _a : '{}');
         for (const [prop, mustacheTemplate] of Object.entries(contextProperties)) {
             const value = replaceMustaches(mustacheTemplate, { props: bosProps });
             parsed[prop] = value;
@@ -95,7 +95,7 @@ exports.BosParser = BosParser;
  */
 function replaceMustaches(template, data) {
     return template.replace(/\{\{([^}]+)\}\}/g, (match, key) => {
-        const keys = key.split(".");
+        const keys = key.split('.');
         let value = data;
         for (const k of keys) {
             if (value.hasOwnProperty(k)) {

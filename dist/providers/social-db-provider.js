@@ -1,4 +1,10 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -8,42 +14,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var _SocialDbProvider_client;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocialDbProvider = void 0;
 const js_sha256_1 = require("js-sha256");
 const json_stringify_deterministic_1 = __importDefault(require("json-stringify-deterministic"));
+const caching_decorator_1 = require("caching-decorator");
 const utils_1 = require("../core/utils");
 const social_db_client_1 = require("./social-db-client");
-const constants_1 = require("../constants");
-const DappletsNamespace = "https://dapplets.org/ns/";
-const SupportedParserTypes = ["json", "bos"];
-const ProjectIdKey = "dapplets.near";
-const ParserKey = "parser";
-const SettingsKey = "settings";
-const LinkKey = "link";
-const SelfKey = "";
-const ParserContextsKey = "contexts";
-const AppKey = "app";
-const MutationKey = "mutation";
-const WildcardKey = "*";
-const RecursiveWildcardKey = "**";
-const IndexesKey = "indexes";
-const KeyDelimiter = "/";
+const ProjectIdKey = 'dapplets.near';
+const ParserKey = 'parser';
+const SettingsKey = 'settings';
+const LinkKey = 'link';
+const SelfKey = '';
+const ParserContextsKey = 'contexts';
+const AppKey = 'app';
+const MutationKey = 'mutation';
+const WildcardKey = '*';
+const RecursiveWildcardKey = '**';
+const IndexesKey = 'indexes';
+const KeyDelimiter = '/';
 /**
  * All Mutable Web data is stored in the Social DB contract in `settings` namespace.
  * More info about the schema is here:
@@ -55,59 +47,26 @@ const KeyDelimiter = "/";
 class SocialDbProvider {
     constructor(_signer, _contractName) {
         this._signer = _signer;
-        _SocialDbProvider_client.set(this, void 0);
-        __classPrivateFieldSet(this, _SocialDbProvider_client, new social_db_client_1.SocialDbClient(_signer, _contractName), "f");
+        this.client = new social_db_client_1.SocialDbClient(_signer, _contractName);
     }
     // #region Read methods
-    getParserConfigsForContext(contextFilter) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // ToDo: implement adapters loading for another types of contexts
-            if (contextFilter.namespace !== constants_1.DappletsEngineNs)
-                return [];
-            const contextHashKey = SocialDbProvider._hashObject(contextFilter);
-            const keys = [
-                WildcardKey, // from any user
-                SettingsKey,
-                ProjectIdKey,
-                ParserKey,
-                WildcardKey, // any parser
-                ParserContextsKey,
-                contextHashKey,
-            ];
-            const availableKeys = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([keys.join(KeyDelimiter)]);
-            const parserKeys = availableKeys
-                .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))) // discard contextHashKey
-                .map((key) => key.substring(0, key.lastIndexOf(KeyDelimiter))); // discard ParserContextsKey
-            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get(parserKeys);
-            const parsers = [];
-            for (const key of parserKeys) {
-                const json = SocialDbProvider._getValueByKey(key.split(KeyDelimiter), queryResult);
-                parsers.push(JSON.parse(json));
-            }
-            return parsers;
-        });
-    }
-    getParserConfig(ns) {
+    getParserConfig(globalParserId) {
         var _a, _b, _c, _d, _e;
         return __awaiter(this, void 0, void 0, function* () {
-            const { accountId, parserLocalId } = this._extractParserIdFromNamespace(ns);
-            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
+            const { accountId, parserLocalId } = this._extractParserIdFromNamespace(globalParserId);
+            const queryResult = yield this.client.get([
                 `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
             ]);
             const parserConfigJson = (_e = (_d = (_c = (_b = (_a = queryResult[accountId]) === null || _a === void 0 ? void 0 : _a[SettingsKey]) === null || _b === void 0 ? void 0 : _b[ProjectIdKey]) === null || _c === void 0 ? void 0 : _c[ParserKey]) === null || _d === void 0 ? void 0 : _d[parserLocalId]) === null || _e === void 0 ? void 0 : _e[SelfKey];
             if (!parserConfigJson)
                 return null;
-            return JSON.parse(parserConfigJson);
-        });
-    }
-    getAllAppIds() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const keys = [WildcardKey, SettingsKey, ProjectIdKey, AppKey, WildcardKey];
-            const appKeys = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([keys.join(KeyDelimiter)]);
-            return appKeys.map((key) => {
-                const [authorId, , , , localAppId] = key.split(KeyDelimiter);
-                return [authorId, AppKey, localAppId].join(KeyDelimiter);
-            });
+            const config = JSON.parse(parserConfigJson);
+            return {
+                id: globalParserId,
+                parserType: config.parserType,
+                contexts: config.contexts,
+                targets: config.targets,
+            };
         });
     }
     getLinksByIndex(indexObject) {
@@ -123,7 +82,7 @@ class SocialDbProvider {
                 index,
             ].join(KeyDelimiter);
             // ToDo: batch requests
-            const resp = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").keys([key]);
+            const resp = yield this.client.keys([key]);
             return resp.map((key) => {
                 const [authorId, , , , id] = key.split(KeyDelimiter);
                 return { id, authorId };
@@ -134,29 +93,19 @@ class SocialDbProvider {
         return __awaiter(this, void 0, void 0, function* () {
             const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter);
             const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
-            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
-                [...keys, RecursiveWildcardKey].join(KeyDelimiter),
-            ]);
+            const queryResult = yield this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)]);
             const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
             if (!(mutation === null || mutation === void 0 ? void 0 : mutation[SelfKey]))
                 return null;
-            return Object.assign(Object.assign({}, JSON.parse(mutation[SelfKey])), { id: globalAppId, appLocalId,
+            return Object.assign(Object.assign({}, JSON.parse(mutation[SelfKey])), { metadata: mutation.metadata, id: globalAppId, appLocalId,
                 authorId });
         });
     }
     getMutation(globalMutationId) {
         return __awaiter(this, void 0, void 0, function* () {
             const [authorId, , mutationLocalId] = globalMutationId.split(KeyDelimiter);
-            const keys = [
-                authorId,
-                SettingsKey,
-                ProjectIdKey,
-                MutationKey,
-                mutationLocalId,
-            ];
-            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
-                [...keys, RecursiveWildcardKey].join(KeyDelimiter),
-            ]);
+            const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId];
+            const queryResult = yield this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)]);
             const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
             if (!mutation)
                 return null;
@@ -176,9 +125,7 @@ class SocialDbProvider {
                 MutationKey,
                 WildcardKey, // any mutation local id
             ];
-            const queryResult = yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").get([
-                [...keys, RecursiveWildcardKey].join(KeyDelimiter),
-            ]);
+            const queryResult = yield this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)]);
             const mutationsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length);
             const mutations = Object.entries(mutationsByKey).map(([key, value]) => {
                 const [accountId, , , , localMutationId] = key.split(KeyDelimiter);
@@ -199,15 +146,15 @@ class SocialDbProvider {
             const linkId = (0, utils_1.generateGuid)();
             const accountId = yield this._signer.getAccountId();
             if (!accountId)
-                throw new Error("User is not logged in");
+                throw new Error('User is not logged in');
             const index = SocialDbProvider._hashObject(indexObject);
             const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId];
             const storedAppLink = {
                 indexes: {
-                    [index]: "",
+                    [index]: '',
                 },
             };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedAppLink));
+            yield this.client.set(SocialDbProvider._buildNestedData(keys, storedAppLink));
             return {
                 id: linkId,
                 authorId: accountId,
@@ -218,17 +165,10 @@ class SocialDbProvider {
         return __awaiter(this, void 0, void 0, function* () {
             const accountId = yield this._signer.getAccountId();
             if (!accountId)
-                throw new Error("User is not logged in");
+                throw new Error('User is not logged in');
             // ToDo: check link ownership?
-            const keys = [
-                accountId,
-                SettingsKey,
-                ProjectIdKey,
-                LinkKey,
-                linkId,
-                RecursiveWildcardKey,
-            ];
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").delete([keys.join(KeyDelimiter)]);
+            const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId, RecursiveWildcardKey];
+            yield this.client.delete([keys.join(KeyDelimiter)]);
         });
     }
     createApplication(appMetadata) {
@@ -239,8 +179,9 @@ class SocialDbProvider {
                 [SelfKey]: JSON.stringify({
                     targets: appMetadata.targets,
                 }),
+                metadata: appMetadata.metadata,
             };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));
+            yield this.client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));
             return Object.assign(Object.assign({}, appMetadata), { appLocalId,
                 authorId });
         });
@@ -248,75 +189,38 @@ class SocialDbProvider {
     createMutation(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
             const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter);
-            const keys = [
-                authorId,
-                SettingsKey,
-                ProjectIdKey,
-                MutationKey,
-                mutationLocalId,
-            ];
+            const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId];
             const storedAppMetadata = {
                 metadata: mutation.metadata,
                 apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
             };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));
+            yield this.client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));
             return mutation;
         });
     }
     createParserConfig(config) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.namespace);
-            const keys = [
-                accountId,
-                SettingsKey,
-                ProjectIdKey,
-                ParserKey,
-                parserLocalId,
-            ];
+            const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.id);
+            const keys = [accountId, SettingsKey, ProjectIdKey, ParserKey, parserLocalId];
             const storedParserConfig = {
-                [SelfKey]: JSON.stringify(config),
+                [SelfKey]: JSON.stringify({
+                    parserType: config.parserType,
+                    targets: config.targets,
+                    contexts: config.contexts,
+                }),
             };
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(keys, storedParserConfig));
-        });
-    }
-    setContextIdsForParser(parserGlobalId, contextsToBeAdded, contextsToBeDeleted) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const [parserOwnerId, parserKey, parserLocalId] = parserGlobalId.split(KeyDelimiter);
-            if (parserKey !== ParserKey) {
-                throw new Error("Invalid parser ID");
-            }
-            const addingKeys = contextsToBeAdded.map(SocialDbProvider._hashObject);
-            const deletingKeys = contextsToBeDeleted.map(SocialDbProvider._hashObject);
-            const savingData = Object.assign(Object.assign({}, Object.fromEntries(addingKeys.map((k) => [k, ""]))), Object.fromEntries(deletingKeys.map((k) => [k, null])));
-            // Key example:
-            // bos.dapplets.near/settings/dapplets.near/parser/social-network/contexts
-            const parentKeys = [
-                parserOwnerId,
-                SettingsKey,
-                ProjectIdKey,
-                ParserKey,
-                parserLocalId,
-                ParserContextsKey,
-            ];
-            yield __classPrivateFieldGet(this, _SocialDbProvider_client, "f").set(SocialDbProvider._buildNestedData(parentKeys, savingData));
+            yield this.client.set(SocialDbProvider._buildNestedData(keys, storedParserConfig));
         });
     }
     // #endregion
     // #region Private methods
-    _extractParserIdFromNamespace(namespace) {
-        if (!namespace.startsWith(DappletsNamespace)) {
-            throw new Error("Invalid namespace");
-        }
-        const parserGlobalId = namespace.replace(DappletsNamespace, "");
+    _extractParserIdFromNamespace(parserGlobalId) {
         // Example: example.near/parser/social-network
-        const [parserType, accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter);
-        if (entityType !== "parser" || !accountId || !parserLocalId) {
-            throw new Error("Invalid namespace");
+        const [accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter);
+        if (entityType !== 'parser' || !accountId || !parserLocalId) {
+            throw new Error('Invalid namespace');
         }
-        if (!SupportedParserTypes.includes(parserType)) {
-            throw new Error(`Parser type "${parserType}" is not supported`);
-        }
-        return { parserType, accountId, parserLocalId };
+        return { accountId, parserLocalId };
     }
     // #endregion
     // #region Utils
@@ -334,7 +238,7 @@ class SocialDbProvider {
         }
     }
     static _splitObjectByDepth(obj, depth = 0, path = []) {
-        if (depth === 0 || typeof obj !== "object" || obj === null) {
+        if (depth === 0 || typeof obj !== 'object' || obj === null) {
             return { [path.join(KeyDelimiter)]: obj };
         }
         const result = {};
@@ -363,10 +267,10 @@ class SocialDbProvider {
             .map((val) => {
             return String.fromCharCode(val);
         })
-            .join(""))
-            .replace(/\+/g, "-")
-            .replace(/\//g, "_")
-            .replace(/\=/g, "");
+            .join(''))
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/\=/g, '');
     }
     static _getValueByKey(keys, obj) {
         const [firstKey, ...anotherKeys] = keys;
@@ -379,4 +283,6 @@ class SocialDbProvider {
     }
 }
 exports.SocialDbProvider = SocialDbProvider;
-_SocialDbProvider_client = new WeakMap();
+__decorate([
+    (0, caching_decorator_1.Cacheable)({ ttl: 60000 })
+], SocialDbProvider.prototype, "getLinksByIndex", null);

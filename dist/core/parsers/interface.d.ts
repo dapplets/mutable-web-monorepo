@@ -1,4 +1,4 @@
-import { InsertionType } from "../adapters/interface";
+import { InsertionType } from '../adapters/interface';
 export type InsertionPoint = {
     name: string;
     insertionType?: InsertionType;

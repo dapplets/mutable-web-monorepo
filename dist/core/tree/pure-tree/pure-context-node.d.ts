@@ -1,13 +1,13 @@
-import { IContextNode } from "../types";
+import { IContextNode } from '../types';
 export declare class PureContextNode implements IContextNode {
     id: string | null;
-    tagName: string;
-    namespaceURI: string;
+    contextType: string;
+    namespace: string;
     parentNode: IContextNode | null;
     parsedContext: any;
     children: IContextNode[];
     insPoints: string[];
-    constructor(namespaceURI: string, tagName: string);
+    constructor(namespace: string, contextType: string);
     removeChild(child: IContextNode): void;
     appendChild(child: IContextNode): void;
 }

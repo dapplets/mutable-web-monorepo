@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _MutationManager_provider, _MutationManager_activeApps;
+var _MutationManager_provider, _MutationManager_activeApps, _MutationManager_activeParsers;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MutationManager = void 0;
 class MutationManager {
@@ -27,6 +27,7 @@ class MutationManager {
         this.mutation = null;
         _MutationManager_provider.set(this, void 0);
         _MutationManager_activeApps.set(this, []);
+        _MutationManager_activeParsers.set(this, []);
         __classPrivateFieldSet(this, _MutationManager_provider, provider, "f");
     }
     // #region Read methods
@@ -48,16 +49,14 @@ class MutationManager {
     }
     // ToDo: replace with getAppsAndLinksForContext
     filterSuitableApps(context) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const suitableApps = [];
-            for (const app of __classPrivateFieldGet(this, _MutationManager_activeApps, "f")) {
-                const suitableTargets = app.targets.filter((target) => MutationManager._isTargetMet(target, context));
-                if (suitableTargets.length > 0) {
-                    suitableApps.push(Object.assign(Object.assign({}, app), { targets: suitableTargets }));
-                }
+        const suitableApps = [];
+        for (const app of __classPrivateFieldGet(this, _MutationManager_activeApps, "f")) {
+            const suitableTargets = app.targets.filter((target) => MutationManager._isTargetMet(target, context));
+            if (suitableTargets.length > 0) {
+                suitableApps.push(Object.assign(Object.assign({}, app), { targets: suitableTargets }));
             }
-            return suitableApps;
-        });
+        }
+        return suitableApps;
     }
     // ToDo: replace with getAppsAndLinksForContext
     getLinksForContext(context) {
@@ -74,6 +73,16 @@ class MutationManager {
             return appLinksNested.flat(2);
         });
     }
+    filterSuitableParsers(context) {
+        const suitableParsers = [];
+        for (const parser of __classPrivateFieldGet(this, _MutationManager_activeParsers, "f")) {
+            const suitableTargets = parser.targets.filter((target) => MutationManager._isTargetMet(target, context));
+            if (suitableTargets.length > 0) {
+                suitableParsers.push(Object.assign(Object.assign({}, parser), { targets: suitableTargets }));
+            }
+        }
+        return suitableParsers;
+    }
     // #endregion
     // #region Write methods
     switchMutation(mutationId) {
@@ -82,26 +91,37 @@ class MutationManager {
             if (!mutation)
                 throw new Error("Mutation doesn't exist");
             const apps = yield Promise.all(mutation.apps.map((app) => __classPrivateFieldGet(this, _MutationManager_provider, "f").getApplication(app)));
-            __classPrivateFieldSet(this, _MutationManager_activeApps, apps.flatMap((app) => (app ? [app] : [])), "f"); // filter empty apps
+            const activeApps = apps.flatMap((app) => (app ? [app] : [])); // filter empty apps
+            // get parser ids from target namespaces
+            const parserIds = [
+                ...new Set(activeApps
+                    .map((app) => app.targets)
+                    .flat()
+                    .map((target) => target.namespace)),
+            ];
+            const parsers = yield Promise.all(parserIds.map((id) => __classPrivateFieldGet(this, _MutationManager_provider, "f").getParserConfig(id)));
+            const activeParsers = parsers.flatMap((parser) => (parser ? [parser] : [])); // filter empty parsers
+            __classPrivateFieldSet(this, _MutationManager_activeApps, activeApps, "f");
+            __classPrivateFieldSet(this, _MutationManager_activeParsers, activeParsers, "f");
             this.mutation = mutation;
-            console.log("Active apps: ", mutation.apps);
+            console.log('Active apps: ', mutation.apps);
         });
     }
     createLink(appGlobalId, context) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.mutation) {
-                throw new Error("Mutation is not loaded");
+                throw new Error('Mutation is not loaded');
             }
             const app = __classPrivateFieldGet(this, _MutationManager_activeApps, "f").find((app) => app.id === appGlobalId);
             if (!app) {
-                throw new Error("App is not active");
+                throw new Error('App is not active');
             }
             const suitableTargets = app.targets.filter((target) => MutationManager._isTargetMet(target, context));
             if (suitableTargets.length === 0) {
-                throw new Error("No suitable targets found");
+                throw new Error('No suitable targets found');
             }
             if (suitableTargets.length > 1) {
-                throw new Error("More than one suitable targets found");
+                throw new Error('More than one suitable targets found');
             }
             const [target] = suitableTargets;
             const indexObject = MutationManager._buildLinkIndex(app.id, this.mutation.id, target, context);
@@ -115,6 +135,7 @@ class MutationManager {
             const indexedLink = yield __classPrivateFieldGet(this, _MutationManager_provider, "f").createLink(indexObject);
             return {
                 id: indexedLink.id,
+                appId: appGlobalId,
                 namespace: target.namespace,
                 authorId: indexedLink.authorId,
                 bosWidgetId: target.componentId,
@@ -132,11 +153,12 @@ class MutationManager {
     _getUserLinksForTarget(appId, target, context) {
         return __awaiter(this, void 0, void 0, function* () {
             if (!this.mutation)
-                throw new Error("Mutation is not loaded");
+                throw new Error('Mutation is not loaded');
             const indexObject = MutationManager._buildLinkIndex(appId, this.mutation.id, target, context);
             const indexedLinks = yield __classPrivateFieldGet(this, _MutationManager_provider, "f").getLinksByIndex(indexObject);
             return indexedLinks.map((link) => ({
                 id: link.id,
+                appId: appId,
                 authorId: link.authorId,
                 namespace: target.namespace,
                 bosWidgetId: target.componentId, // ToDo: unify
@@ -167,8 +189,8 @@ class MutationManager {
     }
     static _isTargetMet(target, context) {
         // ToDo: check insertion points?
-        return (target.namespace === context.namespaceURI &&
-            target.contextType === context.tagName &&
+        return (target.namespace === context.namespace &&
+            target.contextType === context.contextType &&
             this._areConditionsMet(target.if, context.parsedContext));
     }
     static _areConditionsMet(conditions, values) {
@@ -187,7 +209,7 @@ class MutationManager {
         if (_eq !== undefined) {
             return _eq === value;
         }
-        if (_contains !== undefined && typeof value === "string") {
+        if (_contains !== undefined && typeof value === 'string') {
             return value.includes(_contains);
         }
         if (_in !== undefined) {
@@ -197,4 +219,4 @@ class MutationManager {
     }
 }
 exports.MutationManager = MutationManager;
-_MutationManager_provider = new WeakMap(), _MutationManager_activeApps = new WeakMap();
+_MutationManager_provider = new WeakMap(), _MutationManager_activeApps = new WeakMap(), _MutationManager_activeParsers = new WeakMap();

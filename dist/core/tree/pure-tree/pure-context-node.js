@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PureContextNode = void 0;
 class PureContextNode {
-    constructor(namespaceURI, tagName) {
+    constructor(namespace, contextType) {
         this.id = null;
         this.parentNode = null;
         this.parsedContext = {};
         this.children = [];
         this.insPoints = [];
-        this.namespaceURI = namespaceURI;
-        this.tagName = tagName;
+        this.namespace = namespace;
+        this.contextType = contextType;
     }
     removeChild(child) {
         child.parentNode = null;

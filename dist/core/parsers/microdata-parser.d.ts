@@ -1,4 +1,4 @@
-import { IParser, InsertionPoint } from "./interface";
+import { IParser, InsertionPoint } from './interface';
 export declare class MicrodataParser implements IParser {
     parseContext(element: Element): any;
     findChildElements(element: Element): {

@@ -1,1 +1,1 @@
-{"version":3,"file":"dapplet-overlay.d.ts","sourceRoot":"","sources":["../../src/custom-elements/dapplet-overlay.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAG/B,eAAO,MAAM,cAAc;cAGf,MAAM,SAAS,EAAE;uBAI5B,CAAC"}
+{"version":3,"file":"dapplet-overlay.d.ts","sourceRoot":"","sources":["../../src/custom-elements/dapplet-overlay.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAA;AAG9B,eAAO,MAAM,cAAc;cAA8B,MAAM,SAAS,EAAE;uBAGzE,CAAA"}

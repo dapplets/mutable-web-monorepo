@@ -26,8 +26,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DappletOverlay = void 0;
 const React = __importStar(require("react"));
 const overlay_1 = require("../bos/overlay");
-const DappletOverlay = ({ children, }) => {
-    const child = children.filter((c) => typeof c !== "string" || !!c.trim())[0];
+const DappletOverlay = ({ children }) => {
+    const child = children.filter((c) => typeof c !== 'string' || !!c.trim())[0];
     return React.createElement(overlay_1.Overlay, null, child);
 };
 exports.DappletOverlay = DappletOverlay;
