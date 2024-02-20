@@ -29,6 +29,11 @@
         "http://*/*",
         "https://*/*"
       ],
+      "exclude_globs": [
+        "https://mutable-near-social.netlify.app/*",
+        "https://social.dapplets.org/*",
+        "http://localhost/*"
+      ],
       "js": [
         "custom-elements.min.js",
         "contentscript.js"
