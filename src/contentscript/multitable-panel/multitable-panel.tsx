@@ -7,7 +7,7 @@ const WrapperPanel = styled.div<{ $right: string }>`
   width: 100vw;
   right: ${(props) => props.$right};
   position: fixed;
-  z-index: 1009;
+  z-index: 5000;
   top: 0;
   height: 5px;
   background: #3d7fff;

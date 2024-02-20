@@ -19,6 +19,7 @@ const SelectedMutationBlock = styled.div`
   justify-content: space-between;
   width: 100%;
   padding: 2px 6px;
+  cursor: pointer;
 `
 
 const SelectedMutationInfo = styled.div`
@@ -310,7 +311,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
       tabIndex={0}
       style={{ scrollbarColor: 'rgb(147, 150, 152)  rgb(255, 255, 255)', scrollbarWidth: 'thin' }}
     >
-      <SelectedMutationBlock>
+      <SelectedMutationBlock onClick={() => setOpen(!isOpen)}>
         <SelectedMutationInfo>
           {selectedMutation && (
             <>
@@ -323,9 +324,9 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
         </SelectedMutationInfo>
 
         {isOpen ? (
-          <OpenList onClick={() => setOpen(!isOpen)}>{iconDropdown}</OpenList>
+          <OpenList>{iconDropdown}</OpenList>
         ) : (
-          <OpenListDefault onClick={() => setOpen(!isOpen)}>{iconDropdown}</OpenListDefault>
+          <OpenListDefault>{iconDropdown}</OpenListDefault>
         )}
       </SelectedMutationBlock>
 
