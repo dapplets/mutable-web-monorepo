@@ -54,7 +54,6 @@
   "permissions": [
     "storage",
     "tabs",
-    "activeTab",
     "contextMenus"
   ],
   "host_permissions": [
