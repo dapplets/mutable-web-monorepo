@@ -302,7 +302,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
     setSelectedMutation(mut)
     x(false) // ToDo: ???
     await engine.switchMutation(mut.id)
-    await setCurrentMutationId(window.location.hostname, mut.id)
+    setCurrentMutationId(mut.id)
   }
 
   return (

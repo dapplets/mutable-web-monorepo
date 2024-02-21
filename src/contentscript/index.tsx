@@ -60,7 +60,7 @@ async function main() {
     selector,
   })
 
-  const mutationId = await getCurrentMutationId(window.location.hostname)
+  const mutationId = getCurrentMutationId()
 
   if (mutationId) {
     await engine.start(mutationId)
