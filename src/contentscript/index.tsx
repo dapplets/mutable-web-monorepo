@@ -77,10 +77,7 @@ async function main() {
       // It's a way to check liveness of the content script
       return Promise.resolve('PONG')
     } else if (message.type === 'COPY') {
-      const type = 'text/plain'
-      const blob = new Blob([message.address], { type })
-      const data = [new ClipboardItem({ [type]: blob })]
-      navigator.clipboard.write(data)
+      navigator.clipboard.writeText(message.address)
     } else if (message.type === 'SIGNED_IN') {
       eventEmitter.emit('signedIn', message.params)
     } else if (message.type === 'SIGNED_OUT') {

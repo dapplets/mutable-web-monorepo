@@ -125,9 +125,11 @@ function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Ta
 browser.runtime.onInstalled.addListener(updateActionMenu)
 
 const setCopyAvailability = async (tabId: number) => {
+  const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
+  if (tabId !== currentTab.id) return
   // The script may not be injected if the extension was just installed
   const isContentScriptInjected = await browser.tabs
-    .sendMessage(tabId, { type: 'PING' }) // The CS must reply 'PONG'
+    .sendMessage(currentTab.id, { type: 'PING' }) // The CS must reply 'PONG'
     .then(() => true)
     .catch(() => false)
   browser.contextMenus
@@ -138,6 +140,8 @@ const setCopyAvailability = async (tabId: number) => {
 
 const debouncedFn = debounce(setCopyAvailability, 1000)
 
-browser.tabs.onUpdated.addListener((tabId) => debouncedFn(tabId))
+browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (tab.active) debouncedFn(tabId)
+})
 browser.tabs.onActivated.addListener((a) => debouncedFn(a.tabId))
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)

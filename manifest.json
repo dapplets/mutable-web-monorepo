@@ -55,8 +55,7 @@
     "storage",
     "tabs",
     "activeTab",
-    "contextMenus",
-    "clipboardWrite"
+    "contextMenus"
   ],
   "host_permissions": [
     "*://localhost/*",
