@@ -1,7 +1,7 @@
 {
   "name": "@dapplets/mutable-web-extension",
   "version": "0.1.0",
-  "description": "The Mutable Web",
+  "description": "The Gateway to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack -w --config webpack.dev.js",
