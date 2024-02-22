@@ -3,6 +3,8 @@ import browser from 'webextension-polyfill'
 import { debounce } from './helpers'
 import { WalletImpl, WalletParams } from './wallet'
 
+// NEAR wallet
+
 const DEFAULT_CONTRACT_ID = 'social.near' // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
 
 const walletConfig: WalletParams = {
@@ -27,6 +29,8 @@ export type BgFunctions = typeof bgFunctions
 
 browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
 
+// Context menu actions
+
 const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> =>
   browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
 
@@ -50,7 +54,7 @@ const connectWallet = async (): Promise<void> => {
     })
   )
 
-  recreateMenuForConnectedState(accounts[0].accountId)
+  updateMenuForConnectedState(accounts[0].accountId)
 }
 
 const disconnect = async (): Promise<void> => {
@@ -62,14 +66,16 @@ const disconnect = async (): Promise<void> => {
       browser.tabs.sendMessage(tab.id, { type: 'SIGNED_OUT' })
     })
   )
-  recreateMenuForDisconnectedState()
+  updateMenuForDisconnectedState()
 }
 
 const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
   setClipboard(tab, (await near.getAccounts())[0].accountId)
 }
 
-const recreateMenuForDisconnectedState = (): void => {
+// Context menu updaters
+
+const updateMenuForDisconnectedState = (): void => {
   browser.contextMenus.removeAll()
   browser.contextMenus.create({
     title: 'Connect NEAR wallet',
@@ -78,7 +84,7 @@ const recreateMenuForDisconnectedState = (): void => {
   })
 }
 
-const recreateMenuForConnectedState = (accountName: string): void => {
+const updateMenuForConnectedState = (accountName: string): void => {
   browser.contextMenus.removeAll()
   const parentContextMenuId = browser.contextMenus.create({
     title: accountName,
@@ -100,29 +106,17 @@ const recreateMenuForConnectedState = (accountName: string): void => {
   })
 }
 
-const updateActionMenu = async (): Promise<void> => {
+// Set context menu
+
+const setActionMenu = async (): Promise<void> => {
   const accounts = await near.getAccounts()
-  if (accounts.length) recreateMenuForConnectedState(accounts[0].accountId)
-  else recreateMenuForDisconnectedState()
+  if (accounts.length) updateMenuForConnectedState(accounts[0].accountId)
+  else updateMenuForDisconnectedState()
 }
 
-function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) {
-  switch (info.menuItemId) {
-    case 'connect':
-      return connectWallet()
+setActionMenu()
 
-    case 'disconnect':
-      return disconnect()
-
-    case 'copy':
-      return copy(info, tab)
-
-    default:
-      break
-  }
-}
-
-browser.runtime.onInstalled.addListener(updateActionMenu)
+// Set availability for copy address
 
 const setCopyAvailability = async (tabId: number) => {
   const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
@@ -140,8 +134,26 @@ const setCopyAvailability = async (tabId: number) => {
 
 const debouncedFn = debounce(setCopyAvailability, 1000)
 
+browser.tabs.onActivated.addListener((a) => debouncedFn(a.tabId))
 browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (tab.active) debouncedFn(tabId)
 })
-browser.tabs.onActivated.addListener((a) => debouncedFn(a.tabId))
+
+// Context menu actions routing
+
+function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) {
+  switch (info.menuItemId) {
+    case 'connect':
+      return connectWallet()
+
+    case 'disconnect':
+      return disconnect()
+
+    case 'copy':
+      return copy(info, tab)
+
+    default:
+      break
+  }
+}
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)
