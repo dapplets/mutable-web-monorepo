@@ -3,14 +3,22 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { Dropdown } from './components/dropdown'
 
-const WrapperPanel = styled.div<{ $right: string }>`
+const WrapperPanel = styled.div`
   width: 100vw;
-  right: ${(props) => props.$right};
+  right: 0;
   position: fixed;
   z-index: 5000;
   top: 0;
   height: 5px;
   background: #3d7fff;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  &:hover,
+  &:focus {
+    opacity: 1;
+    transform: translateY(0);
+  }
 `
 const NorthPanel = styled.div`
   position: relative;
@@ -36,13 +44,8 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
-  // ToDo: remove this
-  const isOverlayCollapsed = document
-    .querySelector('#dapplets-overlay-manager')
-    ?.classList.contains('dapplets-overlay-collapsed')
-
   return (
-    <WrapperPanel $right={`${!isOverlayCollapsed ? 0 : 468}px`}>
+    <WrapperPanel>
       <NorthPanel>
         <Dropdown engine={props.engine} />
       </NorthPanel>
