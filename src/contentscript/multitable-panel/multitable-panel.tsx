@@ -9,15 +9,22 @@ const WrapperPanel = styled.div`
   position: fixed;
   z-index: 5000;
   top: 0;
-  height: 5px;
-  background: #3d7fff;
-  opacity: 0;
-  transform: translateY(-100%);
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  height: 15px;
+  background: transparent;
+  &::before {
+    content: '';
+    width: 100%;
+    height: 5px;
+    display: block;
+    background: #3d7fff;
+  }
+
   &:hover,
   &:focus {
-    opacity: 1;
-    transform: translateY(0);
+    .visible-north-panel {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 `
 const NorthPanel = styled.div`
@@ -38,6 +45,9 @@ const NorthPanel = styled.div`
   background: #3d7fff;
   box-sizing: border-box;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 `
 interface MultitablePanelProps {
   engine: Engine
@@ -46,7 +56,7 @@ interface MultitablePanelProps {
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   return (
     <WrapperPanel>
-      <NorthPanel>
+      <NorthPanel className="visible-north-panel">
         <Dropdown engine={props.engine} />
       </NorthPanel>
     </WrapperPanel>
