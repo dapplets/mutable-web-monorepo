@@ -125,8 +125,8 @@ const MutationsList = styled.div`
   left: -2.5px;
   top: 39px;
   border-radius: 0px 0px 10px 10px;
+  max-height: 300px;
 
-  height: 300px;
   overflow: hidden;
   overflow-y: auto;
 
