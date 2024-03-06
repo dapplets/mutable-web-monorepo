@@ -307,20 +307,23 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
 
   return (
     <WrapperDropdown
+      data-testid="mutable-panel-dropdown"
       onBlur={() => {
         setOpen(false)
       }}
       tabIndex={0}
       style={{ scrollbarColor: 'rgb(147, 150, 152)  rgb(255, 255, 255)', scrollbarWidth: 'thin' }}
     >
-      <SelectedMutationBlock onClick={() => setOpen(!isOpen)}>
+      <SelectedMutationBlock data-testid="selected-mutation-block" onClick={() => setOpen(!isOpen)}>
         <SelectedMutationInfo>
           {selectedMutation && (
             <>
-              <SelectedMutationDescription>
+              <SelectedMutationDescription data-testid="selected-mutation-name">
                 {selectedMutation.metadata.name}
               </SelectedMutationDescription>
-              <SelectedMutationId>{selectedMutation.id}</SelectedMutationId>
+              <SelectedMutationId data-testid="selected-mutation-id">
+                {selectedMutation.id}
+              </SelectedMutationId>
             </>
           )}
         </SelectedMutationInfo>
@@ -333,7 +336,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
       </SelectedMutationBlock>
 
       {isOpen && (
-        <MutationsList>
+        <MutationsList data-testid="mutatiomn-list">
           <Label>Available mutations</Label>
 
           {mutations.length &&
@@ -345,6 +348,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
                   enableMutation(mut, setOpen)
                 }}
                 key={i}
+                data-testid={`selected-mutation-name-${mut.metadata.name}`}
               >
                 <InputMutation>{mut.metadata.name}</InputMutation>
                 <AuthorMutation>{mut.id}</AuthorMutation>

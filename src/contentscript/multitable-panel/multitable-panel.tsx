@@ -42,8 +42,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
     ?.classList.contains('dapplets-overlay-collapsed')
 
   return (
-    <WrapperPanel $right={`${!isOverlayCollapsed ? 0 : 468}px`}>
-      <NorthPanel>
+    <WrapperPanel id='mutable-panel' data-testid="mutable-panel" $right={`${!isOverlayCollapsed ? 0 : 468}px`}>
+      <NorthPanel data-testid="north-panel">
         <Dropdown engine={props.engine} />
       </NorthPanel>
     </WrapperPanel>
