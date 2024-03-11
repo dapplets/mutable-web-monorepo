@@ -1,5 +1,5 @@
 import { Engine } from 'mutable-web-engine'
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Dropdown } from './components/dropdown'
 
@@ -25,6 +25,10 @@ const WrapperPanel = styled.div`
       opacity: 1;
       transform: translateY(0);
     }
+  }
+  .visible-default {
+    opacity: 1;
+    transform: translateY(0);
   }
 `
 const NorthPanel = styled.div`
@@ -54,10 +58,20 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(true)
+    }, 5000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <WrapperPanel>
-      <NorthPanel className="visible-north-panel">
-        <Dropdown engine={props.engine} />
+      <NorthPanel className={visible ? 'visible-north-panel' : 'visible-default'}>
+        <Dropdown setVisible={setVisible} engine={props.engine} />
       </NorthPanel>
     </WrapperPanel>
   )
