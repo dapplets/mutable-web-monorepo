@@ -9,7 +9,7 @@ const WrapperDropdown = styled.div`
   display: flex;
   align-items: center;
 
-  width: 220px;
+  width: 242px;
   height: 100%;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
@@ -120,9 +120,9 @@ const MutationsList = styled.div`
   background: #fff;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
 
-  width: 225px;
+  width: 242px;
   box-sizing: border-box;
-  left: -2.5px;
+  left: 0.5px;
   top: 39px;
   border-radius: 0px 0px 10px 10px;
   max-height: 300px;
@@ -302,7 +302,9 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
   const enableMutation = async (mut: Mutation) => {
     setSelectedMutation(mut)
     setOpen(false) // ToDo: ???
+
     isOpen ? setVisible(true) : setVisible(false)
+
     await engine.switchMutation(mut.id)
     setCurrentMutationId(mut.id)
   }
@@ -318,8 +320,9 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
     >
       <SelectedMutationBlock
         onClick={() => {
-          setOpen(!isOpen)
           isOpen ? setVisible(true) : setVisible(false)
+
+          setOpen(!isOpen)
         }}
       >
         <SelectedMutationInfo>
