@@ -3,6 +3,8 @@ export type NearConfig = {
   nodeUrl: string
   contractName: string
   walletUrl: string
+  defaultMutationId: string
+  defaultLayoutManager: string
 }
 
 export const NearConfigs: { [networkId: string]: NearConfig } = {
@@ -10,7 +12,17 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
     networkId: 'mainnet',
     nodeUrl: 'https://rpc.mainnet.near.org',
     contractName: 'social.dapplets.near',
-    walletUrl: 'https://wallet.near.org',
+    walletUrl: 'https://app.mynearwallet.com',
+    defaultMutationId: 'bos.dapplets.near/mutation/Sandbox',
+    defaultLayoutManager: 'bos.dapplets.near/widget/DefaultLayoutManager',
+  },
+  testnet: {
+    networkId: 'testnet',
+    nodeUrl: 'https://rpc.testnet.near.org',
+    contractName: 'social.dapplets.testnet',
+    walletUrl: 'https://testnet.mynearwallet.com',
+    defaultMutationId: 'bos.dapplets.testnet/mutation/Sandbox',
+    defaultLayoutManager: 'bos.dapplets.testnet/widget/DefaultLayoutManager',
   },
 }
 

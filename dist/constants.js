@@ -6,7 +6,17 @@ exports.NearConfigs = {
         networkId: 'mainnet',
         nodeUrl: 'https://rpc.mainnet.near.org',
         contractName: 'social.dapplets.near',
-        walletUrl: 'https://wallet.near.org',
+        walletUrl: 'https://app.mynearwallet.com',
+        defaultMutationId: 'bos.dapplets.near/mutation/Sandbox',
+        defaultLayoutManager: 'bos.dapplets.near/widget/DefaultLayoutManager',
+    },
+    testnet: {
+        networkId: 'testnet',
+        nodeUrl: 'https://rpc.testnet.near.org',
+        contractName: 'social.dapplets.testnet',
+        walletUrl: 'https://testnet.mynearwallet.com',
+        defaultMutationId: 'bos.dapplets.testnet/mutation/Sandbox',
+        defaultLayoutManager: 'bos.dapplets.testnet/widget/DefaultLayoutManager',
     },
 };
 const getNearConfig = (networkId) => {

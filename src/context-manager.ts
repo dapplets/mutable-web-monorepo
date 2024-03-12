@@ -11,8 +11,6 @@ import {
   UserLinkId,
 } from './providers/provider'
 
-const DefaultLayoutManager = 'bos.dapplets.near/widget/DefaultLayoutManager'
-
 export type InsertionPointName = string
 
 export class ContextManager {
@@ -24,17 +22,20 @@ export class ContextManager {
   #mutationManager: MutationManager
   #userLinks: Map<UserLinkId, BosUserLink> = new Map()
   #apps: Map<AppId, AppMetadata> = new Map()
+  #defaultLayoutManager: string
 
   constructor(
     context: IContextNode,
     adapter: IAdapter,
     widgetFactory: BosWidgetFactory,
-    mutationManager: MutationManager
+    mutationManager: MutationManager,
+    defaultLayoutManager: string
   ) {
     this.context = context
     this.#adapter = adapter
     this.#widgetFactory = widgetFactory
     this.#mutationManager = mutationManager
+    this.#defaultLayoutManager = defaultLayoutManager
   }
 
   forceUpdate() {
@@ -103,7 +104,7 @@ export class ContextManager {
       return
     }
 
-    const bosWidgetId = insPoint.bosLayoutManager ?? DefaultLayoutManager
+    const bosWidgetId = insPoint.bosLayoutManager ?? this.#defaultLayoutManager
     const layoutManagerElement = this.#widgetFactory.createWidget(bosWidgetId)
 
     const layoutManager = new LayoutManager(layoutManagerElement, this)

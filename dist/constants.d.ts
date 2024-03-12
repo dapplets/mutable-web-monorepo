@@ -3,6 +3,8 @@ export type NearConfig = {
     nodeUrl: string;
     contractName: string;
     walletUrl: string;
+    defaultMutationId: string;
+    defaultLayoutManager: string;
 };
 export declare const NearConfigs: {
     [networkId: string]: NearConfig;

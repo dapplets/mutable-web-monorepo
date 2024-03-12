@@ -19,23 +19,24 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layoutManagers, _ContextManager_mutationManager, _ContextManager_userLinks, _ContextManager_apps;
+var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layoutManagers, _ContextManager_mutationManager, _ContextManager_userLinks, _ContextManager_apps, _ContextManager_defaultLayoutManager;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextManager = void 0;
 const layout_manager_1 = require("./layout-manager");
-const DefaultLayoutManager = 'bos.dapplets.near/widget/DefaultLayoutManager';
 class ContextManager {
-    constructor(context, adapter, widgetFactory, mutationManager) {
+    constructor(context, adapter, widgetFactory, mutationManager, defaultLayoutManager) {
         _ContextManager_adapter.set(this, void 0);
         _ContextManager_widgetFactory.set(this, void 0);
         _ContextManager_layoutManagers.set(this, new Map());
         _ContextManager_mutationManager.set(this, void 0);
         _ContextManager_userLinks.set(this, new Map());
         _ContextManager_apps.set(this, new Map());
+        _ContextManager_defaultLayoutManager.set(this, void 0);
         this.context = context;
         __classPrivateFieldSet(this, _ContextManager_adapter, adapter, "f");
         __classPrivateFieldSet(this, _ContextManager_widgetFactory, widgetFactory, "f");
         __classPrivateFieldSet(this, _ContextManager_mutationManager, mutationManager, "f");
+        __classPrivateFieldSet(this, _ContextManager_defaultLayoutManager, defaultLayoutManager, "f");
     }
     forceUpdate() {
         __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.forceUpdate());
@@ -89,7 +90,7 @@ class ContextManager {
         if (!insPoint) {
             return;
         }
-        const bosWidgetId = (_a = insPoint.bosLayoutManager) !== null && _a !== void 0 ? _a : DefaultLayoutManager;
+        const bosWidgetId = (_a = insPoint.bosLayoutManager) !== null && _a !== void 0 ? _a : __classPrivateFieldGet(this, _ContextManager_defaultLayoutManager, "f");
         const layoutManagerElement = __classPrivateFieldGet(this, _ContextManager_widgetFactory, "f").createWidget(bosWidgetId);
         const layoutManager = new layout_manager_1.LayoutManager(layoutManagerElement, this);
         try {
@@ -124,4 +125,4 @@ class ContextManager {
     }
 }
 exports.ContextManager = ContextManager;
-_ContextManager_adapter = new WeakMap(), _ContextManager_widgetFactory = new WeakMap(), _ContextManager_layoutManagers = new WeakMap(), _ContextManager_mutationManager = new WeakMap(), _ContextManager_userLinks = new WeakMap(), _ContextManager_apps = new WeakMap();
+_ContextManager_adapter = new WeakMap(), _ContextManager_widgetFactory = new WeakMap(), _ContextManager_layoutManagers = new WeakMap(), _ContextManager_mutationManager = new WeakMap(), _ContextManager_userLinks = new WeakMap(), _ContextManager_apps = new WeakMap(), _ContextManager_defaultLayoutManager = new WeakMap();

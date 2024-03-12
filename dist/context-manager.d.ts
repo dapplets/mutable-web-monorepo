@@ -7,7 +7,7 @@ export type InsertionPointName = string;
 export declare class ContextManager {
     #private;
     readonly context: IContextNode;
-    constructor(context: IContextNode, adapter: IAdapter, widgetFactory: BosWidgetFactory, mutationManager: MutationManager);
+    constructor(context: IContextNode, adapter: IAdapter, widgetFactory: BosWidgetFactory, mutationManager: MutationManager, defaultLayoutManager: string);
     forceUpdate(): void;
     enableEditMode(): void;
     disableEditMode(): void;

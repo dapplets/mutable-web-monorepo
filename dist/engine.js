@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager;
+var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Engine = exports.AdapterType = void 0;
 const dynamic_html_adapter_1 = require("./core/adapters/dynamic-html-adapter");
@@ -38,7 +38,6 @@ var AdapterType;
     AdapterType["Microdata"] = "microdata";
     AdapterType["Json"] = "json";
 })(AdapterType || (exports.AdapterType = AdapterType = {}));
-const DefaultMutationId = 'bos.dapplets.near/mutation/Sandbox';
 class Engine {
     constructor(config) {
         this.config = config;
@@ -47,6 +46,7 @@ class Engine {
         _Engine_selector.set(this, void 0);
         _Engine_contextManagers.set(this, new Map());
         _Engine_mutationManager.set(this, void 0);
+        _Engine_nearConfig.set(this, void 0);
         this.adapters = new Set();
         this.treeBuilder = null;
         this.started = false;
@@ -55,11 +55,12 @@ class Engine {
             selector: this.config.selector,
             tagName: 'bos-component',
         }), "f");
-        const nearConfig = (0, constants_1.getNearConfig)(this.config.networkId);
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
+        const nearConfig = (0, constants_1.getNearConfig)(this.config.networkId);
         const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), nearConfig.nodeUrl);
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
         __classPrivateFieldSet(this, _Engine_mutationManager, new mutation_manager_1.MutationManager(__classPrivateFieldGet(this, _Engine_provider, "f")), "f");
+        __classPrivateFieldSet(this, _Engine_nearConfig, nearConfig, "f");
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -80,7 +81,7 @@ class Engine {
             });
             if (!adapter)
                 return;
-            const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_mutationManager, "f"));
+            const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_mutationManager, "f"), __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultLayoutManager);
             __classPrivateFieldGet(this, _Engine_contextManagers, "f").set(context, contextManager);
             const links = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context);
             const apps = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context);
@@ -107,7 +108,7 @@ class Engine {
     handleInsPointFinished(context, oldInsPoint) {
         // ToDo: do nothing because IP unmounted?
     }
-    start(mutationId = DefaultMutationId) {
+    start(mutationId = __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId) {
         return __awaiter(this, void 0, void 0, function* () {
             // load mutation and apps
             yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutationId);
@@ -180,4 +181,4 @@ class Engine {
     }
 }
 exports.Engine = Engine;
-_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap();
+_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap();

@@ -3,7 +3,7 @@ import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
 import { IProvider, Mutation, ParserConfig } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
-import { getNearConfig } from './constants'
+import { NearConfig, getNearConfig } from './constants'
 import { NearSigner } from './providers/near-signer'
 import { SocialDbProvider } from './providers/social-db-provider'
 import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
@@ -24,14 +24,13 @@ export type EngineConfig = {
   selector: WalletSelector
 }
 
-const DefaultMutationId = 'bos.dapplets.near/mutation/Sandbox'
-
 export class Engine implements IContextListener {
   #provider: IProvider
   #bosWidgetFactory: BosWidgetFactory
   #selector: WalletSelector
   #contextManagers: Map<IContextNode, ContextManager> = new Map()
   #mutationManager: MutationManager
+  #nearConfig: NearConfig
 
   adapters: Set<IAdapter> = new Set()
   treeBuilder: ITreeBuilder | null = null
@@ -43,11 +42,12 @@ export class Engine implements IContextListener {
       selector: this.config.selector,
       tagName: 'bos-component',
     })
-    const nearConfig = getNearConfig(this.config.networkId)
     this.#selector = this.config.selector
+    const nearConfig = getNearConfig(this.config.networkId)
     const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl)
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
+    this.#nearConfig = nearConfig
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -75,7 +75,8 @@ export class Engine implements IContextListener {
       context,
       adapter,
       this.#bosWidgetFactory,
-      this.#mutationManager
+      this.#mutationManager,
+      this.#nearConfig.defaultLayoutManager
     )
 
     this.#contextManagers.set(context, contextManager)
@@ -108,7 +109,7 @@ export class Engine implements IContextListener {
     // ToDo: do nothing because IP unmounted?
   }
 
-  async start(mutationId = DefaultMutationId): Promise<void> {
+  async start(mutationId = this.#nearConfig.defaultMutationId): Promise<void> {
     // load mutation and apps
     await this.#mutationManager.switchMutation(mutationId)
 
