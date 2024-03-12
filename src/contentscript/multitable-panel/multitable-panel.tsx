@@ -1,5 +1,5 @@
 import { Engine } from 'mutable-web-engine'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Dropdown } from './components/dropdown'
 
@@ -55,7 +55,7 @@ const NorthPanel = styled.div`
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   opacity: 0;
   transform: translateY(-100%);
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, left 0.1s ease;
 `
 
 const iconPinDefault = (
@@ -101,9 +101,34 @@ const PinWrapper = styled.div`
   }
 `
 const DragWrapper = styled.div`
-  width: 16px;
-  height: 16px;
+  width: 10px;
+  height: 37px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    opacity: 0.5;
+  }
 `
+
+const DragIconWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 6px;
+  height: 6px;
+`
+
+const iconDrag = (
+  <svg xmlns="http://www.w3.org/2000/svg" width="6" height="1" viewBox="0 0 6 1" fill="none">
+    <rect width="6" height="1" rx="0.5" fill="white" />
+  </svg>
+)
 interface MultitablePanelProps {
   engine: Engine
 }
@@ -111,6 +136,35 @@ interface MultitablePanelProps {
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   const [visible, setVisible] = useState(false)
   const [isPin, setPin] = useState(false)
+  const thumbRef = useRef<HTMLDivElement>(null)
+  const northPanelRef = useRef<HTMLDivElement>(null)
+  const [thumbPosition, setThumbPosition] = useState({ left: 0 })
+
+  const onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault()
+    setPin(true)
+    const thumb = thumbRef.current
+    const thumbRect = thumb.getBoundingClientRect()
+    const shiftX = event.clientX - thumbRect.left
+
+    const onMouseMove = (event: MouseEvent) => {
+      let newLeft = event.clientX - shiftX - thumb.parentElement.getBoundingClientRect().left
+
+      setThumbPosition({ left: newLeft })
+
+      document.addEventListener('mousemove', onMouseMove)
+      document.addEventListener('mouseup', onMouseUp)
+    }
+
+    const onMouseUp = () => {
+      document.removeEventListener('mousemove', onMouseMove)
+      document.removeEventListener('mouseup', onMouseUp)
+      setPin(false)
+    }
+
+    document.addEventListener('mousemove', onMouseMove)
+    document.addEventListener('mouseup', onMouseUp)
+  }
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(true)
@@ -122,12 +176,23 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   return (
     <WrapperPanel>
       <NorthPanel
+        ref={northPanelRef}
+        id="slider"
         className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
+        style={{ left: thumbPosition.left }}
       >
-        <DragWrapper />
+        <DragWrapper ref={thumbRef} className="thumb" onMouseDown={onMouseDown}>
+          <DragIconWrapper>
+            {iconDrag}
+            {iconDrag}
+            {iconDrag}
+          </DragIconWrapper>
+        </DragWrapper>
         <Dropdown setVisible={setVisible} engine={props.engine} />
         <PinWrapper onClick={() => setPin(!isPin)}>{isPin ? iconPin : iconPinDefault}</PinWrapper>
       </NorthPanel>
     </WrapperPanel>
   )
 }
+
+export default MultitablePanel
