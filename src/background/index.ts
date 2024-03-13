@@ -1,21 +1,12 @@
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
+import { networkConfig } from '../common/networks'
 import { debounce } from './helpers'
-import { WalletImpl, WalletParams } from './wallet'
+import { WalletImpl } from './wallet'
 
 // NEAR wallet
 
-const DEFAULT_CONTRACT_ID = 'social.near' // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
-
-const walletConfig: WalletParams = {
-  networkId: 'mainnet',
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  walletUrl: 'https://app.mynearwallet.com',
-  helperUrl: 'https://helper.mainnet.near.org',
-  explorerUrl: 'https://explorer.near.org',
-}
-
-const near = new WalletImpl(walletConfig)
+const near = new WalletImpl(networkConfig)
 
 export const bgFunctions = {
   near_signIn: near.signIn.bind(near),
@@ -36,7 +27,8 @@ const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<voi
 
 const connectWallet = async (): Promise<void> => {
   const params = {
-    contractId: DEFAULT_CONTRACT_ID,
+    // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
+    contractId: networkConfig.socialDbContract,
     methodNames: [],
   }
   const accounts = await near.signIn(params)
