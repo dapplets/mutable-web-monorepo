@@ -16,7 +16,7 @@ const WrapperPanel = styled.div`
     width: 100%;
     height: 5px;
     display: block;
-    background: #3d7fff;
+    background: #384bff;
   }
 
   &:hover,
@@ -50,7 +50,7 @@ const NorthPanel = styled.div`
   padding: 4px;
 
   border-radius: 0 0 6px 6px;
-  background: #3d7fff;
+  background: #384bff;
   box-sizing: border-box;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   opacity: 0;
@@ -108,7 +108,7 @@ const DragWrapper = styled.div`
   justify-content: center;
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
-
+  border-radius: 2px;
   &:hover,
   &:focus {
     opacity: 0.5;
