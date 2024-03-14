@@ -34,8 +34,8 @@ class LayoutManager {
         __classPrivateFieldSet(this, _LayoutManager_isEditMode, false, "f");
         this.forceUpdate();
     }
-    addUserLink(userLink) {
-        __classPrivateFieldGet(this, _LayoutManager_userLinks, "f").set(userLink.id, userLink);
+    addUserLink(userLink, isSuitable) {
+        __classPrivateFieldGet(this, _LayoutManager_userLinks, "f").set(userLink.id, Object.assign(Object.assign({}, userLink), { isSuitable }));
         this.forceUpdate();
     }
     removeUserLink(userLinkId) {
@@ -62,10 +62,11 @@ class LayoutManager {
         const context = __classPrivateFieldGet(this, _LayoutManager_contextManager, "f").context;
         const links = Array.from(__classPrivateFieldGet(this, _LayoutManager_userLinks, "f").values());
         const apps = Array.from(__classPrivateFieldGet(this, _LayoutManager_apps, "f").values());
+        const pureContextTree = LayoutManager._buildContextTree(context);
         this._setProps({
             // ToDo: unify context forwarding
-            context: context.parsedContext,
-            contextType: context.contextType,
+            context: context.parsedContext, // ToDo: remove?
+            contextType: context.contextType, // ToDo: remove?
             apps: apps.map((app) => ({
                 id: app.id,
                 metadata: app.metadata,
@@ -75,12 +76,13 @@ class LayoutManager {
                 linkAuthorId: link.authorId,
                 src: link.bosWidgetId,
                 props: {
-                    context: LayoutManager._buildContextTree(context),
+                    context: pureContextTree,
                     link: {
                         id: link.id,
                         authorId: link.authorId,
                     },
                 }, // ToDo: add props
+                isSuitable: link.isSuitable, // ToDo: LM know about widgets from other LM
             })),
             isEditMode: __classPrivateFieldGet(this, _LayoutManager_isEditMode, "f"),
             // ToDo: move functions to separate api namespace?

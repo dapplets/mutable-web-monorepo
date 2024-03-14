@@ -42,7 +42,7 @@ interface ContextTreeProps {
 export declare class LayoutManager {
     #private;
     constructor(layoutManager: BosComponent, contextManager: ContextManager);
-    addUserLink(userLink: BosUserLink): void;
+    addUserLink(userLink: BosUserLink, isSuitable: boolean): void;
     removeUserLink(userLinkId: UserLinkId): void;
     addAppMetadata(appMetadata: AppMetadata): void;
     removeAppMetadata(globalAppId: AppId): void;

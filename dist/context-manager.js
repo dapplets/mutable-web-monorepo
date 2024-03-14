@@ -48,14 +48,14 @@ class ContextManager {
         __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.disableEditMode());
     }
     addUserLink(link) {
-        var _a;
         __classPrivateFieldGet(this, _ContextManager_userLinks, "f").set(link.id, link); // save link for further layout managers
-        (_a = __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").get(link.insertionPoint)) === null || _a === void 0 ? void 0 : _a.addUserLink(link);
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm, lmInsPoint) => {
+            lm.addUserLink(link, link.insertionPoint === lmInsPoint);
+        });
     }
     removeUserLink(link) {
-        var _a;
         __classPrivateFieldGet(this, _ContextManager_userLinks, "f").delete(link.id);
-        (_a = __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").get(link.insertionPoint)) === null || _a === void 0 ? void 0 : _a.removeUserLink(link.id);
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.removeUserLink(link.id));
     }
     addAppMetadata(appMetadata) {
         const injectableTargets = appMetadata.targets.filter((target) => this._isTargetInjectable(target, appMetadata.id));
@@ -97,9 +97,8 @@ class ContextManager {
             // Inject layout manager
             __classPrivateFieldGet(this, _ContextManager_adapter, "f").injectElement(layoutManagerElement, this.context, insPoint.name);
             __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").set(insPoint.name, layoutManager);
-            const suitableLinks = Array.from(__classPrivateFieldGet(this, _ContextManager_userLinks, "f").values()).filter((link) => link.insertionPoint === insPoint.name);
             // Add existing links to layout managers injected later (for lazy loading websites)
-            suitableLinks.forEach((link) => layoutManager.addUserLink(link));
+            Array.from(__classPrivateFieldGet(this, _ContextManager_userLinks, "f").values()).forEach((link) => layoutManager.addUserLink(link, link.insertionPoint === insPoint.name));
             // Add existing apps to the layout manager
             __classPrivateFieldGet(this, _ContextManager_apps, "f").forEach((app) => layoutManager.addAppMetadata(app));
         }
