@@ -55,7 +55,7 @@ const NorthPanel = styled.div`
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   opacity: 0;
   transform: translateY(-100%);
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, left 0.1s ease;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, left 0.1s ease, right 0.1s ease;
 `
 
 const iconPinDefault = (
@@ -138,28 +138,36 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   const [isPin, setPin] = useState(false)
   const thumbRef = useRef<HTMLDivElement>(null)
   const northPanelRef = useRef<HTMLDivElement>(null)
-  const [thumbPosition, setThumbPosition] = useState({ left: 0 })
+  const [thumbPosition, setThumbPosition] = useState({ left: 0, right: 0 })
 
   const onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     event.preventDefault()
-    setPin(true)
+    setVisible(false)
     const thumb = thumbRef.current
     const thumbRect = thumb.getBoundingClientRect()
     const shiftX = event.clientX - thumbRect.left
-
+    const shiftXR = event.clientX - thumbRect.right
     const onMouseMove = (event: MouseEvent) => {
       let newLeft = event.clientX - shiftX - thumb.parentElement.getBoundingClientRect().left
+      let newRight = event.clientX - shiftXR - thumb.parentElement.getBoundingClientRect().right
+      console.log(
+        thumb.parentElement.getBoundingClientRect(),
+        'thumb.parentElement.getBoundingClientRect()'
+      )
+      console.log(event.clientX, 'event.clientX')
 
-      setThumbPosition({ left: newLeft })
+      setThumbPosition({ left: newLeft, right: newRight })
 
       document.addEventListener('mousemove', onMouseMove)
       document.addEventListener('mouseup', onMouseUp)
     }
 
     const onMouseUp = () => {
+      setTimeout(() => {
+        setVisible(true)
+      }, 7000)
       document.removeEventListener('mousemove', onMouseMove)
       document.removeEventListener('mouseup', onMouseUp)
-      setPin(false)
     }
 
     document.addEventListener('mousemove', onMouseMove)
@@ -179,7 +187,14 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
         ref={northPanelRef}
         id="slider"
         className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
-        style={{ left: thumbPosition.left }}
+        style={
+          thumbPosition.left > 0
+            ? {
+                left: thumbPosition.left - 150,
+                right: thumbPosition.right - Math.abs(thumbPosition.left),
+              }
+            : { left: thumbPosition.right }
+        }
       >
         <DragWrapper ref={thumbRef} className="thumb" onMouseDown={onMouseDown}>
           <DragIconWrapper>
