@@ -3,14 +3,29 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { Dropdown } from './components/dropdown'
 
-const WrapperPanel = styled.div<{ $right: string }>`
+const WrapperPanel = styled.div`
   width: 100vw;
-  right: ${(props) => props.$right};
+  right: 0;
   position: fixed;
   z-index: 5000;
   top: 0;
-  height: 5px;
-  background: #3d7fff;
+  height: 15px;
+  background: transparent;
+  &::before {
+    content: '';
+    width: 100%;
+    height: 5px;
+    display: block;
+    background: #3d7fff;
+  }
+
+  &:hover,
+  &:focus {
+    .visible-north-panel {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 `
 const NorthPanel = styled.div`
   position: relative;
@@ -30,20 +45,18 @@ const NorthPanel = styled.div`
   background: #3d7fff;
   box-sizing: border-box;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 `
 interface MultitablePanelProps {
   engine: Engine
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
-  // ToDo: remove this
-  const isOverlayCollapsed = document
-    .querySelector('#dapplets-overlay-manager')
-    ?.classList.contains('dapplets-overlay-collapsed')
-
   return (
-    <WrapperPanel $right={`${!isOverlayCollapsed ? 0 : 468}px`}>
-      <NorthPanel>
+    <WrapperPanel>
+      <NorthPanel className="visible-north-panel">
         <Dropdown engine={props.engine} />
       </NorthPanel>
     </WrapperPanel>
