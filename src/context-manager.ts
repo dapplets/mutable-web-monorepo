@@ -52,12 +52,14 @@ export class ContextManager {
 
   addUserLink(link: BosUserLink) {
     this.#userLinks.set(link.id, link) // save link for further layout managers
-    this.#layoutManagers.get(link.insertionPoint)?.addUserLink(link)
+    this.#layoutManagers.forEach((lm, lmInsPoint) => {
+      lm.addUserLink(link, link.insertionPoint === lmInsPoint)
+    })
   }
 
   removeUserLink(link: BosUserLink) {
     this.#userLinks.delete(link.id)
-    this.#layoutManagers.get(link.insertionPoint)?.removeUserLink(link.id)
+    this.#layoutManagers.forEach((lm) => lm.removeUserLink(link.id))
   }
 
   addAppMetadata(appMetadata: AppMetadata) {
@@ -115,12 +117,10 @@ export class ContextManager {
 
       this.#layoutManagers.set(insPoint.name, layoutManager)
 
-      const suitableLinks = Array.from(this.#userLinks.values()).filter(
-        (link) => link.insertionPoint === insPoint.name
-      )
-
       // Add existing links to layout managers injected later (for lazy loading websites)
-      suitableLinks.forEach((link) => layoutManager.addUserLink(link))
+      Array.from(this.#userLinks.values()).forEach((link) =>
+        layoutManager.addUserLink(link, link.insertionPoint === insPoint.name)
+      )
 
       // Add existing apps to the layout manager
       this.#apps.forEach((app) => layoutManager.addAppMetadata(app))

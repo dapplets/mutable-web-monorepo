@@ -45,7 +45,7 @@ interface ContextTreeProps {
 export class LayoutManager {
   #contextManager: ContextManager
   #layoutManager: BosComponent
-  #userLinks: Map<UserLinkId, BosUserLink> = new Map()
+  #userLinks: Map<UserLinkId, BosUserLink & { isSuitable: boolean }> = new Map()
   #apps: Map<AppId, AppMetadata> = new Map()
   #isEditMode: boolean
 
@@ -56,8 +56,8 @@ export class LayoutManager {
     this.forceUpdate()
   }
 
-  addUserLink(userLink: BosUserLink) {
-    this.#userLinks.set(userLink.id, userLink)
+  addUserLink(userLink: BosUserLink, isSuitable: boolean) {
+    this.#userLinks.set(userLink.id, { ...userLink, isSuitable })
     this.forceUpdate()
   }
 
@@ -90,11 +90,12 @@ export class LayoutManager {
     const context = this.#contextManager.context
     const links = Array.from(this.#userLinks.values())
     const apps = Array.from(this.#apps.values())
+    const pureContextTree = LayoutManager._buildContextTree(context)
 
     this._setProps({
       // ToDo: unify context forwarding
-      context: context.parsedContext,
-      contextType: context.contextType,
+      context: context.parsedContext, // ToDo: remove?
+      contextType: context.contextType, // ToDo: remove?
       apps: apps.map((app) => ({
         id: app.id,
         metadata: app.metadata,
@@ -104,12 +105,13 @@ export class LayoutManager {
         linkAuthorId: link.authorId,
         src: link.bosWidgetId,
         props: {
-          context: LayoutManager._buildContextTree(context),
+          context: pureContextTree,
           link: {
             id: link.id,
             authorId: link.authorId,
           },
         }, // ToDo: add props
+        isSuitable: link.isSuitable, // ToDo: LM know about widgets from other LM
       })),
       isEditMode: this.#isEditMode,
 
