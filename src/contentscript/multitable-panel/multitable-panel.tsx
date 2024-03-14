@@ -1,8 +1,15 @@
 import { Engine } from 'mutable-web-engine'
-import React, { FC, useEffect, useRef, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
+import Draggable from 'react-draggable'
 import styled from 'styled-components'
+import {
+  getPanelPinned,
+  getPanelPosition,
+  removePanelPinned,
+  setPanelPinned,
+  setPanelPosition,
+} from '../storage'
 import { Dropdown } from './components/dropdown'
-
 const WrapperPanel = styled.div`
   width: 100vw;
   right: 0;
@@ -32,7 +39,7 @@ const WrapperPanel = styled.div`
   }
   .visible-pin {
     opacity: 1 !important;
-    transform: translateY(0) !important;
+    transform: translateY(0), translateX(50%);
   }
 `
 const NorthPanel = styled.div`
@@ -135,77 +142,90 @@ interface MultitablePanelProps {
 
 export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   const [visible, setVisible] = useState(false)
-  const [isPin, setPin] = useState(false)
-  const thumbRef = useRef<HTMLDivElement>(null)
-  const northPanelRef = useRef<HTMLDivElement>(null)
-  const [thumbPosition, setThumbPosition] = useState({ left: 0, right: 0 })
+  const [isPin, setPin] = useState(getPanelPinned() ? true : false)
+  const [activeDrags, setActiveDrags] = useState(0)
+  const [deltaPosition, setDeltaPosition] = useState(
+    getPanelPosition() ? { x: parseInt(getPanelPosition()), y: 0 } : { x: 0, y: 0 }
+  )
 
-  const onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    event.preventDefault()
-    setVisible(false)
-    const thumb = thumbRef.current
-    const thumbRect = thumb.getBoundingClientRect()
-    const shiftX = event.clientX - thumbRect.left
-    const shiftXR = event.clientX - thumbRect.right
-    const onMouseMove = (event: MouseEvent) => {
-      let newLeft = event.clientX - shiftX - thumb.parentElement.getBoundingClientRect().left
-      let newRight = event.clientX - shiftXR - thumb.parentElement.getBoundingClientRect().right
-      console.log(
-        thumb.parentElement.getBoundingClientRect(),
-        'thumb.parentElement.getBoundingClientRect()'
-      )
-      console.log(event.clientX, 'event.clientX')
+  const [positionOffset, setPositionOffset] = useState(
+    getPanelPosition() ? { x: parseInt(getPanelPosition()), y: 0 } : { x: 0, y: 0 }
+  )
 
-      setThumbPosition({ left: newLeft, right: newRight })
-
-      document.addEventListener('mousemove', onMouseMove)
-      document.addEventListener('mouseup', onMouseUp)
-    }
-
-    const onMouseUp = () => {
-      setTimeout(() => {
-        setVisible(true)
-      }, 7000)
-      document.removeEventListener('mousemove', onMouseMove)
-      document.removeEventListener('mouseup', onMouseUp)
-    }
-
-    document.addEventListener('mousemove', onMouseMove)
-    document.addEventListener('mouseup', onMouseUp)
-  }
   useEffect(() => {
     const timer = setTimeout(() => {
       setVisible(true)
     }, 5000)
 
     return () => clearTimeout(timer)
-  }, [isPin])
+  }, [isPin, visible])
+
+  const handleDrag = (e, ui) => {
+    console.log(ui)
+
+    setDeltaPosition({
+      x: deltaPosition.x + ui.deltaX,
+      y: deltaPosition.y + ui.deltaY,
+    })
+
+    setPanelPosition(deltaPosition.x.toString())
+  }
+
+  const onStart = () => {
+    setVisible(false)
+    setActiveDrags(activeDrags + 1)
+  }
+
+  const onStop = () => {
+    setTimeout(() => {
+      setVisible(true)
+    }, 5000)
+
+    setActiveDrags(activeDrags - 1)
+  }
+
+  const dragHandlers = {
+    onStart,
+    onStop,
+    activeDrags,
+    deltaPosition,
+
+    positionOffset,
+  }
+  const handlePin = () => {
+    if (isPin) {
+      removePanelPinned()
+    } else {
+      setPanelPinned('pin')
+    }
+    setPin(!isPin)
+  }
 
   return (
     <WrapperPanel>
-      <NorthPanel
-        ref={northPanelRef}
-        id="slider"
-        className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
-        style={
-          thumbPosition.left > 0
-            ? {
-                left: thumbPosition.left - 150,
-                right: thumbPosition.right - Math.abs(thumbPosition.left),
-              }
-            : { left: thumbPosition.right }
-        }
+      <Draggable
+        onStart={onStart}
+        onStop={onStop}
+        positionOffset={positionOffset}
+        onDrag={handleDrag}
+        handle=".dragWrapper"
+        axis="x"
       >
-        <DragWrapper ref={thumbRef} className="thumb" onMouseDown={onMouseDown}>
-          <DragIconWrapper>
-            {iconDrag}
-            {iconDrag}
-            {iconDrag}
-          </DragIconWrapper>
-        </DragWrapper>
-        <Dropdown setVisible={setVisible} engine={props.engine} />
-        <PinWrapper onClick={() => setPin(!isPin)}>{isPin ? iconPin : iconPinDefault}</PinWrapper>
-      </NorthPanel>
+        <NorthPanel
+          {...dragHandlers}
+          className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
+        >
+          <DragWrapper className="dragWrapper">
+            <DragIconWrapper>
+              {iconDrag}
+              {iconDrag}
+              {iconDrag}
+            </DragIconWrapper>
+          </DragWrapper>
+          <Dropdown setVisible={setVisible} engine={props.engine} />
+          <PinWrapper onClick={handlePin}>{isPin ? iconPin : iconPinDefault}</PinWrapper>
+        </NorthPanel>
+      </Draggable>
     </WrapperPanel>
   )
 }
