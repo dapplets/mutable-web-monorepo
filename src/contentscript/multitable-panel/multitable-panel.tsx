@@ -186,8 +186,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   const dragHandlers = {
     onStart,
     onStop,
-    activeDrags,
-    deltaPosition,
+    // activeDrags,
+    // deltaPosition,
 
     positionOffset,
   }
@@ -205,12 +205,15 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
       <div
         style={{
           position: 'relative',
-          width: '100vw',
-          right: '0',
+          width: '99%',
+          padding: '0 2px',
+          left: '0',
           display: 'flex',
           justifyContent: 'center',
           height: '1px',
+          margin: '0 auto',
         }}
+        className="container"
       >
         <Draggable
           onStart={onStart}
@@ -219,7 +222,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
           onDrag={handleDrag}
           handle=".dragWrapper"
           axis="x"
-          bounds="parent"
+          bounds={'parent'}
         >
           <NorthPanel
             {...dragHandlers}
