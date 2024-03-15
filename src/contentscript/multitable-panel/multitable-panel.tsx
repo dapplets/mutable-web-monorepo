@@ -49,7 +49,7 @@ const NorthPanel = styled.div`
   align-items: center;
   justify-content: space-between;
 
-  margin: 0 auto;
+  // margin: 0 auto;
 
   width: 284px;
   height: 45px;
@@ -162,6 +162,10 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
 
   const handleDrag = (e, ui) => {
     console.log(ui)
+    setVisible(false)
+    setTimeout(() => {
+      setVisible(true)
+    }, 5000)
 
     setDeltaPosition({
       x: deltaPosition.x + ui.deltaX,
@@ -172,15 +176,10 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   }
 
   const onStart = () => {
-    setVisible(false)
     setActiveDrags(activeDrags + 1)
   }
 
   const onStop = () => {
-    setTimeout(() => {
-      setVisible(true)
-    }, 5000)
-
     setActiveDrags(activeDrags - 1)
   }
 
@@ -203,29 +202,41 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
 
   return (
     <WrapperPanel>
-      <Draggable
-        onStart={onStart}
-        onStop={onStop}
-        positionOffset={positionOffset}
-        onDrag={handleDrag}
-        handle=".dragWrapper"
-        axis="x"
+      <div
+        style={{
+          position: 'relative',
+          width: '100vw',
+          right: '0',
+          display: 'flex',
+          justifyContent: 'center',
+          height: '1px',
+        }}
       >
-        <NorthPanel
-          {...dragHandlers}
-          className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
+        <Draggable
+          onStart={onStart}
+          onStop={onStop}
+          positionOffset={positionOffset}
+          onDrag={handleDrag}
+          handle=".dragWrapper"
+          axis="x"
+          bounds="parent"
         >
-          <DragWrapper className="dragWrapper">
-            <DragIconWrapper>
-              {iconDrag}
-              {iconDrag}
-              {iconDrag}
-            </DragIconWrapper>
-          </DragWrapper>
-          <Dropdown setVisible={setVisible} engine={props.engine} />
-          <PinWrapper onClick={handlePin}>{isPin ? iconPin : iconPinDefault}</PinWrapper>
-        </NorthPanel>
-      </Draggable>
+          <NorthPanel
+            {...dragHandlers}
+            className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
+          >
+            <DragWrapper className="dragWrapper">
+              <DragIconWrapper>
+                {iconDrag}
+                {iconDrag}
+                {iconDrag}
+              </DragIconWrapper>
+            </DragWrapper>
+            <Dropdown setVisible={setVisible} engine={props.engine} />
+            <PinWrapper onClick={handlePin}>{isPin ? iconPin : iconPinDefault}</PinWrapper>
+          </NorthPanel>
+        </Draggable>
+      </div>
     </WrapperPanel>
   )
 }
