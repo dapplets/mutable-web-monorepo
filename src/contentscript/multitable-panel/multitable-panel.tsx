@@ -1,5 +1,5 @@
 import { Engine } from 'mutable-web-engine'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
 import {
@@ -147,10 +147,12 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   const [deltaPosition, setDeltaPosition] = useState(
     getPanelPosition() ? { x: parseInt(getPanelPosition()), y: 0 } : { x: 0, y: 0 }
   )
-
-  const [positionOffset, setPositionOffset] = useState(
+  const refNorthPanel = useRef<HTMLDivElement>(null)
+  const [defaultPosition, setdefaultPosition] = useState(
     getPanelPosition() ? { x: parseInt(getPanelPosition()), y: 0 } : { x: 0, y: 0 }
   )
+
+  const [bounds, setBounds] = useState({ left: 0, top: 0, right: 0, bottom: 0 })
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -161,7 +163,6 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   }, [isPin, visible])
 
   const handleDrag = (e, ui) => {
-    console.log(ui)
     setVisible(false)
     setTimeout(() => {
       setVisible(true)
@@ -186,10 +187,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   const dragHandlers = {
     onStart,
     onStop,
-    // activeDrags,
-    // deltaPosition,
 
-    positionOffset,
+    defaultPosition,
   }
   const handlePin = () => {
     if (isPin) {
@@ -199,6 +198,26 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
     }
     setPin(!isPin)
   }
+
+  const updateBounds = () => {
+    if (!refNorthPanel.current) return
+
+    const rect = refNorthPanel.current.getBoundingClientRect()
+    if (!rect) return
+
+    setBounds({
+      left: -((window.innerWidth - rect.width) / 2),
+      top: 0,
+      right: (window.innerWidth - rect.width) / 2,
+      bottom: 0,
+    })
+  }
+
+  useLayoutEffect(() => {
+    updateBounds()
+    window.addEventListener('resize', updateBounds)
+    return () => window.removeEventListener('resize', updateBounds)
+  }, [])
 
   return (
     <WrapperPanel>
@@ -216,15 +235,17 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
         className="container"
       >
         <Draggable
-          onStart={onStart}
-          onStop={onStop}
-          positionOffset={positionOffset}
+          {...dragHandlers}
           onDrag={handleDrag}
           handle=".dragWrapper"
           axis="x"
-          bounds={'parent'}
+          bounds={bounds}
         >
           <NorthPanel
+            ref={(node) => {
+              refNorthPanel.current = node
+            }}
+            id="northPanel"
             {...dragHandlers}
             className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
           >
