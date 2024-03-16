@@ -166,7 +166,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
     setVisible(false)
     setTimeout(() => {
       setVisible(true)
-    }, 5000)
+    }, 7000)
 
     setDeltaPosition({
       x: deltaPosition.x + ui.deltaX,
