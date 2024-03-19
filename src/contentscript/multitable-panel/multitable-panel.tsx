@@ -225,12 +225,13 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
         style={{
           position: 'relative',
           width: '99%',
-          padding: '0 2px',
+
           left: '0',
           display: 'flex',
           justifyContent: 'center',
           height: '1px',
-          margin: '0 auto',
+
+          margin: '0 5px 0 5px',
         }}
         className="container"
       >
