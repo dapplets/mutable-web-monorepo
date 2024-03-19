@@ -48,7 +48,9 @@ const NorthPanel = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
   // margin: 0 auto;
 
   width: 284px;
@@ -116,6 +118,9 @@ const DragWrapper = styled.div`
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
   border-radius: 2px;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+-webkit-tap-highlight-color: transparent;
+user-select: none;
   &:hover,
   &:focus {
     opacity: 0.5;
@@ -129,6 +134,9 @@ const DragIconWrapper = styled.div`
   justify-content: space-between;
   width: 6px;
   height: 6px;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+-webkit-tap-highlight-color: transparent;
+user-select: none;
 `
 
 const iconDrag = (
@@ -163,6 +171,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
   }, [isPin, visible])
 
   const handleDrag = (e, ui) => {
+    e.stopPropagation()
     setVisible(false)
     setTimeout(() => {
       setVisible(true)
