@@ -8,6 +8,8 @@ export declare class BosComponent extends HTMLElement {
     get src(): string;
     set props(val: any);
     get props(): any;
+    set redirectMap(val: any);
+    get redirectMap(): any;
     connectedCallback(): void;
     disconnectedCallback(): void;
     _render(): void;

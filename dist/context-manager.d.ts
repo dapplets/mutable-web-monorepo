@@ -17,6 +17,7 @@ export declare class ContextManager {
     removeAppMetadata(appGlobalId: AppId): void;
     createUserLink(globalAppId: AppId): Promise<void>;
     deleteUserLink(userLink: BosUserLink): Promise<void>;
+    setRedirectMap(redirectMap: any): void;
     injectLayoutManager(insPointName: string): void;
     destroy(): void;
     private _isTargetInjectable;

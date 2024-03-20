@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DappletsEngineNs = exports.getNearConfig = exports.NearConfigs = void 0;
+exports.bosLoaderUrl = exports.DappletsEngineNs = exports.getNearConfig = exports.NearConfigs = void 0;
 exports.NearConfigs = {
     mainnet: {
         networkId: 'mainnet',
@@ -27,3 +27,4 @@ const getNearConfig = (networkId) => {
 };
 exports.getNearConfig = getNearConfig;
 exports.DappletsEngineNs = 'engine';
+exports.bosLoaderUrl = 'http://127.0.0.1:3030/';

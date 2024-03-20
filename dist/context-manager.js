@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layoutManagers, _ContextManager_mutationManager, _ContextManager_userLinks, _ContextManager_apps, _ContextManager_defaultLayoutManager;
+var _ContextManager_adapter, _ContextManager_widgetFactory, _ContextManager_layoutManagers, _ContextManager_mutationManager, _ContextManager_userLinks, _ContextManager_apps, _ContextManager_defaultLayoutManager, _ContextManager_redirectMap;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContextManager = void 0;
 const layout_manager_1 = require("./layout-manager");
@@ -32,6 +32,7 @@ class ContextManager {
         _ContextManager_userLinks.set(this, new Map());
         _ContextManager_apps.set(this, new Map());
         _ContextManager_defaultLayoutManager.set(this, void 0);
+        _ContextManager_redirectMap.set(this, null);
         this.context = context;
         __classPrivateFieldSet(this, _ContextManager_adapter, adapter, "f");
         __classPrivateFieldSet(this, _ContextManager_widgetFactory, widgetFactory, "f");
@@ -83,6 +84,10 @@ class ContextManager {
             this.removeUserLink(userLink);
         });
     }
+    setRedirectMap(redirectMap) {
+        __classPrivateFieldSet(this, _ContextManager_redirectMap, redirectMap, "f");
+        __classPrivateFieldGet(this, _ContextManager_layoutManagers, "f").forEach((lm) => lm.setRedirectMap(redirectMap));
+    }
     injectLayoutManager(insPointName) {
         var _a;
         const insertionPoints = __classPrivateFieldGet(this, _ContextManager_adapter, "f").getInsertionPoints(this.context);
@@ -101,6 +106,7 @@ class ContextManager {
             Array.from(__classPrivateFieldGet(this, _ContextManager_userLinks, "f").values()).forEach((link) => layoutManager.addUserLink(link, link.insertionPoint === insPoint.name));
             // Add existing apps to the layout manager
             __classPrivateFieldGet(this, _ContextManager_apps, "f").forEach((app) => layoutManager.addAppMetadata(app));
+            layoutManager.setRedirectMap(__classPrivateFieldGet(this, _ContextManager_redirectMap, "f"));
         }
         catch (err) {
             console.error(err);
@@ -124,4 +130,4 @@ class ContextManager {
     }
 }
 exports.ContextManager = ContextManager;
-_ContextManager_adapter = new WeakMap(), _ContextManager_widgetFactory = new WeakMap(), _ContextManager_layoutManagers = new WeakMap(), _ContextManager_mutationManager = new WeakMap(), _ContextManager_userLinks = new WeakMap(), _ContextManager_apps = new WeakMap(), _ContextManager_defaultLayoutManager = new WeakMap();
+_ContextManager_adapter = new WeakMap(), _ContextManager_widgetFactory = new WeakMap(), _ContextManager_layoutManagers = new WeakMap(), _ContextManager_mutationManager = new WeakMap(), _ContextManager_userLinks = new WeakMap(), _ContextManager_apps = new WeakMap(), _ContextManager_defaultLayoutManager = new WeakMap(), _ContextManager_redirectMap = new WeakMap();

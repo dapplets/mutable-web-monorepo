@@ -11,4 +11,5 @@ export declare const NearConfigs: {
 };
 export declare const getNearConfig: (networkId: string) => NearConfig;
 export declare const DappletsEngineNs = "engine";
+export declare const bosLoaderUrl = "http://127.0.0.1:3030/";
 //# sourceMappingURL=constants.d.ts.map

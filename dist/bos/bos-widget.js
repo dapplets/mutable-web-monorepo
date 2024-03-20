@@ -33,13 +33,13 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _BosComponent_src, _BosComponent_props;
+var _BosComponent_src, _BosComponent_props, _BosComponent_redirectMap;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BosComponent = void 0;
-const near_social_vm_1 = require("near-social-vm");
 const React = __importStar(require("react"));
-const client_1 = require("react-dom/client");
+const near_social_vm_1 = require("near-social-vm");
 const styled_components_1 = require("styled-components");
+const client_1 = require("react-dom/client");
 const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress'];
 class BosComponent extends HTMLElement {
     constructor() {
@@ -50,6 +50,7 @@ class BosComponent extends HTMLElement {
         this._root = (0, client_1.createRoot)(this._componentMountPoint);
         _BosComponent_src.set(this, '');
         _BosComponent_props.set(this, {});
+        _BosComponent_redirectMap.set(this, null);
     }
     set src(val) {
         __classPrivateFieldSet(this, _BosComponent_src, val, "f");
@@ -66,6 +67,15 @@ class BosComponent extends HTMLElement {
     }
     get props() {
         return __classPrivateFieldGet(this, _BosComponent_props, "f");
+    }
+    set redirectMap(val) {
+        if (__classPrivateFieldGet(this, _BosComponent_redirectMap, "f") === val)
+            return;
+        __classPrivateFieldSet(this, _BosComponent_redirectMap, val, "f");
+        this._render();
+    }
+    get redirectMap() {
+        return __classPrivateFieldGet(this, _BosComponent_redirectMap, "f");
     }
     connectedCallback() {
         const shadowRoot = this.attachShadow({ mode: 'closed' });
@@ -98,8 +108,8 @@ class BosComponent extends HTMLElement {
     }
     _render() {
         this._root.render(React.createElement(styled_components_1.StyleSheetManager, { target: this._stylesMountPoint },
-            React.createElement(near_social_vm_1.Widget, { src: __classPrivateFieldGet(this, _BosComponent_src, "f"), props: __classPrivateFieldGet(this, _BosComponent_props, "f") })));
+            React.createElement(near_social_vm_1.Widget, { src: __classPrivateFieldGet(this, _BosComponent_src, "f"), props: __classPrivateFieldGet(this, _BosComponent_props, "f"), config: { redirectMap: __classPrivateFieldGet(this, _BosComponent_redirectMap, "f") } })));
     }
 }
 exports.BosComponent = BosComponent;
-_BosComponent_src = new WeakMap(), _BosComponent_props = new WeakMap();
+_BosComponent_src = new WeakMap(), _BosComponent_props = new WeakMap(), _BosComponent_redirectMap = new WeakMap();

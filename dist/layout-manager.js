@@ -58,6 +58,9 @@ class LayoutManager {
         __classPrivateFieldSet(this, _LayoutManager_isEditMode, false, "f");
         this.forceUpdate();
     }
+    setRedirectMap(redirectMap) {
+        __classPrivateFieldGet(this, _LayoutManager_layoutManager, "f").redirectMap = redirectMap;
+    }
     forceUpdate() {
         const context = __classPrivateFieldGet(this, _LayoutManager_contextManager, "f").context;
         const links = Array.from(__classPrivateFieldGet(this, _LayoutManager_userLinks, "f").values());

@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig;
+var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig, _Engine_redirectMap, _Engine_devModePollingTimer;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Engine = exports.AdapterType = void 0;
 const dynamic_html_adapter_1 = require("./core/adapters/dynamic-html-adapter");
@@ -47,6 +47,8 @@ class Engine {
         _Engine_contextManagers.set(this, new Map());
         _Engine_mutationManager.set(this, void 0);
         _Engine_nearConfig.set(this, void 0);
+        _Engine_redirectMap.set(this, null);
+        _Engine_devModePollingTimer.set(this, null);
         this.adapters = new Set();
         this.treeBuilder = null;
         this.started = false;
@@ -87,6 +89,7 @@ class Engine {
             const apps = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context);
             links.forEach((link) => contextManager.addUserLink(link));
             apps.forEach((app) => contextManager.addAppMetadata(app));
+            contextManager.setRedirectMap(__classPrivateFieldGet(this, _Engine_redirectMap, "f"));
         });
     }
     handleContextChanged(context, oldParsedContext) {
@@ -151,6 +154,24 @@ class Engine {
             return (_b = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation) !== null && _b !== void 0 ? _b : null;
         });
     }
+    enableDevMode(options) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (options === null || options === void 0 ? void 0 : options.polling) {
+                __classPrivateFieldSet(this, _Engine_devModePollingTimer, setInterval(() => this._tryFetchAndUpdateRedirects(true), 1500), "f");
+            }
+            else {
+                __classPrivateFieldSet(this, _Engine_devModePollingTimer, null, "f");
+                yield this._tryFetchAndUpdateRedirects(false);
+            }
+        });
+    }
+    disableDevMode() {
+        if (__classPrivateFieldGet(this, _Engine_devModePollingTimer, "f") !== null) {
+            clearInterval(__classPrivateFieldGet(this, _Engine_devModePollingTimer, "f"));
+        }
+        __classPrivateFieldSet(this, _Engine_redirectMap, null, "f");
+        __classPrivateFieldGet(this, _Engine_contextManagers, "f").forEach((cm) => cm.setRedirectMap(null));
+    }
     registerAdapter(adapter) {
         if (!this.treeBuilder)
             throw new Error('Tree builder is not inited');
@@ -179,6 +200,31 @@ class Engine {
                 throw new Error('Incompatible adapter type');
         }
     }
+    _tryFetchAndUpdateRedirects(polling) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const res = yield fetch(constants_1.bosLoaderUrl, {
+                    method: 'GET',
+                    headers: { Accept: 'application/json' },
+                });
+                if (!res.ok) {
+                    throw new Error('Network response was not OK');
+                }
+                const data = yield res.json();
+                // This function is async
+                if (polling && __classPrivateFieldGet(this, _Engine_devModePollingTimer, "f") === null) {
+                    return;
+                }
+                __classPrivateFieldSet(this, _Engine_redirectMap, (_a = data === null || data === void 0 ? void 0 : data.components) !== null && _a !== void 0 ? _a : null, "f");
+                __classPrivateFieldGet(this, _Engine_contextManagers, "f").forEach((cm) => cm.setRedirectMap(__classPrivateFieldGet(this, _Engine_redirectMap, "f")));
+            }
+            catch (err) {
+                console.error(err);
+                this.disableDevMode();
+            }
+        });
+    }
 }
 exports.Engine = Engine;
-_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap();
+_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap(), _Engine_redirectMap = new WeakMap(), _Engine_devModePollingTimer = new WeakMap();

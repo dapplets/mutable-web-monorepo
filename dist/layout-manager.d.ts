@@ -48,6 +48,7 @@ export declare class LayoutManager {
     removeAppMetadata(globalAppId: AppId): void;
     enableEditMode(): void;
     disableEditMode(): void;
+    setRedirectMap(redirectMap: any): void;
     forceUpdate(): void;
     destroy(): void;
     _setProps(props: LayoutManagerProps): void;

@@ -28,8 +28,13 @@ export declare class Engine implements IContextListener {
     getMutations(): Promise<Mutation[]>;
     switchMutation(mutationId: string): Promise<void>;
     getCurrentMutation(): Promise<Mutation | null>;
+    enableDevMode(options?: {
+        polling: boolean;
+    }): Promise<void>;
+    disableDevMode(): void;
     registerAdapter(adapter: IAdapter): void;
     unregisterAdapter(adapter: IAdapter): void;
     createAdapter(config?: ParserConfig): IAdapter;
+    private _tryFetchAndUpdateRedirects;
 }
 //# sourceMappingURL=engine.d.ts.map
