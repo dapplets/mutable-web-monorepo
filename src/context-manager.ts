@@ -23,6 +23,7 @@ export class ContextManager {
   #userLinks: Map<UserLinkId, BosUserLink> = new Map()
   #apps: Map<AppId, AppMetadata> = new Map()
   #defaultLayoutManager: string
+  #redirectMap: any = null
 
   constructor(
     context: IContextNode,
@@ -98,6 +99,11 @@ export class ContextManager {
     this.removeUserLink(userLink)
   }
 
+  setRedirectMap(redirectMap: any) {
+    this.#redirectMap = redirectMap
+    this.#layoutManagers.forEach((lm) => lm.setRedirectMap(redirectMap))
+  }
+
   injectLayoutManager(insPointName: string) {
     const insertionPoints = this.#adapter.getInsertionPoints(this.context)
     const insPoint = insertionPoints.find((ip) => ip.name === insPointName)
@@ -124,6 +130,8 @@ export class ContextManager {
 
       // Add existing apps to the layout manager
       this.#apps.forEach((app) => layoutManager.addAppMetadata(app))
+
+      layoutManager.setRedirectMap(this.#redirectMap)
     } catch (err) {
       console.error(err)
     }

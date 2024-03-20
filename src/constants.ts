@@ -33,3 +33,5 @@ export const getNearConfig = (networkId: string): NearConfig => {
 }
 
 export const DappletsEngineNs = 'engine'
+
+export const bosLoaderUrl = 'http://127.0.0.1:3030/'

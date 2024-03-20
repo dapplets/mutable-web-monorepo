@@ -86,6 +86,10 @@ export class LayoutManager {
     this.forceUpdate()
   }
 
+  setRedirectMap(redirectMap: any) {
+    this.#layoutManager.redirectMap = redirectMap
+  }
+
   forceUpdate() {
     const context = this.#contextManager.context
     const links = Array.from(this.#userLinks.values())

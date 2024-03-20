@@ -3,7 +3,7 @@ import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
 import { IProvider, Mutation, ParserConfig } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
-import { NearConfig, getNearConfig } from './constants'
+import { NearConfig, bosLoaderUrl, getNearConfig } from './constants'
 import { NearSigner } from './providers/near-signer'
 import { SocialDbProvider } from './providers/social-db-provider'
 import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
@@ -31,6 +31,8 @@ export class Engine implements IContextListener {
   #contextManagers: Map<IContextNode, ContextManager> = new Map()
   #mutationManager: MutationManager
   #nearConfig: NearConfig
+  #redirectMap: any = null
+  #devModePollingTimer: number | null = null
 
   adapters: Set<IAdapter> = new Set()
   treeBuilder: ITreeBuilder | null = null
@@ -86,6 +88,7 @@ export class Engine implements IContextListener {
 
     links.forEach((link) => contextManager.addUserLink(link))
     apps.forEach((app) => contextManager.addAppMetadata(app))
+    contextManager.setRedirectMap(this.#redirectMap)
   }
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {
@@ -151,6 +154,27 @@ export class Engine implements IContextListener {
     return this.#mutationManager?.mutation ?? null
   }
 
+  async enableDevMode(options?: { polling: boolean }) {
+    if (options?.polling) {
+      this.#devModePollingTimer = setInterval(
+        () => this._tryFetchAndUpdateRedirects(true),
+        1500
+      ) as any as number
+    } else {
+      this.#devModePollingTimer = null
+      await this._tryFetchAndUpdateRedirects(false)
+    }
+  }
+
+  disableDevMode() {
+    if (this.#devModePollingTimer !== null) {
+      clearInterval(this.#devModePollingTimer)
+    }
+
+    this.#redirectMap = null
+    this.#contextManagers.forEach((cm) => cm.setRedirectMap(null))
+  }
+
   registerAdapter(adapter: IAdapter) {
     if (!this.treeBuilder) throw new Error('Tree builder is not inited')
     this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context)
@@ -189,6 +213,32 @@ export class Engine implements IContextListener {
 
       default:
         throw new Error('Incompatible adapter type')
+    }
+  }
+
+  private async _tryFetchAndUpdateRedirects(polling: boolean) {
+    try {
+      const res = await fetch(bosLoaderUrl, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      })
+
+      if (!res.ok) {
+        throw new Error('Network response was not OK')
+      }
+
+      const data = await res.json()
+
+      // This function is async
+      if (polling && this.#devModePollingTimer === null) {
+        return
+      }
+
+      this.#redirectMap = data?.components ?? null
+      this.#contextManagers.forEach((cm) => cm.setRedirectMap(this.#redirectMap))
+    } catch (err) {
+      console.error(err)
+      this.disableDevMode()
     }
   }
 }

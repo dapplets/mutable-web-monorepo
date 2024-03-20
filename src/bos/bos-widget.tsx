@@ -1,7 +1,7 @@
-import { Widget } from 'near-social-vm'
 import * as React from 'react'
-import { createRoot } from 'react-dom/client'
+import { Widget } from 'near-social-vm'
 import { StyleSheetManager } from 'styled-components'
+import { createRoot } from 'react-dom/client'
 
 const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
 
@@ -13,6 +13,7 @@ export class BosComponent extends HTMLElement {
 
   #src: string = ''
   #props: any = {}
+  #redirectMap: any = null
 
   set src(val: string) {
     this.#src = val
@@ -32,6 +33,17 @@ export class BosComponent extends HTMLElement {
 
   get props() {
     return this.#props
+  }
+
+  set redirectMap(val: any) {
+    if (this.#redirectMap === val) return
+
+    this.#redirectMap = val
+    this._render()
+  }
+
+  get redirectMap() {
+    return this.#redirectMap
   }
 
   connectedCallback() {
@@ -73,7 +85,7 @@ export class BosComponent extends HTMLElement {
   _render() {
     this._root.render(
       <StyleSheetManager target={this._stylesMountPoint}>
-        <Widget src={this.#src} props={this.#props} />
+        <Widget src={this.#src} props={this.#props} config={{ redirectMap: this.#redirectMap }} />
       </StyleSheetManager>
     )
   }
