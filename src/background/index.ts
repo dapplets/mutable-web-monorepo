@@ -1,5 +1,6 @@
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
+import { MUTATION_LINK_URL } from '../common/constants'
 import { networkConfig } from '../common/networks'
 import { debounce } from './helpers'
 import { WalletImpl } from './wallet'
@@ -112,7 +113,7 @@ setActionMenu()
 
 const setCopyAvailability = async (tabId: number) => {
   const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
-  if (tabId !== currentTab.id) return
+  if (!currentTab || tabId !== currentTab.id) return
   // The script may not be injected if the extension was just installed
   const isContentScriptInjected = await browser.tabs
     .sendMessage(currentTab.id, { type: 'PING' }) // The CS must reply 'PONG'
@@ -149,3 +150,50 @@ function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Ta
   }
 }
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)
+
+// Redirect from share link with mutations
+const mutationLinkListener = async (tabId: number) => {
+  const tab = await browser.tabs.get(tabId)
+
+  // Prevent concurrency
+  if (tab.status !== 'complete') return
+
+  if (tab?.url.startsWith(MUTATION_LINK_URL)) {
+    const url = new URL(tab.url)
+
+    // URL example:
+    // https://augm.link/mutate?t=https://twitter.com/MrConCreator&m=bos.dapplets.near/mutation/Zoo
+    if (url.pathname === '/mutate' || url.pathname === '/mutate/') {
+      const redirectUrl = url.searchParams.get('t')
+      const mutationId = url.searchParams.get('m')
+
+      if (!redirectUrl || !mutationId) return
+
+      // ToDo: Here the mutation was switched in the background
+
+      await browser.tabs.update(tabId, { url: redirectUrl, active: true })
+
+      const handler = async (_tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType) => {
+        if (_tabId === tabId && changeInfo.status === 'complete') {
+          // ToDo: here we can send messages to the tab
+          await browser.tabs.sendMessage(tabId, { type: 'SWITCH_MUTATION', mutationId })
+
+          browser.tabs.onUpdated.removeListener(handler)
+        }
+      }
+
+      browser.tabs.onUpdated.addListener(handler)
+    }
+  }
+}
+
+browser.runtime.onInstalled.addListener(async () => {
+  const serviceTabs = await browser.tabs.query({
+    url: `${new URL('/', MUTATION_LINK_URL).href}*`,
+  })
+
+  await Promise.all(serviceTabs.map((tab) => mutationLinkListener(tab.id)))
+})
+
+browser.tabs.onActivated.addListener(({ tabId }) => mutationLinkListener(tabId))
+browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))

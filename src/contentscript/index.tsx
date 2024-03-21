@@ -8,7 +8,7 @@ import browser from 'webextension-polyfill'
 import { networkConfig } from '../common/networks'
 import { ExtensionStorage } from './extension-storage'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
-import { getCurrentMutationId } from './storage'
+import { getCurrentMutationId, setCurrentMutationId } from './storage'
 import { setupWallet } from './wallet'
 
 const eventEmitter = new NEventEmitter()
@@ -46,6 +46,14 @@ const App: FC = () => {
 
   return null
 }
+
+browser.runtime.onMessage.addListener((message) => {
+  if (!message || !message.type) return
+  if (message.type === 'SWITCH_MUTATION') {
+    console.log(`Switching to the "${message.mutationId}" mutation`)
+    setCurrentMutationId(message.mutationId)
+  }
+})
 
 async function main() {
   // Execute useInitNear hook before start the engine
