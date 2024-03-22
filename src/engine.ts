@@ -149,6 +149,9 @@ export class Engine implements IContextListener {
   }
 
   async switchMutation(mutationId: string): Promise<void> {
+    const currentMutation = await this.getCurrentMutation()
+    if (currentMutation?.id === mutationId) return
+
     this.stop()
     await this.start(mutationId)
   }
