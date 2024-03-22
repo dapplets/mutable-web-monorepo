@@ -146,6 +146,9 @@ class Engine {
     }
     switchMutation(mutationId) {
         return __awaiter(this, void 0, void 0, function* () {
+            const currentMutation = yield this.getCurrentMutation();
+            if ((currentMutation === null || currentMutation === void 0 ? void 0 : currentMutation.id) === mutationId)
+                return;
             this.stop();
             yield this.start(mutationId);
         });
