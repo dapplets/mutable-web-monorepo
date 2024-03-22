@@ -65,6 +65,7 @@
     "near-social-vm": "github:dapplets/near-social-vm",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.6",
     "react-singleton-hook": "^4.0.1",
     "styled-components": "^5.3.11"
   },
