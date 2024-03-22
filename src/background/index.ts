@@ -2,8 +2,14 @@ import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
 import { networkConfig } from '../common/networks'
+import { MessageWrapperRequest } from '../common/types'
 import { debounce } from './helpers'
+import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
+
+// Services
+
+const tabStateService = new TabStateService()
 
 // NEAR wallet
 
@@ -15,6 +21,7 @@ export const bgFunctions = {
   near_getAccounts: near.getAccounts.bind(near),
   near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
   near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
+  popTabState: (req?: MessageWrapperRequest) => tabStateService.pop(req?.sender?.tab?.id),
 }
 
 export type BgFunctions = typeof bgFunctions
@@ -169,20 +176,10 @@ const mutationLinkListener = async (tabId: number) => {
 
       if (!redirectUrl || !mutationId) return
 
-      // ToDo: Here the mutation was switched in the background
+      // Add mutationId to the queue. It will be fetch later, when the page loaded
+      tabStateService.push(tabId, { mutationId })
 
       await browser.tabs.update(tabId, { url: redirectUrl, active: true })
-
-      const handler = async (_tabId: number, changeInfo: browser.Tabs.OnUpdatedChangeInfoType) => {
-        if (_tabId === tabId && changeInfo.status === 'complete') {
-          // ToDo: here we can send messages to the tab
-          await browser.tabs.sendMessage(tabId, { type: 'SWITCH_MUTATION', mutationId })
-
-          browser.tabs.onUpdated.removeListener(handler)
-        }
-      }
-
-      browser.tabs.onUpdated.addListener(handler)
     }
   }
 }
