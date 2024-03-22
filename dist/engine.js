@@ -121,7 +121,9 @@ class Engine {
             // ToDo: looks like circular dependency
             this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
                 id: window.location.hostname,
-                // ToDo: add mutationId
+                url: window.location.href,
+                mutationId: mutationId,
+                gatewayId: this.config.gatewayId,
             });
             console.log('Mutable Web Engine started!', {
                 engine: this,

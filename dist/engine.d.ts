@@ -9,6 +9,7 @@ export declare enum AdapterType {
 }
 export type EngineConfig = {
     networkId: string;
+    gatewayId: string;
     selector: WalletSelector;
 };
 export declare class Engine implements IContextListener {
