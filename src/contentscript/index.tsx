@@ -12,6 +12,7 @@ import { getCurrentMutationId, setCurrentMutationId } from './storage'
 import { setupWallet } from './wallet'
 
 const eventEmitter = new NEventEmitter()
+let startEnginePromise: Promise<Engine> | null = null
 
 // The wallet selector looks like an unnecessary abstraction layer over the background wallet
 // but we have to use it because near-social-vm uses not only a wallet object, but also a selector state
@@ -52,10 +53,14 @@ browser.runtime.onMessage.addListener((message) => {
   if (message.type === 'SWITCH_MUTATION') {
     console.log(`Switching to the "${message.mutationId}" mutation`)
     setCurrentMutationId(message.mutationId)
+
+    if (startEnginePromise) {
+      startEnginePromise.then((engine) => engine.switchMutation(message.mutationId))
+    }
   }
 })
 
-async function main() {
+async function startEngine() {
   // Execute useInitNear hook before start the engine
   // It's necessary for widgets from near-social-vm
   createRoot(document.createElement('div')).render(<App />)
@@ -68,6 +73,8 @@ async function main() {
   })
 
   const mutationId = getCurrentMutationId()
+
+  console.log('Mutable Web Engine is initializing...')
 
   if (mutationId) {
     await engine.start(mutationId)
@@ -97,6 +104,8 @@ async function main() {
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(<MultitablePanel engine={engine} />)
+
+  return engine
 }
 
-main().catch(console.error)
+startEnginePromise = startEngine()
