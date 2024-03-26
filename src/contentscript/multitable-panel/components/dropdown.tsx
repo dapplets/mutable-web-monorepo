@@ -1,7 +1,6 @@
-import { Engine, Mutation } from 'mutable-web-engine'
-import React, { DetailedHTMLProps, FC, HTMLAttributes, useEffect, useState } from 'react'
+import { Mutation } from 'mutable-web-engine'
+import React, { DetailedHTMLProps, FC, HTMLAttributes, useState } from 'react'
 import styled from 'styled-components'
-import { setCurrentMutationId } from '../../storage'
 
 const WrapperDropdown = styled.div`
   position: relative;
@@ -277,43 +276,28 @@ const iconDropdown = (
 )
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
-  engine: Engine
+  mutations: Mutation[]
+  selectedMutation: Mutation | null
+  onMutationChange: (mutationId: string | null) => void
   setVisible: (visible: boolean) => void
 }
 
 export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
-  const { engine, setVisible } = props
-  const [isOpen, setOpen] = useState(false)
-  const [selectedMutation, setSelectedMutation] = useState<Mutation | null>(null)
+  const { selectedMutation, mutations, onMutationChange, setVisible } = props
 
-  const [mutations, setMutations] = useState<Mutation[]>([])
+  const [isOpen, setIsOpen] = useState(false)
 
-  useEffect(() => {
-    const init = async () => {
-      const mutations = await engine.getMutations()
-      setMutations(mutations)
-
-      const mutation = await engine.getCurrentMutation()
-      setSelectedMutation(mutation)
-    }
-    init()
-  }, [engine])
-
-  const enableMutation = async (mut: Mutation) => {
-    setSelectedMutation(mut)
-    setOpen(false) // ToDo: ???
-
+  const handleMutationClick = (mutationId: string) => {
+    setIsOpen(false)
     isOpen ? setVisible(true) : setVisible(false)
-
-    await engine.switchMutation(mut.id)
-    setCurrentMutationId(mut.id)
+    onMutationChange(mutationId)
   }
 
   return (
     <WrapperDropdown
       onBlur={() => {
         setVisible(false)
-        setOpen(false)
+        setIsOpen(false)
       }}
       tabIndex={0}
       style={{ scrollbarColor: 'rgb(147, 150, 152)  rgb(255, 255, 255)', scrollbarWidth: 'thin' }}
@@ -321,8 +305,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
       <SelectedMutationBlock
         onClick={() => {
           isOpen ? setVisible(true) : setVisible(false)
-
-          setOpen(!isOpen)
+          setIsOpen(!isOpen)
         }}
       >
         <SelectedMutationInfo>
@@ -352,9 +335,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
               <InputBlock
                 $enable={mut.id === selectedMutation?.id && '#f7f7f7'}
                 $enableBefore={mut.id === selectedMutation?.id && '#34d31a'}
-                onClick={() => {
-                  enableMutation(mut)
-                }}
+                onClick={() => handleMutationClick(mut.id)}
                 key={i}
               >
                 <InputMutation>{mut.metadata.name}</InputMutation>
