@@ -12,6 +12,7 @@ import { ContextManager } from './context-manager'
 import { MutationManager } from './mutation-manager'
 import { JsonParser } from './core/parsers/json-parser'
 import { BosParser } from './core/parsers/bos-parser'
+import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
 
 export enum AdapterType {
   Bos = 'bos',
@@ -36,7 +37,7 @@ export class Engine implements IContextListener {
   #devModePollingTimer: number | null = null
 
   adapters: Set<IAdapter> = new Set()
-  treeBuilder: ITreeBuilder | null = new PureTreeBuilder(this)
+  treeBuilder: ITreeBuilder | null = null
   started: boolean = false
 
   constructor(private config: EngineConfig) {
@@ -51,9 +52,6 @@ export class Engine implements IContextListener {
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
     this.#nearConfig = nearConfig
-
-    // initialize root context
-    this._updateRootContext()
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -118,7 +116,7 @@ export class Engine implements IContextListener {
 
   async start(mutationId = this.#nearConfig.defaultMutationId): Promise<void> {
     const mutations = await this.getMutations()
-    const mutation = mutations.find(mutation => mutation.id === mutationId) ?? null;
+    const mutation = mutations.find((mutation) => mutation.id === mutationId) ?? null
 
     if (mutation) {
       // load mutation and apps
@@ -127,6 +125,7 @@ export class Engine implements IContextListener {
       console.error('No suitable mutations found')
     }
 
+    this.treeBuilder = new PureTreeBuilder(this)
     this.started = true
 
     this._updateRootContext()
@@ -147,8 +146,10 @@ export class Engine implements IContextListener {
   }
 
   async getMutations(): Promise<Mutation[]> {
-    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
-    return this.#mutationManager.getMutationsForContext(this.treeBuilder.root)
+    // ToDo: use real context from the PureTreeBuilder
+    const context = new PureContextNode('engine', 'website')
+    context.parsedContext = { id: window.location.hostname }
+    return this.#mutationManager.getMutationsForContext(context)
   }
 
   async switchMutation(mutationId: string): Promise<void> {
