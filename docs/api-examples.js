@@ -1,3 +1,108 @@
+temp1.provider.createMutation({
+  id: 'bos.dapplets.near/mutation/Sandbox',
+  metadata: {
+    name: 'Sandbox',
+    description: 'Playground where anyone can inject BOS components',
+    image: {
+      ipfs_cid: 'bafkreihxajq5ujkgp4t7uadmymet4s62z2rnqb22okpw4vb7atichoq7oy',
+    },
+  },
+  apps: [
+    'bos.dapplets.near/app/Paywall',
+    'bos.dapplets.near/app/Tipping',
+    'bos.dapplets.near/app/Onboarding',
+  ],
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: {
+        id: {
+          in: [
+            'twitter.com',
+            'github.com',
+            'youtube.com',
+            'www.youtube.com',
+            'linkedin.com',
+            'www.linkedin.com',
+            'social.dapplets.org',
+            'localhost',
+          ],
+        },
+      },
+    },
+  ],
+})
+
+temp1.provider.createMutation({
+  id: 'bos.dapplets.near/mutation/Zoo',
+  metadata: {
+    name: 'Zoo',
+    description: 'Mutation with animal icons and buttons',
+    image: {
+      ipfs_cid: 'bafkreie4tum66dxhl4twu6ak3d2vgtxkwc3rkoay2rriqzdwm4m2hflgwy',
+    },
+  },
+  apps: [
+    'bos.dapplets.near/app/Cat',
+    'bos.dapplets.near/app/Dog',
+    'nikter.near/app/Capybara',
+    'bos.dapplets.near/app/Onboarding',
+  ],
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: {
+        id: {
+          in: [
+            'twitter.com',
+            'github.com',
+            'youtube.com',
+            'www.youtube.com',
+            'linkedin.com',
+            'www.linkedin.com',
+            'social.dapplets.org',
+            'localhost',
+          ],
+        },
+      },
+    },
+  ],
+})
+
+temp1.provider.createMutation({
+  id: 'bos.dapplets.near/mutation/Testing',
+  metadata: {
+    name: 'Testing',
+    description: 'Mutation for application testing',
+    image: {
+      ipfs_cid: 'bafkreihxaiefldmdz6pjo5cxieltvd3nbwhxb7h5ra74gtxc5zlcypwuya',
+    },
+  },
+  apps: ['bos.dapplets.near/app/OnboardingTest'],
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: {
+        id: {
+          in: [
+            'twitter.com',
+            'github.com',
+            'youtube.com',
+            'www.youtube.com',
+            'linkedin.com',
+            'www.linkedin.com',
+            'social.dapplets.org',
+            'localhost',
+          ],
+        },
+      },
+    },
+  ],
+})
+
 temp1.provider.createApplication({
   id: 'bos.dapplets.near/app/Tipping',
   targets: [

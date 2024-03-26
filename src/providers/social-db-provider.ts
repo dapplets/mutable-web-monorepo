@@ -130,6 +130,7 @@ export class SocialDbProvider implements IProvider {
       id: globalMutationId,
       metadata: mutation.metadata,
       apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+      targets: mutation.targets ? JSON.parse(mutation.targets) : [],
     }
   }
 
@@ -146,14 +147,15 @@ export class SocialDbProvider implements IProvider {
 
     const mutationsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length)
 
-    const mutations = Object.entries(mutationsByKey).map(([key, value]: [string, any]) => {
+    const mutations = Object.entries(mutationsByKey).map(([key, mutation]: [string, any]) => {
       const [accountId, , , , localMutationId] = key.split(KeyDelimiter)
       const mutationId = [accountId, MutationKey, localMutationId].join(KeyDelimiter)
 
       return {
         id: mutationId,
-        metadata: value.metadata,
-        apps: JSON.parse(value.apps),
+        metadata: mutation.metadata,
+        apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+        targets: mutation.targets ? JSON.parse(mutation.targets) : [],
       }
     })
 
@@ -231,6 +233,7 @@ export class SocialDbProvider implements IProvider {
 
     const storedAppMetadata = {
       metadata: mutation.metadata,
+      targets: mutation.targets ? JSON.stringify(mutation.targets) : null,
       apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
     }
 

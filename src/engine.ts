@@ -36,7 +36,7 @@ export class Engine implements IContextListener {
   #devModePollingTimer: number | null = null
 
   adapters: Set<IAdapter> = new Set()
-  treeBuilder: ITreeBuilder | null = null
+  treeBuilder: ITreeBuilder | null = new PureTreeBuilder(this)
   started: boolean = false
 
   constructor(private config: EngineConfig) {
@@ -51,6 +51,9 @@ export class Engine implements IContextListener {
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
     this.#nearConfig = nearConfig
+
+    // initialize root context
+    this._updateRootContext()
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -114,20 +117,19 @@ export class Engine implements IContextListener {
   }
 
   async start(mutationId = this.#nearConfig.defaultMutationId): Promise<void> {
-    // load mutation and apps
-    await this.#mutationManager.switchMutation(mutationId)
+    const mutations = await this.getMutations()
+    const mutation = mutations.find(mutation => mutation.id === mutationId) ?? null;
+
+    if (mutation) {
+      // load mutation and apps
+      await this.#mutationManager.switchMutation(mutation)
+    } else {
+      console.error('No suitable mutations found')
+    }
 
     this.started = true
-    this.treeBuilder = new PureTreeBuilder(this)
 
-    // ToDo: instantiate root context with data initially
-    // ToDo: looks like circular dependency
-    this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
-      id: window.location.hostname,
-      url: window.location.href,
-      mutationId: mutationId,
-      gatewayId: this.config.gatewayId,
-    })
+    this._updateRootContext()
 
     console.log('Mutable Web Engine started!', {
       engine: this,
@@ -145,7 +147,8 @@ export class Engine implements IContextListener {
   }
 
   async getMutations(): Promise<Mutation[]> {
-    return this.#provider.getMutations()
+    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
+    return this.#mutationManager.getMutationsForContext(this.treeBuilder.root)
   }
 
   async switchMutation(mutationId: string): Promise<void> {
@@ -246,5 +249,18 @@ export class Engine implements IContextListener {
       console.error(err)
       this.disableDevMode()
     }
+  }
+
+  private _updateRootContext() {
+    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
+
+    // ToDo: instantiate root context with data initially
+    // ToDo: looks like circular dependency
+    this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
+      id: window.location.hostname,
+      url: window.location.href,
+      mutationId: this.#mutationManager.mutation?.id ?? null,
+      gatewayId: this.config.gatewayId,
+    })
   }
 }

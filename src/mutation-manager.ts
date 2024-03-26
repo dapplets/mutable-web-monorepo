@@ -62,6 +62,13 @@ export class MutationManager {
     return appLinksNested
   }
 
+  async getMutationsForContext(context: IContextNode): Promise<Mutation[]> {
+    const mutations = await this.#provider.getMutations()
+    return mutations.filter((mutation) =>
+      mutation.targets.some((target) => MutationManager._isTargetMet(target, context))
+    )
+  }
+
   // ToDo: replace with getAppsAndLinksForContext
   filterSuitableApps(context: IContextNode): AppMetadata[] {
     const suitableApps: AppMetadata[] = []
@@ -119,9 +126,14 @@ export class MutationManager {
 
   // #region Write methods
 
-  async switchMutation(mutationId: string): Promise<void> {
-    const mutation = await this.#provider.getMutation(mutationId)
-    if (!mutation) throw new Error("Mutation doesn't exist")
+  async switchMutation(mutation: Mutation | null): Promise<void> {
+    if (!mutation) {
+      this.#activeApps = []
+      this.#activeParsers = []
+      this.mutation = null
+
+      return
+    }
 
     const apps = await Promise.all(mutation.apps.map((app) => this.#provider.getApplication(app)))
     const activeApps = apps.flatMap((app) => (app ? [app] : [])) // filter empty apps
