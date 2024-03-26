@@ -30,12 +30,18 @@
         "contentscript.js"
       ],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://app.mynearwallet.com/*", "https://testnet.mynearwallet.com/*"],
+      "js": ["mnw-patch-cs.js"],
+      "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "callback.html"
+        "callback.html",
+        "mnw-patch-inpage.js"
       ],
       "matches": [
         "*://*/*"
