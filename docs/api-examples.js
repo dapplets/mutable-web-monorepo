@@ -21,8 +21,6 @@ temp1.provider.createMutation({
           in: [
             'twitter.com',
             'github.com',
-            'youtube.com',
-            'www.youtube.com',
             'linkedin.com',
             'www.linkedin.com',
             'social.dapplets.org',
@@ -58,8 +56,6 @@ temp1.provider.createMutation({
           in: [
             'twitter.com',
             'github.com',
-            'youtube.com',
-            'www.youtube.com',
             'linkedin.com',
             'www.linkedin.com',
             'social.dapplets.org',
@@ -90,8 +86,6 @@ temp1.provider.createMutation({
           in: [
             'twitter.com',
             'github.com',
-            'youtube.com',
-            'www.youtube.com',
             'linkedin.com',
             'www.linkedin.com',
             'social.dapplets.org',
