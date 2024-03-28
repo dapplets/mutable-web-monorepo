@@ -10,7 +10,7 @@
     "service_worker": "service-worker.js",
     "type": "module"
   },
-  "minimum_chrome_version": "92",
+  "minimum_chrome_version": "95",
   "icons": {
     "128": "icons/icon128.png"
   },
@@ -33,15 +33,15 @@
     },
     {
       "matches": ["https://app.mynearwallet.com/*", "https://testnet.mynearwallet.com/*"],
-      "js": ["mnw-patch-cs.js"],
-      "run_at": "document_start"
+      "js": ["mnw-patch-inpage.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "callback.html",
-        "mnw-patch-inpage.js"
+        "callback.html"
       ],
       "matches": [
         "*://*/*"
