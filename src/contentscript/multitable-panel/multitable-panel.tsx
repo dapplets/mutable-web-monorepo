@@ -1,4 +1,4 @@
-import { Engine } from 'mutable-web-engine'
+import { Engine, Mutation } from 'mutable-web-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { getPanelPinned, removePanelPinned, setPanelPinned } from '../storage'
@@ -107,9 +107,23 @@ interface MultitablePanelProps {
   engine: Engine
 }
 
-export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
+export const MultitablePanel: FC<MultitablePanelProps> = ({ engine }) => {
   const [visible, setVisible] = useState(false)
   const [isPin, setPin] = useState(getPanelPinned() ? true : false)
+
+  const [mutations, setMutations] = useState<Mutation[]>([])
+  const [selectedMutation, setSelectedMutation] = useState<Mutation | null>(null)
+
+  useEffect(() => {
+    const init = async () => {
+      const mutations = await engine.getMutations()
+      setMutations(mutations)
+
+      const mutation = await engine.getCurrentMutation()
+      setSelectedMutation(mutation)
+    }
+    init()
+  }, [engine])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -118,6 +132,14 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
 
     return () => clearTimeout(timer)
   }, [isPin, visible])
+
+  const handleMutationChange = async (mutationId: string) => {
+    const mutation = mutations.find((mutation) => mutation.id === mutationId)
+
+    setSelectedMutation(mutation)
+
+    await engine.switchMutation(mutation.id)
+  }
 
   const handlePin = () => {
     if (isPin) {
@@ -128,12 +150,21 @@ export const MultitablePanel: FC<MultitablePanelProps> = (props) => {
     setPin(!isPin)
   }
 
+  if (mutations.length === 0) {
+    return null
+  }
+
   return (
     <WrapperPanel>
       <NorthPanel
         className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
       >
-        <Dropdown setVisible={setVisible} engine={props.engine} />
+        <Dropdown
+          mutations={mutations}
+          selectedMutation={selectedMutation}
+          onMutationChange={handleMutationChange}
+          setVisible={setVisible}
+        />
         <PinWrapper onClick={handlePin}>{isPin ? iconPin : iconPinDefault}</PinWrapper>
       </NorthPanel>
     </WrapperPanel>
