@@ -113,6 +113,7 @@ class SocialDbProvider {
                 id: globalMutationId,
                 metadata: mutation.metadata,
                 apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+                targets: mutation.targets ? JSON.parse(mutation.targets) : [],
             };
         });
     }
@@ -127,13 +128,14 @@ class SocialDbProvider {
             ];
             const queryResult = yield this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)]);
             const mutationsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length);
-            const mutations = Object.entries(mutationsByKey).map(([key, value]) => {
+            const mutations = Object.entries(mutationsByKey).map(([key, mutation]) => {
                 const [accountId, , , , localMutationId] = key.split(KeyDelimiter);
                 const mutationId = [accountId, MutationKey, localMutationId].join(KeyDelimiter);
                 return {
                     id: mutationId,
-                    metadata: value.metadata,
-                    apps: JSON.parse(value.apps),
+                    metadata: mutation.metadata,
+                    apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+                    targets: mutation.targets ? JSON.parse(mutation.targets) : [],
                 };
             });
             return mutations;
@@ -192,6 +194,7 @@ class SocialDbProvider {
             const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId];
             const storedAppMetadata = {
                 metadata: mutation.metadata,
+                targets: mutation.targets ? JSON.stringify(mutation.targets) : null,
                 apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
             };
             yield this.client.set(SocialDbProvider._buildNestedData(keys, storedAppMetadata));

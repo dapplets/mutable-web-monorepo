@@ -32,6 +32,7 @@ const context_manager_1 = require("./context-manager");
 const mutation_manager_1 = require("./mutation-manager");
 const json_parser_1 = require("./core/parsers/json-parser");
 const bos_parser_1 = require("./core/parsers/bos-parser");
+const pure_context_node_1 = require("./core/tree/pure-tree/pure-context-node");
 var AdapterType;
 (function (AdapterType) {
     AdapterType["Bos"] = "bos";
@@ -112,19 +113,20 @@ class Engine {
         // ToDo: do nothing because IP unmounted?
     }
     start(mutationId = __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            // load mutation and apps
-            yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutationId);
-            this.started = true;
+            const mutations = yield this.getMutations();
+            const mutation = (_a = mutations.find((mutation) => mutation.id === mutationId)) !== null && _a !== void 0 ? _a : null;
+            if (mutation) {
+                // load mutation and apps
+                yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutation);
+            }
+            else {
+                console.error('No suitable mutations found');
+            }
             this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this);
-            // ToDo: instantiate root context with data initially
-            // ToDo: looks like circular dependency
-            this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
-                id: window.location.hostname,
-                url: window.location.href,
-                mutationId: mutationId,
-                gatewayId: this.config.gatewayId,
-            });
+            this.started = true;
+            this._updateRootContext();
             console.log('Mutable Web Engine started!', {
                 engine: this,
                 provider: __classPrivateFieldGet(this, _Engine_provider, "f"),
@@ -141,7 +143,10 @@ class Engine {
     }
     getMutations() {
         return __awaiter(this, void 0, void 0, function* () {
-            return __classPrivateFieldGet(this, _Engine_provider, "f").getMutations();
+            // ToDo: use real context from the PureTreeBuilder
+            const context = new pure_context_node_1.PureContextNode('engine', 'website');
+            context.parsedContext = { id: window.location.hostname };
+            return __classPrivateFieldGet(this, _Engine_mutationManager, "f").getMutationsForContext(context);
         });
     }
     switchMutation(mutationId) {
@@ -228,6 +233,19 @@ class Engine {
                 console.error(err);
                 this.disableDevMode();
             }
+        });
+    }
+    _updateRootContext() {
+        var _a, _b;
+        if (!this.treeBuilder)
+            throw new Error('Tree builder is not inited');
+        // ToDo: instantiate root context with data initially
+        // ToDo: looks like circular dependency
+        this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
+            id: window.location.hostname,
+            url: window.location.href,
+            mutationId: (_b = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f").mutation) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : null,
+            gatewayId: this.config.gatewayId,
         });
     }
 }

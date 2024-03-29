@@ -10,10 +10,11 @@ export declare class MutationManager {
     mutation: Mutation | null;
     constructor(provider: IProvider);
     getAppsAndLinksForContext(context: IContextNode): Promise<AppWithTargetLinks[]>;
+    getMutationsForContext(context: IContextNode): Promise<Mutation[]>;
     filterSuitableApps(context: IContextNode): AppMetadata[];
     getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
     filterSuitableParsers(context: IContextNode): ParserConfig[];
-    switchMutation(mutationId: string): Promise<void>;
+    switchMutation(mutation: Mutation | null): Promise<void>;
     createLink(appGlobalId: AppId, context: IContextNode): Promise<BosUserLink>;
     deleteUserLink(userLinkId: UserLinkId): Promise<void>;
     private _getUserLinksForTarget;

@@ -37,5 +37,6 @@ export declare class Engine implements IContextListener {
     unregisterAdapter(adapter: IAdapter): void;
     createAdapter(config?: ParserConfig): IAdapter;
     private _tryFetchAndUpdateRedirects;
+    private _updateRootContext;
 }
 //# sourceMappingURL=engine.d.ts.map

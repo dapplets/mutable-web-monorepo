@@ -22,10 +22,12 @@ export type BosUserLink = {
     bosWidgetId: string;
     authorId: string;
 };
-export type AppMetadataTarget = {
+export type ContextTarget = {
     namespace: string;
     contextType: string;
     if: Record<string, TargetCondition>;
+};
+export type AppMetadataTarget = ContextTarget & {
     componentId: string;
     injectTo: string;
     injectOnce?: boolean;
@@ -53,6 +55,7 @@ export type Mutation = {
         };
     };
     apps: string[];
+    targets: ContextTarget[];
 };
 export type LinkIndexObject = {
     appId: AppId;
@@ -61,16 +64,11 @@ export type LinkIndexObject = {
     contextType: string;
     if: Record<string, ScalarType>;
 };
-export type ParserConfigTarget = {
-    namespace: string;
-    contextType: string;
-    if: Record<string, TargetCondition>;
-};
 export type ParserConfig = {
     id: string;
     parserType: string;
     contexts: any;
-    targets: ParserConfigTarget[];
+    targets: ContextTarget[];
 };
 export interface IProvider {
     getParserConfig(globalParserId: string): Promise<ParserConfig | null>;
