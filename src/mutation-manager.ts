@@ -298,7 +298,7 @@ export class MutationManager {
   }
 
   static _isConditionMet(condition: TargetCondition, value: ScalarType): boolean {
-    const { not: _not, eq: _eq, contains: _contains, in: _in } = condition
+    const { not: _not, eq: _eq, contains: _contains, in: _in, endsWith: _endsWith } = condition
 
     if (_not !== undefined) {
       return _not !== value
@@ -310,6 +310,10 @@ export class MutationManager {
 
     if (_contains !== undefined && typeof value === 'string') {
       return value.includes(_contains)
+    }
+
+    if (_endsWith !== undefined && typeof value === 'string') {
+      return value.endsWith(_endsWith)
     }
 
     if (_in !== undefined) {

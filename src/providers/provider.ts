@@ -12,6 +12,7 @@ export type TargetCondition = {
   contains?: string
   in?: ScalarType[]
   index?: boolean
+  endsWith?: string
 }
 
 export type IndexedLink = {

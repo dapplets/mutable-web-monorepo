@@ -105,6 +105,32 @@ describe('MutationManager', () => {
     expect(actual).toEqual(expected)
   })
 
+  it('target condition: endsWith (positive)', () => {
+    // Arrange
+    const condition = { endsWith: '--test.example.com' }
+    const value = 'deploy-preview-5--test.example.com'
+    const expected = true
+
+    // Act
+    const actual = MutationManager._isConditionMet(condition, value)
+
+    // Assert
+    expect(actual).toEqual(expected)
+  })
+
+  it('target condition: endsWith (negative)', () => {
+    // Arrange
+    const condition = { endsWith: '--dev.example.org' }
+    const value = 'deploy-preview-5--test.example.com'
+    const expected = false
+
+    // Act
+    const actual = MutationManager._isConditionMet(condition, value)
+
+    // Assert
+    expect(actual).toEqual(expected)
+  })
+
   it('target conditions object (positive)', () => {
     // Arrange
     const conditions = {
