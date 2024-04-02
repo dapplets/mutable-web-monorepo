@@ -127,6 +127,10 @@ export class Engine implements IContextListener {
     if (mutation) {
       // load mutation and apps
       await this.#mutationManager.switchMutation(mutation)
+
+      // save last usage
+      const currentDate = (new Date()).toISOString()
+      await this.#repository.setMutationLastUsage(mutation.id, currentDate)
     } else {
       console.error('No suitable mutations found')
     }
@@ -155,14 +159,17 @@ export class Engine implements IContextListener {
     // ToDo: use real context from the PureTreeBuilder
     const context = new PureContextNode('engine', 'website')
     context.parsedContext = { id: window.location.hostname }
+    
     const mutations = await this.#mutationManager.getMutationsForContext(context)
     const favorites = await this.#repository.getFavoriteMutations()
-    return mutations.map((mutation) => ({
+
+    return Promise.all(mutations.map(async (mutation) => ({
       ...mutation,
       settings: {
         isFavorite: favorites.includes(mutation.id),
+        lastUsage: await this.#repository.getMutationLastUsage(mutation.id)
       },
-    }))
+    })))
   }
 
   async switchMutation(mutationId: string): Promise<void> {
@@ -183,6 +190,7 @@ export class Engine implements IContextListener {
       ...mutation,
       settings: {
         isFavorite: favorites.includes(mutation.id),
+        lastUsage: await this.#repository.getMutationLastUsage(mutation.id)
       },
     }
   }

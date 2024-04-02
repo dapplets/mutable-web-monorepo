@@ -72,6 +72,7 @@ export type Mutation = {
 export type MutationWithSettings = Mutation & {
   settings: {
     isFavorite: boolean
+    lastUsage: string | null
   }
 }
 
