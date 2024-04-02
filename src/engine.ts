@@ -1,7 +1,7 @@
 import { IAdapter } from './core/adapters/interface'
 import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
-import { IProvider, Mutation, ParserConfig } from './providers/provider'
+import { IProvider, Mutation, MutationWithSettings, ParserConfig } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
 import { NearConfig, bosLoaderUrl, getNearConfig } from './constants'
 import { NearSigner } from './providers/near-signer'
@@ -13,6 +13,9 @@ import { MutationManager } from './mutation-manager'
 import { JsonParser } from './core/parsers/json-parser'
 import { BosParser } from './core/parsers/bos-parser'
 import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
+import { IStorage } from './storage/storage'
+import { Repository } from './storage/repository'
+import { JsonStorage } from './storage/json-storage'
 
 export enum AdapterType {
   Bos = 'bos',
@@ -24,6 +27,7 @@ export type EngineConfig = {
   networkId: string
   gatewayId: string
   selector: WalletSelector
+  storage: IStorage
 }
 
 export class Engine implements IContextListener {
@@ -35,6 +39,7 @@ export class Engine implements IContextListener {
   #nearConfig: NearConfig
   #redirectMap: any = null
   #devModePollingTimer: number | null = null
+  #repository: Repository
 
   adapters: Set<IAdapter> = new Set()
   treeBuilder: ITreeBuilder | null = null
@@ -52,6 +57,7 @@ export class Engine implements IContextListener {
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
     this.#nearConfig = nearConfig
+    this.#repository = new Repository(new JsonStorage(this.config.storage))
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -145,11 +151,18 @@ export class Engine implements IContextListener {
     this.treeBuilder = null
   }
 
-  async getMutations(): Promise<Mutation[]> {
+  async getMutations(): Promise<MutationWithSettings[]> {
     // ToDo: use real context from the PureTreeBuilder
     const context = new PureContextNode('engine', 'website')
     context.parsedContext = { id: window.location.hostname }
-    return this.#mutationManager.getMutationsForContext(context)
+    const mutations = await this.#mutationManager.getMutationsForContext(context)
+    const favorites = await this.#repository.getFavoriteMutations()
+    return mutations.map((mutation) => ({
+      ...mutation,
+      settings: {
+        isFavorite: favorites.includes(mutation.id),
+      },
+    }))
   }
 
   async switchMutation(mutationId: string): Promise<void> {
@@ -160,8 +173,18 @@ export class Engine implements IContextListener {
     await this.start(mutationId)
   }
 
-  async getCurrentMutation(): Promise<Mutation | null> {
-    return this.#mutationManager?.mutation ?? null
+  async getCurrentMutation(): Promise<MutationWithSettings | null> {
+    const mutation = this.#mutationManager?.mutation
+    if (!mutation) return null
+
+    const favorites = await this.#repository.getFavoriteMutations()
+
+    return {
+      ...mutation,
+      settings: {
+        isFavorite: favorites.includes(mutation.id),
+      },
+    }
   }
 
   async enableDevMode(options?: { polling: boolean }) {
@@ -224,6 +247,18 @@ export class Engine implements IContextListener {
       default:
         throw new Error('Incompatible adapter type')
     }
+  }
+
+  async addMutationToFavorites(mutationId: string): Promise<void> {
+    const ids = await this.#repository.getFavoriteMutations()
+    ids.push(mutationId)
+    await this.#repository.setFavoriteMutations(ids)
+  }
+
+  async deleteMutationFromFavorites(mutationId: string): Promise<void> {
+    const ids = await this.#repository.getFavoriteMutations()
+    const newIds = ids.filter((id) => id !== mutationId)
+    await this.#repository.setFavoriteMutations(newIds)
   }
 
   private async _tryFetchAndUpdateRedirects(polling: boolean) {

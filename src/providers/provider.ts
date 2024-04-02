@@ -69,6 +69,12 @@ export type Mutation = {
   targets: ContextTarget[]
 }
 
+export type MutationWithSettings = Mutation & {
+  settings: {
+    isFavorite: boolean
+  }
+}
+
 export type LinkIndexObject = {
   appId: AppId
   mutationId: MutationId
