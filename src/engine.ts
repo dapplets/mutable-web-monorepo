@@ -120,7 +120,12 @@ export class Engine implements IContextListener {
     // ToDo: do nothing because IP unmounted?
   }
 
-  async start(mutationId = this.#nearConfig.defaultMutationId): Promise<void> {
+  async start(mutationId?: string): Promise<void> {
+    if (!mutationId) {
+      const favoriteMutationId = await this.getFavoriteMutation()
+      mutationId = favoriteMutationId ?? this.#nearConfig.defaultMutationId
+    }
+
     const mutations = await this.getMutations()
     const mutation = mutations.find((mutation) => mutation.id === mutationId) ?? null
 
