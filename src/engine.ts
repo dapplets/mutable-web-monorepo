@@ -28,6 +28,7 @@ export type EngineConfig = {
   gatewayId: string
   selector: WalletSelector
   storage: IStorage
+  bosElementName?: string
 }
 
 export class Engine implements IContextListener {
@@ -49,7 +50,7 @@ export class Engine implements IContextListener {
     this.#bosWidgetFactory = new BosWidgetFactory({
       networkId: this.config.networkId,
       selector: this.config.selector,
-      tagName: 'bos-component',
+      tagName: this.config.bosElementName ?? 'bos-component',
     })
     this.#selector = this.config.selector
     const nearConfig = getNearConfig(this.config.networkId)
@@ -270,6 +271,10 @@ export class Engine implements IContextListener {
 
   async getFavoriteMutation(): Promise<string | null> {
     return this.#repository.getFavoriteMutation()
+  }
+
+  async removeMutationFromRecents(mutationId: string): Promise<void> {
+    await this.#repository.setMutationLastUsage(mutationId, null)
   }
 
   private async _tryFetchAndUpdateRedirects(polling: boolean) {
