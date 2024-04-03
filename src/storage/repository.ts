@@ -1,7 +1,7 @@
 import { JsonStorage } from './json-storage'
 
 const KEY_DELIMITER = ':'
-const FAVORITE_MUTATIONS = 'favorite-mutations'
+const FAVORITE_MUTATION = 'favorite-mutation'
 const MUTATION_LAST_USAGE = 'mutation-last-usage'
 
 export class Repository {
@@ -11,12 +11,12 @@ export class Repository {
     this.jsonStorage = jsonStorage
   }
 
-  async getFavoriteMutations(): Promise<string[]> {
-    return this._get(FAVORITE_MUTATIONS, [])
+  async getFavoriteMutation(): Promise<string | null> {
+    return this._get(FAVORITE_MUTATION)
   }
 
-  async setFavoriteMutations(mutations: string[]): Promise<void> {
-    return this._set(FAVORITE_MUTATIONS, mutations)
+  async setFavoriteMutation(mutationId: string | null): Promise<void> {
+    return this._set(FAVORITE_MUTATION, mutationId)
   }
 
   async getMutationLastUsage(mutationId: string): Promise<string | null> {

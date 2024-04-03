@@ -1,7 +1,7 @@
 import { IAdapter } from './core/adapters/interface'
 import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
-import { IProvider, Mutation, MutationWithSettings, ParserConfig } from './providers/provider'
+import { IProvider, MutationWithSettings, ParserConfig } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
 import { NearConfig, bosLoaderUrl, getNearConfig } from './constants'
 import { NearSigner } from './providers/near-signer'
@@ -129,7 +129,7 @@ export class Engine implements IContextListener {
       await this.#mutationManager.switchMutation(mutation)
 
       // save last usage
-      const currentDate = (new Date()).toISOString()
+      const currentDate = new Date().toISOString()
       await this.#repository.setMutationLastUsage(mutation.id, currentDate)
     } else {
       console.error('No suitable mutations found')
@@ -159,17 +159,19 @@ export class Engine implements IContextListener {
     // ToDo: use real context from the PureTreeBuilder
     const context = new PureContextNode('engine', 'website')
     context.parsedContext = { id: window.location.hostname }
-    
-    const mutations = await this.#mutationManager.getMutationsForContext(context)
-    const favorites = await this.#repository.getFavoriteMutations()
 
-    return Promise.all(mutations.map(async (mutation) => ({
-      ...mutation,
-      settings: {
-        isFavorite: favorites.includes(mutation.id),
-        lastUsage: await this.#repository.getMutationLastUsage(mutation.id)
-      },
-    })))
+    const mutations = await this.#mutationManager.getMutationsForContext(context)
+    const favoriteMutationId = await this.#repository.getFavoriteMutation()
+
+    return Promise.all(
+      mutations.map(async (mutation) => ({
+        ...mutation,
+        settings: {
+          isFavorite: favoriteMutationId === mutation.id,
+          lastUsage: await this.#repository.getMutationLastUsage(mutation.id),
+        },
+      }))
+    )
   }
 
   async switchMutation(mutationId: string): Promise<void> {
@@ -184,13 +186,13 @@ export class Engine implements IContextListener {
     const mutation = this.#mutationManager?.mutation
     if (!mutation) return null
 
-    const favorites = await this.#repository.getFavoriteMutations()
+    const favoriteMutationId = await this.#repository.getFavoriteMutation()
 
     return {
       ...mutation,
       settings: {
-        isFavorite: favorites.includes(mutation.id),
-        lastUsage: await this.#repository.getMutationLastUsage(mutation.id)
+        isFavorite: favoriteMutationId === mutation.id,
+        lastUsage: await this.#repository.getMutationLastUsage(mutation.id),
       },
     }
   }
@@ -257,16 +259,12 @@ export class Engine implements IContextListener {
     }
   }
 
-  async addMutationToFavorites(mutationId: string): Promise<void> {
-    const ids = await this.#repository.getFavoriteMutations()
-    ids.push(mutationId)
-    await this.#repository.setFavoriteMutations(ids)
+  async setFavoriteMutation(mutationId: string | null): Promise<void> {
+    return this.#repository.setFavoriteMutation(mutationId)
   }
 
-  async deleteMutationFromFavorites(mutationId: string): Promise<void> {
-    const ids = await this.#repository.getFavoriteMutations()
-    const newIds = ids.filter((id) => id !== mutationId)
-    await this.#repository.setFavoriteMutations(newIds)
+  async getFavoriteMutation(): Promise<string | null> {
+    return this.#repository.getFavoriteMutation()
   }
 
   private async _tryFetchAndUpdateRedirects(polling: boolean) {
