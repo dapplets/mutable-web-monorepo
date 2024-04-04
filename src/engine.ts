@@ -1,7 +1,13 @@
 import { IAdapter } from './core/adapters/interface'
 import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
-import { IProvider, MutationWithSettings, ParserConfig } from './providers/provider'
+import {
+  AppMetadata,
+  IProvider,
+  Mutation,
+  MutationWithSettings,
+  ParserConfig,
+} from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
 import { NearConfig, bosLoaderUrl, getNearConfig } from './constants'
 import { NearSigner } from './providers/near-signer'
@@ -275,6 +281,23 @@ export class Engine implements IContextListener {
 
   async removeMutationFromRecents(mutationId: string): Promise<void> {
     await this.#repository.setMutationLastUsage(mutationId, null)
+  }
+
+  async getApplications(): Promise<AppMetadata[]> {
+    return this.#provider.getApplications()
+  }
+
+  async createMutation(mutation: Mutation): Promise<void> {
+    // ToDo: move to provider?
+    if (!await this.#provider.getMutation(mutation.id)) {
+      throw new Error("Mutation with that ID already exists")
+    }
+    
+    await this.#provider.saveMutation(mutation)
+  }
+
+  async editMutation(mutation: Mutation): Promise<void> {
+    await this.#provider.saveMutation(mutation)
   }
 
   private async _tryFetchAndUpdateRedirects(polling: boolean) {

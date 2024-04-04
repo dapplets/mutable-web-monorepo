@@ -98,13 +98,14 @@ export interface IProvider {
   getParserConfig(globalParserId: string): Promise<ParserConfig | null>
   getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]>
   getApplication(globalAppId: AppId): Promise<AppMetadata | null>
+  getApplications(): Promise<AppMetadata[]>
   getMutation(globalMutationId: MutationId): Promise<Mutation | null>
   getMutations(): Promise<Mutation[]>
 
   // Write
   createLink(indexObject: LinkIndexObject): Promise<IndexedLink>
   deleteUserLink(linkId: UserLinkId): Promise<void>
-  createApplication(appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>): Promise<AppMetadata>
-  createMutation(mutation: Mutation): Promise<Mutation>
-  createParserConfig(config: ParserConfig): Promise<void>
+  saveApplication(appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>): Promise<AppMetadata>
+  saveMutation(mutation: Mutation): Promise<Mutation>
+  saveParserConfig(config: ParserConfig): Promise<void>
 }

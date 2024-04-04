@@ -61,4 +61,12 @@ describe('Engine', () => {
     expect(actual).toEqual(mutationId)
     expect(mutation!.settings.isFavorite).toEqual(true)
   })
+
+  it('returns all applications', async () => {
+    // Act
+    const apps = await engine.getApplications()
+
+    // Assert
+    expect(apps.length).toBeGreaterThan(0)
+  })
 })

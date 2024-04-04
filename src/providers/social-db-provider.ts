@@ -16,15 +16,12 @@ import {
 } from './provider'
 import { generateGuid } from '../core/utils'
 import { SocialDbClient } from './social-db-client'
-import { BosParserConfig } from '../core/parsers/bos-parser'
-import { DappletsEngineNs } from '../constants'
 
 const ProjectIdKey = 'dapplets.near'
 const ParserKey = 'parser'
 const SettingsKey = 'settings'
 const LinkKey = 'link'
 const SelfKey = ''
-const ParserContextsKey = 'contexts'
 const AppKey = 'app'
 const MutationKey = 'mutation'
 const WildcardKey = '*'
@@ -103,17 +100,46 @@ export class SocialDbProvider implements IProvider {
     const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId]
     const queryResult = await this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
 
-    const mutation = SocialDbProvider._getValueByKey(keys, queryResult)
+    const app = SocialDbProvider._getValueByKey(keys, queryResult)
 
-    if (!mutation?.[SelfKey]) return null
+    if (!app?.[SelfKey]) return null
 
     return {
-      ...JSON.parse(mutation[SelfKey]),
-      metadata: mutation.metadata,
+      ...JSON.parse(app[SelfKey]),
+      metadata: app.metadata,
       id: globalAppId,
       appLocalId,
       authorId,
     }
+  }
+
+  async getApplications(): Promise<AppMetadata[]> {
+    const keys = [
+      WildcardKey, // any author id
+      SettingsKey,
+      ProjectIdKey,
+      AppKey,
+      WildcardKey, // any app local id
+    ]
+
+    const queryResult = await this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)])
+
+    const appsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length)
+
+    const apps = Object.entries(appsByKey).map(([key, app]: [string, any]) => {
+      const [authorId, , , , appLocalId] = key.split(KeyDelimiter)
+      const globalAppId = [authorId, AppKey, appLocalId].join(KeyDelimiter)
+
+      return {
+        ...JSON.parse(app[SelfKey]),
+        metadata: app.metadata,
+        id: globalAppId,
+        appLocalId,
+        authorId,
+      }
+    })
+
+    return apps
   }
 
   async getMutation(globalMutationId: MutationId): Promise<Mutation | null> {
@@ -203,7 +229,7 @@ export class SocialDbProvider implements IProvider {
     await this.client.delete([keys.join(KeyDelimiter)])
   }
 
-  async createApplication(
+  async saveApplication(
     appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>
   ): Promise<AppMetadata> {
     const [authorId, , appLocalId] = appMetadata.id.split(KeyDelimiter)
@@ -226,7 +252,7 @@ export class SocialDbProvider implements IProvider {
     }
   }
 
-  async createMutation(mutation: Mutation): Promise<Mutation> {
+  async saveMutation(mutation: Mutation): Promise<Mutation> {
     const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter)
 
     const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId]
@@ -242,7 +268,7 @@ export class SocialDbProvider implements IProvider {
     return mutation
   }
 
-  async createParserConfig(config: ParserConfig): Promise<void> {
+  async saveParserConfig(config: ParserConfig): Promise<void> {
     const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.id)
 
     const keys = [accountId, SettingsKey, ProjectIdKey, ParserKey, parserLocalId]
