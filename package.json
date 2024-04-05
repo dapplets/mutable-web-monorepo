@@ -1,6 +1,6 @@
 {
   "name": "@dapplets/mutable-web-extension",
-  "version": "0.1.2",
+  "version": "0.1.6",
   "description": "Bridge to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
@@ -9,7 +9,7 @@
     "prettify": "prettier --write src",
     "eslint": "eslint ./src --ext .ts --fix",
     "stylelint": "stylelint ./src/**/*.{css,scss,module.scss} --fix",
-    "test:mutable-panel": "playwright test tests/scenarios"
+    "test": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",

@@ -76,6 +76,7 @@ export class CustomWalletConnection {
     const newUrl = new URL(this._walletBaseUrl + LOGIN_WALLET_URL_SUFFIX)
     newUrl.searchParams.set('success_url', successUrl)
     newUrl.searchParams.set('failure_url', failureUrl)
+    newUrl.searchParams.set('referrer', 'mutable-web')
 
     if (contractId) {
       /* Throws exception if contract account does not exist */
@@ -150,7 +151,7 @@ export class CustomWalletConnection {
         .join(',')
     )
     newUrl.searchParams.set('callbackUrl', callbackUrl || currentUrl.href)
-    newUrl.searchParams.set('referrer', 'Dapplets Extension')
+    newUrl.searchParams.set('referrer', 'mutable-web')
 
     if (meta) newUrl.searchParams.set('meta', meta)
 

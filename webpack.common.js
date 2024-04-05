@@ -51,7 +51,7 @@ function handleInsertStyles(element) {
 module.exports = {
   entry: {
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
-    contentscript: path.join(__dirname, 'src/contentscript/index.tsx')
+    contentscript: path.join(__dirname, 'src/contentscript/index.tsx'),
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -137,11 +137,12 @@ module.exports = {
           from: 'manifest.json',
           to: 'manifest.json',
           transform: (content) => modifyManifest(content),
-        }
+        },
       ],
     }),
     new webpack.DefinePlugin({
       EXTENSION_VERSION: JSON.stringify(package.version),
+      NEAR_NETWORK: JSON.stringify(process.env.NEAR_NETWORK ?? 'mainnet'),
     }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],

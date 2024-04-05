@@ -1,21 +1,19 @@
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
+import { MUTATION_LINK_URL } from '../common/constants'
+import { networkConfig } from '../common/networks'
+import { MessageWrapperRequest } from '../common/types'
 import { debounce } from './helpers'
-import { WalletImpl, WalletParams } from './wallet'
+import { TabStateService } from './services/tab-state-service'
+import { WalletImpl } from './wallet'
+
+// Services
+
+const tabStateService = new TabStateService()
 
 // NEAR wallet
 
-const DEFAULT_CONTRACT_ID = 'social.near' // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
-
-const walletConfig: WalletParams = {
-  networkId: 'mainnet',
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  walletUrl: 'https://app.mynearwallet.com',
-  helperUrl: 'https://helper.mainnet.near.org',
-  explorerUrl: 'https://explorer.near.org',
-}
-
-const near = new WalletImpl(walletConfig)
+const near = new WalletImpl(networkConfig)
 
 export const bgFunctions = {
   near_signIn: near.signIn.bind(near),
@@ -23,6 +21,7 @@ export const bgFunctions = {
   near_getAccounts: near.getAccounts.bind(near),
   near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
   near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
+  popTabState: (req?: MessageWrapperRequest) => tabStateService.pop(req?.sender?.tab?.id),
 }
 
 export type BgFunctions = typeof bgFunctions
@@ -36,7 +35,8 @@ const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<voi
 
 const connectWallet = async (): Promise<void> => {
   const params = {
-    contractId: DEFAULT_CONTRACT_ID,
+    // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
+    contractId: networkConfig.socialDbContract,
     methodNames: [],
   }
   const accounts = await near.signIn(params)
@@ -120,7 +120,7 @@ setActionMenu()
 
 const setCopyAvailability = async (tabId: number) => {
   const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
-  if (tabId !== currentTab.id) return
+  if (!currentTab || tabId !== currentTab.id) return
   // The script may not be injected if the extension was just installed
   const isContentScriptInjected = await browser.tabs
     .sendMessage(currentTab.id, { type: 'PING' }) // The CS must reply 'PONG'
@@ -157,3 +157,40 @@ function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Ta
   }
 }
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)
+
+// Redirect from share link with mutations
+const mutationLinkListener = async (tabId: number) => {
+  const tab = await browser.tabs.get(tabId)
+
+  // Prevent concurrency
+  if (tab.status !== 'complete') return
+
+  if (tab?.url.startsWith(MUTATION_LINK_URL)) {
+    const url = new URL(tab.url)
+
+    // URL example:
+    // https://augm.link/mutate?t=https://twitter.com/MrConCreator&m=bos.dapplets.near/mutation/Zoo
+    if (url.pathname === '/mutate' || url.pathname === '/mutate/') {
+      const redirectUrl = url.searchParams.get('t')
+      const mutationId = url.searchParams.get('m')
+
+      if (!redirectUrl || !mutationId) return
+
+      // Add mutationId to the queue. It will be fetch later, when the page loaded
+      tabStateService.push(tabId, { mutationId })
+
+      await browser.tabs.update(tabId, { url: redirectUrl, active: true })
+    }
+  }
+}
+
+browser.runtime.onInstalled.addListener(async () => {
+  const serviceTabs = await browser.tabs.query({
+    url: `${new URL('/', MUTATION_LINK_URL).href}*`,
+  })
+
+  await Promise.all(serviceTabs.map((tab) => mutationLinkListener(tab.id)))
+})
+
+browser.tabs.onActivated.addListener(({ tabId }) => mutationLinkListener(tabId))
+browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))
