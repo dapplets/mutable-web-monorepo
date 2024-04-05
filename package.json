@@ -8,9 +8,11 @@
     "lint": "npm run prettify && npm run stylelint && npm run eslint",
     "prettify": "prettier --write src",
     "eslint": "eslint ./src --ext .ts --fix",
-    "stylelint": "stylelint ./src/**/*.{css,scss,module.scss} --fix"
+    "stylelint": "stylelint ./src/**/*.{css,scss,module.scss} --fix",
+    "test": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.1",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@svgr/webpack": "^6.5.1",
@@ -20,11 +22,13 @@
     "@types/webextension-polyfill": "^0.10.0",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
+    "adm-zip": "^0.5.10",
     "assert-browserify": "^2.0.0",
     "buffer": "^6.0.3",
     "copy-webpack-plugin": "^11.0.0",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.3",
+    "dotenv": "^16.4.5",
     "eslint": "^8.37.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",

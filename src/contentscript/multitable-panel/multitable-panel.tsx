@@ -155,8 +155,9 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ engine }) => {
   }
 
   return (
-    <WrapperPanel>
+    <WrapperPanel data-testid="mutable-panel">
       <NorthPanel
+        data-testid="north-panel"
         className={isPin ? 'visible-pin' : visible ? 'visible-north-panel' : 'visible-default'}
       >
         <Dropdown

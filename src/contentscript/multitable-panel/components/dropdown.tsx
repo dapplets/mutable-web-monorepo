@@ -303,6 +303,7 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
       style={{ scrollbarColor: 'rgb(147, 150, 152)  rgb(255, 255, 255)', scrollbarWidth: 'thin' }}
     >
       <SelectedMutationBlock
+        data-testid="selected-mutation-block"
         onClick={() => {
           isOpen ? setVisible(true) : setVisible(false)
           setIsOpen(!isOpen)
