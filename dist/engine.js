@@ -19,7 +19,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig, _Engine_redirectMap, _Engine_devModePollingTimer;
+var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig, _Engine_redirectMap, _Engine_devModePollingTimer, _Engine_repository;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Engine = exports.AdapterType = void 0;
 const dynamic_html_adapter_1 = require("./core/adapters/dynamic-html-adapter");
@@ -33,6 +33,8 @@ const mutation_manager_1 = require("./mutation-manager");
 const json_parser_1 = require("./core/parsers/json-parser");
 const bos_parser_1 = require("./core/parsers/bos-parser");
 const pure_context_node_1 = require("./core/tree/pure-tree/pure-context-node");
+const repository_1 = require("./storage/repository");
+const json_storage_1 = require("./storage/json-storage");
 var AdapterType;
 (function (AdapterType) {
     AdapterType["Bos"] = "bos";
@@ -41,6 +43,7 @@ var AdapterType;
 })(AdapterType || (exports.AdapterType = AdapterType = {}));
 class Engine {
     constructor(config) {
+        var _a;
         this.config = config;
         _Engine_provider.set(this, void 0);
         _Engine_bosWidgetFactory.set(this, void 0);
@@ -50,13 +53,14 @@ class Engine {
         _Engine_nearConfig.set(this, void 0);
         _Engine_redirectMap.set(this, null);
         _Engine_devModePollingTimer.set(this, null);
+        _Engine_repository.set(this, void 0);
         this.adapters = new Set();
         this.treeBuilder = null;
         this.started = false;
         __classPrivateFieldSet(this, _Engine_bosWidgetFactory, new bos_widget_factory_1.BosWidgetFactory({
             networkId: this.config.networkId,
             selector: this.config.selector,
-            tagName: 'bos-component',
+            tagName: (_a = this.config.bosElementName) !== null && _a !== void 0 ? _a : 'bos-component',
         }), "f");
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
         const nearConfig = (0, constants_1.getNearConfig)(this.config.networkId);
@@ -64,6 +68,7 @@ class Engine {
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
         __classPrivateFieldSet(this, _Engine_mutationManager, new mutation_manager_1.MutationManager(__classPrivateFieldGet(this, _Engine_provider, "f")), "f");
         __classPrivateFieldSet(this, _Engine_nearConfig, nearConfig, "f");
+        __classPrivateFieldSet(this, _Engine_repository, new repository_1.Repository(new json_storage_1.JsonStorage(this.config.storage)), "f");
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -112,14 +117,21 @@ class Engine {
     handleInsPointFinished(context, oldInsPoint) {
         // ToDo: do nothing because IP unmounted?
     }
-    start(mutationId = __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId) {
+    start(mutationId) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            if (!mutationId) {
+                const favoriteMutationId = yield this.getFavoriteMutation();
+                mutationId = favoriteMutationId !== null && favoriteMutationId !== void 0 ? favoriteMutationId : __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId;
+            }
             const mutations = yield this.getMutations();
             const mutation = (_a = mutations.find((mutation) => mutation.id === mutationId)) !== null && _a !== void 0 ? _a : null;
             if (mutation) {
                 // load mutation and apps
                 yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutation);
+                // save last usage
+                const currentDate = new Date().toISOString();
+                yield __classPrivateFieldGet(this, _Engine_repository, "f").setMutationLastUsage(mutation.id, currentDate);
             }
             else {
                 console.error('No suitable mutations found');
@@ -146,7 +158,14 @@ class Engine {
             // ToDo: use real context from the PureTreeBuilder
             const context = new pure_context_node_1.PureContextNode('engine', 'website');
             context.parsedContext = { id: window.location.hostname };
-            return __classPrivateFieldGet(this, _Engine_mutationManager, "f").getMutationsForContext(context);
+            const mutations = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getMutationsForContext(context);
+            const favoriteMutationId = yield __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+            return Promise.all(mutations.map((mutation) => __awaiter(this, void 0, void 0, function* () {
+                return (Object.assign(Object.assign({}, mutation), { settings: {
+                        isFavorite: favoriteMutationId === mutation.id,
+                        lastUsage: yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id),
+                    } }));
+            })));
         });
     }
     switchMutation(mutationId) {
@@ -159,9 +178,16 @@ class Engine {
         });
     }
     getCurrentMutation() {
-        var _a, _b;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            return (_b = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation) !== null && _b !== void 0 ? _b : null;
+            const mutation = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation;
+            if (!mutation)
+                return null;
+            const favoriteMutationId = yield __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+            return Object.assign(Object.assign({}, mutation), { settings: {
+                    isFavorite: favoriteMutationId === mutation.id,
+                    lastUsage: yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id),
+                } });
         });
     }
     enableDevMode(options) {
@@ -210,6 +236,40 @@ class Engine {
                 throw new Error('Incompatible adapter type');
         }
     }
+    setFavoriteMutation(mutationId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return __classPrivateFieldGet(this, _Engine_repository, "f").setFavoriteMutation(mutationId);
+        });
+    }
+    getFavoriteMutation() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+        });
+    }
+    removeMutationFromRecents(mutationId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield __classPrivateFieldGet(this, _Engine_repository, "f").setMutationLastUsage(mutationId, null);
+        });
+    }
+    getApplications() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return __classPrivateFieldGet(this, _Engine_provider, "f").getApplications();
+        });
+    }
+    createMutation(mutation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // ToDo: move to provider?
+            if (!(yield __classPrivateFieldGet(this, _Engine_provider, "f").getMutation(mutation.id))) {
+                throw new Error("Mutation with that ID already exists");
+            }
+            yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
+        });
+    }
+    editMutation(mutation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
+        });
+    }
     _tryFetchAndUpdateRedirects(polling) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -250,4 +310,4 @@ class Engine {
     }
 }
 exports.Engine = Engine;
-_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap(), _Engine_redirectMap = new WeakMap(), _Engine_devModePollingTimer = new WeakMap();
+_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap(), _Engine_redirectMap = new WeakMap(), _Engine_devModePollingTimer = new WeakMap(), _Engine_repository = new WeakMap();

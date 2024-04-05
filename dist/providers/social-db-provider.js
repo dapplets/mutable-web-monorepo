@@ -29,7 +29,6 @@ const ParserKey = 'parser';
 const SettingsKey = 'settings';
 const LinkKey = 'link';
 const SelfKey = '';
-const ParserContextsKey = 'contexts';
 const AppKey = 'app';
 const MutationKey = 'mutation';
 const WildcardKey = '*';
@@ -94,11 +93,31 @@ class SocialDbProvider {
             const [authorId, , appLocalId] = globalAppId.split(KeyDelimiter);
             const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
             const queryResult = yield this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)]);
-            const mutation = SocialDbProvider._getValueByKey(keys, queryResult);
-            if (!(mutation === null || mutation === void 0 ? void 0 : mutation[SelfKey]))
+            const app = SocialDbProvider._getValueByKey(keys, queryResult);
+            if (!(app === null || app === void 0 ? void 0 : app[SelfKey]))
                 return null;
-            return Object.assign(Object.assign({}, JSON.parse(mutation[SelfKey])), { metadata: mutation.metadata, id: globalAppId, appLocalId,
+            return Object.assign(Object.assign({}, JSON.parse(app[SelfKey])), { metadata: app.metadata, id: globalAppId, appLocalId,
                 authorId });
+        });
+    }
+    getApplications() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const keys = [
+                WildcardKey, // any author id
+                SettingsKey,
+                ProjectIdKey,
+                AppKey,
+                WildcardKey, // any app local id
+            ];
+            const queryResult = yield this.client.get([[...keys, RecursiveWildcardKey].join(KeyDelimiter)]);
+            const appsByKey = SocialDbProvider._splitObjectByDepth(queryResult, keys.length);
+            const apps = Object.entries(appsByKey).map(([key, app]) => {
+                const [authorId, , , , appLocalId] = key.split(KeyDelimiter);
+                const globalAppId = [authorId, AppKey, appLocalId].join(KeyDelimiter);
+                return Object.assign(Object.assign({}, JSON.parse(app[SelfKey])), { metadata: app.metadata, id: globalAppId, appLocalId,
+                    authorId });
+            });
+            return apps;
         });
     }
     getMutation(globalMutationId) {
@@ -173,7 +192,7 @@ class SocialDbProvider {
             yield this.client.delete([keys.join(KeyDelimiter)]);
         });
     }
-    createApplication(appMetadata) {
+    saveApplication(appMetadata) {
         return __awaiter(this, void 0, void 0, function* () {
             const [authorId, , appLocalId] = appMetadata.id.split(KeyDelimiter);
             const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, appLocalId];
@@ -188,7 +207,7 @@ class SocialDbProvider {
                 authorId });
         });
     }
-    createMutation(mutation) {
+    saveMutation(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
             const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter);
             const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId];
@@ -201,7 +220,7 @@ class SocialDbProvider {
             return mutation;
         });
     }
-    createParserConfig(config) {
+    saveParserConfig(config) {
         return __awaiter(this, void 0, void 0, function* () {
             const { accountId, parserLocalId } = this._extractParserIdFromNamespace(config.id);
             const keys = [accountId, SettingsKey, ProjectIdKey, ParserKey, parserLocalId];

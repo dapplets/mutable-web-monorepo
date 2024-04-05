@@ -1,7 +1,8 @@
 import { IAdapter } from './core/adapters/interface';
-import { Mutation, ParserConfig } from './providers/provider';
+import { AppMetadata, Mutation, MutationWithSettings, ParserConfig } from './providers/provider';
 import { WalletSelector } from '@near-wallet-selector/core';
 import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types';
+import { IStorage } from './storage/storage';
 export declare enum AdapterType {
     Bos = "bos",
     Microdata = "microdata",
@@ -11,6 +12,8 @@ export type EngineConfig = {
     networkId: string;
     gatewayId: string;
     selector: WalletSelector;
+    storage: IStorage;
+    bosElementName?: string;
 };
 export declare class Engine implements IContextListener {
     #private;
@@ -26,9 +29,9 @@ export declare class Engine implements IContextListener {
     handleInsPointFinished(context: IContextNode, oldInsPoint: string): void;
     start(mutationId?: string): Promise<void>;
     stop(): void;
-    getMutations(): Promise<Mutation[]>;
+    getMutations(): Promise<MutationWithSettings[]>;
     switchMutation(mutationId: string): Promise<void>;
-    getCurrentMutation(): Promise<Mutation | null>;
+    getCurrentMutation(): Promise<MutationWithSettings | null>;
     enableDevMode(options?: {
         polling: boolean;
     }): Promise<void>;
@@ -36,6 +39,12 @@ export declare class Engine implements IContextListener {
     registerAdapter(adapter: IAdapter): void;
     unregisterAdapter(adapter: IAdapter): void;
     createAdapter(config?: ParserConfig): IAdapter;
+    setFavoriteMutation(mutationId: string | null): Promise<void>;
+    getFavoriteMutation(): Promise<string | null>;
+    removeMutationFromRecents(mutationId: string): Promise<void>;
+    getApplications(): Promise<AppMetadata[]>;
+    createMutation(mutation: Mutation): Promise<void>;
+    editMutation(mutation: Mutation): Promise<void>;
     private _tryFetchAndUpdateRedirects;
     private _updateRootContext;
 }

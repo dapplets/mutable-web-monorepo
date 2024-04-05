@@ -58,6 +58,12 @@ export type Mutation = {
     apps: string[];
     targets: ContextTarget[];
 };
+export type MutationWithSettings = Mutation & {
+    settings: {
+        isFavorite: boolean;
+        lastUsage: string | null;
+    };
+};
 export type LinkIndexObject = {
     appId: AppId;
     mutationId: MutationId;
@@ -75,12 +81,13 @@ export interface IProvider {
     getParserConfig(globalParserId: string): Promise<ParserConfig | null>;
     getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]>;
     getApplication(globalAppId: AppId): Promise<AppMetadata | null>;
+    getApplications(): Promise<AppMetadata[]>;
     getMutation(globalMutationId: MutationId): Promise<Mutation | null>;
     getMutations(): Promise<Mutation[]>;
     createLink(indexObject: LinkIndexObject): Promise<IndexedLink>;
     deleteUserLink(linkId: UserLinkId): Promise<void>;
-    createApplication(appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>): Promise<AppMetadata>;
-    createMutation(mutation: Mutation): Promise<Mutation>;
-    createParserConfig(config: ParserConfig): Promise<void>;
+    saveApplication(appMetadata: Omit<AppMetadata, 'authorId' | 'appLocalId'>): Promise<AppMetadata>;
+    saveMutation(mutation: Mutation): Promise<Mutation>;
+    saveParserConfig(config: ParserConfig): Promise<void>;
 }
 //# sourceMappingURL=provider.d.ts.map
