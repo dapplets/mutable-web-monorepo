@@ -32,8 +32,8 @@ export class CustomWalletConnection {
   _authData: { accountId?: string; allKeys?: string[] }
   _networkId: string
   _near: Near
-  _connectedAccount: CustomConnectedWalletAccount
-  _completeSignInPromise: Promise<void>
+  _connectedAccount?: CustomConnectedWalletAccount
+  _completeSignInPromise?: Promise<void>
 
   constructor(
     near: Near,
@@ -105,7 +105,11 @@ export class CustomWalletConnection {
 
     const tab = await browser.tabs.create({ url: newUrl.toString() })
 
-    let callbackTab: browser.Tabs.Tab = null
+    if (!tab?.id || !tab?.windowId) {
+      throw new Error('Cannot create tab')
+    }
+
+    let callbackTab: browser.Tabs.Tab | null = null as browser.Tabs.Tab | null
     const waitTabPromise = waitTab(callbackUrl).then((x) => (callbackTab = x))
     const closingTabPromise = waitClosingTab(tab.id, tab.windowId)
 
@@ -113,7 +117,9 @@ export class CustomWalletConnection {
 
     await browser.tabs.update(currentTabId, { active: true })
 
-    if (!callbackTab) throw new Error('Wallet connection request rejected.')
+    if (!callbackTab?.id || !callbackTab?.url) {
+      throw new Error('Wallet connection request rejected.')
+    }
 
     await browser.tabs.remove(callbackTab.id)
 
@@ -143,8 +149,12 @@ export class CustomWalletConnection {
     meta,
     callbackUrl,
   }: RequestSignTransactionsOptions): Promise<void> {
-    const tabs = await browser.tabs.query({ active: true, lastFocusedWindow: true })
-    const currentUrl = new URL(tabs?.[0]?.url)
+    const [currentTab] = await browser.tabs.query({ active: true, lastFocusedWindow: true })
+    if (!currentTab?.url) {
+      throw new Error('No active tab')
+    }
+
+    const currentUrl = new URL(currentTab.url)
     const newUrl = new URL('sign', this._walletBaseUrl)
 
     newUrl.searchParams.set(
@@ -159,8 +169,13 @@ export class CustomWalletConnection {
 
     if (meta) newUrl.searchParams.set('meta', meta)
 
-    const tab = await browser.tabs.create({ url: newUrl.toString() })
-    await waitClosingTab(tab.id, tab.windowId)
+    const signingInTab = await browser.tabs.create({ url: newUrl.toString() })
+
+    if (!signingInTab?.id || !signingInTab?.windowId) {
+      throw new Error('Cannot create tab')
+    }
+
+    await waitClosingTab(signingInTab.id, signingInTab.windowId)
   }
 
   async completeSignIn(accountId: string, publicKey: string, allKeys: string[]) {
@@ -202,6 +217,10 @@ export class CustomWalletConnection {
 
   account() {
     if (!this._connectedAccount) {
+      if (!this._authData.accountId) {
+        throw new Error('Not logged in')
+      }
+
       this._connectedAccount = new CustomConnectedWalletAccount(
         this as any, // ToDo: _completeSignInWithAccessKey is not implemented
         this._near.connection,

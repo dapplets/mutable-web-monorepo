@@ -20,9 +20,11 @@ export class WebExtensionKeyStorage extends keyStores.KeyStore {
   async getKey(networkId: string, accountId: string): Promise<KeyPair> {
     const key = this.storageKeyForSecretKey(networkId, accountId)
     const result = await browser.storage.local.get(key)
+
     if (!result || !result[key]) {
-      return null
+      throw new Error(`No key for ${accountId} account`)
     }
+
     return KeyPair.fromString(result[key])
   }
 

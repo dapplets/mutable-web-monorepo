@@ -14,6 +14,6 @@ export class TabStateService {
   pop(tabId: TabId): TabState | null {
     const state = this._state.get(tabId)
     this._state.delete(tabId)
-    return state
+    return state ?? null
   }
 }

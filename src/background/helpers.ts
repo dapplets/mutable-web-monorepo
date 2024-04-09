@@ -37,6 +37,7 @@ export async function waitTab(url: string) {
   return new Promise<browser.Tabs.Tab>((res) => {
     const handler = async (tabId: number) => {
       const tab = await browser.tabs.get(tabId)
+      if (!tab?.url) return
       const receivedUrl = new URL(tab.url)
       if (isEqualUrlParams(expectedUrl, receivedUrl)) {
         res(tab)

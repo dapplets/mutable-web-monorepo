@@ -22,7 +22,10 @@ export const bgFunctions = {
   near_getAccounts: near.getAccounts.bind(near),
   near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
   near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
-  popTabState: (req?: MessageWrapperRequest) => tabStateService.pop(req?.sender?.tab?.id),
+  popTabState: (req?: MessageWrapperRequest) => {
+    const tabId = req?.sender?.tab?.id
+    return tabId ? tabStateService.pop(tabId) : null
+  },
 }
 
 export type BgFunctions = typeof bgFunctions
@@ -31,8 +34,10 @@ browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
 
 // Context menu actions
 
-const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> =>
-  browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
+const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> => {
+  if (!tab.id) return
+  await browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
+}
 
 const connectWallet = async (): Promise<void> => {
   const params: Partial<SignInParams> = {
@@ -45,6 +50,7 @@ const connectWallet = async (): Promise<void> => {
   // send events to all tabs
   browser.tabs.query({}).then((tabs) =>
     tabs.map((tab) => {
+      if (!tab.id) return
       browser.tabs.sendMessage(tab.id, {
         type: 'SIGNED_IN',
         params: {
@@ -64,6 +70,7 @@ const disconnect = async (): Promise<void> => {
   // send events to all tabs
   browser.tabs.query({}).then((tabs) =>
     tabs.map((tab) => {
+      if (!tab.id) return
       browser.tabs.sendMessage(tab.id, { type: 'SIGNED_OUT' })
     })
   )
@@ -142,7 +149,10 @@ browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // Context menu actions routing
 
-function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) {
+function handleContextMenuClick(
+  info: browser.Menus.OnClickData,
+  tab: browser.Tabs.Tab | undefined
+) {
   switch (info.menuItemId) {
     case 'connect':
       return connectWallet()
@@ -150,8 +160,12 @@ function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Ta
     case 'disconnect':
       return disconnect()
 
-    case 'copy':
-      return copy(info, tab)
+    case 'copy': {
+      if (tab) {
+        return copy(info, tab)
+      }
+      break
+    }
 
     default:
       break
@@ -160,11 +174,13 @@ function handleContextMenuClick(info: browser.Menus.OnClickData, tab: browser.Ta
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)
 
 // Redirect from share link with mutations
-const mutationLinkListener = async (tabId: number) => {
+const mutationLinkListener = async (tabId: number | undefined) => {
+  if (!tabId) return
+
   const tab = await browser.tabs.get(tabId)
 
   // Prevent concurrency
-  if (tab.status !== 'complete') return
+  if (!tab || tab.status !== 'complete' || !tab.url) return
 
   if (tab?.url.startsWith(MUTATION_LINK_URL)) {
     const url = new URL(tab.url)
