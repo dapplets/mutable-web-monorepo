@@ -1,0 +1,48 @@
+{
+  "bos.dapplets.near": {
+    "settings": {
+      "dapplets.near": {
+        "mutation": {
+          "Sandbox": {
+            "name": "Sandbox",
+            "description": "Playground where anyone can inject BOS components",
+            "image": {
+              "ipfs_cid": "bafkreihxajq5ujkgp4t7uadmymet4s62z2rnqb22okpw4vb7atichoq7oy"
+            },
+            "metadata": {
+              "name": "Sandbox",
+              "description": "Playground where anyone can inject BOS components",
+              "image": {
+                "ipfs_cid": "bafkreihxajq5ujkgp4t7uadmymet4s62z2rnqb22okpw4vb7atichoq7oy"
+              }
+            },
+            "apps": "[\"bos.dapplets.near/app/Paywall\",\"bos.dapplets.near/app/Tipping\",\"bos.dapplets.near/app/Onboarding\"]",
+            "targets": "[{\"namespace\":\"engine\",\"contextType\":\"website\",\"if\":{\"id\":{\"in\":[\"twitter.com\",\"github.com\",\"linkedin.com\",\"www.linkedin.com\",\"social.dapplets.org\",\"localhost\"]}}},{\"namespace\":\"engine\",\"contextType\":\"website\",\"if\":{\"id\":{\"endsWith\":\"--mutable-near-social.netlify.app\"}}}]"
+          },
+          "Zoo": {
+            "metadata": {
+              "name": "Zoo",
+              "description": "Mutation with animal icons and buttons",
+              "image": {
+                "ipfs_cid": "bafkreie4tum66dxhl4twu6ak3d2vgtxkwc3rkoay2rriqzdwm4m2hflgwy"
+              }
+            },
+            "apps": "[\"bos.dapplets.near/app/Cat\",\"bos.dapplets.near/app/Dog\",\"nikter.near/app/Capybara\",\"bos.dapplets.near/app/Onboarding\"]",
+            "targets": "[{\"namespace\":\"engine\",\"contextType\":\"website\",\"if\":{\"id\":{\"in\":[\"twitter.com\",\"github.com\",\"linkedin.com\",\"www.linkedin.com\",\"social.dapplets.org\",\"localhost\"]}}},{\"namespace\":\"engine\",\"contextType\":\"website\",\"if\":{\"id\":{\"endsWith\":\"--mutable-near-social.netlify.app\"}}}]"
+          },
+          "Testing": {
+            "metadata": {
+              "name": "Testing2",
+              "description": "Mutation for application testing",
+              "image": {
+                "ipfs_cid": "bafkreihxaiefldmdz6pjo5cxieltvd3nbwhxb7h5ra74gtxc5zlcypwuya"
+              }
+            },
+            "apps": "[\"bos.dapplets.near/app/OnboardingTest\"]",
+            "targets": "[{\"namespace\":\"engine\",\"contextType\":\"website\",\"if\":{\"id\":{\"in\":[\"twitter.com\",\"github.com\",\"linkedin.com\",\"www.linkedin.com\",\"reddit.com\",\"www.reddit.com\",\"social.dapplets.org\",\"localhost\"]}}},{\"namespace\":\"engine\",\"contextType\":\"website\",\"if\":{\"id\":{\"endsWith\":\"--mutable-near-social.netlify.app\"}}}]"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "bos.dapplets.near": {
+    "settings": {
+      "dapplets.near": {
+        "app": {
+          "Paywall": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"},{\"namespace\":\"bos.dapplets.near/parser/github\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"},{\"namespace\":\"bos.dapplets.near/parser/near-social\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"},{\"namespace\":\"bos.dapplets.near/parser/linkedin\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"},{\"namespace\":\"bos.dapplets.near/parser/youtube\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"},{\"namespace\":\"bos.dapplets.near/parser/reddit\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"},{\"namespace\":\"bos.dapplets.near/parser/reddit-new\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Paywall.Main\"}]}",
+            "metadata": {
+              "name": "Paywall",
+              "description": "The Paywall Dapplet seamlessly integrates with Twitter, utilizing the NEAR Protocol and NEAR BOS to display paid content",
+              "image": {
+                "ipfs_cid": "bafkreif7roycllkswl2sveqpt4zbzce3e4vjasr756bdh4a2334i55upnq"
+              }
+            }
+          },
+          "Cat": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Cat\"},{\"namespace\":\"bos.dapplets.near/parser/near-social\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Cat\"},{\"namespace\":\"bos.dapplets.near/parser/linkedin\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Cat\"},{\"namespace\":\"bos.dapplets.near/parser/youtube\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Cat\"},{\"namespace\":\"bos.dapplets.near/parser/reddit\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Cat\"},{\"namespace\":\"bos.dapplets.near/parser/github\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Cat\"}]}",
+            "metadata": {
+              "name": "Cat",
+              "description": "Just a vector image for testing purposes",
+              "image": {
+                "ipfs_cid": "bafkreie4tum66dxhl4twu6ak3d2vgtxkwc3rkoay2rriqzdwm4m2hflgwy"
+              }
+            }
+          },
+          "Dog": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Dog\"},{\"namespace\":\"bos.dapplets.near/parser/near-social\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Dog\"},{\"namespace\":\"bos.dapplets.near/parser/linkedin\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Dog\"},{\"namespace\":\"bos.dapplets.near/parser/youtube\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Dog\"},{\"namespace\":\"bos.dapplets.near/parser/reddit\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Dog\"},{\"namespace\":\"bos.dapplets.near/parser/github\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/Dog\"}]}",
+            "metadata": {
+              "name": "Dog",
+              "description": "Just a vector image for testing purposes",
+              "image": {
+                "ipfs_cid": "bafkreiconobvmlnm3vjjyvmcvy3sruppk2e3g7b6sxampmy6ajbm2ln54q"
+              }
+            }
+          },
+          "Tipping": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null}},\"injectTo\":\"southPanel\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Tipping.Main\"},{\"namespace\":\"bos.dapplets.near/parser/near-social\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null}},\"injectTo\":\"southPanel\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Tipping.Main\"},{\"namespace\":\"bos.dapplets.near/parser/linkedin\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null}},\"injectTo\":\"southPanel\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Tipping.Main\"},{\"namespace\":\"bos.dapplets.near/parser/youtube\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null}},\"injectTo\":\"southPanel\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Tipping.Main\"},{\"namespace\":\"bos.dapplets.near/parser/reddit\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null}},\"injectTo\":\"southPanel\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Tipping.Main\"},{\"namespace\":\"bos.dapplets.near/parser/github\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null}},\"injectTo\":\"southPanel\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Tipping.Main\"}]}",
+            "metadata": {
+              "name": "Tipping",
+              "description": "Tipping dapplet allows you to donate NEAR tokens to X and GitHub users. It charges an extra fee of 3% on each donation.",
+              "image": {
+                "ipfs_cid": "bafkreif7fkfyupdrms3zn6xiptlxmekdl5g7cfgihsq6piqrwxu7pfywfy"
+              }
+            }
+          },
+          "Onboarding": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/common\",\"contextType\":\"body\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"end\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Onboarding.Main\"},{\"namespace\":\"bos.dapplets.near/parser/twitter-test\",\"contextType\":\"body\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"end\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Onboarding.Main\"},{\"namespace\":\"bos.dapplets.near/parser/github-onboarding\",\"contextType\":\"body\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"end\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Onboarding.Main\"},{\"namespace\":\"bos.dapplets.near/parser/linkedin-onboarding\",\"contextType\":\"body\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"end\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/Onboarding.Main\"}]}",
+            "metadata": {
+              "name": "Onboarding",
+              "description": "Onboarding for the mutation",
+              "image": {
+                "ipfs_cid": "bafkreih235nlz4vricl2h5s3ti7fmwsrkqerrqhspcan7z2vzhh5ebjk7y"
+              }
+            }
+          },
+          "OnboardingTest": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/commonTest\",\"contextType\":\"body\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"end\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/OnboardingTest.Main\"},{\"namespace\":\"bos.dapplets.near/parser/twitter-test\",\"contextType\":\"body\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"end\",\"injectOnce\":true,\"componentId\":\"bos.dapplets.near/widget/OnboardingTest.Main\"}]}",
+            "metadata": {
+              "name": "Onboarding Test",
+              "description": "Onboarding for the mutation",
+              "image": {
+                "ipfs_cid": "bafkreih235nlz4vricl2h5s3ti7fmwsrkqerrqhspcan7z2vzhh5ebjk7y"
+              }
+            }
+          },
+          "CalloutCat": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"root\",\"componentId\":\"bos.dapplets.near/widget/CalloutCat\"}]}",
+            "metadata": {
+              "name": "CalloutCat",
+              "description": "Just a vector image for testing purposes",
+              "image": {
+                "ipfs_cid": "bafkreie4tum66dxhl4twu6ak3d2vgtxkwc3rkoay2rriqzdwm4m2hflgwy"
+              }
+            }
+          },
+          "OnboardingQuestion": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"southPanel\",\"componentId\":\"bos.dapplets.near/widget/Onboarding.Question\"}]}",
+            "metadata": {
+              "name": "Onboarding Question",
+              "description": "Onboarding callout for testing purposes",
+              "image": {
+                "ipfs_cid": "bafkreigx7d64p4tie7hrldb4gwiozde3vdig2eoimtjbdjvjqopgzd57re"
+              }
+            }
+          },
+          "Callouts": {
+            "": "{\"targets\":[{\"namespace\":\"bos.dapplets.near/parser/twitter\",\"contextType\":\"post\",\"if\":{\"id\":{\"not\":null,\"index\":true}},\"injectTo\":\"afterText\",\"componentId\":\"bos.dapplets.near/widget/Onboarding.Callout\"}]}",
+            "metadata": {
+              "name": "Test Callouts"
+            }
+          }
+        }
+      }
+    }
+  }
+}
