@@ -50,8 +50,8 @@ class NearSigner {
         });
     }
     getAccountId() {
-        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             const wallet = yield (yield this._selector).wallet();
             const accounts = yield wallet.getAccounts();
             return (_b = (_a = accounts[0]) === null || _a === void 0 ? void 0 : _a.accountId) !== null && _b !== void 0 ? _b : null;

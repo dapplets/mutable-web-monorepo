@@ -66,6 +66,7 @@ export class BosComponent extends HTMLElement {
         align-items: center;
         justify-content: center;
         position: relative;
+        visibility: visible !important;
       }
     `
     this._adapterStylesMountPoint.innerHTML = resetCssRules

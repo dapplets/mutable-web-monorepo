@@ -19,6 +19,7 @@ overlay.style.outline = '0'
 overlay.style.fontFamily =
   '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif'
 overlay.style.zIndex = '2147483647'
+overlay.style.visibility = 'visible'
 
 const shadowRoot = overlay.attachShadow({ mode: 'closed' })
 const stylesMountPoint = document.createElement('div')

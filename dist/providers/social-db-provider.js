@@ -50,8 +50,8 @@ class SocialDbProvider {
     }
     // #region Read methods
     getParserConfig(globalParserId) {
-        var _a, _b, _c, _d, _e;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e;
             const { accountId, parserLocalId } = this._extractParserIdFromNamespace(globalParserId);
             const queryResult = yield this.client.get([
                 `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
