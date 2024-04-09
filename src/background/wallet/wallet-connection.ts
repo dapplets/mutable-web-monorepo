@@ -218,7 +218,7 @@ export class CustomWalletConnection {
   account() {
     if (!this._connectedAccount) {
       if (!this._authData.accountId) {
-        throw new Error('Not logged in')
+        return null
       }
 
       this._connectedAccount = new CustomConnectedWalletAccount(

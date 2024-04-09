@@ -3,7 +3,6 @@ import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
 import { networkConfig } from '../common/networks'
-import { MessageWrapperRequest } from '../common/types'
 import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
@@ -22,10 +21,7 @@ export const bgFunctions = {
   near_getAccounts: near.getAccounts.bind(near),
   near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
   near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
-  popTabState: (req?: MessageWrapperRequest) => {
-    const tabId = req?.sender?.tab?.id
-    return tabId ? tabStateService.pop(tabId) : null
-  },
+  popTabState: tabStateService.popForTab.bind(tabStateService),
 }
 
 export type BgFunctions = typeof bgFunctions
@@ -42,7 +38,7 @@ const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<voi
 const connectWallet = async (): Promise<void> => {
   const params: Partial<SignInParams> = {
     // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
-    contractId: networkConfig.socialDbContract,
+    contractId: 'social.dapplets.near',
     methodNames: [],
   }
   const accounts = await near.signIn(params)

@@ -102,6 +102,10 @@ export class WalletImpl {
 
     const account = _state.wallet.account()
 
+    if (!account) {
+      throw new Error('Not logged in')
+    }
+
     return account.signAndSendTransaction({
       receiverId: receiverId,
       actions: actions.map((action) => createAction(action)),
@@ -123,6 +127,10 @@ export class WalletImpl {
     const _state = await this._statePromise
 
     const account = _state.wallet.account()
+
+    if (!account) {
+      throw new Error('Not logged in')
+    }
 
     const finalExecutionOutcome = await account.signAndSendTransaction({
       receiverId: transaction.receiverId,
