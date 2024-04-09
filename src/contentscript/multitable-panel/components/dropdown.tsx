@@ -278,7 +278,7 @@ const iconDropdown = (
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   mutations: Mutation[]
   selectedMutation: Mutation | null
-  onMutationChange: (mutationId: string | null) => void
+  onMutationChange: (mutationId: string) => void
   setVisible: (visible: boolean) => void
 }
 
@@ -310,14 +310,14 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
         }}
       >
         <SelectedMutationInfo>
-          {selectedMutation && (
+          {selectedMutation ? (
             <>
               <SelectedMutationDescription>
                 {selectedMutation.metadata.name}
               </SelectedMutationDescription>
               <SelectedMutationId>{selectedMutation.id}</SelectedMutationId>
             </>
-          )}
+          ) : null}
         </SelectedMutationInfo>
 
         {isOpen ? (
@@ -334,8 +334,8 @@ export const Dropdown: FC<DropdownProps> = (props: DropdownProps) => {
           {mutations.length &&
             mutations.map((mut, i) => (
               <InputBlock
-                $enable={mut.id === selectedMutation?.id && '#f7f7f7'}
-                $enableBefore={mut.id === selectedMutation?.id && '#34d31a'}
+                $enable={mut.id === selectedMutation?.id ? '#f7f7f7' : ''}
+                $enableBefore={mut.id === selectedMutation?.id ? '#34d31a' : ''}
                 onClick={() => handleMutationClick(mut.id)}
                 key={i}
               >

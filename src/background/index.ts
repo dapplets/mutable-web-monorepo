@@ -1,3 +1,4 @@
+import { SignInParams } from '@near-wallet-selector/core'
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
@@ -34,7 +35,7 @@ const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<voi
   browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
 
 const connectWallet = async (): Promise<void> => {
-  const params = {
+  const params: Partial<SignInParams> = {
     // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
     contractId: networkConfig.socialDbContract,
     methodNames: [],

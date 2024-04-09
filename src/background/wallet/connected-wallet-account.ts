@@ -2,6 +2,7 @@ import { FinalExecutionOutcome } from '@near-wallet-selector/core'
 import BN from 'bn.js'
 import { ConnectedWalletAccount } from 'near-api-js'
 import { SignAndSendTransactionOptions } from 'near-api-js/lib/account'
+import { TypedError } from 'near-api-js/lib/providers'
 import { createTransaction } from 'near-api-js/lib/transaction'
 import { PublicKey, serialize } from 'near-api-js/lib/utils'
 import browser from 'webextension-polyfill'
@@ -27,8 +28,8 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
     if (localKey && localKey.toString() === accessKey.public_key) {
       try {
         return await super.signAndSendTransaction({ receiverId, actions })
-      } catch (e) {
-        if (e.type === 'NotEnoughAllowance') {
+      } catch (e: unknown) {
+        if (e instanceof TypedError && e.type === 'NotEnoughAllowance') {
           accessKey = await this.accessKeyForTransaction(receiverId, actions)
         } else {
           throw e
@@ -57,7 +58,7 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
     // ToDo: replace currentWindow with lastFocusedWindow
     const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true })
 
-    let callbackTab = null
+    let callbackTab: browser.Tabs.Tab = null
     const waitTabPromise = waitTab(callbackUrl).then((x) => (callbackTab = x))
     const requestPromise = this.walletConnection.requestSignTransactions({
       transactions: [transaction],

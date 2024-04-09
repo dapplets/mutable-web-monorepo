@@ -2,6 +2,7 @@ import type {
   Action,
   EventEmitterService,
   SignInParams,
+  Transaction,
   WalletBehaviourOptions,
   WalletEvents,
 } from '@near-wallet-selector/core'
@@ -10,9 +11,8 @@ import {
   WalletBehaviourFactory,
   WalletModuleFactory,
 } from '@near-wallet-selector/core'
-import { initBGFunctions } from 'chrome-extension-message-wrapper'
 import { EventEmitter as NEventEmitter } from 'events'
-import browser from 'webextension-polyfill'
+import Background from '../background'
 
 export interface BrowserWalletSignInParams extends SignInParams {
   successUrl?: string
@@ -21,7 +21,7 @@ export interface BrowserWalletSignInParams extends SignInParams {
 
 export interface SignAndSendTransactionParams {
   signerId?: string
-  receiverId?: string
+  receiverId: string
   actions: Array<Action>
 }
 
@@ -44,15 +44,15 @@ export class WalletImpl {
   }
 
   signIn = async () => {
-    return initBGFunctions(browser).then((x) => x.near_signIn())
+    return Background.near_signIn({})
   }
 
   signOut = async () => {
-    return initBGFunctions(browser).then((x) => x.near_signOut())
+    return Background.near_signOut()
   }
 
   getAccounts = async () => {
-    return initBGFunctions(browser).then((x) => x.near_getAccounts())
+    return Background.near_getAccounts()
   }
 
   verifyOwner = async () => {
@@ -63,12 +63,12 @@ export class WalletImpl {
     throw new Error(`Method not supported`)
   }
 
-  signAndSendTransaction = async (params) => {
-    return initBGFunctions(browser).then((x) => x.near_signAndSendTransaction(params))
+  signAndSendTransaction = async (params: BrowserWalletSignAndSendTransactionParams) => {
+    return Background.near_signAndSendTransaction(params)
   }
 
-  signAndSendTransactions = async (params) => {
-    return initBGFunctions(browser).then((x) => x.near_signAndSendTransactions(params))
+  signAndSendTransactions = async (params: { transactions: Transaction[] }) => {
+    return Background.near_signAndSendTransactions(params)
   }
 
   buildImportAccountsUrl = (): string => {

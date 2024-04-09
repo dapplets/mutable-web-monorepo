@@ -16,6 +16,7 @@
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "@svgr/webpack": "^6.5.1",
+    "@types/bn.js": "^5.1.5",
     "@types/chrome": "^0.0.236",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",

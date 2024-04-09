@@ -1,8 +1,8 @@
-import browser from 'webextension-polyfill'
+import browser, { Tabs } from 'webextension-polyfill'
 
 export async function waitClosingTab(tabId: number, windowId: number) {
   return new Promise<void>((res) => {
-    const handler = (_tabId, removeInfo) => {
+    const handler = (_tabId: number, removeInfo: Tabs.OnRemovedRemoveInfoType) => {
       if (_tabId === tabId && windowId === removeInfo.windowId) {
         res()
         browser.tabs.onRemoved.removeListener(handler)
@@ -55,7 +55,10 @@ export function generateGuid() {
   })
 }
 
-export function debounce<T, Q>(func: (...args: T[]) => Q, ms: number): (...args: T[]) => void {
+export function debounce<T, Q>(
+  func: (...args: T[]) => Q,
+  ms: number
+): (this: unknown, ...args: T[]) => void {
   let timeout: string | number | NodeJS.Timeout
   return function (...args: T[]): void {
     clearTimeout(timeout)

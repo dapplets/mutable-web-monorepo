@@ -136,6 +136,10 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ engine }) => {
   const handleMutationChange = async (mutationId: string) => {
     const mutation = mutations.find((mutation) => mutation.id === mutationId)
 
+    if (!mutation) {
+      throw new Error(`Mutation with this ID is not found: ${mutationId}`)
+    }
+
     setSelectedMutation(mutation)
 
     await engine.switchMutation(mutation.id)
