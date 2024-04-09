@@ -118,8 +118,8 @@ class Engine {
         // ToDo: do nothing because IP unmounted?
     }
     start(mutationId) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             if (!mutationId) {
                 const favoriteMutationId = yield this.getFavoriteMutation();
                 mutationId = favoriteMutationId !== null && favoriteMutationId !== void 0 ? favoriteMutationId : __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId;
@@ -178,8 +178,8 @@ class Engine {
         });
     }
     getCurrentMutation() {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const mutation = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation;
             if (!mutation)
                 return null;
@@ -271,8 +271,8 @@ class Engine {
         });
     }
     _tryFetchAndUpdateRedirects(polling) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
                 const res = yield fetch(constants_1.bosLoaderUrl, {
                     method: 'GET',

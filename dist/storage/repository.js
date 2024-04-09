@@ -39,8 +39,8 @@ class Repository {
             return this._set(key, value);
         });
     }
-    _get(key, defaultValue = null) {
-        return __awaiter(this, void 0, void 0, function* () {
+    _get(key_1) {
+        return __awaiter(this, arguments, void 0, function* (key, defaultValue = null) {
             const value = yield this.jsonStorage.getItem(key);
             return value === null ? defaultValue : value;
         });
