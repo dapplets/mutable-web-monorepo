@@ -110,7 +110,7 @@ export class SocialDbClient {
 
     const deposit = bigMax(
       expectedDataBalance.sub(availableBytes.mul(StorageCostPerByte)),
-      !accountStorage ? MinStorageBalance : Big(0)
+      !accountStorage ? MinStorageBalance : Big(1)
     )
 
     await this._signer.call(
