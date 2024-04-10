@@ -91,7 +91,7 @@ class SocialDbClient {
             const expectedDataBalance = StorageCostPerByte.mul(estimateDataSize(data, currentData))
                 .add(accountStorage ? (0, big_js_1.default)(0) : InitialAccountStorageBalance)
                 .add(ExtraStorageBalance);
-            const deposit = bigMax(expectedDataBalance.sub(availableBytes.mul(StorageCostPerByte)), !accountStorage ? MinStorageBalance : (0, big_js_1.default)(0));
+            const deposit = bigMax(expectedDataBalance.sub(availableBytes.mul(StorageCostPerByte)), !accountStorage ? MinStorageBalance : (0, big_js_1.default)(1));
             yield this._signer.call(this._contractName, 'set', { data }, TGas.mul(100).toFixed(0), // gas
             deposit.toFixed(0));
         });
