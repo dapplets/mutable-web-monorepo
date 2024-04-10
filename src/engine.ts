@@ -289,7 +289,7 @@ export class Engine implements IContextListener {
 
   async createMutation(mutation: Mutation): Promise<void> {
     // ToDo: move to provider?
-    if (!await this.#provider.getMutation(mutation.id)) {
+    if (await this.#provider.getMutation(mutation.id)) {
       throw new Error("Mutation with that ID already exists")
     }
     
