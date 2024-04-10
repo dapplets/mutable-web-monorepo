@@ -38,7 +38,7 @@ const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<voi
 const connectWallet = async (): Promise<void> => {
   const params: Partial<SignInParams> = {
     // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
-    contractId: 'social.dapplets.near',
+    contractId: networkConfig.socialDbContract,
     methodNames: [],
   }
   const accounts = await near.signIn(params)
