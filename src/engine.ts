@@ -174,17 +174,8 @@ export class Engine implements IContextListener {
     context.parsedContext = { id: window.location.hostname }
 
     const mutations = await this.#mutationManager.getMutationsForContext(context)
-    const favoriteMutationId = await this.getFavoriteMutation()
 
-    return Promise.all(
-      mutations.map(async (mutation) => ({
-        ...mutation,
-        settings: {
-          isFavorite: favoriteMutationId === mutation.id,
-          lastUsage: await this.#repository.getMutationLastUsage(mutation.id),
-        },
-      }))
-    )
+    return Promise.all(mutations.map((mut) => this._populateMutationSettings(mut)))
   }
 
   async switchMutation(mutationId: string): Promise<void> {
@@ -199,15 +190,7 @@ export class Engine implements IContextListener {
     const mutation = this.#mutationManager?.mutation
     if (!mutation) return null
 
-    const favoriteMutationId = await this.getFavoriteMutation()
-
-    return {
-      ...mutation,
-      settings: {
-        isFavorite: favoriteMutationId === mutation.id,
-        lastUsage: await this.#repository.getMutationLastUsage(mutation.id),
-      },
-    }
+    return this._populateMutationSettings(mutation)
   }
 
   async enableDevMode(options?: { polling: boolean }) {
@@ -295,17 +278,20 @@ export class Engine implements IContextListener {
     return this.#provider.getApplications()
   }
 
-  async createMutation(mutation: Mutation): Promise<void> {
+  async createMutation(mutation: Mutation): Promise<MutationWithSettings> {
     // ToDo: move to provider?
     if (await this.#provider.getMutation(mutation.id)) {
       throw new Error('Mutation with that ID already exists')
     }
 
     await this.#provider.saveMutation(mutation)
+
+    return this._populateMutationSettings(mutation)
   }
 
-  async editMutation(mutation: Mutation): Promise<void> {
+  async editMutation(mutation: Mutation): Promise<MutationWithSettings> {
     await this.#provider.saveMutation(mutation)
+    return this._populateMutationSettings(mutation)
   }
 
   private async _tryFetchAndUpdateRedirects(polling: boolean) {
@@ -345,5 +331,18 @@ export class Engine implements IContextListener {
       mutationId: this.#mutationManager.mutation?.id ?? null,
       gatewayId: this.config.gatewayId,
     })
+  }
+
+  private async _populateMutationSettings(mutation: Mutation): Promise<MutationWithSettings> {
+    const isFavorite = (await this.getFavoriteMutation()) === mutation.id
+    const lastUsage = await this.#repository.getMutationLastUsage(mutation.id)
+
+    return {
+      ...mutation,
+      settings: {
+        isFavorite,
+        lastUsage,
+      },
+    }
   }
 }
