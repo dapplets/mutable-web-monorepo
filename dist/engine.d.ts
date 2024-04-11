@@ -27,7 +27,7 @@ export declare class Engine implements IContextListener {
     handleContextFinished(context: IContextNode): void;
     handleInsPointStarted(context: IContextNode, newInsPoint: string): void;
     handleInsPointFinished(context: IContextNode, oldInsPoint: string): void;
-    start(mutationId?: string): Promise<void>;
+    start(mutationId?: string | null): Promise<void>;
     stop(): void;
     getMutations(): Promise<MutationWithSettings[]>;
     switchMutation(mutationId: string): Promise<void>;

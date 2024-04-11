@@ -120,21 +120,22 @@ class Engine {
     start(mutationId) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            if (!mutationId) {
-                const favoriteMutationId = yield this.getFavoriteMutation();
-                mutationId = favoriteMutationId !== null && favoriteMutationId !== void 0 ? favoriteMutationId : __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId;
+            if (mutationId === undefined) {
+                mutationId = yield this.getFavoriteMutation();
             }
-            const mutations = yield this.getMutations();
-            const mutation = (_a = mutations.find((mutation) => mutation.id === mutationId)) !== null && _a !== void 0 ? _a : null;
-            if (mutation) {
-                // load mutation and apps
-                yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutation);
-                // save last usage
-                const currentDate = new Date().toISOString();
-                yield __classPrivateFieldGet(this, _Engine_repository, "f").setMutationLastUsage(mutation.id, currentDate);
-            }
-            else {
-                console.error('No suitable mutations found');
+            if (mutationId !== null) {
+                const mutations = yield this.getMutations();
+                const mutation = (_a = mutations.find((mutation) => mutation.id === mutationId)) !== null && _a !== void 0 ? _a : null;
+                if (mutation) {
+                    // load mutation and apps
+                    yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutation);
+                    // save last usage
+                    const currentDate = new Date().toISOString();
+                    yield __classPrivateFieldGet(this, _Engine_repository, "f").setMutationLastUsage(mutation.id, currentDate);
+                }
+                else {
+                    console.error('No suitable mutations found');
+                }
             }
             this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this);
             this.started = true;
@@ -159,7 +160,7 @@ class Engine {
             const context = new pure_context_node_1.PureContextNode('engine', 'website');
             context.parsedContext = { id: window.location.hostname };
             const mutations = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getMutationsForContext(context);
-            const favoriteMutationId = yield __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+            const favoriteMutationId = yield this.getFavoriteMutation();
             return Promise.all(mutations.map((mutation) => __awaiter(this, void 0, void 0, function* () {
                 return (Object.assign(Object.assign({}, mutation), { settings: {
                         isFavorite: favoriteMutationId === mutation.id,
@@ -183,7 +184,7 @@ class Engine {
             const mutation = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation;
             if (!mutation)
                 return null;
-            const favoriteMutationId = yield __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+            const favoriteMutationId = yield this.getFavoriteMutation();
             return Object.assign(Object.assign({}, mutation), { settings: {
                     isFavorite: favoriteMutationId === mutation.id,
                     lastUsage: yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id),
@@ -243,7 +244,12 @@ class Engine {
     }
     getFavoriteMutation() {
         return __awaiter(this, void 0, void 0, function* () {
-            return __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+            const value = yield __classPrivateFieldGet(this, _Engine_repository, "f").getFavoriteMutation();
+            // Activate default mutation for new users
+            if (value === undefined) {
+                return __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultMutationId;
+            }
+            return value;
         });
     }
     removeMutationFromRecents(mutationId) {
@@ -260,7 +266,7 @@ class Engine {
         return __awaiter(this, void 0, void 0, function* () {
             // ToDo: move to provider?
             if (yield __classPrivateFieldGet(this, _Engine_provider, "f").getMutation(mutation.id)) {
-                throw new Error("Mutation with that ID already exists");
+                throw new Error('Mutation with that ID already exists');
             }
             yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
         });

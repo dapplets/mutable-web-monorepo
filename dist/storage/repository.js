@@ -29,8 +29,9 @@ class Repository {
     }
     getMutationLastUsage(mutationId) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const key = this._makeKey(MUTATION_LAST_USAGE, mutationId);
-            return this._get(key);
+            return ((_a = this._get(key)) !== null && _a !== void 0 ? _a : null);
         });
     }
     setMutationLastUsage(mutationId, value) {

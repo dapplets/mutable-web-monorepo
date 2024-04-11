@@ -2,8 +2,8 @@ import { JsonStorage } from './json-storage';
 export declare class Repository {
     jsonStorage: JsonStorage;
     constructor(jsonStorage: JsonStorage);
-    getFavoriteMutation(): Promise<string | null>;
-    setFavoriteMutation(mutationId: string | null): Promise<void>;
+    getFavoriteMutation(): Promise<string | null | undefined>;
+    setFavoriteMutation(mutationId: string | null | undefined): Promise<void>;
     getMutationLastUsage(mutationId: string): Promise<string | null>;
     setMutationLastUsage(mutationId: string, value: string | null): Promise<void>;
     private _get;

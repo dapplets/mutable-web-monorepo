@@ -17,17 +17,18 @@ class JsonStorage {
     getItem(key) {
         return __awaiter(this, void 0, void 0, function* () {
             const item = yield this.storage.getItem(key);
-            return typeof item === 'string' ? JSON.parse(item) : null;
+            return typeof item === 'string' ? JSON.parse(item) : undefined;
         });
     }
     setItem(key, value) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.storage.setItem(key, JSON.stringify(value));
-        });
-    }
-    removeItem(key) {
-        return __awaiter(this, void 0, void 0, function* () {
-            return this.storage.removeItem(key);
+            const serializedValue = JSON.stringify(value);
+            if (typeof serializedValue === 'undefined') {
+                return this.storage.removeItem(key);
+            }
+            else {
+                return this.storage.setItem(key, JSON.stringify(value));
+            }
         });
     }
 }
