@@ -127,24 +127,25 @@ export class Engine implements IContextListener {
     // ToDo: do nothing because IP unmounted?
   }
 
-  async start(mutationId?: string): Promise<void> {
-    if (!mutationId) {
-      const favoriteMutationId = await this.getFavoriteMutation()
-      mutationId = favoriteMutationId ?? this.#nearConfig.defaultMutationId
+  async start(mutationId?: string | null): Promise<void> {
+    if (mutationId === undefined) {
+      mutationId = await this.getFavoriteMutation()
     }
 
-    const mutations = await this.getMutations()
-    const mutation = mutations.find((mutation) => mutation.id === mutationId) ?? null
+    if (mutationId !== null) {
+      const mutations = await this.getMutations()
+      const mutation = mutations.find((mutation) => mutation.id === mutationId) ?? null
 
-    if (mutation) {
-      // load mutation and apps
-      await this.#mutationManager.switchMutation(mutation)
+      if (mutation) {
+        // load mutation and apps
+        await this.#mutationManager.switchMutation(mutation)
 
-      // save last usage
-      const currentDate = new Date().toISOString()
-      await this.#repository.setMutationLastUsage(mutation.id, currentDate)
-    } else {
-      console.error('No suitable mutations found')
+        // save last usage
+        const currentDate = new Date().toISOString()
+        await this.#repository.setMutationLastUsage(mutation.id, currentDate)
+      } else {
+        console.error('No suitable mutations found')
+      }
     }
 
     this.treeBuilder = new PureTreeBuilder(this)
@@ -173,7 +174,7 @@ export class Engine implements IContextListener {
     context.parsedContext = { id: window.location.hostname }
 
     const mutations = await this.#mutationManager.getMutationsForContext(context)
-    const favoriteMutationId = await this.#repository.getFavoriteMutation()
+    const favoriteMutationId = await this.getFavoriteMutation()
 
     return Promise.all(
       mutations.map(async (mutation) => ({
@@ -198,7 +199,7 @@ export class Engine implements IContextListener {
     const mutation = this.#mutationManager?.mutation
     if (!mutation) return null
 
-    const favoriteMutationId = await this.#repository.getFavoriteMutation()
+    const favoriteMutationId = await this.getFavoriteMutation()
 
     return {
       ...mutation,
@@ -276,7 +277,14 @@ export class Engine implements IContextListener {
   }
 
   async getFavoriteMutation(): Promise<string | null> {
-    return this.#repository.getFavoriteMutation()
+    const value = await this.#repository.getFavoriteMutation()
+
+    // Activate default mutation for new users
+    if (value === undefined) {
+      return this.#nearConfig.defaultMutationId
+    }
+
+    return value
   }
 
   async removeMutationFromRecents(mutationId: string): Promise<void> {
@@ -290,9 +298,9 @@ export class Engine implements IContextListener {
   async createMutation(mutation: Mutation): Promise<void> {
     // ToDo: move to provider?
     if (await this.#provider.getMutation(mutation.id)) {
-      throw new Error("Mutation with that ID already exists")
+      throw new Error('Mutation with that ID already exists')
     }
-    
+
     await this.#provider.saveMutation(mutation)
   }
 

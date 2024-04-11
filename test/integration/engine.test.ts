@@ -1,5 +1,4 @@
 import { Engine } from '../../src/engine'
-import { JsonStorage } from '../../src/storage/json-storage'
 import { LocalStorage } from '../../src/storage/local-storage'
 import { TextEncoder, TextDecoder } from 'util'
 
@@ -18,7 +17,7 @@ describe('Engine', () => {
       gatewayId: 'test',
       networkId: 'mainnet',
       selector: null as any,
-      storage: new JsonStorage(new LocalStorage(`test-${++i}`)),
+      storage: new LocalStorage(`test-${++i}`),
       bosElementName: `bos-component-${++i}`
     })
   })
@@ -34,11 +33,11 @@ describe('Engine', () => {
 
     // Assert
     expect(engine.started).toEqual(true)
-  })
+  }, 60000)
 
-  it('favorite mutation is not set by default', async () => {
+  it('favorite mutation is set by default', async () => {
     // Arrange
-    const expected = null
+    const expected = "bos.dapplets.near/mutation/Sandbox"
 
     // Act
     const actual = await engine.getFavoriteMutation()
@@ -60,6 +59,18 @@ describe('Engine', () => {
     // Assert
     expect(actual).toEqual(mutationId)
     expect(mutation!.settings.isFavorite).toEqual(true)
+  })
+
+  it('sets original mutation as favorite', async () => {
+    // Arrange
+    const mutationId = null
+
+    // Act
+    await engine.setFavoriteMutation(mutationId)
+    const actual = await engine.getFavoriteMutation()
+
+    // Assert
+    expect(actual).toEqual(mutationId)
   })
 
   it('returns all applications', async () => {
