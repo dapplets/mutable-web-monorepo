@@ -160,13 +160,7 @@ class Engine {
             const context = new pure_context_node_1.PureContextNode('engine', 'website');
             context.parsedContext = { id: window.location.hostname };
             const mutations = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getMutationsForContext(context);
-            const favoriteMutationId = yield this.getFavoriteMutation();
-            return Promise.all(mutations.map((mutation) => __awaiter(this, void 0, void 0, function* () {
-                return (Object.assign(Object.assign({}, mutation), { settings: {
-                        isFavorite: favoriteMutationId === mutation.id,
-                        lastUsage: yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id),
-                    } }));
-            })));
+            return Promise.all(mutations.map((mut) => this._populateMutationSettings(mut)));
         });
     }
     switchMutation(mutationId) {
@@ -184,11 +178,7 @@ class Engine {
             const mutation = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation;
             if (!mutation)
                 return null;
-            const favoriteMutationId = yield this.getFavoriteMutation();
-            return Object.assign(Object.assign({}, mutation), { settings: {
-                    isFavorite: favoriteMutationId === mutation.id,
-                    lastUsage: yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id),
-                } });
+            return this._populateMutationSettings(mutation);
         });
     }
     enableDevMode(options) {
@@ -269,11 +259,13 @@ class Engine {
                 throw new Error('Mutation with that ID already exists');
             }
             yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
+            return this._populateMutationSettings(mutation);
         });
     }
     editMutation(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
             yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
+            return this._populateMutationSettings(mutation);
         });
     }
     _tryFetchAndUpdateRedirects(polling) {
@@ -312,6 +304,16 @@ class Engine {
             url: window.location.href,
             mutationId: (_b = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f").mutation) === null || _a === void 0 ? void 0 : _a.id) !== null && _b !== void 0 ? _b : null,
             gatewayId: this.config.gatewayId,
+        });
+    }
+    _populateMutationSettings(mutation) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const isFavorite = (yield this.getFavoriteMutation()) === mutation.id;
+            const lastUsage = yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id);
+            return Object.assign(Object.assign({}, mutation), { settings: {
+                    isFavorite,
+                    lastUsage,
+                } });
         });
     }
 }

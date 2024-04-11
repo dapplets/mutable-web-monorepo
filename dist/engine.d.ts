@@ -43,9 +43,10 @@ export declare class Engine implements IContextListener {
     getFavoriteMutation(): Promise<string | null>;
     removeMutationFromRecents(mutationId: string): Promise<void>;
     getApplications(): Promise<AppMetadata[]>;
-    createMutation(mutation: Mutation): Promise<void>;
-    editMutation(mutation: Mutation): Promise<void>;
+    createMutation(mutation: Mutation): Promise<MutationWithSettings>;
+    editMutation(mutation: Mutation): Promise<MutationWithSettings>;
     private _tryFetchAndUpdateRedirects;
     private _updateRootContext;
+    private _populateMutationSettings;
 }
 //# sourceMappingURL=engine.d.ts.map
