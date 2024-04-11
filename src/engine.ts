@@ -291,6 +291,13 @@ export class Engine implements IContextListener {
 
   async editMutation(mutation: Mutation): Promise<MutationWithSettings> {
     await this.#provider.saveMutation(mutation)
+
+    // If the current mutation is edited, reload it
+    if (mutation.id === this.#mutationManager?.mutation?.id) {
+      this.stop()
+      await this.start(mutation.id)
+    }
+
     return this._populateMutationSettings(mutation)
   }
 
