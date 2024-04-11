@@ -264,7 +264,13 @@ class Engine {
     }
     editMutation(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
             yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
+            // If the current mutation is edited, reload it
+            if (mutation.id === ((_b = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation) === null || _b === void 0 ? void 0 : _b.id)) {
+                this.stop();
+                yield this.start(mutation.id);
+            }
             return this._populateMutationSettings(mutation);
         });
     }
