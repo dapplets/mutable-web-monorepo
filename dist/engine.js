@@ -259,7 +259,7 @@ class Engine {
     createMutation(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
             // ToDo: move to provider?
-            if (!(yield __classPrivateFieldGet(this, _Engine_provider, "f").getMutation(mutation.id))) {
+            if (yield __classPrivateFieldGet(this, _Engine_provider, "f").getMutation(mutation.id)) {
                 throw new Error("Mutation with that ID already exists");
             }
             yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);

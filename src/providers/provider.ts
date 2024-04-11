@@ -47,7 +47,7 @@ export type AppMetadata = {
   authorId: string
   appLocalId: string
   targets: AppMetadataTarget[]
-  metadata?: {
+  metadata: {
     name?: string
     description?: string
     image?: {
@@ -58,7 +58,7 @@ export type AppMetadata = {
 
 export type Mutation = {
   id: MutationId
-  metadata?: {
+  metadata: {
     name?: string
     description?: string
     image?: {
