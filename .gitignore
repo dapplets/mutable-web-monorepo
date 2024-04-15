@@ -8,3 +8,4 @@ lib
 /test-results/
 /playwright-report/
 /playwright/.cache/
+yarn-error.log

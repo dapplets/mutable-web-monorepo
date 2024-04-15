@@ -1,6 +1,6 @@
 {
   "name": "@dapplets/mutable-web-extension",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Bridge to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
@@ -41,6 +41,8 @@
     "prettier-plugin-organize-imports": "^3.2.2",
     "process": "^0.11.10",
     "raw-loader": "^4.0.2",
+    "react-draggable": "^4.4.6",
+    "resize-observer-polyfill": "^1.5.1",
     "resolve-url-loader": "^5.0.0",
     "sass": "^1.60.0",
     "sass-loader": "^13.2.2",

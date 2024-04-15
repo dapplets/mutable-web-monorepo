@@ -7,9 +7,10 @@ import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
 import { networkConfig } from '../common/networks'
 import Background from './background'
+import { MutableWebProvider } from './contexts/mutable-web-context'
 import { ExtensionStorage } from './extension-storage'
+import { ShadowDomWrapper } from './multitable-panel/components/shadow-dom-wrapper'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
-import { getCurrentMutationId, setCurrentMutationId } from './storage'
 import { setupWallet } from './wallet'
 
 const eventEmitter = new NEventEmitter()
@@ -54,13 +55,9 @@ async function main() {
   createRoot(document.createElement('div')).render(<App />)
 
   const tabState = await Background.popTabState()
-
-  if (tabState?.mutationId) {
-    setCurrentMutationId(tabState?.mutationId)
-  }
-
   const selector = await selectorPromise
 
+  // ToDo: move to MutableWebContext
   const engine = new Engine({
     networkId: networkConfig.networkId,
     gatewayId: 'mutable-web-extension',
@@ -68,13 +65,13 @@ async function main() {
     storage: new ExtensionStorage('mutableweb'),
   })
 
-  const mutationId = getCurrentMutationId()
+  const mutationIdToLoad = tabState?.mutationId
 
   console.log('Mutable Web Engine is initializing...')
 
-  if (mutationId) {
+  if (mutationIdToLoad) {
     try {
-      await engine.start(mutationId)
+      await engine.start(mutationIdToLoad)
     } catch (err) {
       console.error(err)
       await engine.start()
@@ -104,7 +101,13 @@ async function main() {
   container.style.display = 'flex'
   document.body.appendChild(container)
   const root = createRoot(container)
-  root.render(<MultitablePanel engine={engine} />)
+  root.render(
+    <MutableWebProvider engine={engine}>
+      <ShadowDomWrapper>
+        <MultitablePanel />
+      </ShadowDomWrapper>
+    </MutableWebProvider>
+  )
 
   return engine
 }
