@@ -7,3 +7,12 @@ declare module 'near-social-vm' {
 }
 
 declare module 'chrome-extension-message-wrapper'
+
+declare module '*.svg' {
+  const content: string
+  export default content
+}
+declare module '*.png' {
+  const content: string
+  export default content
+}

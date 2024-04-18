@@ -39,6 +39,7 @@ import {
 
 import { MutationWithSettings } from 'mutable-web-engine/dist/providers/provider'
 import { useMutableWeb } from '../../contexts/mutable-web-context'
+import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
@@ -166,7 +167,7 @@ export const Dropdown: FC<DropdownProps> = ({
               {recentlyUsedMutations.map((mut) => (
                 <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
                   <ImageBlock>
-                    <Image image={mut.metadata.image} />
+                    <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
                   </ImageBlock>
                   <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
                     {/* todo: mocked classname */}
@@ -229,7 +230,7 @@ export const Dropdown: FC<DropdownProps> = ({
                       className="avalibleMutationsInput"
                     >
                       <ImageBlock>
-                        <Image image={mut.metadata.image} />
+                        <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
                       </ImageBlock>
                       <InputInfoWrapper>
                         <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
@@ -247,7 +248,7 @@ export const Dropdown: FC<DropdownProps> = ({
                       className="avalibleMutationsInput"
                     >
                       <ImageBlock>
-                        <Image image={mut.metadata.image} />
+                        <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
                       </ImageBlock>
                       <InputInfoWrapper>
                         <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
