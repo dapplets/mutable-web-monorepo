@@ -57,12 +57,15 @@ async function main() {
   const tabState = await Background.popTabState()
   const selector = await selectorPromise
 
+  const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
+
   // ToDo: move to MutableWebContext
   const engine = new Engine({
     networkId: networkConfig.networkId,
     gatewayId: 'mutable-web-extension',
     selector,
     storage: new ExtensionStorage('mutableweb'),
+    bosElementStyleSrc: bootstrapCssUrl,
   })
 
   const mutationIdToLoad = tabState?.mutationId
@@ -106,7 +109,7 @@ async function main() {
   const root = createRoot(container)
   root.render(
     <MutableWebProvider engine={engine}>
-      <ShadowDomWrapper>
+      <ShadowDomWrapper stylesheetSrc={bootstrapCssUrl}>
         <MultitablePanel eventEmitter={eventEmitter} />
       </ShadowDomWrapper>
     </MutableWebProvider>

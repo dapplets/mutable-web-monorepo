@@ -34,8 +34,13 @@
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://app.mynearwallet.com/*", "https://testnet.mynearwallet.com/*"],
-      "js": ["mnw-patch-inpage.js"],
+      "matches": [
+        "https://app.mynearwallet.com/*",
+        "https://testnet.mynearwallet.com/*"
+      ],
+      "js": [
+        "mnw-patch-inpage.js"
+      ],
       "run_at": "document_start",
       "world": "MAIN"
     }
@@ -43,7 +48,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "callback.html"
+        "callback.html",
+        "bootstrap.min.css"
       ],
       "matches": [
         "*://*/*"

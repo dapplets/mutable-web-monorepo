@@ -138,6 +138,10 @@ module.exports = {
           to: 'manifest.json',
           transform: (content) => modifyManifest(content),
         },
+        {
+          from: 'node_modules/bootstrap/dist/css/bootstrap.min.css',
+          to: 'bootstrap.min.css',
+        },
       ],
     }),
     new webpack.DefinePlugin({

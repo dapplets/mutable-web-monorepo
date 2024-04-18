@@ -4,16 +4,18 @@ import { StyleSheetManager } from 'styled-components'
 
 export interface ShadowDomWrapperProps {
   children: React.ReactNode
+  stylesheetSrc?: string
 }
 
 export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrapperProps>(
-  ({ children }, ref) => {
+  ({ children, stylesheetSrc }, ref) => {
     const myRef = React.useRef<HTMLDivElement | null>(null)
     const [root, setRoot] = React.useState<{
       container: HTMLDivElement
       stylesMountPoint: HTMLDivElement
     } | null>(null)
 
+    // ToDo: to make sure that when stylesheetSrc changes, it doesn't get executed multiple times
     React.useLayoutEffect(() => {
       if (myRef.current) {
         const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
@@ -39,6 +41,16 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
         disableCssInheritanceStyle.innerHTML = resetCssRules
         shadowRoot.appendChild(disableCssInheritanceStyle)
 
+        if (stylesheetSrc) {
+          const externalStylesLink = document.createElement('link')
+          externalStylesLink.rel = 'stylesheet'
+          externalStylesLink.href = stylesheetSrc
+          shadowRoot.appendChild(externalStylesLink)
+
+          // ToDo: parametrize this bootstrap specific code
+          container.setAttribute('data-bs-theme', 'light')
+        }
+
         shadowRoot.appendChild(container)
 
         // Prevent event propagation from BOS-component to parent
@@ -50,7 +62,7 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
       } else {
         setRoot(null)
       }
-    }, [myRef])
+    }, [myRef, stylesheetSrc])
 
     return (
       <div

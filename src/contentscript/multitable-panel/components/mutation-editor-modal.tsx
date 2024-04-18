@@ -1,6 +1,8 @@
 import { AppMetadata, Mutation } from 'mutable-web-engine'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import BsButton from 'react-bootstrap/Button'
+import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { useMutableWeb } from '../../contexts/mutable-web-context'
 import { useCreateMutation } from '../../contexts/mutable-web-context/use-create-mutation'
@@ -370,18 +372,25 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
         <Button disabled={isSubmitDisabled} onClick={handleRevertClick}>
           Revert changes
         </Button>
-        <DropdownButton
-          value={mode}
-          items={[
-            { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
-            { value: MutationModalMode.Editing, title: 'Save', visible: !!baseMutation && isOwn },
-            { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
-          ]}
-          onClick={handleSaveClick}
-          onChange={handleSaveDropdownChange}
-          disabled={isSubmitDisabled}
-          disabledAll={isFormDisabled}
-        />
+        {!isFormDisabled ? (
+          <DropdownButton
+            value={mode}
+            items={[
+              { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
+              { value: MutationModalMode.Editing, title: 'Save', visible: !!baseMutation && isOwn },
+              { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
+            ]}
+            onClick={handleSaveClick}
+            onChange={handleSaveDropdownChange}
+            disabled={isSubmitDisabled}
+            disabledAll={isFormDisabled}
+          />
+        ) : (
+          <BsButton style={{ width: 175, height: 42, borderRadius: 10 }} variant="primary" disabled>
+            <BsSpinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />{' '}
+            Sending...
+          </BsButton>
+        )}
       </ButtonsBlock>
     </SelectedMutationEditorWrapper>
   )
