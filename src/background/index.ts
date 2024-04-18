@@ -77,6 +77,10 @@ const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
   setClipboard(tab, (await near.getAccounts())[0].accountId)
 }
 
+const openNewMutationPopup = (tab: browser.Tabs.Tab) => {
+  tab?.id && browser.tabs.sendMessage(tab.id, { type: 'OPEN_NEW_MUTATION_POPUP' })
+}
+
 // Context menu updaters
 
 const updateMenuForDisconnectedState = (): void => {
@@ -84,6 +88,11 @@ const updateMenuForDisconnectedState = (): void => {
   browser.contextMenus.create({
     title: 'Connect NEAR wallet',
     id: 'connect',
+    contexts: ['action'],
+  })
+  browser.contextMenus.create({
+    title: 'Mutate',
+    id: 'mutate',
     contexts: ['action'],
   })
 }
@@ -106,6 +115,11 @@ const updateMenuForConnectedState = (accountName: string): void => {
     title: 'Disconnect NEAR wallet',
     parentId: parentContextMenuId,
     id: 'disconnect',
+    contexts: ['action'],
+  })
+  browser.contextMenus.create({
+    title: 'Mutate',
+    id: 'mutate',
     contexts: ['action'],
   })
 }
@@ -163,8 +177,14 @@ function handleContextMenuClick(
       break
     }
 
-    default:
+    case 'mutate':
+      if (tab) {
+        return openNewMutationPopup(tab)
+      }
       break
+
+    default:
+      console.log('There is no such a menu command')
   }
 }
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)

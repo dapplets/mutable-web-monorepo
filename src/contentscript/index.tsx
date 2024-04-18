@@ -94,6 +94,9 @@ async function main() {
       eventEmitter.emit('signedIn', message.params)
     } else if (message.type === 'SIGNED_OUT') {
       eventEmitter.emit('signedOut')
+    } else if (message.type === 'OPEN_NEW_MUTATION_POPUP') {
+      // ToDo: eventEmitter is intended for near-wallet-selector
+      eventEmitter.emit('openMutationPopup')
     }
   })
 
@@ -104,7 +107,7 @@ async function main() {
   root.render(
     <MutableWebProvider engine={engine}>
       <ShadowDomWrapper>
-        <MultitablePanel />
+        <MultitablePanel eventEmitter={eventEmitter} />
       </ShadowDomWrapper>
     </MutableWebProvider>
   )

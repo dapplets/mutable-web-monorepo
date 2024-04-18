@@ -1,9 +1,9 @@
+import { EventEmitter as NEventEmitter } from 'events'
 import React, { FC, useEffect, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
 import { useMutableWeb } from '../contexts/mutable-web-context'
 import { getPanelPinned, removePanelPinned, setPanelPinned } from '../storage'
-
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
@@ -127,7 +127,11 @@ const DragIcon = () => (
   </svg>
 )
 
-export const MultitablePanel: FC = () => {
+interface MultitablePanelProps {
+  eventEmitter: NEventEmitter
+}
+
+export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const { mutations, apps, selectedMutation } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!!getPanelPinned())
@@ -142,6 +146,16 @@ export const MultitablePanel: FC = () => {
 
     return () => clearTimeout(timer)
   }, [isPin])
+
+  useEffect(() => {
+    const openMutationPopupCallback = () => {
+      setIsModalOpen(true)
+    }
+    eventEmitter.on('openMutationPopup', openMutationPopupCallback)
+    return () => {
+      eventEmitter.off('openMutationPopup', openMutationPopupCallback)
+    }
+  }, [eventEmitter])
 
   const handleStartDrag = () => {
     setIsDragging(true)
@@ -160,10 +174,6 @@ export const MultitablePanel: FC = () => {
     setPin(!isPin)
   }
 
-  if (mutations.length === 0) {
-    return null
-  }
-
   const handleMutateButtonClick = () => {
     setIsModalOpen(true)
     setIsDropdownVisible(false)
@@ -173,57 +183,51 @@ export const MultitablePanel: FC = () => {
     setIsModalOpen(false)
   }
 
-  return (
+  return isModalOpen ? (
     <WrapperPanel $isAnimated={!isDragging} data-testid="mutable-panel">
-      {!isModalOpen ? (
-        <Draggable
-          axis="x"
-          bounds="parent"
-          handle=".dragWrapper"
-          onStart={handleStartDrag}
-          onStop={handleStopDrag}
-          defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
-        >
-          <NorthPanelWrapper>
-            {/* ToDo: refactor className */}
-            <NorthPanel
-              data-testid="north-panel"
-              className={
-                isPin
-                  ? 'visible-pin'
-                  : isPanelDisplayed || isDropdownVisible || isDragging
-                  ? 'visible-default'
-                  : 'visible-north-panel'
-              }
-              $isAnimated={!isDragging}
-            >
-              <DragWrapper className="dragWrapper">
-                <DragIconWrapper>
-                  <DragIcon />
-                </DragIconWrapper>
-              </DragWrapper>
-              <Dropdown
-                isVisible={isDropdownVisible}
-                onVisibilityChange={setIsDropdownVisible}
-                onMutateButtonClick={handleMutateButtonClick}
-              />
-              <PinWrapper onClick={handlePin}>
-                {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-              </PinWrapper>
-            </NorthPanel>
-          </NorthPanelWrapper>
-        </Draggable>
-      ) : null}
-
-      {isModalOpen ? (
-        <MutationEditorModal
-          apps={apps}
-          baseMutation={selectedMutation}
-          onClose={handleModalClose}
-        />
-      ) : null}
+      <MutationEditorModal apps={apps} baseMutation={selectedMutation} onClose={handleModalClose} />
     </WrapperPanel>
-  )
+  ) : mutations.length !== 0 ? (
+    <WrapperPanel $isAnimated={!isDragging} data-testid="mutable-panel">
+      <Draggable
+        axis="x"
+        bounds="parent"
+        handle=".dragWrapper"
+        onStart={handleStartDrag}
+        onStop={handleStopDrag}
+        defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
+      >
+        <NorthPanelWrapper>
+          {/* ToDo: refactor className */}
+          <NorthPanel
+            data-testid="north-panel"
+            className={
+              isPin
+                ? 'visible-pin'
+                : isPanelDisplayed || isDropdownVisible || isDragging
+                ? 'visible-default'
+                : 'visible-north-panel'
+            }
+            $isAnimated={!isDragging}
+          >
+            <DragWrapper className="dragWrapper">
+              <DragIconWrapper>
+                <DragIcon />
+              </DragIconWrapper>
+            </DragWrapper>
+            <Dropdown
+              isVisible={isDropdownVisible}
+              onVisibilityChange={setIsDropdownVisible}
+              onMutateButtonClick={handleMutateButtonClick}
+            />
+            <PinWrapper onClick={handlePin}>
+              {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
+            </PinWrapper>
+          </NorthPanel>
+        </NorthPanelWrapper>
+      </Draggable>
+    </WrapperPanel>
+  ) : null
 }
 
 export default MultitablePanel
