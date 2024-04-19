@@ -35,6 +35,7 @@ const bos_parser_1 = require("./core/parsers/bos-parser");
 const pure_context_node_1 = require("./core/tree/pure-tree/pure-context-node");
 const repository_1 = require("./storage/repository");
 const json_storage_1 = require("./storage/json-storage");
+const local_storage_1 = require("./storage/local-storage");
 var AdapterType;
 (function (AdapterType) {
     AdapterType["Bos"] = "bos";
@@ -57,6 +58,9 @@ class Engine {
         this.adapters = new Set();
         this.treeBuilder = null;
         this.started = false;
+        if (!this.config.storage) {
+            this.config.storage = new local_storage_1.LocalStorage('mutable-web-engine');
+        }
         __classPrivateFieldSet(this, _Engine_bosWidgetFactory, new bos_widget_factory_1.BosWidgetFactory({
             networkId: this.config.networkId,
             selector: this.config.selector,
@@ -64,11 +68,12 @@ class Engine {
         }), "f");
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
         const nearConfig = (0, constants_1.getNearConfig)(this.config.networkId);
-        const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), nearConfig.nodeUrl);
+        const jsonStorage = new json_storage_1.JsonStorage(this.config.storage);
+        __classPrivateFieldSet(this, _Engine_nearConfig, nearConfig, "f");
+        __classPrivateFieldSet(this, _Engine_repository, new repository_1.Repository(jsonStorage), "f");
+        const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), jsonStorage, nearConfig);
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
         __classPrivateFieldSet(this, _Engine_mutationManager, new mutation_manager_1.MutationManager(__classPrivateFieldGet(this, _Engine_provider, "f")), "f");
-        __classPrivateFieldSet(this, _Engine_nearConfig, nearConfig, "f");
-        __classPrivateFieldSet(this, _Engine_repository, new repository_1.Repository(new json_storage_1.JsonStorage(this.config.storage)), "f");
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {

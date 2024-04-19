@@ -22,6 +22,7 @@ import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
 import { IStorage } from './storage/storage'
 import { Repository } from './storage/repository'
 import { JsonStorage } from './storage/json-storage'
+import { LocalStorage } from './storage/local-storage'
 import { shadowRoot as overlayShadowRoot } from './bos/overlay'
 
 export enum AdapterType {
@@ -34,7 +35,7 @@ export type EngineConfig = {
   networkId: string
   gatewayId: string
   selector: WalletSelector
-  storage: IStorage
+  storage?: IStorage
   bosElementName?: string
   bosElementStyleSrc?: string
 }
@@ -55,17 +56,22 @@ export class Engine implements IContextListener {
   started: boolean = false
 
   constructor(private config: EngineConfig) {
+    if (!this.config.storage) {
+      this.config.storage = new LocalStorage('mutable-web-engine')
+    }
+
     this.#bosWidgetFactory = new BosWidgetFactory({
       tagName: this.config.bosElementName ?? 'bos-component',
       bosElementStyleSrc: this.config.bosElementStyleSrc,
     })
     this.#selector = this.config.selector
     const nearConfig = getNearConfig(this.config.networkId)
-    const nearSigner = new NearSigner(this.#selector, nearConfig.nodeUrl)
+    const jsonStorage = new JsonStorage(this.config.storage)
+    this.#nearConfig = nearConfig
+    this.#repository = new Repository(jsonStorage)
+    const nearSigner = new NearSigner(this.#selector, jsonStorage, nearConfig)
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
-    this.#nearConfig = nearConfig
-    this.#repository = new Repository(new JsonStorage(this.config.storage))
 
     // ToDo: refactor this hack. Maybe extract ShadowDomWrapper as customElement to initNear
     if (config.bosElementStyleSrc) {

@@ -1,6 +1,10 @@
 import { WalletSelector } from '@near-wallet-selector/core';
 import * as nearAPI from 'near-api-js';
+import { JsonStorage } from '../storage/json-storage';
+import Big from 'big.js';
+import { NearConfig } from '../constants';
 export declare const DefaultGas = "30000000000000";
+export declare const TGas: Big.Big;
 /**
  * NearSigner is a wrapper around near-api-js JsonRpcProvider and WalletSelector
  * that provides a simple interface for calling and viewing contract methods.
@@ -10,10 +14,15 @@ export declare const DefaultGas = "30000000000000";
  */
 export declare class NearSigner {
     private _selector;
+    private _jsonStorage;
+    private _nearConfig;
     readonly provider: nearAPI.providers.JsonRpcProvider;
-    constructor(_selector: WalletSelector, nodeUrl: string);
+    constructor(_selector: WalletSelector, _jsonStorage: JsonStorage, _nearConfig: NearConfig);
     getAccountId(): Promise<string | null>;
     view(contractName: string, methodName: string, args: any): Promise<any>;
-    call(contractName: string, methodName: string, args: any, gas?: string, deposit?: string): Promise<void | nearAPI.providers.FinalExecutionOutcome>;
+    call(contractName: string, methodName: string, args: any, gas?: string, deposit?: string): Promise<void | nearAPI.providers.FinalExecutionOutcome | nearAPI.providers.FinalExecutionOutcome[]>;
+    private _getKeyStoreForContract;
+    private _createConnectionForContract;
+    private _signInAndSetCallMethod;
 }
 //# sourceMappingURL=near-signer.d.ts.map

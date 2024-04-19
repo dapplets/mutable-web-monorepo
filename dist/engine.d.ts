@@ -12,7 +12,7 @@ export type EngineConfig = {
     networkId: string;
     gatewayId: string;
     selector: WalletSelector;
-    storage: IStorage;
+    storage?: IStorage;
     bosElementName?: string;
 };
 export declare class Engine implements IContextListener {
