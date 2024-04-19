@@ -1,6 +1,7 @@
 import React, { FC, useId } from 'react'
+import FloatingLabel from 'react-bootstrap/FloatingLabel'
+import Form from 'react-bootstrap/Form'
 import styled from 'styled-components'
-
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -9,10 +10,12 @@ const InputContainer = styled.div`
   label {
     font-size: 14px;
   }
-
+  .form-floating > .form-control {
+    height: 48px;
+    min-height: 48px;
+  }
   input {
     flex: 1;
-
     padding: 10px 10px;
     border-radius: 10px;
     border: 1px solid #e2e2e5;
@@ -37,14 +40,15 @@ export const Input: FC<Props> = ({ value, label, placeholder, disabled, onChange
   const inputId = useId()
   return (
     <InputContainer>
-      <label htmlFor={inputId}>{label}</label>
-      <input
-        id={inputId}
-        value={value}
-        placeholder={placeholder}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
-      />
+      <FloatingLabel controlId={inputId} label={label} className="mb-3">
+        <Form.Control
+          onChange={(e) => onChange(e.target.value)}
+          value={value}
+          disabled={disabled}
+          type="text"
+          placeholder={placeholder}
+        />
+      </FloatingLabel>
     </InputContainer>
   )
 }
