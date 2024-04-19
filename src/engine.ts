@@ -22,6 +22,7 @@ import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
 import { IStorage } from './storage/storage'
 import { Repository } from './storage/repository'
 import { JsonStorage } from './storage/json-storage'
+import { shadowRoot as overlayShadowRoot } from './bos/overlay'
 
 export enum AdapterType {
   Bos = 'bos',
@@ -35,6 +36,7 @@ export type EngineConfig = {
   selector: WalletSelector
   storage: IStorage
   bosElementName?: string
+  bosElementStyleSrc?: string
 }
 
 export class Engine implements IContextListener {
@@ -54,9 +56,8 @@ export class Engine implements IContextListener {
 
   constructor(private config: EngineConfig) {
     this.#bosWidgetFactory = new BosWidgetFactory({
-      networkId: this.config.networkId,
-      selector: this.config.selector,
       tagName: this.config.bosElementName ?? 'bos-component',
+      bosElementStyleSrc: this.config.bosElementStyleSrc,
     })
     this.#selector = this.config.selector
     const nearConfig = getNearConfig(this.config.networkId)
@@ -65,6 +66,14 @@ export class Engine implements IContextListener {
     this.#mutationManager = new MutationManager(this.#provider)
     this.#nearConfig = nearConfig
     this.#repository = new Repository(new JsonStorage(this.config.storage))
+
+    // ToDo: refactor this hack. Maybe extract ShadowDomWrapper as customElement to initNear
+    if (config.bosElementStyleSrc) {
+      const externalStyleLink = document.createElement('link')
+      externalStyleLink.rel = 'stylesheet'
+      externalStyleLink.href = config.bosElementStyleSrc
+      overlayShadowRoot.appendChild(externalStyleLink)
+    }
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {

@@ -58,3 +58,6 @@ export const Overlay: React.FC<OverlayProps> = ({ children }) => {
     container
   )
 }
+
+// ToDo: refactor this hack
+export { shadowRoot }

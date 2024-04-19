@@ -6,6 +6,8 @@ import { createRoot } from 'react-dom/client'
 const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
 
 export class BosComponent extends HTMLElement {
+  private _shadowRoot = this.attachShadow({ mode: 'closed' })
+  private _styleLibraryMountPoint = document.createElement('link')
   private _adapterStylesMountPoint = document.createElement('style')
   private _stylesMountPoint = document.createElement('div')
   private _componentMountPoint = document.createElement('div')
@@ -23,6 +25,22 @@ export class BosComponent extends HTMLElement {
 
   get src() {
     return this.#src
+  }
+
+  set styleSrc(val: string | null) {
+    if (!val) {
+      this._styleLibraryMountPoint.remove()
+    } else {
+      this._styleLibraryMountPoint.href = val
+
+      if (!this._styleLibraryMountPoint.parentElement) {
+        this._shadowRoot.appendChild(this._styleLibraryMountPoint)
+      }
+    }
+  }
+
+  get styleSrc() {
+    return this._styleLibraryMountPoint.parentElement ? this._styleLibraryMountPoint.href : null
   }
 
   set props(val: any) {
@@ -47,15 +65,13 @@ export class BosComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    const shadowRoot = this.attachShadow({ mode: 'closed' })
-
     // Prevent event propagation from BOS-component to parent
     EventsToStopPropagation.forEach((eventName) => {
       this.addEventListener(eventName, (e) => e.stopPropagation())
     })
 
-    shadowRoot.appendChild(this._componentMountPoint)
-    shadowRoot.appendChild(this._stylesMountPoint)
+    this._shadowRoot.appendChild(this._componentMountPoint)
+    this._shadowRoot.appendChild(this._stylesMountPoint)
 
     // It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
     // https://stackoverflow.com/a/68062098
@@ -70,7 +86,12 @@ export class BosComponent extends HTMLElement {
       }
     `
     this._adapterStylesMountPoint.innerHTML = resetCssRules
-    shadowRoot.appendChild(this._adapterStylesMountPoint)
+    this._shadowRoot.appendChild(this._adapterStylesMountPoint)
+
+    // For external bootstrap styles
+    this._styleLibraryMountPoint.rel = 'stylesheet'
+    this._shadowRoot.appendChild(this._styleLibraryMountPoint)
+    this._componentMountPoint.setAttribute('data-bs-theme', 'light')
 
     // For full-width components
     this._componentMountPoint.style.flex = '1'
