@@ -36,6 +36,7 @@ const pure_context_node_1 = require("./core/tree/pure-tree/pure-context-node");
 const repository_1 = require("./storage/repository");
 const json_storage_1 = require("./storage/json-storage");
 const local_storage_1 = require("./storage/local-storage");
+const overlay_1 = require("./bos/overlay");
 var AdapterType;
 (function (AdapterType) {
     AdapterType["Bos"] = "bos";
@@ -62,9 +63,8 @@ class Engine {
             this.config.storage = new local_storage_1.LocalStorage('mutable-web-engine');
         }
         __classPrivateFieldSet(this, _Engine_bosWidgetFactory, new bos_widget_factory_1.BosWidgetFactory({
-            networkId: this.config.networkId,
-            selector: this.config.selector,
             tagName: (_a = this.config.bosElementName) !== null && _a !== void 0 ? _a : 'bos-component',
+            bosElementStyleSrc: this.config.bosElementStyleSrc,
         }), "f");
         __classPrivateFieldSet(this, _Engine_selector, this.config.selector, "f");
         const nearConfig = (0, constants_1.getNearConfig)(this.config.networkId);
@@ -74,6 +74,13 @@ class Engine {
         const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), jsonStorage, nearConfig);
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
         __classPrivateFieldSet(this, _Engine_mutationManager, new mutation_manager_1.MutationManager(__classPrivateFieldGet(this, _Engine_provider, "f")), "f");
+        // ToDo: refactor this hack. Maybe extract ShadowDomWrapper as customElement to initNear
+        if (config.bosElementStyleSrc) {
+            const externalStyleLink = document.createElement('link');
+            externalStyleLink.rel = 'stylesheet';
+            externalStyleLink.href = config.bosElementStyleSrc;
+            overlay_1.shadowRoot.appendChild(externalStyleLink);
+        }
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {

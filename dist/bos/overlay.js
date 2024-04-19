@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Overlay = void 0;
+exports.shadowRoot = exports.Overlay = void 0;
 const React = __importStar(require("react"));
 const react_dom_1 = require("react-dom");
 const styled_components_1 = require("styled-components");
@@ -44,6 +44,7 @@ overlay.style.fontFamily =
 overlay.style.zIndex = '2147483647';
 overlay.style.visibility = 'visible';
 const shadowRoot = overlay.attachShadow({ mode: 'closed' });
+exports.shadowRoot = shadowRoot;
 const stylesMountPoint = document.createElement('div');
 const container = document.createElement('div');
 shadowRoot.appendChild(stylesMountPoint);

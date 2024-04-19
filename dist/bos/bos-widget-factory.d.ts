@@ -1,11 +1,11 @@
 import { BosComponent } from './bos-widget';
 export type BosWidgetFactoryConfig = {
-    networkId: string;
-    selector: any;
     tagName: string;
+    bosElementStyleSrc?: string;
 };
 export declare class BosWidgetFactory {
     private _tagName;
+    private _styleSrc?;
     constructor(config: BosWidgetFactoryConfig);
     createWidget(src: string): BosComponent;
 }

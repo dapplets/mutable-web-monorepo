@@ -14,6 +14,7 @@ export type EngineConfig = {
     selector: WalletSelector;
     storage?: IStorage;
     bosElementName?: string;
+    bosElementStyleSrc?: string;
 };
 export declare class Engine implements IContextListener {
     #private;
