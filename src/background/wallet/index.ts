@@ -117,13 +117,6 @@ export class WalletImpl {
   }: {
     transactions: Transaction[]
   }): Promise<nearAPI.providers.FinalExecutionOutcome[]> => {
-    // ToDo: implement batch transactions
-    if (transactions.length > 1) {
-      throw new Error('Batch transactions are not implemented')
-    }
-
-    const [transaction] = transactions
-
     const _state = await this._statePromise
 
     const account = _state.wallet.account()
@@ -132,12 +125,14 @@ export class WalletImpl {
       throw new Error('Not logged in')
     }
 
-    const finalExecutionOutcome = await account.signAndSendTransaction({
-      receiverId: transaction.receiverId,
-      actions: transaction.actions.map((action) => createAction(action)),
+    const finalExecutionOutcomes = await account.signAndSendTransactions({
+      transactions: transactions.map((tx) => ({
+        receiverId: tx.receiverId,
+        actions: tx.actions.map((action) => createAction(action)),
+      })),
     })
 
-    return [finalExecutionOutcome]
+    return finalExecutionOutcomes
   }
 
   buildImportAccountsUrl = (): string => {

@@ -43,8 +43,8 @@ export class WalletImpl {
     this._initializeState() // ToDo: it's async method
   }
 
-  signIn = async () => {
-    return Background.near_signIn({})
+  signIn = async (params: Partial<SignInParams>) => {
+    return Background.near_signIn(params)
   }
 
   signOut = async () => {
