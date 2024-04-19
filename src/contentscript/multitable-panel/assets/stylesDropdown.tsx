@@ -19,6 +19,7 @@ export const SelectedMutationBlock = styled.div`
   padding: 2px 6px;
   cursor: pointer;
   align-items: center;
+  height: 100%;
 `
 
 export const SelectedMutationInfo = styled.div`
@@ -118,22 +119,14 @@ export const MutationsList = styled.div`
   outline: none;
   display: flex;
   flex-direction: column;
-
-  padding: 6px;
-  padding-top: 0;
-
   background: #fff;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
-
   width: 318px;
   left: -26px;
   top: 38px;
+  padding-right: 6px;
   border-radius: 0px 0px 10px 10px;
-  max-height: 500px;
-
   overflow: hidden;
-  overflow-y: auto;
-  gap: 10px;
   @keyframes listVisible {
     0% {
       opacity: 0;
@@ -149,7 +142,19 @@ export const MutationsList = styled.div`
   }
   animation: listVisible 0.2s ease forwards;
   transition: all 0.3s;
+`
 
+export const MutationsListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 6px;
+  padding-top: 0;
+  padding-right: 0;
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: 500px;
+  gap: 10px;
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
@@ -186,11 +191,11 @@ export const ButtonListBlock = styled.div`
   &::before {
     content: '';
     width: 318px;
-    position: absolute;
-    top: 0;
-    left: -6px;
+    position: fixed;
+    top: 45px;
+    left: 0;
     background: #f8f9ff;
-    height: 100%;
+    height: 80%;
     z-index: 0;
   }
 `
@@ -250,6 +255,7 @@ export const ListMutations = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
+  z-index: 1;
 `
 
 export const InputBlock = styled.div<{ isActive?: boolean }>`
@@ -323,6 +329,7 @@ export const AvalibleMutations = styled.div<{ $enable?: string; $enableBefore?: 
   flex-direction: column;
   box-sizing: border-box;
   padding: 10px;
+  z-index: 1;
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);
     width: 100%;
@@ -337,7 +344,7 @@ export const AvalibleMutations = styled.div<{ $enable?: string; $enableBefore?: 
 
 export const AvalibleLableBlock = styled.div`
   display: flex;
-
+  cursor: pointer;
   align-items: center;
   justify-content: space-between;
   width: 100%;
