@@ -66,7 +66,6 @@ const HeaderEditor = styled.div`
 `
 
 const HeaderTitle = styled.div`
-  line-height: 40px;
   color: #02193a;
 `
 
