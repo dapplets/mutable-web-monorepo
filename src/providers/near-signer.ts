@@ -6,6 +6,7 @@ import { JsonStorage } from '../storage/json-storage'
 import Big from 'big.js'
 import { NearConfig } from '../constants'
 import { TypedError } from 'near-api-js/lib/providers'
+import BN from 'bn.js'
 
 export const DefaultGas = '30000000000000' // 30 TGas
 export const TGas = Big(10).pow(12)
@@ -63,48 +64,54 @@ export class NearSigner {
         return this._signInAndSetCallMethod(contractName, methodName, args, gas, deposit)
       }
 
+      // tx with deposit should be send via wallet
+      if (deposit && deposit !== '0') {
+        return this._sendTxViaWallet(contractName, methodName, args, gas, deposit)
+      }
+
       try {
         return await account.functionCall({
           contractId: contractName,
           methodName,
           args,
-          // ToDo
-          // @ts-ignore
-          gas,
+          gas: gas ? new BN(gas) : undefined,
         })
       } catch (e) {
         if (e instanceof TypedError && e.type === 'NotEnoughAllowance') {
           return this._signInAndSetCallMethod(contractName, methodName, args, gas, deposit)
         } else {
+          console.error(e)
           throw e
         }
       }
     }
 
-    try {
-      const wallet = await (await this._selector).wallet()
+    return this._sendTxViaWallet(contractName, methodName, args, gas, deposit)
+  }
 
-      return await wallet.signAndSendTransaction({
-        receiverId: contractName,
-        actions: [
-          {
-            type: 'FunctionCall',
-            params: {
-              methodName,
-              args,
-              gas: gas ?? DefaultGas,
-              deposit: deposit ?? '0',
-            },
+  private async _sendTxViaWallet(
+    contractName: string,
+    methodName: string,
+    args: any,
+    gas?: string,
+    deposit?: string
+  ) {
+    const wallet = await (await this._selector).wallet()
+
+    return await wallet.signAndSendTransaction({
+      receiverId: contractName,
+      actions: [
+        {
+          type: 'FunctionCall',
+          params: {
+            methodName,
+            args,
+            gas: gas ?? DefaultGas,
+            deposit: deposit ?? '0',
           },
-        ],
-      })
-    } catch (e) {
-      // const msg = e.toString();
-      // if (msg.indexOf("does not have enough balance") !== -1) {
-      //   return await refreshAllowanceObj.refreshAllowance();
-      // }
-      throw e
-    }
+        },
+      ],
+    })
   }
 
   private _getKeyStoreForContract(contractId: string) {

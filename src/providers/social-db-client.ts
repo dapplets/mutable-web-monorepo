@@ -19,6 +19,7 @@ const StorageCostPerByte = Big(10).pow(19)
 const MinStorageBalance = StorageCostPerByte.mul(2000)
 const InitialAccountStorageBalance = StorageCostPerByte.mul(500)
 const ExtraStorageBalance = StorageCostPerByte.mul(500)
+const ExtraStorageForSession = Big(10).pow(22).mul(5) // 0.05 NEAR
 
 const isArray = (a: any): boolean => Array.isArray(a)
 
@@ -61,6 +62,41 @@ function collectKeys(obj: any): string[] {
   return keys
 }
 
+const stringify = (s: any): string => (isString(s) || s === null ? s : JSON.stringify(s))
+
+const convertToStringLeaves = (data: any) => {
+  return isObject(data)
+    ? Object.entries(data).reduce((obj: any, [key, value]) => {
+        obj[stringify(key)] = convertToStringLeaves(value)
+        return obj
+      }, {})
+    : stringify(data)
+}
+
+const extractKeys = (data: any, prefix = ''): string[] =>
+  Object.entries(data)
+    .map(([key, value]) =>
+      isObject(value) ? extractKeys(value, `${prefix}${key}/`) : `${prefix}${key}`
+    )
+    .flat()
+
+const removeDuplicates = (data: any, prevData: any) => {
+  const obj = Object.entries(data).reduce((obj: any, [key, value]) => {
+    const prevValue = isObject(prevData) ? prevData[key] : undefined
+    if (isObject(value)) {
+      const newValue = isObject(prevValue) ? removeDuplicates(value, prevValue) : value
+      if (newValue !== undefined) {
+        obj[key] = newValue
+      }
+    } else if (value !== prevValue) {
+      obj[key] = value
+    }
+
+    return obj
+  }, {})
+  return Object.keys(obj).length ? obj : undefined
+}
+
 export class SocialDbClient {
   constructor(
     private _signer: NearSigner,
@@ -79,8 +115,8 @@ export class SocialDbClient {
     return collectKeys(response)
   }
 
-  async set(data: Value): Promise<void> {
-    const accountIds = Object.keys(data)
+  async set(originalData: Value): Promise<void> {
+    const accountIds = Object.keys(originalData)
 
     if (accountIds.length !== 1) {
       throw new Error('Only one account can be updated at a time')
@@ -99,19 +135,27 @@ export class SocialDbClient {
 
     const accountStorage = await this._getAccountStorage(signedAccountId)
 
-    // ToDo: fetch current data from the contract
-    //       and compare it with the new data to calculate storage cost
-    const currentData = {}
-
     const availableBytes = Big(accountStorage?.availableBytes || '0')
+
+    let data = originalData
+    const currentData = await this._fetchCurrentData(data)
+    data = removeDuplicates(data, currentData)
+
+    // ToDo: check is_write_permission_granted
+
     const expectedDataBalance = StorageCostPerByte.mul(estimateDataSize(data, currentData))
       .add(accountStorage ? Big(0) : InitialAccountStorageBalance)
       .add(ExtraStorageBalance)
 
-    const deposit = bigMax(
+    let deposit = bigMax(
       expectedDataBalance.sub(availableBytes.mul(StorageCostPerByte)),
-      !accountStorage ? MinStorageBalance : Big(1)
+      !accountStorage ? MinStorageBalance : Big(0)
     )
+
+    // If deposit required add extra deposit to avoid future wallet TX confirmation
+    if (!deposit.eq(Big(0))) {
+      deposit = deposit.add(ExtraStorageForSession)
+    }
 
     await this._signer.call(
       this._contractName,
@@ -137,6 +181,11 @@ export class SocialDbClient {
       usedBytes: resp?.used_bytes,
       availableBytes: resp?.available_bytes,
     }
+  }
+
+  private async _fetchCurrentData(data: any) {
+    const keys = extractKeys(data)
+    return await this._signer.view(this._contractName, 'get', { keys })
   }
 
   // Utils
