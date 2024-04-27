@@ -1,6 +1,6 @@
 {
   "name": "@dapplets/mutable-web-extension",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Bridge to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
