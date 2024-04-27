@@ -164,7 +164,7 @@ export const Dropdown: FC<DropdownProps> = ({
             </ButtonListBlock>
 
             {recentlyUsedMutations.length > 0 ? (
-              <ListMutations>
+              <ListMutations isAccordeonExpanded={isAccordeonExpanded}>
                 {recentlyUsedMutations.map((mut) => (
                   <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
                     <ImageBlock>
@@ -209,7 +209,7 @@ export const Dropdown: FC<DropdownProps> = ({
             ) : null}
 
             {unusedMutations.length > 0 ? (
-              <AvalibleMutations>
+              <AvalibleMutations isAccordeonExpanded={isAccordeonExpanded}>
                 <AvalibleLableBlock onClick={handleAccordeonClick}>
                   <AvalibleLable>available</AvalibleLable>
                   {/* todo: mock */}

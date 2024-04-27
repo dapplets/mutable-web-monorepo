@@ -155,6 +155,8 @@ export const MutationsListWrapper = styled.div`
   overflow-y: auto;
   max-height: 500px;
   gap: 10px;
+  position: relative;
+  padding-top: 55px;
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
@@ -187,15 +189,18 @@ export const ButtonListBlock = styled.div`
   justify-content: space-evenly;
   width: 100%;
   align-items: center;
-  position: relative;
+  position: fixed;
+  top: 40px;
+  z-index: 100;
+  left: 0;
   &::before {
     content: '';
     width: 318px;
     position: fixed;
-    top: 45px;
+    top: 40px;
     left: 0;
     background: #f8f9ff;
-    height: 80%;
+    height: 43px;
     z-index: 0;
   }
 `
@@ -250,8 +255,10 @@ export const ButtonMutation = styled.div`
   }
 `
 
-export const ListMutations = styled.div`
-  width: 100%;
+export const ListMutations = styled.div<{
+  isAccordeonExpanded?: boolean
+}>`
+  width: ${(props) => (props.isAccordeonExpanded ? 'calc(100% - 5px)' : '100%')};
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -320,8 +327,12 @@ export const ImageBlock = styled.div`
   }
 `
 
-export const AvalibleMutations = styled.div<{ $enable?: string; $enableBefore?: string }>`
-  width: 100%;
+export const AvalibleMutations = styled.div<{
+  $enable?: string
+  $enableBefore?: string
+  isAccordeonExpanded?: boolean
+}>`
+  width: ${(props) => (props.isAccordeonExpanded ? 'calc(100% - 5px)' : '100%')};
   background: rgba(248, 249, 255, 1);
   border-radius: 10px;
   gap: 10px;
