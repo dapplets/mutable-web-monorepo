@@ -18,7 +18,7 @@ describe('Engine', () => {
       networkId: 'mainnet',
       selector: null as any,
       storage: new LocalStorage(`test-${++i}`),
-      bosElementName: `bos-component-${++i}`
+      bosElementName: `bos-component-${++i}`,
     })
   })
 
@@ -35,16 +35,16 @@ describe('Engine', () => {
     expect(engine.started).toEqual(true)
   }, 60000)
 
-  it('favorite mutation is set by default', async () => {
+  it('no mutations are set by default', async () => {
     // Arrange
-    const expected = "bos.dapplets.near/mutation/Sandbox"
+    const expected = null
 
     // Act
     const actual = await engine.getFavoriteMutation()
 
     // Assert
     expect(actual).toEqual(expected)
-  });
+  })
 
   it('sets favorite mutation', async () => {
     // Arrange

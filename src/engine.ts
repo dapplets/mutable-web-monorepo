@@ -142,9 +142,36 @@ export class Engine implements IContextListener {
     // ToDo: do nothing because IP unmounted?
   }
 
+  getLastUsedMutation = async (): Promise<string | null> => {
+    const allMutations = await this.getMutations()
+    const hostname = window.location.hostname
+    const lastUsedData = await Promise.all(
+      allMutations.map(async (m) => ({
+        id: m.id,
+        lastUsage: await this.#repository.getMutationLastUsage(m.id, hostname),
+      }))
+    )
+    const usedMutationsData = lastUsedData
+      .filter((m) => m.lastUsage)
+      .map((m) => ({ id: m.id, lastUsage: new Date(m.lastUsage!).getTime() }))
+    if (usedMutationsData?.length) {
+      if (usedMutationsData.length === 1) return usedMutationsData[0].id
+      let lastMutationId = usedMutationsData[0].id
+      for (let i = 1; i < usedMutationsData.length; i++) {
+        if (usedMutationsData[i].lastUsage > usedMutationsData[i - 1].lastUsage) {
+          lastMutationId = usedMutationsData[i].id
+        }
+      }
+      return lastMutationId
+    } else {
+      // Activate default mutation for new users
+      return this.#nearConfig.defaultMutationId
+    }
+  }
+
   async start(mutationId?: string | null): Promise<void> {
     if (mutationId === undefined) {
-      mutationId = await this.getFavoriteMutation()
+      mutationId = (await this.getFavoriteMutation()) || (await this.getLastUsedMutation())
     }
 
     if (mutationId !== null) {
@@ -157,7 +184,11 @@ export class Engine implements IContextListener {
 
         // save last usage
         const currentDate = new Date().toISOString()
-        await this.#repository.setMutationLastUsage(mutation.id, currentDate)
+        await this.#repository.setMutationLastUsage(
+          mutation.id,
+          currentDate,
+          window.location.hostname
+        )
       } else {
         console.error('No suitable mutations found')
       }
@@ -276,17 +307,11 @@ export class Engine implements IContextListener {
 
   async getFavoriteMutation(): Promise<string | null> {
     const value = await this.#repository.getFavoriteMutation()
-
-    // Activate default mutation for new users
-    if (value === undefined) {
-      return this.#nearConfig.defaultMutationId
-    }
-
-    return value
+    return value ?? null
   }
 
   async removeMutationFromRecents(mutationId: string): Promise<void> {
-    await this.#repository.setMutationLastUsage(mutationId, null)
+    await this.#repository.setMutationLastUsage(mutationId, null, window.location.hostname)
   }
 
   async getApplications(): Promise<AppMetadata[]> {
@@ -357,7 +382,10 @@ export class Engine implements IContextListener {
 
   private async _populateMutationSettings(mutation: Mutation): Promise<MutationWithSettings> {
     const isFavorite = (await this.getFavoriteMutation()) === mutation.id
-    const lastUsage = await this.#repository.getMutationLastUsage(mutation.id)
+    const lastUsage = await this.#repository.getMutationLastUsage(
+      mutation.id,
+      window.location.hostname
+    )
 
     return {
       ...mutation,
