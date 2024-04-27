@@ -40,6 +40,7 @@ const nearAPI = __importStar(require("near-api-js"));
 const key_storage_1 = require("./key-storage");
 const big_js_1 = __importDefault(require("big.js"));
 const providers_1 = require("near-api-js/lib/providers");
+const bn_js_1 = __importDefault(require("bn.js"));
 exports.DefaultGas = '30000000000000'; // 30 TGas
 exports.TGas = (0, big_js_1.default)(10).pow(12);
 /**
@@ -90,14 +91,16 @@ class NearSigner {
                 if (!account) {
                     return this._signInAndSetCallMethod(contractName, methodName, args, gas, deposit);
                 }
+                // tx with deposit should be send via wallet
+                if (deposit && deposit !== '0') {
+                    return this._sendTxViaWallet(contractName, methodName, args, gas, deposit);
+                }
                 try {
                     return yield account.functionCall({
                         contractId: contractName,
                         methodName,
                         args,
-                        // ToDo
-                        // @ts-ignore
-                        gas,
+                        gas: gas ? new bn_js_1.default(gas) : undefined,
                     });
                 }
                 catch (e) {
@@ -105,34 +108,31 @@ class NearSigner {
                         return this._signInAndSetCallMethod(contractName, methodName, args, gas, deposit);
                     }
                     else {
+                        console.error(e);
                         throw e;
                     }
                 }
             }
-            try {
-                const wallet = yield (yield this._selector).wallet();
-                return yield wallet.signAndSendTransaction({
-                    receiverId: contractName,
-                    actions: [
-                        {
-                            type: 'FunctionCall',
-                            params: {
-                                methodName,
-                                args,
-                                gas: gas !== null && gas !== void 0 ? gas : exports.DefaultGas,
-                                deposit: deposit !== null && deposit !== void 0 ? deposit : '0',
-                            },
+            return this._sendTxViaWallet(contractName, methodName, args, gas, deposit);
+        });
+    }
+    _sendTxViaWallet(contractName, methodName, args, gas, deposit) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const wallet = yield (yield this._selector).wallet();
+            return yield wallet.signAndSendTransaction({
+                receiverId: contractName,
+                actions: [
+                    {
+                        type: 'FunctionCall',
+                        params: {
+                            methodName,
+                            args,
+                            gas: gas !== null && gas !== void 0 ? gas : exports.DefaultGas,
+                            deposit: deposit !== null && deposit !== void 0 ? deposit : '0',
                         },
-                    ],
-                });
-            }
-            catch (e) {
-                // const msg = e.toString();
-                // if (msg.indexOf("does not have enough balance") !== -1) {
-                //   return await refreshAllowanceObj.refreshAllowance();
-                // }
-                throw e;
-            }
+                    },
+                ],
+            });
         });
     }
     _getKeyStoreForContract(contractId) {

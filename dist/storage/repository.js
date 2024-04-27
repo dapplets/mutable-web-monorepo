@@ -19,24 +19,26 @@ class Repository {
     }
     getFavoriteMutation() {
         return __awaiter(this, void 0, void 0, function* () {
-            return this._get(FAVORITE_MUTATION);
+            const key = this._makeKey(FAVORITE_MUTATION, window.location.hostname);
+            return this._get(key);
         });
     }
     setFavoriteMutation(mutationId) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this._set(FAVORITE_MUTATION, mutationId);
+            const key = this._makeKey(FAVORITE_MUTATION, window.location.hostname);
+            return this._set(key, mutationId);
         });
     }
-    getMutationLastUsage(mutationId) {
+    getMutationLastUsage(mutationId, hostname) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const key = this._makeKey(MUTATION_LAST_USAGE, mutationId);
+            const key = this._makeKey(MUTATION_LAST_USAGE, mutationId, hostname);
             return ((_a = this._get(key)) !== null && _a !== void 0 ? _a : null);
         });
     }
-    setMutationLastUsage(mutationId, value) {
+    setMutationLastUsage(mutationId, value, hostname) {
         return __awaiter(this, void 0, void 0, function* () {
-            const key = this._makeKey(MUTATION_LAST_USAGE, mutationId);
+            const key = this._makeKey(MUTATION_LAST_USAGE, mutationId, hostname);
             return this._set(key, value);
         });
     }

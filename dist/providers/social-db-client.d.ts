@@ -11,9 +11,10 @@ export declare class SocialDbClient {
     constructor(_signer: NearSigner, _contractName: string);
     get(keys: string[]): Promise<Value>;
     keys(keys: string[]): Promise<string[]>;
-    set(data: Value): Promise<void>;
+    set(originalData: Value): Promise<void>;
     delete(keys: string[]): Promise<void>;
     private _getAccountStorage;
+    private _fetchCurrentData;
     static _nullifyData(data: any): any;
 }
 //# sourceMappingURL=social-db-client.d.ts.map

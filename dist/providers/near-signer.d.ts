@@ -21,6 +21,7 @@ export declare class NearSigner {
     getAccountId(): Promise<string | null>;
     view(contractName: string, methodName: string, args: any): Promise<any>;
     call(contractName: string, methodName: string, args: any, gas?: string, deposit?: string): Promise<void | nearAPI.providers.FinalExecutionOutcome | nearAPI.providers.FinalExecutionOutcome[]>;
+    private _sendTxViaWallet;
     private _getKeyStoreForContract;
     private _createConnectionForContract;
     private _signInAndSetCallMethod;

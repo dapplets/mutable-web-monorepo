@@ -128,7 +128,7 @@ class BosComponent extends HTMLElement {
     }
     _render() {
         this._root.render(React.createElement(styled_components_1.StyleSheetManager, { target: this._stylesMountPoint },
-            React.createElement(near_social_vm_1.Widget, { src: __classPrivateFieldGet(this, _BosComponent_src, "f"), props: __classPrivateFieldGet(this, _BosComponent_props, "f"), config: { redirectMap: __classPrivateFieldGet(this, _BosComponent_redirectMap, "f") } })));
+            React.createElement(near_social_vm_1.Widget, { src: __classPrivateFieldGet(this, _BosComponent_src, "f"), props: __classPrivateFieldGet(this, _BosComponent_props, "f"), config: { redirectMap: __classPrivateFieldGet(this, _BosComponent_redirectMap, "f") }, loading: React.createElement(React.Fragment, null) })));
     }
 }
 exports.BosComponent = BosComponent;
