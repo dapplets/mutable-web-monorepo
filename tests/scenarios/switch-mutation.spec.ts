@@ -9,7 +9,7 @@ test('switch mutation', async ({ page }) => {
   await page.goto(url)
 
   // ToDo: move to POM
-  await expect(page.getByTestId('mutable-panel')).toBeVisible()
+  await expect(page.getByTestId('mutation-panel')).toBeVisible()
   await expect(page.getByTestId('selected-mutation-block')).toContainText(sourceMutationId)
   await page.getByTestId('selected-mutation-block').click()
   await page.getByText(targetMutationId).click()

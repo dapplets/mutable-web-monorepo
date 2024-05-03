@@ -166,7 +166,12 @@ export const Dropdown: FC<DropdownProps> = ({
             {recentlyUsedMutations.length > 0 ? (
               <ListMutations isAccordeonExpanded={isAccordeonExpanded}>
                 {recentlyUsedMutations.map((mut) => (
-                  <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
+                  <InputBlock
+                    key={mut.id}
+                    isActive={mut.id === selectedMutation?.id}
+                    data-mweb-context-type="mutation"
+                    data-mweb-context-parsed={JSON.stringify({ id: mut.id })}
+                  >
                     <ImageBlock>
                       <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
                     </ImageBlock>
@@ -226,6 +231,8 @@ export const Dropdown: FC<DropdownProps> = ({
                         isActive={mut.id === selectedMutation?.id}
                         onClick={() => handleMutationClick(mut.id)}
                         className="avalibleMutationsInput"
+                        data-mweb-context-type="mutation"
+                        data-mweb-context-parsed={JSON.stringify({ id: mut.id })}
                       >
                         <ImageBlock>
                           <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />

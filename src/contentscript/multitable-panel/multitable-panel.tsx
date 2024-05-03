@@ -34,7 +34,7 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
 
   &:hover,
   &:focus {
-    .visible-north-panel {
+    .visible-notch {
       opacity: 1;
       transform: translateY(0);
     }
@@ -51,17 +51,16 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   }
 `
 
-const NorthPanelWrapper = styled.span`
+const NotchWrapper = styled.span`
   position: fixed;
   height: 5px;
 `
 
-const NorthPanel = styled.div<{ $isAnimated?: boolean }>`
+const Notch = styled.div<{ $isAnimated?: boolean }>`
   position: relative;
-
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -74,8 +73,6 @@ const NorthPanel = styled.div<{ $isAnimated?: boolean }>`
   width: 318px;
   height: 45px;
   z-index: 5000;
-  padding: 4px;
-  padding-top: 0;
   border-radius: 0 0 6px 6px;
   background: #384bff;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
@@ -83,6 +80,17 @@ const NorthPanel = styled.div<{ $isAnimated?: boolean }>`
   transform: translateY(-100%);
   transition: ${(props) =>
     props.$isAnimated ? 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out' : 'initial'};
+
+  & > div:first-child {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px;
+    padding-top: 0;
+    width: 100%;
+    height: 45px;
+  }
 `
 
 const PinWrapper = styled.div`
@@ -136,12 +144,12 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!!getPanelPinned())
   const [isDragging, setIsDragging] = useState(false)
-  const [isPanelDisplayed, setIsPanelDisplayed] = useState(true)
+  const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsPanelDisplayed(false)
+      setIsNotchDisplayed(false)
     }, 5000)
 
     return () => clearTimeout(timer)
@@ -183,51 +191,60 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
     setIsModalOpen(false)
   }
 
-  return isModalOpen ? (
-    <WrapperPanel $isAnimated={!isDragging} data-testid="mutable-panel">
-      <MutationEditorModal apps={apps} baseMutation={selectedMutation} onClose={handleModalClose} />
+  // The notch can be opened from the extension's context menu on websites without any mutation
+  if (!isModalOpen && mutations.length === 0) return null
+
+  return (
+    <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
+      {isModalOpen ? (
+        <MutationEditorModal
+          apps={apps}
+          baseMutation={selectedMutation}
+          onClose={handleModalClose}
+        />
+      ) : (
+        <Draggable
+          axis="x"
+          bounds="parent"
+          handle=".dragWrapper"
+          onStart={handleStartDrag}
+          onStop={handleStopDrag}
+          defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
+        >
+          <NotchWrapper>
+            <Notch
+              data-testid="notch"
+              data-mweb-context-type="notch"
+              className={
+                isPin
+                  ? 'visible-pin'
+                  : isNotchDisplayed || isDropdownVisible || isDragging
+                  ? 'visible-default'
+                  : 'visible-notch'
+              }
+              $isAnimated={!isDragging}
+            >
+              <div>
+                <DragWrapper className="dragWrapper">
+                  <DragIconWrapper>
+                    <DragIcon />
+                  </DragIconWrapper>
+                </DragWrapper>
+                <Dropdown
+                  isVisible={isDropdownVisible}
+                  onVisibilityChange={setIsDropdownVisible}
+                  onMutateButtonClick={handleMutateButtonClick}
+                />
+                <PinWrapper onClick={handlePin}>
+                  {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
+                </PinWrapper>
+              </div>
+            </Notch>
+          </NotchWrapper>
+        </Draggable>
+      )}
     </WrapperPanel>
-  ) : mutations.length !== 0 ? (
-    <WrapperPanel $isAnimated={!isDragging} data-testid="mutable-panel">
-      <Draggable
-        axis="x"
-        bounds="parent"
-        handle=".dragWrapper"
-        onStart={handleStartDrag}
-        onStop={handleStopDrag}
-        defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
-      >
-        <NorthPanelWrapper>
-          {/* ToDo: refactor className */}
-          <NorthPanel
-            data-testid="north-panel"
-            className={
-              isPin
-                ? 'visible-pin'
-                : isPanelDisplayed || isDropdownVisible || isDragging
-                ? 'visible-default'
-                : 'visible-north-panel'
-            }
-            $isAnimated={!isDragging}
-          >
-            <DragWrapper className="dragWrapper">
-              <DragIconWrapper>
-                <DragIcon />
-              </DragIconWrapper>
-            </DragWrapper>
-            <Dropdown
-              isVisible={isDropdownVisible}
-              onVisibilityChange={setIsDropdownVisible}
-              onMutateButtonClick={handleMutateButtonClick}
-            />
-            <PinWrapper onClick={handlePin}>
-              {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-            </PinWrapper>
-          </NorthPanel>
-        </NorthPanelWrapper>
-      </Draggable>
-    </WrapperPanel>
-  ) : null
+  )
 }
 
 export default MultitablePanel

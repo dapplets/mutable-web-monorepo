@@ -20,7 +20,7 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
       if (myRef.current) {
         const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
 
-        const shadowRoot = myRef.current.attachShadow({ mode: 'closed' })
+        const shadowRoot = myRef.current.attachShadow({ mode: 'open' })
         const stylesMountPoint = document.createElement('div')
         const container = document.createElement('div')
         shadowRoot.appendChild(stylesMountPoint)
@@ -28,14 +28,15 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
         // It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
         // https://stackoverflow.com/a/68062098
         const resetCssRules = `
-            :host { 
+          :host { 
             all: initial; 
             display: flex; 
             align-items: center;
             justify-content: center;
             position: relative;
             visibility: visible !important;
-            }
+            z-index: 999999;
+          }
         `
         const disableCssInheritanceStyle = document.createElement('style')
         disableCssInheritanceStyle.innerHTML = resetCssRules
@@ -50,6 +51,13 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
           // ToDo: parametrize this bootstrap specific code
           container.setAttribute('data-bs-theme', 'light')
         }
+
+        // For mweb parser that looks for contexts in shadow dom
+        myRef.current.setAttribute('data-mweb-shadow-host', '')
+
+        // Context cannot be a shadow root node because mutation observer doesn't work there
+        // So we need to select a child node for context
+        container.setAttribute('data-mweb-context-type', 'shadow-dom')
 
         shadowRoot.appendChild(container)
 
