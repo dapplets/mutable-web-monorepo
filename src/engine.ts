@@ -2,6 +2,7 @@ import { IAdapter } from './core/adapters/interface'
 import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
 import {
+  AdapterType,
   AppMetadata,
   IProvider,
   Mutation,
@@ -16,20 +17,15 @@ import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
 import { PureTreeBuilder } from './core/tree/pure-tree/pure-tree-builder'
 import { ContextManager } from './context-manager'
 import { MutationManager } from './mutation-manager'
-import { JsonParser } from './core/parsers/json-parser'
-import { BosParser } from './core/parsers/bos-parser'
+import { JsonParser, JsonParserConfig } from './core/parsers/json-parser'
+import { BosParser, BosParserConfig } from './core/parsers/bos-parser'
+import { MutableWebParser } from './core/parsers/mweb-parser'
 import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
 import { IStorage } from './storage/storage'
 import { Repository } from './storage/repository'
 import { JsonStorage } from './storage/json-storage'
 import { LocalStorage } from './storage/local-storage'
 import { shadowRoot as overlayShadowRoot } from './bos/overlay'
-
-export enum AdapterType {
-  Bos = 'bos',
-  Microdata = 'microdata',
-  Json = 'json',
-}
 
 export type EngineConfig = {
   networkId: string
@@ -92,8 +88,6 @@ export class Engine implements IContextListener {
     for (const config of parserConfigs) {
       const adapter = this.createAdapter(config)
       this.registerAdapter(adapter)
-
-      console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`)
     }
 
     // ToDo: do not iterate over all adapters
@@ -265,6 +259,7 @@ export class Engine implements IContextListener {
     this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context)
     this.adapters.add(adapter)
     adapter.start()
+    console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`)
   }
 
   unregisterAdapter(adapter: IAdapter) {
@@ -274,26 +269,34 @@ export class Engine implements IContextListener {
     this.adapters.delete(adapter)
   }
 
-  createAdapter(config?: ParserConfig): IAdapter {
+  createAdapter(config: ParserConfig): IAdapter {
     if (!this.treeBuilder) {
       throw new Error('Tree builder is not inited')
     }
 
-    switch (config?.parserType) {
-      case 'json':
+    switch (config.parserType) {
+      case AdapterType.Json:
         return new DynamicHtmlAdapter(
           document.body,
           this.treeBuilder,
           config.id,
-          new JsonParser(config as any) // ToDo: add try catch because config can be invalid
+          new JsonParser(config) // ToDo: add try catch because config can be invalid
         )
 
-      case 'bos':
+      case AdapterType.Bos:
         return new DynamicHtmlAdapter(
           document.body,
           this.treeBuilder,
           config.id,
-          new BosParser(config as any)
+          new BosParser(config)
+        )
+
+      case AdapterType.MWeb:
+        return new DynamicHtmlAdapter(
+          document.body,
+          this.treeBuilder,
+          config.id,
+          new MutableWebParser()
         )
 
       default:

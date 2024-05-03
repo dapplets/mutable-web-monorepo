@@ -1,3 +1,6 @@
+import { BosParserConfig } from '../core/parsers/bos-parser'
+import { JsonParserConfig } from '../core/parsers/json-parser'
+
 export type UserLinkId = string
 export type AppId = string
 export type MutationId = string
@@ -86,12 +89,17 @@ export type LinkIndexObject = {
   if: Record<string, ScalarType>
 }
 
-export type ParserConfig = {
-  id: string
-  parserType: string
-  contexts: any
-  targets: ContextTarget[]
+export enum AdapterType {
+  Bos = 'bos',
+  Microdata = 'microdata',
+  Json = 'json',
+  MWeb = 'mweb',
 }
+
+export type ParserConfig =
+  | ({ parserType: AdapterType.Json; id: string; targets: ContextTarget[] } & JsonParserConfig)
+  | ({ parserType: AdapterType.Bos; id: string; targets: ContextTarget[] } & BosParserConfig)
+  | ({ parserType: AdapterType.MWeb; id: string; targets: ContextTarget[] })
 
 export interface IProvider {
   // Read

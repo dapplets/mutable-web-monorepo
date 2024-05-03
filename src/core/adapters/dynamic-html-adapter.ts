@@ -99,7 +99,14 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   _createContextForElement(element: Element, contextName: string): IContextNode {
-    const context = this.treeBuilder.createNode(this.namespace, contextName) as IContextNode
+    const parsedContext = this.parser.parseContext(element, contextName)
+    const insPoints = this._findAvailableInsPoints(element, contextName)
+    const context = this.treeBuilder.createNode(
+      this.namespace,
+      contextName,
+      parsedContext,
+      insPoints
+    )
 
     const observer = new MutationObserver(() => this._handleMutations(element, context))
 
@@ -138,8 +145,11 @@ export class DynamicHtmlAdapter implements IAdapter {
     for (const { element, contextName } of childPairs) {
       if (!this.#contextByElement.has(element)) {
         const childContext = this._createContextForElement(element, contextName)
-        this.treeBuilder.appendChild(parentContext, childContext)
         this.#contextByElement.set(element, childContext)
+        this.treeBuilder.appendChild(parentContext, childContext)
+
+        // initial parsing
+        this._handleMutations(element, childContext)
       }
     }
   }

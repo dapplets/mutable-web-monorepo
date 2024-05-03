@@ -22,7 +22,12 @@ export interface ITreeBuilder {
   removeChild(parent: IContextNode, child: IContextNode): void
   updateParsedContext(context: IContextNode, parsedContext: any): void
   updateInsertionPoints(context: IContextNode, insPoints: string[]): void
-  createNode(namespace: string | null, contextType: string): IContextNode
+  createNode(
+    namespace: string | null,
+    contextType: string,
+    parsedContext?: any,
+    insPoints?: string[]
+  ): IContextNode
 }
 
 export interface IContextListener {

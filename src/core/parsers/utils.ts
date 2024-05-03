@@ -1,5 +1,7 @@
+const ShadowHostAttr = 'data-mweb-shadow-host'
+
 export function getChildContextElements(
-  element: Element,
+  element: Element | ShadowRoot,
   attribute: string,
   excludeAttribute?: string
 ) {
@@ -11,8 +13,11 @@ export function getChildContextElements(
         continue
       } else if (child.hasAttribute(attribute)) {
         result.push(child)
+      } else if (child.hasAttribute(ShadowHostAttr) && child.shadowRoot) {
+        // ToDo: it's mweb-parser specific logic
+        result.push(...getChildContextElements(child.shadowRoot, attribute, excludeAttribute))
       } else {
-        result.push(...getChildContextElements(child, attribute))
+        result.push(...getChildContextElements(child, attribute, excludeAttribute))
       }
     }
   }

@@ -9,9 +9,19 @@ export class PureContextNode implements IContextNode {
   public children: IContextNode[] = []
   public insPoints: string[] = []
 
-  constructor(namespace: string, contextType: string) {
+  constructor(
+    namespace: string,
+    contextType: string,
+    parsedContext: any = {},
+    insPoints: string[] = []
+  ) {
     this.namespace = namespace
     this.contextType = contextType
+    this.parsedContext = parsedContext
+    this.insPoints = insPoints
+
+    // ToDo: the similar logic is in tree builder
+    this.id = parsedContext.id ?? null
   }
 
   removeChild(child: IContextNode): void {

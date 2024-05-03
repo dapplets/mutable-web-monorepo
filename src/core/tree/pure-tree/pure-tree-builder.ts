@@ -1,5 +1,4 @@
 import { DappletsEngineNs } from '../../../constants'
-import { InsertionPoint } from '../../parsers/interface'
 import { isDeepEqual } from '../../utils'
 import { IContextListener, IContextNode, ITreeBuilder } from '../types'
 import { PureContextNode } from './pure-context-node'
@@ -18,15 +17,22 @@ export class PureTreeBuilder implements ITreeBuilder {
   appendChild(parent: IContextNode, child: IContextNode): void {
     parent.appendChild(child)
     this.#listeners.handleContextStarted(child)
+    child.insPoints?.forEach((ip) => this.#listeners.handleInsPointStarted(child, ip))
   }
 
   removeChild(parent: IContextNode, child: IContextNode): void {
     parent.removeChild(child)
     this.#listeners.handleContextFinished(child)
+    child.insPoints?.forEach((ip) => this.#listeners.handleInsPointFinished(child, ip))
   }
 
-  createNode(namespace: string, contextType: string): IContextNode {
-    return new PureContextNode(namespace, contextType)
+  createNode(
+    namespace: string,
+    contextType: string,
+    parsedContext: any = {},
+    insPoints: string[] = []
+  ): IContextNode {
+    return new PureContextNode(namespace, contextType, parsedContext, insPoints)
   }
 
   updateParsedContext(context: IContextNode, newParsedContext: any): void {

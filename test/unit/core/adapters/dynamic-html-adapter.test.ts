@@ -87,7 +87,7 @@ describe('dynamic-html-adapter', () => {
     expect(mockListeners.handleContextStarted).toBeCalledWith(dynamicAdapter.context.children[2])
     expect(mockListeners.handleContextFinished).toBeCalledTimes(0)
     expect(mockListeners.handleContextChanged).toBeCalledTimes(0)
-    expect(mockListeners.handleInsPointStarted).toBeCalledTimes(0)
+    expect(mockListeners.handleInsPointStarted).toBeCalledTimes(2)
     expect(mockListeners.handleInsPointFinished).toBeCalledTimes(0)
   })
 
@@ -108,7 +108,7 @@ describe('dynamic-html-adapter', () => {
     expect(mockListeners.handleContextFinished).toBeCalledWith(postContext)
     expect(mockListeners.handleContextChanged).toBeCalledTimes(0)
     expect(mockListeners.handleInsPointStarted).toBeCalledTimes(0)
-    expect(mockListeners.handleInsPointFinished).toBeCalledTimes(0)
+    expect(mockListeners.handleInsPointFinished).toBeCalledTimes(2)
   })
 
   it('change node text content', async () => {

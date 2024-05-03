@@ -1,5 +1,6 @@
 import { IContextNode } from './core/tree/types'
 import {
+  AdapterType,
   AppId,
   AppMetadata,
   AppMetadataTarget,
@@ -155,6 +156,19 @@ export class MutationManager {
     this.#activeParsers = activeParsers
     this.mutation = mutation
 
+    // MWeb parser is enabled by default
+    this.#activeParsers.push({
+      parserType: AdapterType.MWeb,
+      id: 'mweb',
+      targets: [
+        {
+          namespace: 'engine',
+          contextType: 'website',
+          if: { id: { not: null } },
+        },
+      ],
+    })
+
     console.log('Active apps: ', mutation.apps)
   }
 
@@ -223,7 +237,6 @@ export class MutationManager {
     if (!this.mutation) throw new Error('Mutation is not loaded')
 
     const indexObject = MutationManager._buildLinkIndex(appId, this.mutation.id, target, context)
-
     const indexedLinks = await this.#provider.getLinksByIndex(indexObject)
 
     return indexedLinks.map((link) => ({

@@ -6,7 +6,7 @@ import { createRoot } from 'react-dom/client'
 const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
 
 export class BosComponent extends HTMLElement {
-  private _shadowRoot = this.attachShadow({ mode: 'closed' })
+  private _shadowRoot = this.attachShadow({ mode: 'open' })
   private _styleLibraryMountPoint = document.createElement('link')
   private _adapterStylesMountPoint = document.createElement('style')
   private _stylesMountPoint = document.createElement('div')
@@ -70,6 +70,9 @@ export class BosComponent extends HTMLElement {
       this.addEventListener(eventName, (e) => e.stopPropagation())
     })
 
+    // For mweb parser that looks for contexts in shadow dom
+    this.setAttribute('data-mweb-shadow-host', '')
+
     this._shadowRoot.appendChild(this._componentMountPoint)
     this._shadowRoot.appendChild(this._stylesMountPoint)
 
@@ -83,6 +86,7 @@ export class BosComponent extends HTMLElement {
         justify-content: center;
         position: relative;
         visibility: visible !important;
+        z-index: 999999;
       }
     `
     this._adapterStylesMountPoint.innerHTML = resetCssRules

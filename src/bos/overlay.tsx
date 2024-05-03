@@ -21,7 +21,7 @@ overlay.style.fontFamily =
 overlay.style.zIndex = '2147483647'
 overlay.style.visibility = 'visible'
 
-const shadowRoot = overlay.attachShadow({ mode: 'closed' })
+const shadowRoot = overlay.attachShadow({ mode: 'open' })
 const stylesMountPoint = document.createElement('div')
 const container = document.createElement('div')
 shadowRoot.appendChild(stylesMountPoint)
