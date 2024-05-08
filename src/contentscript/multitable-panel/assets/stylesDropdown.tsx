@@ -104,12 +104,15 @@ export const OpenList = styled.span`
   }
 `
 
-export const StarSelectedMutationWrapper = styled.span`
+export const StarSelectedMutationWrapper = styled.div`
   cursor: pointer;
-  display: inline-block;
+  display: flex;
   transition: all 0.2s ease;
   &:hover {
     transform: scale(1.2);
+  }
+  & > svg {
+    vertical-align: initial;
   }
 `
 
@@ -285,12 +288,15 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
     background: rgba(248, 249, 255, 1);
   }
 `
-export const InputIconWrapper = styled.span`
-  display: inline-block;
+export const InputIconWrapper = styled.div`
+  display: flex;
   padding-right: 3px;
   transition: all 0.2s ease;
   &:hover {
     transform: scale(1.2);
+  }
+  & > svg {
+    vertical-align: initial;
   }
 `
 
