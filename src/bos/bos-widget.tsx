@@ -105,7 +105,9 @@ export class BosComponent extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this._root.unmount()
+    // ToDo: this workaround prevents React's error
+    // "Attempted to synchronously unmount a root while React was already rendering"
+    setTimeout(() => this._root.unmount())
   }
 
   _render() {
