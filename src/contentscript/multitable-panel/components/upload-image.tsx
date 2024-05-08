@@ -85,7 +85,7 @@ export const InputImage: FC<Props> = ({ onImageChange, ipfsCid }) => {
           value={''}
           onChange={handleImageChange}
           type="file"
-          accept=".png, .jpeg, .jpg"
+          accept=".png, .jpeg, .jpg, .svg"
         />
         {image?.ipfs_cid ? (
           <Image image={image} />
