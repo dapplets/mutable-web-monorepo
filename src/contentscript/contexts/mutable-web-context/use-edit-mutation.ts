@@ -18,6 +18,7 @@ export function useEditMutation() {
         mutations.map((mut) => (mut.id === editedMutation.id ? editedMutation : mut))
       )
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

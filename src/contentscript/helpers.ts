@@ -36,6 +36,17 @@ export const compareMutations = (m1: Mutation, m2: Mutation): boolean =>
     !compareDeep(m1.apps.sort(), m2.apps.sort())
   )
 
+export const ipfsUpload = async (f: File) => {
+  const res = await fetch('https://ipfs.near.social/add', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+    },
+    body: f,
+  })
+  return (await res.json()).cid
+}
+
 /**
  * Deep merge two objects.
  * @param target

@@ -20,6 +20,7 @@ import { ApplicationCard } from './application-card'
 import { Button } from './button'
 import { DropdownButton } from './dropdown-button'
 import { Input } from './input'
+import { InputImage } from './upload-image'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -277,6 +278,12 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     setEditingMutation((mut) => mergeDeep(cloneDeep(mut), { metadata: { name } }))
   }
 
+  const handleMutationImageChange = async (cid: string) => {
+    setEditingMutation((mut) =>
+      mergeDeep(cloneDeep(mut), { metadata: { image: { ipfs_cid: cid } } })
+    )
+  }
+
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
       const apps = checked ? [...mut.apps, appId] : mut.apps.filter((app) => app !== appId)
@@ -337,7 +344,10 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       </HeaderEditor>
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
-
+      <InputImage
+        ipfsCid={editingMutation.metadata.image?.ipfs_cid ?? undefined}
+        onImageChange={handleMutationImageChange}
+      />
       <Input
         label="Mutation ID"
         value={editingMutation.id}
