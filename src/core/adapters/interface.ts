@@ -18,4 +18,8 @@ export interface IAdapter {
   injectElement(element: Element, context: IContextNode, insertionPoint: string): void
 
   getInsertionPoints(context: IContextNode): InsertionPoint[]
+
+  // For OverlayTrigger
+  getContextElement(context: IContextNode): Element | null
+  getInsertionPointElement(context: IContextNode, insPointName: string): Element | null
 }

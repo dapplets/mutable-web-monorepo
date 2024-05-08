@@ -98,6 +98,16 @@ export class DynamicHtmlAdapter implements IAdapter {
     return this.parser.getInsertionPoints(htmlElement, context.contextType)
   }
 
+  getContextElement(context: IContextNode): Element | null {
+    return this.#elementByContext.get(context) ?? null
+  }
+
+  getInsertionPointElement(context: IContextNode, insPointName: string): Element | null {
+    const contextElement = this.getContextElement(context)
+    if (!contextElement) return null
+    return this.parser.findInsertionPoint(contextElement, context.contextType, insPointName)
+  }
+
   _createContextForElement(element: Element, contextName: string): IContextNode {
     const parsedContext = this.parser.parseContext(element, contextName)
     const insPoints = this._findAvailableInsPoints(element, contextName)

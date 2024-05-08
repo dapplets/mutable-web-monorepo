@@ -1,63 +1,38 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
-import { StyleSheetManager } from 'styled-components'
+import styled from 'styled-components'
+import { getViewport } from '../common'
+import { ShadowDomWrapper } from './shadow-dom-wrapper'
 
-const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
-
-const overlay = document.createElement('mutable-web-overlay')
-
-overlay.style.background = '#ffffff88'
-overlay.style.position = 'fixed'
-overlay.style.display = 'none'
-overlay.style.top = '0'
-overlay.style.left = '0'
-overlay.style.width = '100%'
-overlay.style.height = '100%'
-overlay.style.overflowX = 'hidden'
-overlay.style.overflowY = 'auto'
-overlay.style.outline = '0'
-overlay.style.fontFamily =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif'
-overlay.style.zIndex = '2147483647'
-overlay.style.visibility = 'visible'
-
-const shadowRoot = overlay.attachShadow({ mode: 'open' })
-const stylesMountPoint = document.createElement('div')
-const container = document.createElement('div')
-shadowRoot.appendChild(stylesMountPoint)
-
-// It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
-// https://stackoverflow.com/a/68062098
-const disableCssInheritanceStyle = document.createElement('style')
-disableCssInheritanceStyle.innerHTML = ':host { all: initial; }'
-shadowRoot.appendChild(disableCssInheritanceStyle)
-
-shadowRoot.appendChild(container)
-
-// Prevent event propagation from BOS-component to parent
-EventsToStopPropagation.forEach((eventName) => {
-  overlay.addEventListener(eventName, (e) => e.stopPropagation())
-})
-
-document.body.appendChild(overlay)
+const ModalBackdrop = styled.div`
+  background: #ffffff88;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  z-index: 2147483647;
+  visibility: visible;
+`
 
 export interface OverlayProps {
   children: React.ReactNode
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ children }) => {
-  React.useEffect(() => {
-    overlay.style.display = 'block'
-    return () => {
-      overlay.style.display = 'none'
-    }
-  }, [])
+  const container = getViewport()
+
+  if (!container) return null
 
   return createPortal(
-    <StyleSheetManager target={stylesMountPoint}>{children}</StyleSheetManager>,
+    <ShadowDomWrapper>
+      <ModalBackdrop>{children}</ModalBackdrop>
+    </ShadowDomWrapper>,
     container
   )
 }
-
-// ToDo: refactor this hack
-export { shadowRoot }

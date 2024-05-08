@@ -1,11 +1,10 @@
 import { BosComponent } from './bos/bos-widget'
 import { ContextManager } from './context-manager'
 import { IContextNode } from './core/tree/types'
-import { AppId, AppMetadata, BosUserLink, UserLinkId } from './providers/provider'
+import { AppId, AppMetadata, BosUserLink, InjectableTarget, UserLinkId } from './providers/provider'
 
 export interface LayoutManagerProps {
-  context: any
-  contextType: string
+  context: ContextTreeProps
   apps: {
     id: string
     metadata?: {
@@ -28,16 +27,22 @@ export interface LayoutManagerProps {
       }
     }
   }[]
+  components: { target: InjectableTarget; component: React.FC<unknown> }[]
   isEditMode: boolean
+
   createUserLink: (bosWidgetId: string) => Promise<void>
   deleteUserLink: (userLinkId: UserLinkId) => Promise<void>
   enableEditMode: () => void
   disableEditMode: () => void
+
+  attachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
+  attachInsPointRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
 }
 
 interface ContextTreeProps {
   namespace: string | null
   type: string
+  id: string | null
   parsed: any
   parent: ContextTreeProps | null
 }
@@ -45,12 +50,22 @@ interface ContextTreeProps {
 export class LayoutManager {
   #contextManager: ContextManager
   #layoutManager: BosComponent
+  #contextElement: Element
+  #insPointElement: Element
   #userLinks: Map<UserLinkId, BosUserLink & { isSuitable: boolean }> = new Map()
   #apps: Map<AppId, AppMetadata> = new Map()
   #isEditMode: boolean
+  #components = new Map<React.FC<unknown>, InjectableTarget>()
 
-  constructor(layoutManager: BosComponent, contextManager: ContextManager) {
+  constructor(
+    layoutManager: BosComponent,
+    contextElement: Element,
+    insPointElement: Element,
+    contextManager: ContextManager
+  ) {
     this.#layoutManager = layoutManager
+    this.#contextElement = contextElement
+    this.#insPointElement = insPointElement
     this.#contextManager = contextManager
     this.#isEditMode = false
     this.forceUpdate()
@@ -95,11 +110,14 @@ export class LayoutManager {
     const links = Array.from(this.#userLinks.values())
     const apps = Array.from(this.#apps.values())
     const pureContextTree = LayoutManager._buildContextTree(context)
+    const components = Array.from(this.#components.entries()).map(([component, target]) => ({
+      component,
+      target,
+    }))
 
     this._setProps({
       // ToDo: unify context forwarding
-      context: context.parsedContext, // ToDo: remove?
-      contextType: context.contextType, // ToDo: remove?
+      context: pureContextTree,
       apps: apps.map((app) => ({
         id: app.id,
         metadata: app.metadata,
@@ -117,6 +135,7 @@ export class LayoutManager {
         }, // ToDo: add props
         isSuitable: link.isSuitable, // ToDo: LM know about widgets from other LM
       })),
+      components: components,
       isEditMode: this.#isEditMode,
 
       // ToDo: move functions to separate api namespace?
@@ -124,10 +143,26 @@ export class LayoutManager {
       deleteUserLink: this._deleteUserLink.bind(this),
       enableEditMode: this._enableEditMode.bind(this),
       disableEditMode: this._disableEditMode.bind(this),
+
+      // For OverlayTrigger
+      attachContextRef: this._attachContextRef.bind(this),
+      attachInsPointRef: this._attachInsPointRef.bind(this),
     })
   }
 
+  injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>) {
+    this.#components.set(cmp as React.FC<unknown>, target)
+    this.forceUpdate()
+  }
+
+  unjectComponent<T>(_: InjectableTarget, cmp: React.FC<T>) {
+    this.#components.delete(cmp as React.FC<unknown>)
+    this.forceUpdate()
+  }
+
   destroy() {
+    this.#components.clear()
+    this.#layoutManager.disconnectedCallback?.() // ToDo: it should be called automatically
     this.#layoutManager.remove()
   }
 
@@ -157,6 +192,14 @@ export class LayoutManager {
     return this.#contextManager.disableEditMode()
   }
 
+  _attachContextRef(callback: (r: React.Component | Element | null | undefined) => void) {
+    callback(this.#contextElement)
+  }
+
+  _attachInsPointRef(callback: (r: React.Component | Element | null | undefined) => void) {
+    callback(this.#insPointElement)
+  }
+
   // Utils
 
   // ToDo: maybe it's better to rename props in IContextNode?
@@ -164,6 +207,7 @@ export class LayoutManager {
     return {
       namespace: context.namespace,
       type: context.contextType,
+      id: context.id,
       parsed: context.parsedContext,
       parent: context.parentNode ? this._buildContextTree(context.parentNode) : null,
     }

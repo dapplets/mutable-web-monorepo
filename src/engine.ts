@@ -5,12 +5,19 @@ import {
   AdapterType,
   AppMetadata,
   IProvider,
+  InjectableTarget,
   Mutation,
   MutationWithSettings,
   ParserConfig,
 } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
-import { NearConfig, bosLoaderUrl, getNearConfig } from './constants'
+import {
+  NearConfig,
+  ViewportElementId,
+  ViewportInnerElementId,
+  bosLoaderUrl,
+  getNearConfig,
+} from './constants'
 import { NearSigner } from './providers/near-signer'
 import { SocialDbProvider } from './providers/social-db-provider'
 import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
@@ -25,7 +32,6 @@ import { IStorage } from './storage/storage'
 import { Repository } from './storage/repository'
 import { JsonStorage } from './storage/json-storage'
 import { LocalStorage } from './storage/local-storage'
-import { shadowRoot as overlayShadowRoot } from './bos/overlay'
 
 export type EngineConfig = {
   networkId: string
@@ -35,6 +41,9 @@ export type EngineConfig = {
   bosElementName?: string
   bosElementStyleSrc?: string
 }
+
+// ToDo: dirty hack
+export let engineSingleton: Engine | null = null
 
 export class Engine implements IContextListener {
   #provider: IProvider
@@ -46,6 +55,10 @@ export class Engine implements IContextListener {
   #redirectMap: any = null
   #devModePollingTimer: number | null = null
   #repository: Repository
+  #viewport: HTMLDivElement | null = null
+
+  // ToDo: duplcated in ContextManager and LayoutManager
+  #refComponents = new Map<React.FC<unknown>, InjectableTarget>()
 
   adapters: Set<IAdapter> = new Set()
   treeBuilder: ITreeBuilder | null = null
@@ -69,13 +82,7 @@ export class Engine implements IContextListener {
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
 
-    // ToDo: refactor this hack. Maybe extract ShadowDomWrapper as customElement to initNear
-    if (config.bosElementStyleSrc) {
-      const externalStyleLink = document.createElement('link')
-      externalStyleLink.rel = 'stylesheet'
-      externalStyleLink.href = config.bosElementStyleSrc
-      overlayShadowRoot.appendChild(externalStyleLink)
-    }
+    engineSingleton = this
   }
 
   async handleContextStarted(context: IContextNode): Promise<void> {
@@ -113,6 +120,13 @@ export class Engine implements IContextListener {
     links.forEach((link) => contextManager.addUserLink(link))
     apps.forEach((app) => contextManager.addAppMetadata(app))
     contextManager.setRedirectMap(this.#redirectMap)
+
+    // Add existing React component refereneces from portals
+    this.#refComponents.forEach((target, cmp) => {
+      if (MutationManager._isTargetMet(target, context)) {
+        contextManager.injectComponent(target, cmp)
+      }
+    })
   }
 
   handleContextChanged(context: IContextNode, oldParsedContext: any): void {
@@ -124,7 +138,7 @@ export class Engine implements IContextListener {
   handleContextFinished(context: IContextNode): void {
     if (!this.started) return
 
-    // ToDo: will layout managers be removed from the DOM?
+    this.#contextManagers.get(context)?.destroy()
     this.#contextManagers.delete(context)
   }
 
@@ -133,7 +147,7 @@ export class Engine implements IContextListener {
   }
 
   handleInsPointFinished(context: IContextNode, oldInsPoint: string): void {
-    // ToDo: do nothing because IP unmounted?
+    this.#contextManagers.get(context)?.destroyLayoutManager(oldInsPoint)
   }
 
   getLastUsedMutation = async (): Promise<string | null> => {
@@ -191,6 +205,7 @@ export class Engine implements IContextListener {
     this.treeBuilder = new PureTreeBuilder(this)
     this.started = true
 
+    this._attachViewport()
     this._updateRootContext()
 
     console.log('Mutable Web Engine started!', {
@@ -206,6 +221,7 @@ export class Engine implements IContextListener {
     this.adapters.clear()
     this.#contextManagers.clear()
     this.treeBuilder = null
+    this._detachViewport()
   }
 
   async getMutations(): Promise<MutationWithSettings[]> {
@@ -277,7 +293,7 @@ export class Engine implements IContextListener {
     switch (config.parserType) {
       case AdapterType.Json:
         return new DynamicHtmlAdapter(
-          document.body,
+          document.documentElement,
           this.treeBuilder,
           config.id,
           new JsonParser(config) // ToDo: add try catch because config can be invalid
@@ -285,7 +301,7 @@ export class Engine implements IContextListener {
 
       case AdapterType.Bos:
         return new DynamicHtmlAdapter(
-          document.body,
+          document.documentElement,
           this.treeBuilder,
           config.id,
           new BosParser(config)
@@ -344,6 +360,27 @@ export class Engine implements IContextListener {
     return this._populateMutationSettings(mutation)
   }
 
+  injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>) {
+    // save refs for future contexts
+    this.#refComponents.set(cmp as React.FC<unknown>, target)
+
+    this.#contextManagers.forEach((contextManager, context) => {
+      if (MutationManager._isTargetMet(target, context)) {
+        contextManager.injectComponent(target, cmp)
+      }
+    })
+  }
+
+  unjectComponent<T>(target: InjectableTarget, cmp: React.FC<T>) {
+    this.#refComponents.delete(cmp as React.FC<unknown>)
+
+    this.#contextManagers.forEach((contextManager, context) => {
+      if (MutationManager._isTargetMet(target, context)) {
+        contextManager.unjectComponent(target, cmp)
+      }
+    })
+  }
+
   private async _tryFetchAndUpdateRedirects(polling: boolean) {
     try {
       const res = await fetch(bosLoaderUrl, {
@@ -366,7 +403,7 @@ export class Engine implements IContextListener {
       this.#contextManagers.forEach((cm) => cm.setRedirectMap(this.#redirectMap))
     } catch (err) {
       console.error(err)
-      this.disableDevMode()
+      // this.disableDevMode()
     }
   }
 
@@ -396,6 +433,49 @@ export class Engine implements IContextListener {
         isFavorite,
         lastUsage,
       },
+    }
+  }
+
+  private _attachViewport() {
+    if (this.#viewport) throw new Error('Already attached')
+
+    const viewport = document.createElement('div')
+    viewport.id = ViewportElementId
+    const shadowRoot = viewport.attachShadow({ mode: 'open' })
+
+    // It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
+    // https://stackoverflow.com/a/68062098
+    const disableCssInheritanceStyle = document.createElement('style')
+    disableCssInheritanceStyle.innerHTML = ':host { all: initial; }'
+    shadowRoot.appendChild(disableCssInheritanceStyle)
+
+    if (this.config.bosElementStyleSrc) {
+      const externalStyleLink = document.createElement('link')
+      externalStyleLink.rel = 'stylesheet'
+      externalStyleLink.href = this.config.bosElementStyleSrc
+      shadowRoot.appendChild(externalStyleLink)
+    }
+
+    const viewportInner = document.createElement('div')
+    viewportInner.id = ViewportInnerElementId
+    viewportInner.setAttribute('data-bs-theme', 'light') // ToDo: parametrize
+    shadowRoot.appendChild(viewportInner)
+
+    // Prevent event propagation from BOS-component to parent
+    const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress']
+    EventsToStopPropagation.forEach((eventName) => {
+      viewport.addEventListener(eventName, (e) => e.stopPropagation())
+    })
+
+    document.body.appendChild(viewport)
+
+    this.#viewport = viewport
+  }
+
+  private _detachViewport() {
+    if (this.#viewport) {
+      document.body.removeChild(this.#viewport)
+      this.#viewport = null
     }
   }
 }

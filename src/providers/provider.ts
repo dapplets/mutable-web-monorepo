@@ -45,6 +45,13 @@ export type AppMetadataTarget = ContextTarget & {
   injectOnce?: boolean
 }
 
+export type InjectableTarget = ContextTarget & {
+  injectTo: string
+  insteadOf?: {
+    linkId: string
+  }
+}
+
 export type AppMetadata = {
   id: AppId
   authorId: string

@@ -297,7 +297,7 @@ export class SocialDbProvider implements IProvider {
     const [accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter)
 
     if (entityType !== 'parser' || !accountId || !parserLocalId) {
-      throw new Error('Invalid namespace')
+      throw new Error(`Invalid namespace: ${parserGlobalId}`)
     }
 
     return { accountId, parserLocalId }

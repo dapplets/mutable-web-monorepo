@@ -8,6 +8,7 @@ import {
   AppMetadata,
   AppMetadataTarget,
   BosUserLink,
+  InjectableTarget,
   UserLinkId,
 } from './providers/provider'
 
@@ -24,6 +25,9 @@ export class ContextManager {
   #apps: Map<AppId, AppMetadata> = new Map()
   #defaultLayoutManager: string
   #redirectMap: any = null
+
+  // ToDo: duplcated in ContextManager and LayoutManager
+  #refComponents = new Map<React.FC<unknown>, InjectableTarget>()
 
   constructor(
     context: IContextNode,
@@ -115,7 +119,23 @@ export class ContextManager {
     const bosWidgetId = insPoint.bosLayoutManager ?? this.#defaultLayoutManager
     const layoutManagerElement = this.#widgetFactory.createWidget(bosWidgetId)
 
-    const layoutManager = new LayoutManager(layoutManagerElement, this)
+    const contextElement = this.#adapter.getContextElement(this.context)
+    const insPointElement = this.#adapter.getInsertionPointElement(this.context, insPointName)
+
+    if (!contextElement) {
+      throw new Error('No context element found')
+    }
+
+    if (!insPointElement) {
+      throw new Error('No insertion point element found')
+    }
+
+    const layoutManager = new LayoutManager(
+      layoutManagerElement,
+      contextElement,
+      insPointElement,
+      this
+    )
 
     try {
       // Inject layout manager
@@ -132,14 +152,38 @@ export class ContextManager {
       this.#apps.forEach((app) => layoutManager.addAppMetadata(app))
 
       layoutManager.setRedirectMap(this.#redirectMap)
+
+      // Add existing React component refereneces from portals
+      this.#refComponents.forEach((target, cmp) => {
+        if (target.injectTo === insPoint.name) {
+          layoutManager.injectComponent(target, cmp)
+        }
+      })
     } catch (err) {
       console.error(err)
     }
   }
 
+  destroyLayoutManager(insPointName: string) {
+    this.#layoutManagers.get(insPointName)?.destroy()
+    this.#layoutManagers.delete(insPointName)
+  }
+
   destroy() {
     this.#layoutManagers.forEach((lm) => lm.destroy())
     this.#layoutManagers.clear()
+    this.#refComponents.clear()
+  }
+
+  injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>) {
+    // save refs for future contexts
+    this.#refComponents.set(cmp as React.FC<unknown>, target)
+    this.#layoutManagers.get(target.injectTo)?.injectComponent(target, cmp)
+  }
+
+  unjectComponent<T>(target: InjectableTarget, cmp: React.FC<T>) {
+    this.#refComponents.delete(cmp as React.FC<unknown>)
+    this.#layoutManagers.get(target.injectTo)?.unjectComponent(target, cmp)
   }
 
   private _isTargetInjectable(target: AppMetadataTarget, appId: string) {

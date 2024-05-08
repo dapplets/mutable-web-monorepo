@@ -1,5 +1,6 @@
 import { getChildContextElements } from './utils'
 import { IParser, InsertionPoint } from './interface'
+import { InsertionType } from '../adapters/interface'
 
 const ParsedContextAttr = 'data-mweb-context-parsed'
 const ContextTypeAttr = 'data-mweb-context-type'
@@ -53,6 +54,7 @@ export class MutableWebParser implements IParser {
   getInsertionPoints(element: Element): InsertionPoint[] {
     return getChildContextElements(element, InsPointAttr, ContextTypeAttr).map((el) => ({
       name: el.getAttribute(InsPointAttr)!,
+      insertionType: InsertionType.End
     }))
   }
 }
