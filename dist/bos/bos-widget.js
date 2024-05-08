@@ -44,7 +44,7 @@ const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress'];
 class BosComponent extends HTMLElement {
     constructor() {
         super(...arguments);
-        this._shadowRoot = this.attachShadow({ mode: 'closed' });
+        this._shadowRoot = this.attachShadow({ mode: 'open' });
         this._styleLibraryMountPoint = document.createElement('link');
         this._adapterStylesMountPoint = document.createElement('style');
         this._stylesMountPoint = document.createElement('div');
@@ -98,6 +98,8 @@ class BosComponent extends HTMLElement {
         EventsToStopPropagation.forEach((eventName) => {
             this.addEventListener(eventName, (e) => e.stopPropagation());
         });
+        // For mweb parser that looks for contexts in shadow dom
+        this.setAttribute('data-mweb-shadow-host', '');
         this._shadowRoot.appendChild(this._componentMountPoint);
         this._shadowRoot.appendChild(this._stylesMountPoint);
         // It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
@@ -110,6 +112,7 @@ class BosComponent extends HTMLElement {
         justify-content: center;
         position: relative;
         visibility: visible !important;
+        z-index: 999999;
       }
     `;
         this._adapterStylesMountPoint.innerHTML = resetCssRules;
@@ -124,7 +127,9 @@ class BosComponent extends HTMLElement {
         this._render();
     }
     disconnectedCallback() {
-        this._root.unmount();
+        // ToDo: this workaround prevents React's error
+        // "Attempted to synchronously unmount a root while React was already rendering"
+        setTimeout(() => this._root.unmount());
     }
     _render() {
         this._root.render(React.createElement(styled_components_1.StyleSheetManager, { target: this._stylesMountPoint },

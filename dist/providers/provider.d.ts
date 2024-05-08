@@ -1,3 +1,5 @@
+import { BosParserConfig } from '../core/parsers/bos-parser';
+import { JsonParserConfig } from '../core/parsers/json-parser';
 export type UserLinkId = string;
 export type AppId = string;
 export type MutationId = string;
@@ -32,6 +34,12 @@ export type AppMetadataTarget = ContextTarget & {
     componentId: string;
     injectTo: string;
     injectOnce?: boolean;
+};
+export type InjectableTarget = ContextTarget & {
+    injectTo: string;
+    insteadOf?: {
+        linkId: string;
+    };
 };
 export type AppMetadata = {
     id: AppId;
@@ -71,12 +79,25 @@ export type LinkIndexObject = {
     contextType: string;
     if: Record<string, ScalarType>;
 };
-export type ParserConfig = {
+export declare enum AdapterType {
+    Bos = "bos",
+    Microdata = "microdata",
+    Json = "json",
+    MWeb = "mweb"
+}
+export type ParserConfig = ({
+    parserType: AdapterType.Json;
     id: string;
-    parserType: string;
-    contexts: any;
     targets: ContextTarget[];
-};
+} & JsonParserConfig) | ({
+    parserType: AdapterType.Bos;
+    id: string;
+    targets: ContextTarget[];
+} & BosParserConfig) | ({
+    parserType: AdapterType.MWeb;
+    id: string;
+    targets: ContextTarget[];
+});
 export interface IProvider {
     getParserConfig(globalParserId: string): Promise<ParserConfig | null>;
     getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]>;

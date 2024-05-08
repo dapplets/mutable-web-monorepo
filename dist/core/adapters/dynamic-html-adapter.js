@@ -84,8 +84,20 @@ class DynamicHtmlAdapter {
             return [];
         return this.parser.getInsertionPoints(htmlElement, context.contextType);
     }
+    getContextElement(context) {
+        var _a;
+        return (_a = __classPrivateFieldGet(this, _DynamicHtmlAdapter_elementByContext, "f").get(context)) !== null && _a !== void 0 ? _a : null;
+    }
+    getInsertionPointElement(context, insPointName) {
+        const contextElement = this.getContextElement(context);
+        if (!contextElement)
+            return null;
+        return this.parser.findInsertionPoint(contextElement, context.contextType, insPointName);
+    }
     _createContextForElement(element, contextName) {
-        const context = this.treeBuilder.createNode(this.namespace, contextName);
+        const parsedContext = this.parser.parseContext(element, contextName);
+        const insPoints = this._findAvailableInsPoints(element, contextName);
+        const context = this.treeBuilder.createNode(this.namespace, contextName, parsedContext, insPoints);
         const observer = new MutationObserver(() => this._handleMutations(element, context));
         __classPrivateFieldGet(this, _DynamicHtmlAdapter_observerByElement, "f").set(element, observer);
         __classPrivateFieldGet(this, _DynamicHtmlAdapter_elementByContext, "f").set(context, element);
@@ -114,8 +126,10 @@ class DynamicHtmlAdapter {
         for (const { element, contextName } of childPairs) {
             if (!__classPrivateFieldGet(this, _DynamicHtmlAdapter_contextByElement, "f").has(element)) {
                 const childContext = this._createContextForElement(element, contextName);
-                this.treeBuilder.appendChild(parentContext, childContext);
                 __classPrivateFieldGet(this, _DynamicHtmlAdapter_contextByElement, "f").set(element, childContext);
+                this.treeBuilder.appendChild(parentContext, childContext);
+                // initial parsing
+                this._handleMutations(element, childContext);
             }
         }
     }

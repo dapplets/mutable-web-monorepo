@@ -1,10 +1,10 @@
+/// <reference types="react" />
 import { BosComponent } from './bos/bos-widget';
 import { ContextManager } from './context-manager';
 import { IContextNode } from './core/tree/types';
-import { AppId, AppMetadata, BosUserLink, UserLinkId } from './providers/provider';
+import { AppId, AppMetadata, BosUserLink, InjectableTarget, UserLinkId } from './providers/provider';
 export interface LayoutManagerProps {
-    context: any;
-    contextType: string;
+    context: ContextTreeProps;
     apps: {
         id: string;
         metadata?: {
@@ -27,21 +27,28 @@ export interface LayoutManagerProps {
             };
         };
     }[];
+    components: {
+        target: InjectableTarget;
+        component: React.FC<unknown>;
+    }[];
     isEditMode: boolean;
     createUserLink: (bosWidgetId: string) => Promise<void>;
     deleteUserLink: (userLinkId: UserLinkId) => Promise<void>;
     enableEditMode: () => void;
     disableEditMode: () => void;
+    attachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void;
+    attachInsPointRef: (callback: (r: React.Component | Element | null | undefined) => void) => void;
 }
 interface ContextTreeProps {
     namespace: string | null;
     type: string;
+    id: string | null;
     parsed: any;
     parent: ContextTreeProps | null;
 }
 export declare class LayoutManager {
     #private;
-    constructor(layoutManager: BosComponent, contextManager: ContextManager);
+    constructor(layoutManager: BosComponent, contextElement: Element, insPointElement: Element, contextManager: ContextManager);
     addUserLink(userLink: BosUserLink, isSuitable: boolean): void;
     removeUserLink(userLinkId: UserLinkId): void;
     addAppMetadata(appMetadata: AppMetadata): void;
@@ -50,12 +57,16 @@ export declare class LayoutManager {
     disableEditMode(): void;
     setRedirectMap(redirectMap: any): void;
     forceUpdate(): void;
+    injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
+    unjectComponent<T>(_: InjectableTarget, cmp: React.FC<T>): void;
     destroy(): void;
     _setProps(props: LayoutManagerProps): void;
     _createUserLink(globalAppId: string): Promise<void>;
     _deleteUserLink(userLinkId: UserLinkId): Promise<void>;
     _enableEditMode(): void;
     _disableEditMode(): void;
+    _attachContextRef(callback: (r: React.Component | Element | null | undefined) => void): void;
+    _attachInsPointRef(callback: (r: React.Component | Element | null | undefined) => void): void;
     static _buildContextTree(context: IContextNode): ContextTreeProps;
 }
 export {};

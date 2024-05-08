@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.bosLoaderUrl = exports.DappletsEngineNs = exports.getNearConfig = exports.NearConfigs = void 0;
+exports.ViewportInnerElementId = exports.ViewportElementId = exports.bosLoaderUrl = exports.DappletsEngineNs = exports.getNearConfig = exports.NearConfigs = void 0;
 exports.NearConfigs = {
     mainnet: {
         networkId: 'mainnet',
@@ -28,3 +28,5 @@ const getNearConfig = (networkId) => {
 exports.getNearConfig = getNearConfig;
 exports.DappletsEngineNs = 'engine';
 exports.bosLoaderUrl = 'http://127.0.0.1:3030/';
+exports.ViewportElementId = 'mweb-engine-viewport';
+exports.ViewportInnerElementId = 'mweb-engine-viewport-inner';

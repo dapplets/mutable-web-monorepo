@@ -19,17 +19,22 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _LayoutManager_contextManager, _LayoutManager_layoutManager, _LayoutManager_userLinks, _LayoutManager_apps, _LayoutManager_isEditMode;
+var _LayoutManager_contextManager, _LayoutManager_layoutManager, _LayoutManager_contextElement, _LayoutManager_insPointElement, _LayoutManager_userLinks, _LayoutManager_apps, _LayoutManager_isEditMode, _LayoutManager_components;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LayoutManager = void 0;
 class LayoutManager {
-    constructor(layoutManager, contextManager) {
+    constructor(layoutManager, contextElement, insPointElement, contextManager) {
         _LayoutManager_contextManager.set(this, void 0);
         _LayoutManager_layoutManager.set(this, void 0);
+        _LayoutManager_contextElement.set(this, void 0);
+        _LayoutManager_insPointElement.set(this, void 0);
         _LayoutManager_userLinks.set(this, new Map());
         _LayoutManager_apps.set(this, new Map());
         _LayoutManager_isEditMode.set(this, void 0);
+        _LayoutManager_components.set(this, new Map());
         __classPrivateFieldSet(this, _LayoutManager_layoutManager, layoutManager, "f");
+        __classPrivateFieldSet(this, _LayoutManager_contextElement, contextElement, "f");
+        __classPrivateFieldSet(this, _LayoutManager_insPointElement, insPointElement, "f");
         __classPrivateFieldSet(this, _LayoutManager_contextManager, contextManager, "f");
         __classPrivateFieldSet(this, _LayoutManager_isEditMode, false, "f");
         this.forceUpdate();
@@ -66,10 +71,13 @@ class LayoutManager {
         const links = Array.from(__classPrivateFieldGet(this, _LayoutManager_userLinks, "f").values());
         const apps = Array.from(__classPrivateFieldGet(this, _LayoutManager_apps, "f").values());
         const pureContextTree = LayoutManager._buildContextTree(context);
+        const components = Array.from(__classPrivateFieldGet(this, _LayoutManager_components, "f").entries()).map(([component, target]) => ({
+            component,
+            target,
+        }));
         this._setProps({
             // ToDo: unify context forwarding
-            context: context.parsedContext, // ToDo: remove?
-            contextType: context.contextType, // ToDo: remove?
+            context: pureContextTree,
             apps: apps.map((app) => ({
                 id: app.id,
                 metadata: app.metadata,
@@ -87,15 +95,30 @@ class LayoutManager {
                 }, // ToDo: add props
                 isSuitable: link.isSuitable, // ToDo: LM know about widgets from other LM
             })),
+            components: components,
             isEditMode: __classPrivateFieldGet(this, _LayoutManager_isEditMode, "f"),
             // ToDo: move functions to separate api namespace?
             createUserLink: this._createUserLink.bind(this),
             deleteUserLink: this._deleteUserLink.bind(this),
             enableEditMode: this._enableEditMode.bind(this),
             disableEditMode: this._disableEditMode.bind(this),
+            // For OverlayTrigger
+            attachContextRef: this._attachContextRef.bind(this),
+            attachInsPointRef: this._attachInsPointRef.bind(this),
         });
     }
+    injectComponent(target, cmp) {
+        __classPrivateFieldGet(this, _LayoutManager_components, "f").set(cmp, target);
+        this.forceUpdate();
+    }
+    unjectComponent(_, cmp) {
+        __classPrivateFieldGet(this, _LayoutManager_components, "f").delete(cmp);
+        this.forceUpdate();
+    }
     destroy() {
+        var _a, _b;
+        __classPrivateFieldGet(this, _LayoutManager_components, "f").clear();
+        (_b = (_a = __classPrivateFieldGet(this, _LayoutManager_layoutManager, "f")).disconnectedCallback) === null || _b === void 0 ? void 0 : _b.call(_a); // ToDo: it should be called automatically
         __classPrivateFieldGet(this, _LayoutManager_layoutManager, "f").remove();
     }
     _setProps(props) {
@@ -120,16 +143,23 @@ class LayoutManager {
     _disableEditMode() {
         return __classPrivateFieldGet(this, _LayoutManager_contextManager, "f").disableEditMode();
     }
+    _attachContextRef(callback) {
+        callback(__classPrivateFieldGet(this, _LayoutManager_contextElement, "f"));
+    }
+    _attachInsPointRef(callback) {
+        callback(__classPrivateFieldGet(this, _LayoutManager_insPointElement, "f"));
+    }
     // Utils
     // ToDo: maybe it's better to rename props in IContextNode?
     static _buildContextTree(context) {
         return {
             namespace: context.namespace,
             type: context.contextType,
+            id: context.id,
             parsed: context.parsedContext,
             parent: context.parentNode ? this._buildContextTree(context.parentNode) : null,
         };
     }
 }
 exports.LayoutManager = LayoutManager;
-_LayoutManager_contextManager = new WeakMap(), _LayoutManager_layoutManager = new WeakMap(), _LayoutManager_userLinks = new WeakMap(), _LayoutManager_apps = new WeakMap(), _LayoutManager_isEditMode = new WeakMap();
+_LayoutManager_contextManager = new WeakMap(), _LayoutManager_layoutManager = new WeakMap(), _LayoutManager_contextElement = new WeakMap(), _LayoutManager_insPointElement = new WeakMap(), _LayoutManager_userLinks = new WeakMap(), _LayoutManager_apps = new WeakMap(), _LayoutManager_isEditMode = new WeakMap(), _LayoutManager_components = new WeakMap();

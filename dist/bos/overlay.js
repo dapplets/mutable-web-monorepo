@@ -22,50 +22,36 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shadowRoot = exports.Overlay = void 0;
+exports.Overlay = void 0;
 const React = __importStar(require("react"));
 const react_dom_1 = require("react-dom");
-const styled_components_1 = require("styled-components");
-const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress'];
-const overlay = document.createElement('mutable-web-overlay');
-overlay.style.background = '#ffffff88';
-overlay.style.position = 'fixed';
-overlay.style.display = 'none';
-overlay.style.top = '0';
-overlay.style.left = '0';
-overlay.style.width = '100%';
-overlay.style.height = '100%';
-overlay.style.overflowX = 'hidden';
-overlay.style.overflowY = 'auto';
-overlay.style.outline = '0';
-overlay.style.fontFamily =
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif';
-overlay.style.zIndex = '2147483647';
-overlay.style.visibility = 'visible';
-const shadowRoot = overlay.attachShadow({ mode: 'closed' });
-exports.shadowRoot = shadowRoot;
-const stylesMountPoint = document.createElement('div');
-const container = document.createElement('div');
-shadowRoot.appendChild(stylesMountPoint);
-// It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
-// https://stackoverflow.com/a/68062098
-const disableCssInheritanceStyle = document.createElement('style');
-disableCssInheritanceStyle.innerHTML = ':host { all: initial; }';
-shadowRoot.appendChild(disableCssInheritanceStyle);
-shadowRoot.appendChild(container);
-// Prevent event propagation from BOS-component to parent
-EventsToStopPropagation.forEach((eventName) => {
-    overlay.addEventListener(eventName, (e) => e.stopPropagation());
-});
-document.body.appendChild(overlay);
+const styled_components_1 = __importDefault(require("styled-components"));
+const common_1 = require("../common");
+const shadow_dom_wrapper_1 = require("./shadow-dom-wrapper");
+const ModalBackdrop = styled_components_1.default.div `
+  background: #ffffff88;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  z-index: 2147483647;
+  visibility: visible;
+`;
 const Overlay = ({ children }) => {
-    React.useEffect(() => {
-        overlay.style.display = 'block';
-        return () => {
-            overlay.style.display = 'none';
-        };
-    }, []);
-    return (0, react_dom_1.createPortal)(React.createElement(styled_components_1.StyleSheetManager, { target: stylesMountPoint }, children), container);
+    const container = (0, common_1.getViewport)();
+    if (!container)
+        return null;
+    return (0, react_dom_1.createPortal)(React.createElement(shadow_dom_wrapper_1.ShadowDomWrapper, null,
+        React.createElement(ModalBackdrop, null, children)), container);
 };
 exports.Overlay = Overlay;

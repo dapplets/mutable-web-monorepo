@@ -1,8 +1,9 @@
+/// <reference types="react" />
 import { BosWidgetFactory } from './bos/bos-widget-factory';
 import { IAdapter } from './core/adapters/interface';
 import { IContextNode } from './core/tree/types';
 import { MutationManager } from './mutation-manager';
-import { AppId, AppMetadata, BosUserLink } from './providers/provider';
+import { AppId, AppMetadata, BosUserLink, InjectableTarget } from './providers/provider';
 export type InsertionPointName = string;
 export declare class ContextManager {
     #private;
@@ -19,7 +20,10 @@ export declare class ContextManager {
     deleteUserLink(userLink: BosUserLink): Promise<void>;
     setRedirectMap(redirectMap: any): void;
     injectLayoutManager(insPointName: string): void;
+    destroyLayoutManager(insPointName: string): void;
     destroy(): void;
+    injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
+    unjectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
     private _isTargetInjectable;
 }
 //# sourceMappingURL=context-manager.d.ts.map

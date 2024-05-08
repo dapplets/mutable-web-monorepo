@@ -5,7 +5,7 @@ export declare class PureTreeBuilder implements ITreeBuilder {
     constructor(contextListener: IContextListener);
     appendChild(parent: IContextNode, child: IContextNode): void;
     removeChild(parent: IContextNode, child: IContextNode): void;
-    createNode(namespace: string, contextType: string): IContextNode;
+    createNode(namespace: string, contextType: string, parsedContext?: any, insPoints?: string[]): IContextNode;
     updateParsedContext(context: IContextNode, newParsedContext: any): void;
     updateInsertionPoints(context: IContextNode, foundIPs: string[]): void;
 }

@@ -24,15 +24,19 @@ class PureTreeBuilder {
         __classPrivateFieldSet(this, _PureTreeBuilder_listeners, contextListener, "f");
     }
     appendChild(parent, child) {
+        var _a;
         parent.appendChild(child);
         __classPrivateFieldGet(this, _PureTreeBuilder_listeners, "f").handleContextStarted(child);
+        (_a = child.insPoints) === null || _a === void 0 ? void 0 : _a.forEach((ip) => __classPrivateFieldGet(this, _PureTreeBuilder_listeners, "f").handleInsPointStarted(child, ip));
     }
     removeChild(parent, child) {
+        var _a;
         parent.removeChild(child);
         __classPrivateFieldGet(this, _PureTreeBuilder_listeners, "f").handleContextFinished(child);
+        (_a = child.insPoints) === null || _a === void 0 ? void 0 : _a.forEach((ip) => __classPrivateFieldGet(this, _PureTreeBuilder_listeners, "f").handleInsPointFinished(child, ip));
     }
-    createNode(namespace, contextType) {
-        return new pure_context_node_1.PureContextNode(namespace, contextType);
+    createNode(namespace, contextType, parsedContext = {}, insPoints = []) {
+        return new pure_context_node_1.PureContextNode(namespace, contextType, parsedContext, insPoints);
     }
     updateParsedContext(context, newParsedContext) {
         const oldParsedContext = context.parsedContext;

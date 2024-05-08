@@ -52,6 +52,8 @@ class SocialDbProvider {
     getParserConfig(globalParserId) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d, _e;
+            if (globalParserId === 'mweb')
+                return null;
             const { accountId, parserLocalId } = this._extractParserIdFromNamespace(globalParserId);
             const queryResult = yield this.client.get([
                 `*/${SettingsKey}/${ProjectIdKey}/${ParserKey}/${parserLocalId}/**`,
@@ -228,7 +230,7 @@ class SocialDbProvider {
                 [SelfKey]: JSON.stringify({
                     parserType: config.parserType,
                     targets: config.targets,
-                    contexts: config.contexts,
+                    contexts: config.contexts, // ToDo: types
                 }),
             };
             yield this.client.set(SocialDbProvider._buildNestedData(keys, storedParserConfig));
@@ -240,7 +242,7 @@ class SocialDbProvider {
         // Example: example.near/parser/social-network
         const [accountId, entityType, parserLocalId] = parserGlobalId.split(KeyDelimiter);
         if (entityType !== 'parser' || !accountId || !parserLocalId) {
-            throw new Error('Invalid namespace');
+            throw new Error(`Invalid namespace: ${parserGlobalId}`);
         }
         return { accountId, parserLocalId };
     }

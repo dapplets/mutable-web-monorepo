@@ -22,6 +22,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _MutationManager_provider, _MutationManager_activeApps, _MutationManager_activeParsers;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MutationManager = void 0;
+const provider_1 = require("./providers/provider");
 class MutationManager {
     constructor(provider) {
         this.mutation = null;
@@ -113,6 +114,18 @@ class MutationManager {
             __classPrivateFieldSet(this, _MutationManager_activeApps, activeApps, "f");
             __classPrivateFieldSet(this, _MutationManager_activeParsers, activeParsers, "f");
             this.mutation = mutation;
+            // MWeb parser is enabled by default
+            __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").push({
+                parserType: provider_1.AdapterType.MWeb,
+                id: 'mweb',
+                targets: [
+                    {
+                        namespace: 'engine',
+                        contextType: 'website',
+                        if: { id: { not: null } },
+                    },
+                ],
+            });
             console.log('Active apps: ', mutation.apps);
         });
     }

@@ -13,6 +13,8 @@ export declare class DynamicHtmlAdapter implements IAdapter {
     stop(): void;
     injectElement(injectingElement: Element, context: IContextNode, insertionPoint: string | 'root'): void;
     getInsertionPoints(context: IContextNode): InsertionPoint[];
+    getContextElement(context: IContextNode): Element | null;
+    getInsertionPointElement(context: IContextNode, insPointName: string): Element | null;
     _createContextForElement(element: Element, contextName: string): IContextNode;
     private _handleMutations;
     private _appendNewChildContexts;

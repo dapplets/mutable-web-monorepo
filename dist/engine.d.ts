@@ -1,13 +1,9 @@
+/// <reference types="react" />
 import { IAdapter } from './core/adapters/interface';
-import { AppMetadata, Mutation, MutationWithSettings, ParserConfig } from './providers/provider';
+import { AppMetadata, InjectableTarget, Mutation, MutationWithSettings, ParserConfig } from './providers/provider';
 import { WalletSelector } from '@near-wallet-selector/core';
 import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types';
 import { IStorage } from './storage/storage';
-export declare enum AdapterType {
-    Bos = "bos",
-    Microdata = "microdata",
-    Json = "json"
-}
 export type EngineConfig = {
     networkId: string;
     gatewayId: string;
@@ -16,6 +12,7 @@ export type EngineConfig = {
     bosElementName?: string;
     bosElementStyleSrc?: string;
 };
+export declare let engineSingleton: Engine | null;
 export declare class Engine implements IContextListener {
     #private;
     private config;
@@ -40,15 +37,19 @@ export declare class Engine implements IContextListener {
     disableDevMode(): void;
     registerAdapter(adapter: IAdapter): void;
     unregisterAdapter(adapter: IAdapter): void;
-    createAdapter(config?: ParserConfig): IAdapter;
+    createAdapter(config: ParserConfig): IAdapter;
     setFavoriteMutation(mutationId: string | null): Promise<void>;
     getFavoriteMutation(): Promise<string | null>;
     removeMutationFromRecents(mutationId: string): Promise<void>;
     getApplications(): Promise<AppMetadata[]>;
     createMutation(mutation: Mutation): Promise<MutationWithSettings>;
     editMutation(mutation: Mutation): Promise<MutationWithSettings>;
+    injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
+    unjectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
     private _tryFetchAndUpdateRedirects;
     private _updateRootContext;
     private _populateMutationSettings;
+    private _attachViewport;
+    private _detachViewport;
 }
 //# sourceMappingURL=engine.d.ts.map

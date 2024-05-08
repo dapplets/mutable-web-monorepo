@@ -15,9 +15,6 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -26,8 +23,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocalStorage = exports.customElements = void 0;
-__exportStar(require("./engine"), exports);
-exports.customElements = __importStar(require("./custom-elements"));
-var local_storage_1 = require("./storage/local-storage");
-Object.defineProperty(exports, "LocalStorage", { enumerable: true, get: function () { return local_storage_1.LocalStorage; } });
+exports.MuWebWrapperPortal = void 0;
+const React = __importStar(require("react"));
+const engine_1 = require("../engine");
+const _MuWebWrapperPortal = ({ component: Component, target, }) => {
+    // ToDo: remove singleton
+    React.useEffect(() => {
+        engine_1.engineSingleton === null || engine_1.engineSingleton === void 0 ? void 0 : engine_1.engineSingleton.injectComponent(target, Component);
+        return () => {
+            engine_1.engineSingleton === null || engine_1.engineSingleton === void 0 ? void 0 : engine_1.engineSingleton.unjectComponent(target, Component);
+        };
+    }, [target, Component]);
+    return null;
+};
+const MuWebWrapperPortal = (props) => {
+    return React.createElement(_MuWebWrapperPortal, Object.assign({}, props));
+};
+exports.MuWebWrapperPortal = MuWebWrapperPortal;

@@ -19,11 +19,12 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig, _Engine_redirectMap, _Engine_devModePollingTimer, _Engine_repository;
+var _Engine_provider, _Engine_bosWidgetFactory, _Engine_selector, _Engine_contextManagers, _Engine_mutationManager, _Engine_nearConfig, _Engine_redirectMap, _Engine_devModePollingTimer, _Engine_repository, _Engine_viewport, _Engine_refComponents;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Engine = exports.AdapterType = void 0;
+exports.Engine = exports.engineSingleton = void 0;
 const dynamic_html_adapter_1 = require("./core/adapters/dynamic-html-adapter");
 const bos_widget_factory_1 = require("./bos/bos-widget-factory");
+const provider_1 = require("./providers/provider");
 const constants_1 = require("./constants");
 const near_signer_1 = require("./providers/near-signer");
 const social_db_provider_1 = require("./providers/social-db-provider");
@@ -32,17 +33,13 @@ const context_manager_1 = require("./context-manager");
 const mutation_manager_1 = require("./mutation-manager");
 const json_parser_1 = require("./core/parsers/json-parser");
 const bos_parser_1 = require("./core/parsers/bos-parser");
+const mweb_parser_1 = require("./core/parsers/mweb-parser");
 const pure_context_node_1 = require("./core/tree/pure-tree/pure-context-node");
 const repository_1 = require("./storage/repository");
 const json_storage_1 = require("./storage/json-storage");
 const local_storage_1 = require("./storage/local-storage");
-const overlay_1 = require("./bos/overlay");
-var AdapterType;
-(function (AdapterType) {
-    AdapterType["Bos"] = "bos";
-    AdapterType["Microdata"] = "microdata";
-    AdapterType["Json"] = "json";
-})(AdapterType || (exports.AdapterType = AdapterType = {}));
+// ToDo: dirty hack
+exports.engineSingleton = null;
 class Engine {
     constructor(config) {
         var _a;
@@ -56,6 +53,11 @@ class Engine {
         _Engine_redirectMap.set(this, null);
         _Engine_devModePollingTimer.set(this, null);
         _Engine_repository.set(this, void 0);
+        _Engine_viewport.set(this, null
+        // ToDo: duplcated in ContextManager and LayoutManager
+        );
+        // ToDo: duplcated in ContextManager and LayoutManager
+        _Engine_refComponents.set(this, new Map());
         this.adapters = new Set();
         this.treeBuilder = null;
         this.started = false;
@@ -102,13 +104,7 @@ class Engine {
         const nearSigner = new near_signer_1.NearSigner(__classPrivateFieldGet(this, _Engine_selector, "f"), jsonStorage, nearConfig);
         __classPrivateFieldSet(this, _Engine_provider, new social_db_provider_1.SocialDbProvider(nearSigner, nearConfig.contractName), "f");
         __classPrivateFieldSet(this, _Engine_mutationManager, new mutation_manager_1.MutationManager(__classPrivateFieldGet(this, _Engine_provider, "f")), "f");
-        // ToDo: refactor this hack. Maybe extract ShadowDomWrapper as customElement to initNear
-        if (config.bosElementStyleSrc) {
-            const externalStyleLink = document.createElement('link');
-            externalStyleLink.rel = 'stylesheet';
-            externalStyleLink.href = config.bosElementStyleSrc;
-            overlay_1.shadowRoot.appendChild(externalStyleLink);
-        }
+        exports.engineSingleton = this;
     }
     handleContextStarted(context) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -121,7 +117,6 @@ class Engine {
             for (const config of parserConfigs) {
                 const adapter = this.createAdapter(config);
                 this.registerAdapter(adapter);
-                console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
             }
             // ToDo: do not iterate over all adapters
             const adapter = Array.from(this.adapters).find((adapter) => {
@@ -136,6 +131,12 @@ class Engine {
             links.forEach((link) => contextManager.addUserLink(link));
             apps.forEach((app) => contextManager.addAppMetadata(app));
             contextManager.setRedirectMap(__classPrivateFieldGet(this, _Engine_redirectMap, "f"));
+            // Add existing React component refereneces from portals
+            __classPrivateFieldGet(this, _Engine_refComponents, "f").forEach((target, cmp) => {
+                if (mutation_manager_1.MutationManager._isTargetMet(target, context)) {
+                    contextManager.injectComponent(target, cmp);
+                }
+            });
         });
     }
     handleContextChanged(context, oldParsedContext) {
@@ -145,9 +146,10 @@ class Engine {
         (_a = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context)) === null || _a === void 0 ? void 0 : _a.forceUpdate();
     }
     handleContextFinished(context) {
+        var _a;
         if (!this.started)
             return;
-        // ToDo: will layout managers be removed from the DOM?
+        (_a = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context)) === null || _a === void 0 ? void 0 : _a.destroy();
         __classPrivateFieldGet(this, _Engine_contextManagers, "f").delete(context);
     }
     handleInsPointStarted(context, newInsPoint) {
@@ -155,7 +157,8 @@ class Engine {
         (_a = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context)) === null || _a === void 0 ? void 0 : _a.injectLayoutManager(newInsPoint);
     }
     handleInsPointFinished(context, oldInsPoint) {
-        // ToDo: do nothing because IP unmounted?
+        var _a;
+        (_a = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context)) === null || _a === void 0 ? void 0 : _a.destroyLayoutManager(oldInsPoint);
     }
     start(mutationId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -179,6 +182,7 @@ class Engine {
             }
             this.treeBuilder = new pure_tree_builder_1.PureTreeBuilder(this);
             this.started = true;
+            this._attachViewport();
             this._updateRootContext();
             console.log('Mutable Web Engine started!', {
                 engine: this,
@@ -193,6 +197,7 @@ class Engine {
         this.adapters.clear();
         __classPrivateFieldGet(this, _Engine_contextManagers, "f").clear();
         this.treeBuilder = null;
+        this._detachViewport();
     }
     getMutations() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -245,6 +250,7 @@ class Engine {
         this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context);
         this.adapters.add(adapter);
         adapter.start();
+        console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
     }
     unregisterAdapter(adapter) {
         if (!this.treeBuilder)
@@ -257,12 +263,14 @@ class Engine {
         if (!this.treeBuilder) {
             throw new Error('Tree builder is not inited');
         }
-        switch (config === null || config === void 0 ? void 0 : config.parserType) {
-            case 'json':
-                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.body, this.treeBuilder, config.id, new json_parser_1.JsonParser(config) // ToDo: add try catch because config can be invalid
+        switch (config.parserType) {
+            case provider_1.AdapterType.Json:
+                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.documentElement, this.treeBuilder, config.id, new json_parser_1.JsonParser(config) // ToDo: add try catch because config can be invalid
                 );
-            case 'bos':
-                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.body, this.treeBuilder, config.id, new bos_parser_1.BosParser(config));
+            case provider_1.AdapterType.Bos:
+                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.documentElement, this.treeBuilder, config.id, new bos_parser_1.BosParser(config));
+            case provider_1.AdapterType.MWeb:
+                return new dynamic_html_adapter_1.DynamicHtmlAdapter(document.body, this.treeBuilder, config.id, new mweb_parser_1.MutableWebParser());
             default:
                 throw new Error('Incompatible adapter type');
         }
@@ -310,6 +318,23 @@ class Engine {
             return this._populateMutationSettings(mutation);
         });
     }
+    injectComponent(target, cmp) {
+        // save refs for future contexts
+        __classPrivateFieldGet(this, _Engine_refComponents, "f").set(cmp, target);
+        __classPrivateFieldGet(this, _Engine_contextManagers, "f").forEach((contextManager, context) => {
+            if (mutation_manager_1.MutationManager._isTargetMet(target, context)) {
+                contextManager.injectComponent(target, cmp);
+            }
+        });
+    }
+    unjectComponent(target, cmp) {
+        __classPrivateFieldGet(this, _Engine_refComponents, "f").delete(cmp);
+        __classPrivateFieldGet(this, _Engine_contextManagers, "f").forEach((contextManager, context) => {
+            if (mutation_manager_1.MutationManager._isTargetMet(target, context)) {
+                contextManager.unjectComponent(target, cmp);
+            }
+        });
+    }
     _tryFetchAndUpdateRedirects(polling) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
@@ -331,7 +356,7 @@ class Engine {
             }
             catch (err) {
                 console.error(err);
-                this.disableDevMode();
+                // this.disableDevMode()
             }
         });
     }
@@ -358,6 +383,41 @@ class Engine {
                 } });
         });
     }
+    _attachViewport() {
+        if (__classPrivateFieldGet(this, _Engine_viewport, "f"))
+            throw new Error('Already attached');
+        const viewport = document.createElement('div');
+        viewport.id = constants_1.ViewportElementId;
+        const shadowRoot = viewport.attachShadow({ mode: 'open' });
+        // It will prevent inheritance without affecting other CSS defined within the ShadowDOM.
+        // https://stackoverflow.com/a/68062098
+        const disableCssInheritanceStyle = document.createElement('style');
+        disableCssInheritanceStyle.innerHTML = ':host { all: initial; }';
+        shadowRoot.appendChild(disableCssInheritanceStyle);
+        if (this.config.bosElementStyleSrc) {
+            const externalStyleLink = document.createElement('link');
+            externalStyleLink.rel = 'stylesheet';
+            externalStyleLink.href = this.config.bosElementStyleSrc;
+            shadowRoot.appendChild(externalStyleLink);
+        }
+        const viewportInner = document.createElement('div');
+        viewportInner.id = constants_1.ViewportInnerElementId;
+        viewportInner.setAttribute('data-bs-theme', 'light'); // ToDo: parametrize
+        shadowRoot.appendChild(viewportInner);
+        // Prevent event propagation from BOS-component to parent
+        const EventsToStopPropagation = ['click', 'keydown', 'keyup', 'keypress'];
+        EventsToStopPropagation.forEach((eventName) => {
+            viewport.addEventListener(eventName, (e) => e.stopPropagation());
+        });
+        document.body.appendChild(viewport);
+        __classPrivateFieldSet(this, _Engine_viewport, viewport, "f");
+    }
+    _detachViewport() {
+        if (__classPrivateFieldGet(this, _Engine_viewport, "f")) {
+            document.body.removeChild(__classPrivateFieldGet(this, _Engine_viewport, "f"));
+            __classPrivateFieldSet(this, _Engine_viewport, null, "f");
+        }
+    }
 }
 exports.Engine = Engine;
-_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap(), _Engine_redirectMap = new WeakMap(), _Engine_devModePollingTimer = new WeakMap(), _Engine_repository = new WeakMap();
+_Engine_provider = new WeakMap(), _Engine_bosWidgetFactory = new WeakMap(), _Engine_selector = new WeakMap(), _Engine_contextManagers = new WeakMap(), _Engine_mutationManager = new WeakMap(), _Engine_nearConfig = new WeakMap(), _Engine_redirectMap = new WeakMap(), _Engine_devModePollingTimer = new WeakMap(), _Engine_repository = new WeakMap(), _Engine_viewport = new WeakMap(), _Engine_refComponents = new WeakMap();
