@@ -1,6 +1,6 @@
 import { NetworkId, setupWalletSelector } from '@near-wallet-selector/core'
 import { EventEmitter as NEventEmitter } from 'events'
-import { DappletOverlay, Engine } from 'mutable-web-engine'
+import { customElements, Engine } from 'mutable-web-engine'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -41,7 +41,7 @@ const App: FC = () => {
         features: {
           skipTxConfirmationPopup: true,
         },
-        customElements: { DappletOverlay },
+        customElements,
       })
     }
   }, [initNear])

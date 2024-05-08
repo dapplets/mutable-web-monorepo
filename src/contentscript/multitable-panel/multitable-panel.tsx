@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
 import { useMutableWeb } from '../contexts/mutable-web-context'
-import { getPanelPinned, removePanelPinned, setPanelPinned } from '../storage'
+import { getIsPanelPinned, removePanelUnpinned, setPanelUnpinned } from '../storage'
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
@@ -146,7 +146,7 @@ interface MultitablePanelProps {
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const { mutations, apps, selectedMutation } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
-  const [isPin, setPin] = useState(!!getPanelPinned())
+  const [isPin, setPin] = useState(!getIsPanelPinned())
   const [isDragging, setIsDragging] = useState(false)
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -179,9 +179,9 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   const handlePin = () => {
     if (isPin) {
-      removePanelPinned()
+      removePanelUnpinned()
     } else {
-      setPanelPinned('pin')
+      setPanelUnpinned('unpin')
     }
     setPin(!isPin)
   }
@@ -219,6 +219,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
             <Notch
               data-testid="notch"
               data-mweb-context-type="notch"
+              data-mweb-context-parsed={JSON.stringify({ id: 'notch' })}
               className={
                 isPin
                   ? 'visible-pin'
@@ -243,6 +244,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
                   {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
                 </PinWrapper>
               </div>
+              <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
             </Notch>
           </NotchWrapper>
         </Draggable>
