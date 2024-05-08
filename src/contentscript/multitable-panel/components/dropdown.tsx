@@ -179,12 +179,7 @@ export const Dropdown: FC<DropdownProps> = ({
                 data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
               >
                 {recentlyUsedMutations.map((mut) => (
-                  <InputBlock
-                    key={mut.id}
-                    isActive={mut.id === selectedMutation?.id}
-                    data-mweb-context-type="mutation"
-                    data-mweb-context-parsed={JSON.stringify({ id: mut.id })}
-                  >
+                  <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
                     <ImageBlock>
                       <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
                     </ImageBlock>
@@ -221,8 +216,6 @@ export const Dropdown: FC<DropdownProps> = ({
                         <Trash />
                       </InputIconWrapper>
                     )}
-
-                    <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
                   </InputBlock>
                 ))}
                 <div
@@ -256,8 +249,6 @@ export const Dropdown: FC<DropdownProps> = ({
                         isActive={mut.id === selectedMutation?.id}
                         onClick={() => handleMutationClick(mut.id)}
                         className="avalibleMutationsInput"
-                        data-mweb-context-type="mutation"
-                        data-mweb-context-parsed={JSON.stringify({ id: mut.id })}
                       >
                         <ImageBlock>
                           <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
@@ -266,7 +257,6 @@ export const Dropdown: FC<DropdownProps> = ({
                           <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
                           <AuthorMutation>{mut.id}</AuthorMutation>
                         </InputInfoWrapper>
-                        <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
                       </InputBlock>
                     ))}
                   </div>
