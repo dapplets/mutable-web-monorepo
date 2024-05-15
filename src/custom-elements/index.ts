@@ -1,4 +1,4 @@
 export { DappletOverlay } from './dapplet-overlay'
-export { OverlayTrigger } from './overlay-trigger'
-export { MuWebWrapperPortal } from './mu-web-wrapper-portal'
-export { Tooltip } from './tooltip'
+export { DappletOverlayTrigger } from './dapplet-overlay-trigger'
+export { DappletPortal } from './dapplet-portal'
+export { DappletTooltip } from './dapplet-tooltip'

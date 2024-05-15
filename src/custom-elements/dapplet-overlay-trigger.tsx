@@ -5,7 +5,7 @@ import { getViewport } from '../common'
 import { StyleSheetManager } from 'styled-components'
 
 // ToDo: remove any
-export const OverlayTrigger = ({ children, ...attributes }: any) => {
+export const DappletOverlayTrigger = ({ children, ...attributes }: any) => {
   const child = children.filter((c: any) => typeof c !== 'string' || !!c.trim())[0]
   const viewport = getViewport()
 

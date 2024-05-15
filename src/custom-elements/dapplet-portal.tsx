@@ -2,7 +2,7 @@ import * as React from 'react'
 import { engineSingleton } from '../engine'
 import { InjectableTarget } from '../providers/provider'
 
-const _MuWebWrapperPortal: React.FC<{ component: React.FC; target: InjectableTarget }> = ({
+const _DappletPortal: React.FC<{ component: React.FC; target: InjectableTarget }> = ({
   component: Component,
   target,
 }) => {
@@ -18,6 +18,6 @@ const _MuWebWrapperPortal: React.FC<{ component: React.FC; target: InjectableTar
   return null
 }
 
-export const MuWebWrapperPortal: React.FC<any> = (props) => {
-  return <_MuWebWrapperPortal {...props} />
+export const DappletPortal: React.FC<any> = (props) => {
+  return <_DappletPortal {...props} />
 }
