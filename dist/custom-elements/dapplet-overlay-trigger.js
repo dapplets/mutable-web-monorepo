@@ -34,14 +34,14 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OverlayTrigger = void 0;
+exports.DappletOverlayTrigger = void 0;
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_bootstrap_1 = require("react-bootstrap");
 const common_1 = require("../common");
 const styled_components_1 = require("styled-components");
 // ToDo: remove any
-const OverlayTrigger = (_a) => {
+const DappletOverlayTrigger = (_a) => {
     var { children } = _a, attributes = __rest(_a, ["children"]);
     const child = children.filter((c) => typeof c !== 'string' || !!c.trim())[0];
     const viewport = (0, common_1.getViewport)();
@@ -53,4 +53,4 @@ const OverlayTrigger = (_a) => {
     });
     return (React.createElement(react_bootstrap_1.OverlayTrigger, Object.assign({}, attributes, { container: viewport, overlay: React.createElement(Overlay, null) }), child));
 };
-exports.OverlayTrigger = OverlayTrigger;
+exports.DappletOverlayTrigger = DappletOverlayTrigger;

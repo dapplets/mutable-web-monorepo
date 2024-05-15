@@ -23,10 +23,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MuWebWrapperPortal = void 0;
+exports.DappletPortal = void 0;
 const React = __importStar(require("react"));
 const engine_1 = require("../engine");
-const _MuWebWrapperPortal = ({ component: Component, target, }) => {
+const _DappletPortal = ({ component: Component, target, }) => {
     // ToDo: remove singleton
     React.useEffect(() => {
         engine_1.engineSingleton === null || engine_1.engineSingleton === void 0 ? void 0 : engine_1.engineSingleton.injectComponent(target, Component);
@@ -36,7 +36,7 @@ const _MuWebWrapperPortal = ({ component: Component, target, }) => {
     }, [target, Component]);
     return null;
 };
-const MuWebWrapperPortal = (props) => {
-    return React.createElement(_MuWebWrapperPortal, Object.assign({}, props));
+const DappletPortal = (props) => {
+    return React.createElement(_DappletPortal, Object.assign({}, props));
 };
-exports.MuWebWrapperPortal = MuWebWrapperPortal;
+exports.DappletPortal = DappletPortal;

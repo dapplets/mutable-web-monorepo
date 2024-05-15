@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tooltip = exports.MuWebWrapperPortal = exports.OverlayTrigger = exports.DappletOverlay = void 0;
+exports.DappletTooltip = exports.DappletPortal = exports.DappletOverlayTrigger = exports.DappletOverlay = void 0;
 var dapplet_overlay_1 = require("./dapplet-overlay");
 Object.defineProperty(exports, "DappletOverlay", { enumerable: true, get: function () { return dapplet_overlay_1.DappletOverlay; } });
-var overlay_trigger_1 = require("./overlay-trigger");
-Object.defineProperty(exports, "OverlayTrigger", { enumerable: true, get: function () { return overlay_trigger_1.OverlayTrigger; } });
-var mu_web_wrapper_portal_1 = require("./mu-web-wrapper-portal");
-Object.defineProperty(exports, "MuWebWrapperPortal", { enumerable: true, get: function () { return mu_web_wrapper_portal_1.MuWebWrapperPortal; } });
-var tooltip_1 = require("./tooltip");
-Object.defineProperty(exports, "Tooltip", { enumerable: true, get: function () { return tooltip_1.Tooltip; } });
+var dapplet_overlay_trigger_1 = require("./dapplet-overlay-trigger");
+Object.defineProperty(exports, "DappletOverlayTrigger", { enumerable: true, get: function () { return dapplet_overlay_trigger_1.DappletOverlayTrigger; } });
+var dapplet_portal_1 = require("./dapplet-portal");
+Object.defineProperty(exports, "DappletPortal", { enumerable: true, get: function () { return dapplet_portal_1.DappletPortal; } });
+var dapplet_tooltip_1 = require("./dapplet-tooltip");
+Object.defineProperty(exports, "DappletTooltip", { enumerable: true, get: function () { return dapplet_tooltip_1.DappletTooltip; } });

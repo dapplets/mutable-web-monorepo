@@ -34,11 +34,11 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Tooltip = void 0;
+exports.DappletTooltip = void 0;
 const react_1 = __importStar(require("react"));
 const react_bootstrap_1 = require("react-bootstrap");
 const ShowDelay = 300;
-exports.Tooltip = react_1.default.forwardRef((_a, ref) => {
+exports.DappletTooltip = react_1.default.forwardRef((_a, ref) => {
     var { children } = _a, attributes = __rest(_a, ["children"]);
     const innerRef = (0, react_1.useRef)(null);
     (0, react_1.useImperativeHandle)(ref, () => innerRef.current, []);
