@@ -6,6 +6,7 @@ const ParsedContextAttr = 'data-mweb-context-parsed'
 const ContextTypeAttr = 'data-mweb-context-type'
 const InsPointAttr = 'data-mweb-insertion-point'
 const ShadowHostAttr = 'data-mweb-shadow-host'
+const LayoutManagerAttr = 'data-mweb-layout-manager'
 
 export class MutableWebParser implements IParser {
   parseContext(element: Element, contextName: string) {
@@ -54,7 +55,8 @@ export class MutableWebParser implements IParser {
   getInsertionPoints(element: Element): InsertionPoint[] {
     return getChildContextElements(element, InsPointAttr, ContextTypeAttr).map((el) => ({
       name: el.getAttribute(InsPointAttr)!,
-      insertionType: InsertionType.End
+      insertionType: InsertionType.End,
+      bosLayoutManager: el.getAttribute(LayoutManagerAttr) || undefined,
     }))
   }
 }
