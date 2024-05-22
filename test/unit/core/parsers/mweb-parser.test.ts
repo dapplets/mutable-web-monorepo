@@ -99,7 +99,13 @@ describe('mutable web parser', () => {
 
   it('should get insertionPoint', () => {
     // Arrange
-    const expected = [{ name: 'southPanel' }]
+    const expected = [
+      {
+        name: 'southPanel',
+        insertionType: 'end',
+        bosLayoutManager: undefined,
+      },
+    ]
 
     // Act
     const elementsWithNames = mwebParser.findChildElements(element, 'root')
@@ -112,7 +118,13 @@ describe('mutable web parser', () => {
 
   it('should get insertionPoint from shadow-root', () => {
     // Arrange
-    const expected = [{ name: 'shadowPanel' }]
+    const expected = [
+      {
+        name: 'shadowPanel',
+        insertionType: 'end',
+        bosLayoutManager: undefined,
+      },
+    ]
 
     // Act
     const elementsWithNames = mwebParser.findChildElements(element, 'root')
