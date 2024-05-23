@@ -1,4 +1,5 @@
 import { EventEmitter as NEventEmitter } from 'events'
+import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
@@ -7,6 +8,7 @@ import { getIsPanelPinned, removePanelUnpinned, setPanelUnpinned } from '../stor
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
+import Profile from './profile'
 import SidePanel from './side-panel'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
@@ -108,6 +110,7 @@ const PinWrapper = styled.div`
     vertical-align: initial;
   }
 `
+
 const DragWrapper = styled.div`
   width: 16px;
   height: 37px;
@@ -151,6 +154,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const [isDragging, setIsDragging] = useState(false)
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isProfileOpen, setProfileOpen] = useState(false)
+  const loggedInAccountId = useAccountId()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -196,12 +201,17 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
     setIsModalOpen(false)
   }
 
+  const handleMutationIconClick = () => {
+    setProfileOpen(!isProfileOpen)
+  }
+
   // The notch can be opened from the extension's context menu on websites without any mutation
   if (!isModalOpen && mutations.length === 0) return null
 
   return (
     <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
-      <SidePanel baseMutation={selectedMutation} />
+      {isProfileOpen ? <Profile accountId={loggedInAccountId} /> : null}
+      <SidePanel onMutationIconClick={handleMutationIconClick} baseMutation={selectedMutation} />
       {isModalOpen ? (
         <MutationEditorModal
           apps={apps}

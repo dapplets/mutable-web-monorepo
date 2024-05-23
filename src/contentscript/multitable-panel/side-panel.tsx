@@ -16,14 +16,14 @@ const SidePanelWrapper = styled.div`
   border-radius: 4px 0px 0px 4px;
   border-width: 1px 0 1px 1px;
   border-style: solid;
-  border-color: #E2E2E5;
-  background: #F8F9FF;
-  box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15)
+  border-color: #e2e2e5;
+  background: #f8f9ff;
+  box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
 `
 
-const ButtonIconWrapper = styled.button`
+const MutationIconWrapper = styled.button`
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
@@ -63,15 +63,14 @@ const ButtonIconWrapper = styled.button`
 const ButtonWrapper = styled.div`
   display: flex;
   box-sizing: border-box;
-  overlow: hidden;
+  overflow: hidden;
   justify-content: center;
   align-items: center;
   width: 46px;
   padding: 0;
 `
 
-// todo: replace on iconDefault. Now - from layout
-const IconDefaultProfile = () => (
+const MutationFallbackIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="46" height="46" viewBox="0 0 46 46" fill="none">
     <rect x="0.5" y="0.5" width="45" height="45" rx="22.5" fill="#02193A" />
     <rect x="0.5" y="0.5" width="45" height="45" rx="22.5" stroke="#E2E2E5" />
@@ -84,21 +83,22 @@ const IconDefaultProfile = () => (
 
 interface SidePanelProps {
   baseMutation: Mutation | null
+  onMutationIconClick: () => void
 }
 
-export const SidePanel: FC<SidePanelProps> = ({ baseMutation }) => {
+export const SidePanel: FC<SidePanelProps> = ({ baseMutation, onMutationIconClick }) => {
   return (
     <SidePanelWrapper
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
     >
-      <ButtonIconWrapper>
+      <MutationIconWrapper onClick={onMutationIconClick}>
         {baseMutation?.metadata.image ? (
           <Image image={baseMutation?.metadata.image} />
         ) : (
-          <IconDefaultProfile />
+          <MutationFallbackIcon />
         )}
-      </ButtonIconWrapper>
+      </MutationIconWrapper>
 
       <ButtonWrapper
         data-mweb-insertion-point="mweb-actions-panel"

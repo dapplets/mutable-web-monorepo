@@ -15,26 +15,6 @@ const tabStateService = new TabStateService()
 
 const near = new WalletImpl(networkConfig)
 
-export const bgFunctions = {
-  near_signIn: near.signIn.bind(near),
-  near_signOut: near.signOut.bind(near),
-  near_getAccounts: near.getAccounts.bind(near),
-  near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
-  near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
-  popTabState: tabStateService.popForTab.bind(tabStateService),
-}
-
-export type BgFunctions = typeof bgFunctions
-
-browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
-
-// Context menu actions
-
-const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> => {
-  if (!tab.id) return
-  await browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
-}
-
 const connectWallet = async (): Promise<void> => {
   const params: Partial<SignInParams> = {
     // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
@@ -60,7 +40,7 @@ const connectWallet = async (): Promise<void> => {
   updateMenuForConnectedState(accounts[0].accountId)
 }
 
-const disconnect = async (): Promise<void> => {
+const disconnectWallet = async (): Promise<void> => {
   await near.signOut()
 
   // send events to all tabs
@@ -71,6 +51,28 @@ const disconnect = async (): Promise<void> => {
     })
   )
   updateMenuForDisconnectedState()
+}
+
+export const bgFunctions = {
+  near_signIn: near.signIn.bind(near),
+  near_signOut: near.signOut.bind(near),
+  near_getAccounts: near.getAccounts.bind(near),
+  near_signAndSendTransaction: near.signAndSendTransaction.bind(near),
+  near_signAndSendTransactions: near.signAndSendTransactions.bind(near),
+  popTabState: tabStateService.popForTab.bind(tabStateService),
+  connectWallet,
+  disconnectWallet,
+}
+
+export type BgFunctions = typeof bgFunctions
+
+browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
+
+// Context menu actions
+
+const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> => {
+  if (!tab.id) return
+  await browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
 }
 
 const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
@@ -168,7 +170,7 @@ function handleContextMenuClick(
       return connectWallet()
 
     case 'disconnect':
-      return disconnect()
+      return disconnectWallet()
 
     case 'copy': {
       if (tab) {
