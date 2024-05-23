@@ -1,5 +1,4 @@
 import { EventEmitter as NEventEmitter } from 'events'
-import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
@@ -8,7 +7,6 @@ import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } fro
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
-import Profile from './profile'
 import SidePanel from './side-panel'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
@@ -154,8 +152,6 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const [isDragging, setIsDragging] = useState(false)
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isProfileOpen, setProfileOpen] = useState(false)
-  const loggedInAccountId = useAccountId()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -201,67 +197,64 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
     setIsModalOpen(false)
   }
 
-  const handleMutationIconClick = () => {
-    setProfileOpen(!isProfileOpen)
-  }
-
   // The notch can be opened from the extension's context menu on websites without any mutation
   if (!isModalOpen && mutations.length === 0) return null
 
   return (
-    <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
-      {isProfileOpen ? <Profile accountId={loggedInAccountId} /> : null}
-      <SidePanel onMutationIconClick={handleMutationIconClick} baseMutation={selectedMutation} />
-      {isModalOpen ? (
-        <MutationEditorModal
-          apps={apps}
-          baseMutation={selectedMutation}
-          onClose={handleModalClose}
-        />
-      ) : (
-        <Draggable
-          axis="x"
-          bounds="parent"
-          handle=".dragWrapper"
-          onStart={handleStartDrag}
-          onStop={handleStopDrag}
-          defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
-        >
-          <NotchWrapper>
-            <Notch
-              data-testid="notch"
-              data-mweb-context-type="notch"
-              data-mweb-context-parsed={JSON.stringify({ id: 'notch' })}
-              className={
-                isPin
-                  ? 'visible-pin'
-                  : isNotchDisplayed || isDropdownVisible || isDragging
-                  ? 'visible-default'
-                  : 'visible-notch'
-              }
-              $isAnimated={!isDragging}
-            >
-              <div>
-                <DragWrapper className="dragWrapper">
-                  <DragIconWrapper>
-                    <DragIcon />
-                  </DragIconWrapper>
-                </DragWrapper>
-                <Dropdown
-                  isVisible={isDropdownVisible}
-                  onVisibilityChange={setIsDropdownVisible}
-                  onMutateButtonClick={handleMutateButtonClick}
-                />
-                <PinWrapper onClick={handlePin}>
-                  {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-                </PinWrapper>
-              </div>
-              <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-            </Notch>
-          </NotchWrapper>
-        </Draggable>
-      )}
-    </WrapperPanel>
+    <>
+      <SidePanel baseMutation={selectedMutation} />
+      <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
+        {isModalOpen ? (
+          <MutationEditorModal
+            apps={apps}
+            baseMutation={selectedMutation}
+            onClose={handleModalClose}
+          />
+        ) : (
+          <Draggable
+            axis="x"
+            bounds="parent"
+            handle=".dragWrapper"
+            onStart={handleStartDrag}
+            onStop={handleStopDrag}
+            defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
+          >
+            <NotchWrapper>
+              <Notch
+                data-testid="notch"
+                data-mweb-context-type="notch"
+                data-mweb-context-parsed={JSON.stringify({ id: 'notch' })}
+                className={
+                  isPin
+                    ? 'visible-pin'
+                    : isNotchDisplayed || isDropdownVisible || isDragging
+                    ? 'visible-default'
+                    : 'visible-notch'
+                }
+                $isAnimated={!isDragging}
+              >
+                <div>
+                  <DragWrapper className="dragWrapper">
+                    <DragIconWrapper>
+                      <DragIcon />
+                    </DragIconWrapper>
+                  </DragWrapper>
+                  <Dropdown
+                    isVisible={isDropdownVisible}
+                    onVisibilityChange={setIsDropdownVisible}
+                    onMutateButtonClick={handleMutateButtonClick}
+                  />
+                  <PinWrapper onClick={handlePin}>
+                    {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
+                  </PinWrapper>
+                </div>
+                <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
+              </Notch>
+            </NotchWrapper>
+          </Draggable>
+        )}
+      </WrapperPanel>
+    </>
   )
 }
 

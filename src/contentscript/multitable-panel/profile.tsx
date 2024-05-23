@@ -7,7 +7,6 @@ const ProfileWrapper = styled.div`
   display: flex;
   position: absolute;
   right: 70px;
-  top: 55px;
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
