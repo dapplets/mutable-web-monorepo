@@ -34,15 +34,29 @@ const ButtonIconWrapper = styled.button`
   background: transparent;
   padding: 0;
   border-radius: 50%;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease-in-out;
+
   img {
     object-fit: cover;
     width: 100%;
     height: 100%;
+    transition: all 0.15s ease-in-out;
   }
 
   &:hover {
-    transform: scale(1.1);
+    box-shadow: 0px 4px 20px 0px #0b576f26, 0px 4px 5px 0px #2d343c1a;
+
+    img {
+      filter: brightness(115%);
+    }
+  }
+
+  &:active {
+    box-shadow: 0px 4px 20px 0px #0b576f26, 0px 4px 5px 0px #2d343c1a;
+
+    img {
+      filter: brightness(125%);
+    }
   }
 `
 
