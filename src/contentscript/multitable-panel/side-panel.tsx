@@ -1,13 +1,16 @@
 import { Mutation } from 'mutable-web-engine'
-import React, { FC } from 'react'
+import { useAccountId } from 'near-social-vm'
+import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import { Image } from '../multitable-panel/components/image'
+import Profile from './profile'
 
 const SidePanelWrapper = styled.div`
+  position: fixed;
+  z-index: 5000;
   display: flex;
   width: 58px;
   padding: 6px;
-  position: absolute;
   top: 55px;
   right: 0;
   flex-direction: column;
@@ -83,27 +86,35 @@ const MutationFallbackIcon = () => (
 
 interface SidePanelProps {
   baseMutation: Mutation | null
-  onMutationIconClick: () => void
 }
 
-export const SidePanel: FC<SidePanelProps> = ({ baseMutation, onMutationIconClick }) => {
+export const SidePanel: FC<SidePanelProps> = ({ baseMutation }) => {
+  const [isProfileOpen, setProfileOpen] = useState(false)
+  const loggedInAccountId = useAccountId()
+
+  const handleMutationIconClick = () => {
+    setProfileOpen((val) => !val)
+  }
+
   return (
     <SidePanelWrapper
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
     >
-      <MutationIconWrapper onClick={onMutationIconClick}>
+      <MutationIconWrapper onClick={handleMutationIconClick}>
         {baseMutation?.metadata.image ? (
           <Image image={baseMutation?.metadata.image} />
         ) : (
           <MutationFallbackIcon />
         )}
       </MutationIconWrapper>
-
       <ButtonWrapper
         data-mweb-insertion-point="mweb-actions-panel"
         data-mweb-layout-manager="bos.dapplets.near/widget/VerticalLayoutManager"
       />
+      {isProfileOpen ? (
+        <Profile accountId={loggedInAccountId} closeProfile={() => setProfileOpen(false)} />
+      ) : null}
     </SidePanelWrapper>
   )
 }
