@@ -93,7 +93,7 @@ export const SidePanel: FC<SidePanelProps> = ({ baseMutation }) => {
   const loggedInAccountId = useAccountId()
 
   const handleMutationIconClick = () => {
-    setProfileOpen(!isProfileOpen)
+    setProfileOpen((val) => !val)
   }
 
   return (
@@ -112,7 +112,9 @@ export const SidePanel: FC<SidePanelProps> = ({ baseMutation }) => {
         data-mweb-insertion-point="mweb-actions-panel"
         data-mweb-layout-manager="bos.dapplets.near/widget/VerticalLayoutManager"
       />
-      {isProfileOpen ? <Profile accountId={loggedInAccountId} /> : null}
+      {isProfileOpen ? (
+        <Profile accountId={loggedInAccountId} closeProfile={() => setProfileOpen(false)} />
+      ) : null}
     </SidePanelWrapper>
   )
 }

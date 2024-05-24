@@ -1,7 +1,8 @@
 import makeBlockie from 'ethereum-blockies-base64'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import Background from '../background'
+import { useOutside } from '../hooks/use-outside'
 
 const ProfileWrapper = styled.div`
   display: flex;
@@ -276,8 +277,17 @@ const IconDisconnect = () => (
   </svg>
 )
 
-export const Profile = ({ accountId }: { accountId: string | null }) => {
+export const Profile = ({
+  accountId,
+  closeProfile,
+}: {
+  accountId: string | null
+  closeProfile: () => void
+}) => {
   const [waiting, setWaiting] = useState(false)
+
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  useOutside(wrapperRef, closeProfile)
 
   const handleSignIn = async () => {
     setWaiting(true)
@@ -298,7 +308,7 @@ export const Profile = ({ accountId }: { accountId: string | null }) => {
   }
 
   return (
-    <ProfileWrapper>
+    <ProfileWrapper ref={wrapperRef}>
       {accountId ? (
         <>
           <ProfileIcon>
