@@ -146,7 +146,7 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
-  const { mutations, apps, selectedMutation } = useMutableWeb()
+  const { mutations, allApps, selectedMutation } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
@@ -206,7 +206,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal
-            apps={apps}
+            apps={allApps}
             baseMutation={selectedMutation}
             onClose={handleModalClose}
           />

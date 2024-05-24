@@ -1,4 +1,4 @@
-import { AppMetadata, Engine, MutationWithSettings } from 'mutable-web-engine'
+import { AppMetadata, AppWithSettings, Engine, MutationWithSettings } from 'mutable-web-engine'
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
 
@@ -11,7 +11,8 @@ const MutableWebProvider: FC<Props> = ({ children, engine }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const [mutations, setMutations] = useState<MutationWithSettings[]>([])
-  const [apps, setApps] = useState<AppMetadata[]>([])
+  const [allApps, setAllApps] = useState<AppMetadata[]>([])
+  const [mutationApps, setMutationApps] = useState<AppWithSettings[]>([])
   const [favoriteMutationId, setFavoriteMutationId] = useState<string | null>(null)
 
   const loadMutations = async (engine: Engine) => {
@@ -23,9 +24,17 @@ const MutableWebProvider: FC<Props> = ({ children, engine }) => {
     ])
 
     setMutations(mutations)
-    setApps(allApps)
+    setAllApps(allApps)
     setSelectedMutationId(selectedMutation?.id ?? null)
     setFavoriteMutationId(favoriteMutationId)
+  }
+
+  const loadMutationApps = async (engine: Engine, selectedMutationId: string | null) => {
+    if (selectedMutationId) {
+      setMutationApps(await engine.getAppsFromMutation(selectedMutationId))
+    } else {
+      setMutationApps([])
+    }
   }
 
   const selectedMutation = useMemo(
@@ -36,6 +45,10 @@ const MutableWebProvider: FC<Props> = ({ children, engine }) => {
   useEffect(() => {
     loadMutations(engine)
   }, [engine])
+
+  useEffect(() => {
+    loadMutationApps(engine, selectedMutationId)
+  }, [engine, selectedMutationId])
 
   const stopEngine = () => {
     setSelectedMutationId(null)
@@ -89,7 +102,8 @@ const MutableWebProvider: FC<Props> = ({ children, engine }) => {
   const state: MutableWebContextState = {
     engine,
     mutations,
-    apps,
+    allApps,
+    mutationApps,
     selectedMutation,
     isLoading,
     favoriteMutationId,
@@ -98,6 +112,7 @@ const MutableWebProvider: FC<Props> = ({ children, engine }) => {
     setFavoriteMutation,
     removeMutationFromRecents,
     setMutations,
+    setMutationApps,
   }
 
   return <MutableWebContext.Provider value={state}>{children}</MutableWebContext.Provider>
