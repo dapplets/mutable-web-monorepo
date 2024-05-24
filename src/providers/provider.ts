@@ -86,6 +86,12 @@ export type MutationWithSettings = Mutation & {
   }
 }
 
+export type AppWithSettings = AppMetadata & {
+  settings: {
+    isEnabled: boolean
+  }
+}
+
 export type LinkIndexObject = {
   appId: AppId
   mutationId: MutationId

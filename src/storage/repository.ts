@@ -3,6 +3,7 @@ import { JsonStorage } from './json-storage'
 const KEY_DELIMITER = ':'
 const FAVORITE_MUTATION = 'favorite-mutation'
 const MUTATION_LAST_USAGE = 'mutation-last-usage'
+const STOPPED_APPS = 'stopped-apps'
 
 export class Repository {
   jsonStorage: JsonStorage
@@ -23,9 +24,9 @@ export class Repository {
 
   async getMutationLastUsage(mutationId: string, hostname: string): Promise<string | null> {
     const key = this._makeKey(MUTATION_LAST_USAGE, mutationId, hostname)
-    return (this._get(key) ?? null) as Promise<string | null>
+    return (await this._get(key)) ?? null
   }
-
+  
   async setMutationLastUsage(
     mutationId: string,
     value: string | null,
@@ -33,6 +34,16 @@ export class Repository {
   ): Promise<void> {
     const key = this._makeKey(MUTATION_LAST_USAGE, mutationId, hostname)
     return this._set(key, value)
+  }
+
+  async getAppEnabledStatus(mutationId: string, appId: string): Promise<boolean> {
+    const key = this._makeKey(STOPPED_APPS, mutationId, appId)
+    return (await this._get(key)) ?? true // app is active by default
+  }
+
+  async setAppEnabledStatus(mutationId: string, appId: string, isEnabled: boolean): Promise<void> {
+    const key = this._makeKey(STOPPED_APPS, mutationId, appId)
+    return this._set(key, isEnabled)
   }
 
   private async _get<Value>(key: string): Promise<Value | null | undefined>
