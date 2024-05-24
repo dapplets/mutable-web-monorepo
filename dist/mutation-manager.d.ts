@@ -11,12 +11,16 @@ export declare class MutationManager {
     constructor(provider: IProvider);
     getAppsAndLinksForContext(context: IContextNode): Promise<AppWithTargetLinks[]>;
     getMutationsForContext(context: IContextNode): Promise<Mutation[]>;
-    filterSuitableApps(context: IContextNode): AppMetadata[];
-    getLinksForContext(context: IContextNode): Promise<BosUserLink[]>;
+    filterSuitableApps(context: IContextNode, includedApps?: string[]): AppMetadata[];
+    getLinksForContext(context: IContextNode, includedApps?: string[]): Promise<BosUserLink[]>;
     filterSuitableParsers(context: IContextNode): ParserConfig[];
     switchMutation(mutation: Mutation | null): Promise<void>;
     createLink(appGlobalId: AppId, context: IContextNode): Promise<BosUserLink>;
     deleteUserLink(userLinkId: UserLinkId): Promise<void>;
+    loadApp(appId: string): Promise<AppMetadata>;
+    unloadApp(appId: string): Promise<void>;
+    loadParser(parserId: string): Promise<ParserConfig>;
+    unloadParser(parserId: string): Promise<void>;
     private _getUserLinksForTarget;
     static _buildLinkIndex(appId: AppId, mutationId: MutationId, target: AppMetadataTarget, context: IContextNode): LinkIndexObject;
     static _buildIndexedContextValues(conditions: Record<string, TargetCondition>, values: Record<string, ScalarType>): Record<string, ScalarType>;

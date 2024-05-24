@@ -23,19 +23,30 @@ var _MutationManager_provider, _MutationManager_activeApps, _MutationManager_act
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MutationManager = void 0;
 const provider_1 = require("./providers/provider");
+const MWebParserConfig = {
+    parserType: provider_1.AdapterType.MWeb,
+    id: 'mweb',
+    targets: [
+        {
+            namespace: 'engine',
+            contextType: 'website',
+            if: { id: { not: null } },
+        },
+    ],
+};
 class MutationManager {
     constructor(provider) {
         this.mutation = null;
         _MutationManager_provider.set(this, void 0);
-        _MutationManager_activeApps.set(this, []);
-        _MutationManager_activeParsers.set(this, []);
+        _MutationManager_activeApps.set(this, new Map());
+        _MutationManager_activeParsers.set(this, new Map());
         __classPrivateFieldSet(this, _MutationManager_provider, provider, "f");
     }
     // #region Read methods
     getAppsAndLinksForContext(context) {
         return __awaiter(this, void 0, void 0, function* () {
             const promises = [];
-            for (const app of __classPrivateFieldGet(this, _MutationManager_activeApps, "f")) {
+            for (const app of __classPrivateFieldGet(this, _MutationManager_activeApps, "f").values()) {
                 const suitableTargets = app.targets.filter((target) => MutationManager._isTargetMet(target, context));
                 if (suitableTargets.length > 0) {
                     // ToDo: batch requests
@@ -55,9 +66,12 @@ class MutationManager {
         });
     }
     // ToDo: replace with getAppsAndLinksForContext
-    filterSuitableApps(context) {
+    filterSuitableApps(context, includedApps) {
         const suitableApps = [];
-        for (const app of __classPrivateFieldGet(this, _MutationManager_activeApps, "f")) {
+        const appsToCheck = includedApps
+            ? Array.from(__classPrivateFieldGet(this, _MutationManager_activeApps, "f").values()).filter((app) => includedApps.includes(app.id))
+            : Array.from(__classPrivateFieldGet(this, _MutationManager_activeApps, "f").values());
+        for (const app of appsToCheck) {
             const suitableTargets = app.targets.filter((target) => MutationManager._isTargetMet(target, context));
             if (suitableTargets.length > 0) {
                 suitableApps.push(Object.assign(Object.assign({}, app), { targets: suitableTargets }));
@@ -66,10 +80,13 @@ class MutationManager {
         return suitableApps;
     }
     // ToDo: replace with getAppsAndLinksForContext
-    getLinksForContext(context) {
+    getLinksForContext(context, includedApps) {
         return __awaiter(this, void 0, void 0, function* () {
             const promises = [];
-            for (const app of __classPrivateFieldGet(this, _MutationManager_activeApps, "f")) {
+            const appsToCheck = includedApps
+                ? Array.from(__classPrivateFieldGet(this, _MutationManager_activeApps, "f").values()).filter((app) => includedApps.includes(app.id))
+                : Array.from(__classPrivateFieldGet(this, _MutationManager_activeApps, "f").values());
+            for (const app of appsToCheck) {
                 const suitableTargets = app.targets.filter((target) => MutationManager._isTargetMet(target, context));
                 // ToDo: batch requests
                 suitableTargets.forEach((target) => {
@@ -82,7 +99,7 @@ class MutationManager {
     }
     filterSuitableParsers(context) {
         const suitableParsers = [];
-        for (const parser of __classPrivateFieldGet(this, _MutationManager_activeParsers, "f")) {
+        for (const parser of __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").values()) {
             const suitableTargets = parser.targets.filter((target) => MutationManager._isTargetMet(target, context));
             if (suitableTargets.length > 0) {
                 suitableParsers.push(Object.assign(Object.assign({}, parser), { targets: suitableTargets }));
@@ -94,39 +111,18 @@ class MutationManager {
     // #region Write methods
     switchMutation(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!mutation) {
-                __classPrivateFieldSet(this, _MutationManager_activeApps, [], "f");
-                __classPrivateFieldSet(this, _MutationManager_activeParsers, [], "f");
-                this.mutation = null;
+            __classPrivateFieldGet(this, _MutationManager_activeApps, "f").clear();
+            __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").clear();
+            this.mutation = null;
+            if (!mutation)
                 return;
-            }
-            const apps = yield Promise.all(mutation.apps.map((app) => __classPrivateFieldGet(this, _MutationManager_provider, "f").getApplication(app)));
-            const activeApps = apps.flatMap((app) => (app ? [app] : [])); // filter empty apps
-            // get parser ids from target namespaces
-            const parserIds = [
-                ...new Set(activeApps
-                    .map((app) => app.targets)
-                    .flat()
-                    .map((target) => target.namespace)),
-            ];
-            const parsers = yield Promise.all(parserIds.map((id) => __classPrivateFieldGet(this, _MutationManager_provider, "f").getParserConfig(id)));
-            const activeParsers = parsers.flatMap((parser) => (parser ? [parser] : [])); // filter empty parsers
-            __classPrivateFieldSet(this, _MutationManager_activeApps, activeApps, "f");
-            __classPrivateFieldSet(this, _MutationManager_activeParsers, activeParsers, "f");
             this.mutation = mutation;
             // MWeb parser is enabled by default
-            __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").push({
-                parserType: provider_1.AdapterType.MWeb,
-                id: 'mweb',
-                targets: [
-                    {
-                        namespace: 'engine',
-                        contextType: 'website',
-                        if: { id: { not: null } },
-                    },
-                ],
-            });
-            console.log('Active apps: ', mutation.apps);
+            __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").set(MWebParserConfig.id, MWebParserConfig);
+            // ToDo: it loads all parsers, need to optimize
+            yield Promise.all(this.mutation.apps.map((appId) => __classPrivateFieldGet(this, _MutationManager_provider, "f")
+                .getApplication(appId)
+                .then((app) => { var _a; return Promise.all(((_a = app === null || app === void 0 ? void 0 : app.targets) !== null && _a !== void 0 ? _a : []).map((target) => this.loadParser(target.namespace))); })));
         });
     }
     createLink(appGlobalId, context) {
@@ -134,7 +130,7 @@ class MutationManager {
             if (!this.mutation) {
                 throw new Error('Mutation is not loaded');
             }
-            const app = __classPrivateFieldGet(this, _MutationManager_activeApps, "f").find((app) => app.id === appGlobalId);
+            const app = __classPrivateFieldGet(this, _MutationManager_activeApps, "f").get(appGlobalId);
             if (!app) {
                 throw new Error('App is not active');
             }
@@ -168,6 +164,56 @@ class MutationManager {
     deleteUserLink(userLinkId) {
         return __awaiter(this, void 0, void 0, function* () {
             return __classPrivateFieldGet(this, _MutationManager_provider, "f").deleteUserLink(userLinkId);
+        });
+    }
+    loadApp(appId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // prevents racing
+            if (__classPrivateFieldGet(this, _MutationManager_activeApps, "f").has(appId)) {
+                return __classPrivateFieldGet(this, _MutationManager_activeApps, "f").get(appId);
+            }
+            const app = yield __classPrivateFieldGet(this, _MutationManager_provider, "f").getApplication(appId);
+            if (!app) {
+                throw new Error(`App doesn't exist: ${appId}`);
+            }
+            // prevents racing
+            if (__classPrivateFieldGet(this, _MutationManager_activeApps, "f").has(appId)) {
+                return __classPrivateFieldGet(this, _MutationManager_activeApps, "f").get(appId);
+            }
+            __classPrivateFieldGet(this, _MutationManager_activeApps, "f").set(app.id, app);
+            console.log(`App loaded: ${appId}`);
+            return app;
+        });
+    }
+    unloadApp(appId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            __classPrivateFieldGet(this, _MutationManager_activeApps, "f").delete(appId);
+            console.log(`App unloaded: ${appId}`);
+        });
+    }
+    loadParser(parserId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // prevents racing
+            if (__classPrivateFieldGet(this, _MutationManager_activeParsers, "f").has(parserId)) {
+                return __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").get(parserId);
+            }
+            const parser = yield __classPrivateFieldGet(this, _MutationManager_provider, "f").getParserConfig(parserId);
+            if (!parser) {
+                throw new Error(`Parser doesn't exist: ${parserId}`);
+            }
+            // prevents racing
+            if (__classPrivateFieldGet(this, _MutationManager_activeParsers, "f").has(parserId)) {
+                return __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").get(parserId);
+            }
+            __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").set(parser.id, parser);
+            // console.log(`Parser loaded: ${parser.id}`)
+            return parser;
+        });
+    }
+    unloadParser(parserId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            __classPrivateFieldGet(this, _MutationManager_activeParsers, "f").delete(parserId);
+            console.log(`Parser unloaded: ${parserId}`);
         });
     }
     // #endregion

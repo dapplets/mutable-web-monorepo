@@ -58,7 +58,7 @@ class Engine {
         );
         // ToDo: duplcated in ContextManager and LayoutManager
         _Engine_refComponents.set(this, new Map());
-        this.adapters = new Set();
+        this.adapters = new Map();
         this.treeBuilder = null;
         this.started = false;
         this.getLastUsedMutation = () => __awaiter(this, void 0, void 0, function* () {
@@ -112,24 +112,17 @@ class Engine {
             if (!context.id)
                 return;
             // We don't wait adapters here
-            // Find and load adapters for the given context
             const parserConfigs = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableParsers(context);
             for (const config of parserConfigs) {
                 const adapter = this.createAdapter(config);
                 this.registerAdapter(adapter);
             }
-            // ToDo: do not iterate over all adapters
-            const adapter = Array.from(this.adapters).find((adapter) => {
-                return adapter.getInsertionPoints(context).length > 0;
-            });
+            const adapter = this.adapters.get(context.namespace);
             if (!adapter)
                 return;
             const contextManager = new context_manager_1.ContextManager(context, adapter, __classPrivateFieldGet(this, _Engine_bosWidgetFactory, "f"), __classPrivateFieldGet(this, _Engine_mutationManager, "f"), __classPrivateFieldGet(this, _Engine_nearConfig, "f").defaultLayoutManager);
             __classPrivateFieldGet(this, _Engine_contextManagers, "f").set(context, contextManager);
-            const links = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context);
-            const apps = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context);
-            links.forEach((link) => contextManager.addUserLink(link));
-            apps.forEach((app) => contextManager.addAppMetadata(app));
+            yield this._addAppsAndLinks(context);
             contextManager.setRedirectMap(__classPrivateFieldGet(this, _Engine_redirectMap, "f"));
             // Add existing React component refereneces from portals
             __classPrivateFieldGet(this, _Engine_refComponents, "f").forEach((target, cmp) => {
@@ -170,8 +163,15 @@ class Engine {
                 const mutations = yield this.getMutations();
                 const mutation = (_a = mutations.find((mutation) => mutation.id === mutationId)) !== null && _a !== void 0 ? _a : null;
                 if (mutation) {
-                    // load mutation and apps
+                    // load mutation
                     yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").switchMutation(mutation);
+                    // load non-disabled apps only
+                    yield Promise.all(mutation.apps.map((appId) => __awaiter(this, void 0, void 0, function* () {
+                        const isAppEnabled = yield __classPrivateFieldGet(this, _Engine_repository, "f").getAppEnabledStatus(mutation.id, appId);
+                        if (!isAppEnabled)
+                            return;
+                        return __classPrivateFieldGet(this, _Engine_mutationManager, "f").loadApp(appId);
+                    })));
                     // save last usage
                     const currentDate = new Date().toISOString();
                     yield __classPrivateFieldGet(this, _Engine_repository, "f").setMutationLastUsage(mutation.id, currentDate, window.location.hostname);
@@ -205,7 +205,7 @@ class Engine {
             const context = new pure_context_node_1.PureContextNode('engine', 'website');
             context.parsedContext = { id: window.location.hostname };
             const mutations = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getMutationsForContext(context);
-            return Promise.all(mutations.map((mut) => this._populateMutationSettings(mut)));
+            return Promise.all(mutations.map((mut) => this._populateMutationWithSettings(mut)));
         });
     }
     switchMutation(mutationId) {
@@ -223,7 +223,7 @@ class Engine {
             const mutation = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f")) === null || _a === void 0 ? void 0 : _a.mutation;
             if (!mutation)
                 return null;
-            return this._populateMutationSettings(mutation);
+            return this._populateMutationWithSettings(mutation);
         });
     }
     enableDevMode(options) {
@@ -248,7 +248,7 @@ class Engine {
         if (!this.treeBuilder)
             throw new Error('Tree builder is not inited');
         this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context);
-        this.adapters.add(adapter);
+        this.adapters.set(adapter.namespace, adapter);
         adapter.start();
         console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`);
     }
@@ -257,7 +257,7 @@ class Engine {
             throw new Error('Tree builder is not inited');
         adapter.stop();
         this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context);
-        this.adapters.delete(adapter);
+        this.adapters.delete(adapter.namespace);
     }
     createAdapter(config) {
         if (!this.treeBuilder) {
@@ -303,7 +303,7 @@ class Engine {
                 throw new Error('Mutation with that ID already exists');
             }
             yield __classPrivateFieldGet(this, _Engine_provider, "f").saveMutation(mutation);
-            return this._populateMutationSettings(mutation);
+            return this._populateMutationWithSettings(mutation);
         });
     }
     editMutation(mutation) {
@@ -315,7 +315,7 @@ class Engine {
                 this.stop();
                 yield this.start(mutation.id);
             }
-            return this._populateMutationSettings(mutation);
+            return this._populateMutationWithSettings(mutation);
         });
     }
     injectComponent(target, cmp) {
@@ -333,6 +333,44 @@ class Engine {
             if (mutation_manager_1.MutationManager._isTargetMet(target, context)) {
                 contextManager.unjectComponent(target, cmp);
             }
+        });
+    }
+    getAppsFromMutation(mutationId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { mutation: currentMutation } = __classPrivateFieldGet(this, _Engine_mutationManager, "f");
+            // don't fetch mutation if fetched already
+            const mutation = (currentMutation === null || currentMutation === void 0 ? void 0 : currentMutation.id) === mutationId
+                ? currentMutation
+                : yield __classPrivateFieldGet(this, _Engine_provider, "f").getMutation(mutationId);
+            if (!mutation) {
+                throw new Error(`Mutation doesn't exist: ${mutationId}`);
+            }
+            // ToDo: improve readability
+            return Promise.all(mutation.apps.map((appId) => __classPrivateFieldGet(this, _Engine_provider, "f")
+                .getApplication(appId)
+                .then((appMetadata) => (appMetadata ? this._populateAppWithSettings(appMetadata) : null)))).then((apps) => apps.filter((app) => app !== null));
+        });
+    }
+    enableApp(appId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const currentMutationId = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f").mutation) === null || _a === void 0 ? void 0 : _a.id;
+            if (!currentMutationId) {
+                throw new Error('Mutation is not active');
+            }
+            yield __classPrivateFieldGet(this, _Engine_repository, "f").setAppEnabledStatus(currentMutationId, appId, true);
+            yield this._startApp(appId);
+        });
+    }
+    disableApp(appId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const currentMutationId = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f").mutation) === null || _a === void 0 ? void 0 : _a.id;
+            if (!currentMutationId) {
+                throw new Error('Mutation is not active');
+            }
+            yield __classPrivateFieldGet(this, _Engine_repository, "f").setAppEnabledStatus(currentMutationId, appId, false);
+            yield this._stopApp(appId);
         });
     }
     _tryFetchAndUpdateRedirects(polling) {
@@ -373,13 +411,24 @@ class Engine {
             gatewayId: this.config.gatewayId,
         });
     }
-    _populateMutationSettings(mutation) {
+    _populateMutationWithSettings(mutation) {
         return __awaiter(this, void 0, void 0, function* () {
             const isFavorite = (yield this.getFavoriteMutation()) === mutation.id;
             const lastUsage = yield __classPrivateFieldGet(this, _Engine_repository, "f").getMutationLastUsage(mutation.id, window.location.hostname);
             return Object.assign(Object.assign({}, mutation), { settings: {
                     isFavorite,
                     lastUsage,
+                } });
+        });
+    }
+    _populateAppWithSettings(app) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            const currentMutationId = (_a = __classPrivateFieldGet(this, _Engine_mutationManager, "f").mutation) === null || _a === void 0 ? void 0 : _a.id;
+            if (!currentMutationId)
+                throw new Error('Mutation is not active');
+            return Object.assign(Object.assign({}, app), { settings: {
+                    isEnabled: yield __classPrivateFieldGet(this, _Engine_repository, "f").getAppEnabledStatus(currentMutationId, app.id),
                 } });
         });
     }
@@ -421,6 +470,51 @@ class Engine {
             document.body.removeChild(__classPrivateFieldGet(this, _Engine_viewport, "f"));
             __classPrivateFieldSet(this, _Engine_viewport, null, "f");
         }
+    }
+    _startApp(appId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.treeBuilder)
+                throw new Error('Engine is not started');
+            yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").loadApp(appId);
+            yield this._traverseContextTree((context) => this._addAppsAndLinks(context, [appId]), this.treeBuilder.root);
+        });
+    }
+    _stopApp(appId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.treeBuilder)
+                throw new Error('Engine is not started');
+            yield this._traverseContextTree((context) => this._removeAppsAndLinks(context, [appId]), this.treeBuilder.root);
+            yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").unloadApp(appId);
+        });
+    }
+    _addAppsAndLinks(context, includedApps) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const contextManager = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context);
+            if (!contextManager)
+                return;
+            const links = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context, includedApps);
+            const apps = __classPrivateFieldGet(this, _Engine_mutationManager, "f").filterSuitableApps(context, includedApps);
+            links.forEach((link) => contextManager.addUserLink(link));
+            apps.forEach((app) => contextManager.addAppMetadata(app));
+        });
+    }
+    _removeAppsAndLinks(context, includedApps) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const contextManager = __classPrivateFieldGet(this, _Engine_contextManagers, "f").get(context);
+            if (!contextManager)
+                return;
+            const links = yield __classPrivateFieldGet(this, _Engine_mutationManager, "f").getLinksForContext(context, includedApps);
+            links.forEach((link) => contextManager.removeUserLink(link));
+            includedApps.forEach((appId) => contextManager.removeAppMetadata(appId));
+        });
+    }
+    _traverseContextTree(callback, parent) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield Promise.all([
+                callback(parent),
+                ...parent.children.map((child) => this._traverseContextTree(callback, child)),
+            ]);
+        });
     }
 }
 exports.Engine = Engine;

@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import { IAdapter } from './core/adapters/interface';
-import { AppMetadata, InjectableTarget, Mutation, MutationWithSettings, ParserConfig } from './providers/provider';
+import { AppMetadata, AppWithSettings, InjectableTarget, Mutation, MutationWithSettings, ParserConfig } from './providers/provider';
 import { WalletSelector } from '@near-wallet-selector/core';
 import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types';
 import { IStorage } from './storage/storage';
@@ -16,7 +16,7 @@ export declare let engineSingleton: Engine | null;
 export declare class Engine implements IContextListener {
     #private;
     private config;
-    adapters: Set<IAdapter>;
+    adapters: Map<string, IAdapter>;
     treeBuilder: ITreeBuilder | null;
     started: boolean;
     constructor(config: EngineConfig);
@@ -46,10 +46,19 @@ export declare class Engine implements IContextListener {
     editMutation(mutation: Mutation): Promise<MutationWithSettings>;
     injectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
     unjectComponent<T>(target: InjectableTarget, cmp: React.FC<T>): void;
+    getAppsFromMutation(mutationId: string): Promise<AppWithSettings[]>;
+    enableApp(appId: string): Promise<void>;
+    disableApp(appId: string): Promise<void>;
     private _tryFetchAndUpdateRedirects;
     private _updateRootContext;
-    private _populateMutationSettings;
+    private _populateMutationWithSettings;
+    private _populateAppWithSettings;
     private _attachViewport;
     private _detachViewport;
+    private _startApp;
+    private _stopApp;
+    private _addAppsAndLinks;
+    private _removeAppsAndLinks;
+    private _traverseContextTree;
 }
 //# sourceMappingURL=engine.d.ts.map
