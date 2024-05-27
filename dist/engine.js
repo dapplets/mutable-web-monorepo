@@ -76,13 +76,13 @@ class Engine {
             if (usedMutationsData === null || usedMutationsData === void 0 ? void 0 : usedMutationsData.length) {
                 if (usedMutationsData.length === 1)
                     return usedMutationsData[0].id;
-                let lastMutationId = usedMutationsData[0].id;
+                let lastMutation = usedMutationsData[0];
                 for (let i = 1; i < usedMutationsData.length; i++) {
-                    if (usedMutationsData[i].lastUsage > usedMutationsData[i - 1].lastUsage) {
-                        lastMutationId = usedMutationsData[i].id;
+                    if (usedMutationsData[i].lastUsage > lastMutation.lastUsage) {
+                        lastMutation = usedMutationsData[i];
                     }
                 }
-                return lastMutationId;
+                return lastMutation.id;
             }
             else {
                 // Activate default mutation for new users

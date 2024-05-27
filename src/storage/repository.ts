@@ -26,7 +26,7 @@ export class Repository {
     const key = this._makeKey(MUTATION_LAST_USAGE, mutationId, hostname)
     return (await this._get(key)) ?? null
   }
-  
+
   async setMutationLastUsage(
     mutationId: string,
     value: string | null,
