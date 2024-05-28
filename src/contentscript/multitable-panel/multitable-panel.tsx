@@ -1,14 +1,13 @@
 import { EventEmitter as NEventEmitter } from 'events'
-import { MiniOverlay } from 'mutable-web-engine'
 import React, { FC, useEffect, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
-import Background from '../background'
-import { useMutableWeb, useMutationApp } from '../contexts/mutable-web-context'
+import { useMutableWeb } from '../contexts/mutable-web-context'
 import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } from '../storage'
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
+import SidePanel from './side-panel'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -147,8 +146,7 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
-  const { mutations, allApps, selectedMutation, mutationApps } = useMutableWeb()
-  const { enableApp, disableApp, isLoading } = useMutationApp()
+  const { mutations, allApps, selectedMutation } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
@@ -204,16 +202,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   return (
     <>
-      <MiniOverlay
-        baseMutation={selectedMutation}
-        enableApp={enableApp}
-        disableApp={disableApp}
-        isLoading={isLoading}
-        mutationApps={mutationApps}
-        nearNetwork={NEAR_NETWORK}
-        connectWallet={Background.connectWallet}
-        disconnectWallet={Background.disconnectWallet}
-      />
+      <SidePanel baseMutation={selectedMutation} />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal
