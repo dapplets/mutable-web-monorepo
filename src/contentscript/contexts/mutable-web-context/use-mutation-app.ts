@@ -1,13 +1,13 @@
 import { useContext, useState } from 'react'
 import { MutableWebContext } from './mutable-web-context'
 
-export function useMutationApp(appId: string) {
+export function useMutationApp() {
   const { engine, setMutationApps } = useContext(MutableWebContext)
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const enableApp = async () => {
+  const enableApp = async (appId: string) => {
     try {
       setIsLoading(true)
 
@@ -29,7 +29,7 @@ export function useMutationApp(appId: string) {
     }
   }
 
-  const disableApp = async () => {
+  const disableApp = async (appId: string) => {
     try {
       setIsLoading(true)
 
