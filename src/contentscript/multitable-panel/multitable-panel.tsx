@@ -7,7 +7,7 @@ import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } fro
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
-import SidePanel from './side-panel'
+import MutableOverlayContainer from './mutable-overlay-container'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -202,7 +202,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   return (
     <>
-      <SidePanel baseMutation={selectedMutation} />
+      <MutableOverlayContainer />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal
