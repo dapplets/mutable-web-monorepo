@@ -14,7 +14,6 @@ import {
   MutationId,
   ParserConfig,
 } from './provider'
-import { generateGuid } from '../core/utils'
 import { SocialDbClient } from './social-db-client'
 
 const ProjectIdKey = 'dapplets.near'
@@ -194,7 +193,7 @@ export class SocialDbProvider implements IProvider {
   // #region Write methods
 
   async createLink(indexObject: LinkIndexObject): Promise<IndexedLink> {
-    const linkId = generateGuid()
+    const linkId = SocialDbProvider._generateGuid()
 
     const accountId = await this._signer.getAccountId()
 
@@ -368,6 +367,12 @@ export class SocialDbProvider implements IProvider {
     } else {
       return this._getValueByKey(anotherKeys, obj?.[firstKey])
     }
+  }
+
+  static _generateGuid() {
+    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
   }
 
   // #endregion

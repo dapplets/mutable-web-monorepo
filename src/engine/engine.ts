@@ -1,5 +1,15 @@
-import { IAdapter } from './core/adapters/interface'
-import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
+import {
+  IAdapter,
+  DynamicHtmlAdapter,
+  IContextListener,
+  IContextNode,
+  ITreeBuilder,
+  PureTreeBuilder,
+  JsonParser,
+  BosParser,
+  MutableWebParser,
+  PureContextNode,
+} from '../core'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
 import {
   AdapterType,
@@ -21,14 +31,8 @@ import {
 } from './constants'
 import { NearSigner } from './providers/near-signer'
 import { SocialDbProvider } from './providers/social-db-provider'
-import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
-import { PureTreeBuilder } from './core/tree/pure-tree/pure-tree-builder'
 import { ContextManager } from './context-manager'
 import { MutationManager } from './mutation-manager'
-import { JsonParser, JsonParserConfig } from './core/parsers/json-parser'
-import { BosParser, BosParserConfig } from './core/parsers/bos-parser'
-import { MutableWebParser } from './core/parsers/mweb-parser'
-import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
 import { IStorage } from './storage/storage'
 import { Repository } from './storage/repository'
 import { JsonStorage } from './storage/json-storage'

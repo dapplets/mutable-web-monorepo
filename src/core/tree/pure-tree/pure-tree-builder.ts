@@ -1,4 +1,4 @@
-import { DappletsEngineNs } from '../../../constants'
+import { DappletsEngineNs } from '../../constants'
 import { isDeepEqual } from '../../utils'
 import { IContextListener, IContextNode, ITreeBuilder } from '../types'
 import { PureContextNode } from './pure-context-node'

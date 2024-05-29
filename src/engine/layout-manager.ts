@@ -1,6 +1,6 @@
 import { BosComponent } from './bos/bos-widget'
 import { ContextManager } from './context-manager'
-import { IContextNode } from './core/tree/types'
+import { IContextNode } from '../core'
 import { AppId, AppMetadata, BosUserLink, InjectableTarget, UserLinkId } from './providers/provider'
 
 export interface LayoutManagerProps {

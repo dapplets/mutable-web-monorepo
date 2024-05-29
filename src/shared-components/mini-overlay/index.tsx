@@ -1,4 +1,4 @@
-import { AppWithSettings, Mutation } from '../../providers/provider'
+import { AppWithSettings, Mutation } from '../../engine'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, ReactElement, useState } from 'react'
 import Spinner from 'react-bootstrap/Spinner'

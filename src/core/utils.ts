@@ -1,9 +1,3 @@
-export function generateGuid() {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 export function isDeepEqual(obj1: any, obj2: any): boolean {
   if (obj1 === obj2) return true
 

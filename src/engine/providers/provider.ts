@@ -1,5 +1,4 @@
-import { BosParserConfig } from '../core/parsers/bos-parser'
-import { JsonParserConfig } from '../core/parsers/json-parser'
+import { BosParserConfig, JsonParserConfig } from '../../core'
 
 export type UserLinkId = string
 export type AppId = string
