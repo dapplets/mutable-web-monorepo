@@ -273,11 +273,6 @@ const AppSwitcher = ({ app, enableApp, disableApp, isLoading }) => (react_1.defa
         react_1.default.createElement(PlayCenterIcon, null)))))));
 exports.AppSwitcher = AppSwitcher;
 const MiniOverlay = ({ baseMutation, mutationApps, connectWallet, disconnectWallet, nearNetwork, children, }) => {
-    console.log('baseMutation', baseMutation);
-    console.log('mutationApps', mutationApps);
-    console.log('connectWallet', connectWallet);
-    console.log('disconnectWallet', disconnectWallet);
-    console.log('nearNetwork', nearNetwork);
     const [isOpen, setIsOpen] = (0, react_1.useState)(false);
     const [isProfileOpen, setProfileOpen] = (0, react_1.useState)(false);
     const loggedInAccountId = (0, near_social_vm_1.useAccountId)();
