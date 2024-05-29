@@ -7,14 +7,14 @@ export type InsertionPoint = {
 }
 
 export interface IParser {
-  parseContext(element: Element, contextName: string): any
+  parseContext(element: HTMLElement, contextName: string): any
 
   findChildElements(
-    element: Element,
+    element: HTMLElement,
     contextName: string
-  ): { element: Element; contextName: string }[]
+  ): { element: HTMLElement; contextName: string }[]
 
-  findInsertionPoint(element: Element, contextName: string, insertionPoint: string): Element | null
+  findInsertionPoint(element: HTMLElement, contextName: string, insertionPoint: string): HTMLElement | null
 
-  getInsertionPoints(element: Element, contextName: string): InsertionPoint[]
+  getInsertionPoints(element: HTMLElement, contextName: string): InsertionPoint[]
 }

@@ -5,19 +5,19 @@ import { IAdapter, InsertionType } from './interface'
 const DefaultInsertionType: InsertionType = InsertionType.Before
 
 export class DynamicHtmlAdapter implements IAdapter {
-  protected element: Element
+  protected element: HTMLElement
   protected treeBuilder: ITreeBuilder
   protected parser: IParser
   public namespace: string
   public context: IContextNode
 
-  #observerByElement: Map<Element, MutationObserver> = new Map()
-  #elementByContext: WeakMap<IContextNode, Element> = new WeakMap()
-  #contextByElement: Map<Element, IContextNode> = new Map()
+  #observerByElement: Map<HTMLElement, MutationObserver> = new Map()
+  #elementByContext: WeakMap<IContextNode, HTMLElement> = new WeakMap()
+  #contextByElement: Map<HTMLElement, IContextNode> = new Map()
 
   #isStarted = false // ToDo: find another way to check if adapter is started
 
-  constructor(element: Element, treeBuilder: ITreeBuilder, namespace: string, parser: IParser) {
+  constructor(element: HTMLElement, treeBuilder: ITreeBuilder, namespace: string, parser: IParser) {
     this.element = element
     this.treeBuilder = treeBuilder
     this.namespace = namespace
@@ -45,7 +45,11 @@ export class DynamicHtmlAdapter implements IAdapter {
     this.#observerByElement.forEach((observer) => observer.disconnect())
   }
 
-  injectElement(injectingElement: Element, context: IContextNode, insertionPoint: string | 'root') {
+  injectElement(
+    injectingElement: HTMLElement,
+    context: IContextNode,
+    insertionPoint: string | 'root'
+  ) {
     const contextElement = this.#elementByContext.get(context)
 
     if (!contextElement) {
@@ -60,7 +64,7 @@ export class DynamicHtmlAdapter implements IAdapter {
       throw new Error(`Insertion point "${insertionPoint}" is not defined in the parser`)
     }
 
-    const insPointElement: Element | null = this.parser.findInsertionPoint(
+    const insPointElement: HTMLElement | null = this.parser.findInsertionPoint(
       contextElement,
       context.contextType,
       insertionPoint
@@ -98,17 +102,17 @@ export class DynamicHtmlAdapter implements IAdapter {
     return this.parser.getInsertionPoints(htmlElement, context.contextType)
   }
 
-  getContextElement(context: IContextNode): Element | null {
+  getContextElement(context: IContextNode): HTMLElement | null {
     return this.#elementByContext.get(context) ?? null
   }
 
-  getInsertionPointElement(context: IContextNode, insPointName: string): Element | null {
+  getInsertionPointElement(context: IContextNode, insPointName: string): HTMLElement | null {
     const contextElement = this.getContextElement(context)
     if (!contextElement) return null
     return this.parser.findInsertionPoint(contextElement, context.contextType, insPointName)
   }
 
-  _createContextForElement(element: Element, contextName: string): IContextNode {
+  _createContextForElement(element: HTMLElement, contextName: string): IContextNode {
     const parsedContext = this.parser.parseContext(element, contextName)
     const insPoints = this._findAvailableInsPoints(element, contextName)
     const context = this.treeBuilder.createNode(
@@ -137,7 +141,7 @@ export class DynamicHtmlAdapter implements IAdapter {
     return context
   }
 
-  private _handleMutations(element: Element, context: IContextNode) {
+  private _handleMutations(element: HTMLElement, context: IContextNode) {
     const parsedContext = this.parser.parseContext(element, context.contextType)
     const pairs = this.parser.findChildElements(element, context.contextType)
     const insPoints = this._findAvailableInsPoints(element, context.contextType)
@@ -149,7 +153,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   private _appendNewChildContexts(
-    childPairs: { element: Element; contextName: string }[],
+    childPairs: { element: HTMLElement; contextName: string }[],
     parentContext: IContextNode
   ) {
     for (const { element, contextName } of childPairs) {
@@ -165,7 +169,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   private _removeOldChildContexts(
-    childPairs: { element: Element; contextName: string }[],
+    childPairs: { element: HTMLElement; contextName: string }[],
     parentContext: IContextNode
   ) {
     const childElementsSet = new Set(childPairs.map((pair) => pair.element))
@@ -180,7 +184,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   // ToDo: move to parser?
-  private _findAvailableInsPoints(element: Element, contextName: string): string[] {
+  private _findAvailableInsPoints(element: HTMLElement, contextName: string): string[] {
     const parser = this.parser
     const definedInsPoints = parser.getInsertionPoints(element, contextName)
 

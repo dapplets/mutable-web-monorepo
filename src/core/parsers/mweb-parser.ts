@@ -9,13 +9,13 @@ const ShadowHostAttr = 'data-mweb-shadow-host'
 const LayoutManagerAttr = 'data-mweb-layout-manager'
 
 export class MutableWebParser implements IParser {
-  parseContext(element: Element, contextName: string) {
+  parseContext(element: HTMLElement, contextName: string) {
     const json = element.getAttribute(ParsedContextAttr)
     if (!json) return {}
     return JSON.parse(json)
   }
 
-  findChildElements(element: Element) {
+  findChildElements(element: HTMLElement) {
     return getChildContextElements(element, ContextTypeAttr).map((element) => ({
       element,
       contextName: element.getAttribute(ContextTypeAttr)!,
@@ -23,16 +23,22 @@ export class MutableWebParser implements IParser {
   }
 
   findInsertionPoint(
-    element: Element | ShadowRoot,
+    element: HTMLElement | ShadowRoot,
     contextName: string,
     insertionPoint: string
-  ): Element | null {
+  ): HTMLElement | null {
     // ToDo: use getChildContextElements
 
-    const insPointElement = element.querySelector(`[${InsPointAttr}="${insertionPoint}"]`)
+    const insPointElement = element.querySelector<HTMLElement>(
+      `[${InsPointAttr}="${insertionPoint}"]`
+    )
     if (insPointElement) return insPointElement
 
-    if (element instanceof Element && element.hasAttribute(ShadowHostAttr) && element.shadowRoot) {
+    if (
+      element instanceof HTMLElement &&
+      element.hasAttribute(ShadowHostAttr) &&
+      element.shadowRoot
+    ) {
       return this.findInsertionPoint(element.shadowRoot, contextName, insertionPoint)
     }
 
@@ -52,7 +58,7 @@ export class MutableWebParser implements IParser {
     return null
   }
 
-  getInsertionPoints(element: Element): InsertionPoint[] {
+  getInsertionPoints(element: HTMLElement): InsertionPoint[] {
     return getChildContextElements(element, InsPointAttr, ContextTypeAttr).map((el) => ({
       name: el.getAttribute(InsPointAttr)!,
       insertionType: InsertionType.End,

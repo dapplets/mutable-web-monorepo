@@ -40,7 +40,7 @@ export class BosParser implements IParser {
     }
   }
 
-  parseContext(element: Element, contextName: string) {
+  parseContext(element: HTMLElement, contextName: string) {
     const contextProperties = this.config.contexts[contextName].props
     if (!contextProperties) return {}
 
@@ -55,18 +55,18 @@ export class BosParser implements IParser {
     return parsed
   }
 
-  findChildElements(element: Element, contextName: string) {
+  findChildElements(element: HTMLElement, contextName: string) {
     const contextConfig = this.config.contexts[contextName]
     if (!contextConfig.children?.length) return []
 
-    const result: { element: Element; contextName: string }[] = []
+    const result: { element: HTMLElement; contextName: string }[] = []
 
     for (const childContextName of contextConfig.children ?? []) {
       const childConfig = this.config.contexts[childContextName]
       if (!childConfig.component) continue
 
       const childElements = Array.from(
-        element.querySelectorAll(`[${CompAttr}="${childConfig.component}"]`)
+        element.querySelectorAll<HTMLElement>(`[${CompAttr}="${childConfig.component}"]`)
       )
 
       for (const childElement of childElements) {
@@ -78,10 +78,10 @@ export class BosParser implements IParser {
   }
 
   findInsertionPoint(
-    element: Element,
+    element: HTMLElement,
     contextName: string,
     insertionPoint: string
-  ): Element | null {
+  ): HTMLElement | null {
     const contextConfig = this.config.contexts[contextName]
     const insPointConfig = contextConfig.insertionPoints?.[insertionPoint]
 
@@ -95,7 +95,7 @@ export class BosParser implements IParser {
     }
   }
 
-  getInsertionPoints(_: Element, contextName: string): InsertionPoint[] {
+  getInsertionPoints(_: HTMLElement, contextName: string): InsertionPoint[] {
     const contextConfig = this.config.contexts[contextName]
     if (!contextConfig.insertionPoints) return []
 

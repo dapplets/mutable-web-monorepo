@@ -1,11 +1,11 @@
 const ShadowHostAttr = 'data-mweb-shadow-host'
 
 export function getChildContextElements(
-  element: Element | ShadowRoot,
+  element: HTMLElement | ShadowRoot,
   attribute: string,
   excludeAttribute?: string
 ) {
-  const result: Element[] = []
+  const result: HTMLElement[] = []
 
   for (const child of element.children) {
     if (child instanceof HTMLElement) {
