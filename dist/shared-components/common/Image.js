@@ -15,9 +15,6 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -26,11 +23,22 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppSwitcher = exports.MiniOverlay = exports.LocalStorage = exports.customElements = void 0;
-__exportStar(require("./engine"), exports);
-exports.customElements = __importStar(require("./custom-elements"));
-var local_storage_1 = require("./storage/local-storage");
-Object.defineProperty(exports, "LocalStorage", { enumerable: true, get: function () { return local_storage_1.LocalStorage; } });
-var mini_overlay_1 = require("./shared-components/mini-overlay");
-Object.defineProperty(exports, "MiniOverlay", { enumerable: true, get: function () { return mini_overlay_1.MiniOverlay; } });
-Object.defineProperty(exports, "AppSwitcher", { enumerable: true, get: function () { return mini_overlay_1.AppSwitcher; } });
+exports.Image = void 0;
+const react_1 = __importStar(require("react"));
+const Image = ({ image, alt, fallbackUrl }) => {
+    const [imageUrl, setImageUrl] = (0, react_1.useState)(undefined);
+    // todo: image can changed. need watch
+    (0, react_1.useEffect)(() => {
+        (image === null || image === void 0 ? void 0 : image.ipfs_cid)
+            ? setImageUrl(`https://ipfs.near.social/ipfs/${image.ipfs_cid}`)
+            : (image === null || image === void 0 ? void 0 : image.url)
+                ? setImageUrl(image === null || image === void 0 ? void 0 : image.url)
+                : setImageUrl(fallbackUrl);
+    }, [image]);
+    return (react_1.default.createElement("img", { src: imageUrl, alt: alt, onError: () => {
+            if (imageUrl !== fallbackUrl) {
+                setImageUrl(fallbackUrl);
+            }
+        } }));
+};
+exports.Image = Image;
