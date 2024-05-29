@@ -29,11 +29,3 @@ export interface ITreeBuilder {
     insPoints?: string[]
   ): IContextNode
 }
-
-export interface IContextListener {
-  handleContextStarted(context: IContextNode): void
-  handleContextChanged(context: IContextNode, oldParsedContext: any): void
-  handleContextFinished(context: IContextNode): void
-  handleInsPointStarted(context: IContextNode, newInsPoint: string): void
-  handleInsPointFinished(context: IContextNode, oldInsPoint: string): void
-}
