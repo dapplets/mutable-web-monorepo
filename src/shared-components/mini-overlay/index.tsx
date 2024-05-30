@@ -393,6 +393,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
     setProfileOpen((val) => !val)
   }
 
+  const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
+
   return (
     <SidePanelWrapper
       $isApps={mutationApps.length > 0}
@@ -401,15 +403,20 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
     >
       <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
-          $isButton={!!connectWallet && !!disconnectWallet && !!nearNetwork}
+          $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
           onClick={handleMutationIconClick}
+          data-mweb-context-type="mweb-overlay"
+          data-mweb-context-parsed={JSON.stringify({
+            id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
+          })}
         >
           {baseMutation?.metadata.image ? (
             <Image image={baseMutation?.metadata.image} />
           ) : (
             <MutationFallbackIcon />
           )}
+          <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
       </TopBlock>
 
@@ -423,7 +430,11 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
       {isOpen ? <AppsWrapper>{children}</AppsWrapper> : null}
 
       {mutationApps.length > 0 ? (
-        <ButtonOpenWrapper $open={isOpen || mutationApps.length > 0}>
+        <ButtonOpenWrapper
+          $open={isOpen || mutationApps.length > 0}
+          data-mweb-context-type="mweb-overlay"
+          data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
+        >
           <ButtonOpen
             $open={isOpen}
             className={isOpen ? 'svgTransform' : ''}
@@ -431,10 +442,11 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           >
             <ArrowSvg />
           </ButtonOpen>
+          <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
         </ButtonOpenWrapper>
       ) : null}
 
-      {isProfileOpen && connectWallet && disconnectWallet && nearNetwork ? (
+      {isProfileOpen && isMutationIconButton ? (
         <Profile
           accountId={loggedInAccountId}
           closeProfile={() => setProfileOpen(false)}
@@ -443,6 +455,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           nearNetwork={nearNetwork}
         />
       ) : null}
+      <div data-mweb-insertion-point="mweb-overlay" style={{ display: 'none' }} />
     </SidePanelWrapper>
   )
 }

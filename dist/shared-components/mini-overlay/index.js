@@ -279,14 +279,21 @@ const MiniOverlay = ({ baseMutation, mutationApps, connectWallet, disconnectWall
     const handleMutationIconClick = () => {
         setProfileOpen((val) => !val);
     };
+    const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork;
     return (react_1.default.createElement(SidePanelWrapper, { "$isApps": mutationApps.length > 0, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({ id: 'mweb-overlay' }) },
         react_1.default.createElement(TopBlock, { "$open": isOpen || mutationApps.length > 0, "$noMutations": !mutationApps.length },
-            react_1.default.createElement(MutationIconWrapper, { "$isButton": !!connectWallet && !!disconnectWallet && !!nearNetwork, title: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.name, onClick: handleMutationIconClick }, (baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image) ? (react_1.default.createElement(Image_1.Image, { image: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image })) : (react_1.default.createElement(MutationFallbackIcon, null)))),
+            react_1.default.createElement(MutationIconWrapper, { "$isButton": isMutationIconButton, title: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.name, onClick: handleMutationIconClick, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({
+                    id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
+                }) },
+                (baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image) ? (react_1.default.createElement(Image_1.Image, { image: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image })) : (react_1.default.createElement(MutationFallbackIcon, null)),
+                react_1.default.createElement("div", { "data-mweb-insertion-point": "mutation-icon", style: { display: 'none' } }))),
         isOpen || !mutationApps.length ? null : (react_1.default.createElement(ButtonWrapper, { "data-mweb-insertion-point": "mweb-actions-panel", "data-mweb-layout-manager": "bos.dapplets.near/widget/VerticalLayoutManager" })),
         isOpen ? react_1.default.createElement(AppsWrapper, null, children) : null,
-        mutationApps.length > 0 ? (react_1.default.createElement(ButtonOpenWrapper, { "$open": isOpen || mutationApps.length > 0 },
+        mutationApps.length > 0 ? (react_1.default.createElement(ButtonOpenWrapper, { "$open": isOpen || mutationApps.length > 0, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({ id: 'open-apps-button' }) },
             react_1.default.createElement(ButtonOpen, { "$open": isOpen, className: isOpen ? 'svgTransform' : '', onClick: () => setIsOpen(!isOpen) },
-                react_1.default.createElement(ArrowSvg, null)))) : null,
-        isProfileOpen && connectWallet && disconnectWallet && nearNetwork ? (react_1.default.createElement(Profile_1.default, { accountId: loggedInAccountId, closeProfile: () => setProfileOpen(false), connectWallet: connectWallet, disconnectWallet: disconnectWallet, nearNetwork: nearNetwork })) : null));
+                react_1.default.createElement(ArrowSvg, null)),
+            react_1.default.createElement("div", { "data-mweb-insertion-point": "open-apps-button", style: { display: 'none' } }))) : null,
+        isProfileOpen && isMutationIconButton ? (react_1.default.createElement(Profile_1.default, { accountId: loggedInAccountId, closeProfile: () => setProfileOpen(false), connectWallet: connectWallet, disconnectWallet: disconnectWallet, nearNetwork: nearNetwork })) : null,
+        react_1.default.createElement("div", { "data-mweb-insertion-point": "mweb-overlay", style: { display: 'none' } })));
 };
 exports.MiniOverlay = MiniOverlay;
