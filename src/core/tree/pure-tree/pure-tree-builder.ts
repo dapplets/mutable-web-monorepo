@@ -36,9 +36,10 @@ export class PureTreeBuilder implements ITreeBuilder {
     namespace: string,
     contextType: string,
     parsedContext: any = {},
-    insPoints: string[] = []
+    insPoints: string[] = [],
+    element: HTMLElement | null = null
   ): IContextNode {
-    return new PureContextNode(namespace, contextType, parsedContext, insPoints)
+    return new PureContextNode(namespace, contextType, parsedContext, insPoints, element)
   }
 
   updateParsedContext(context: IContextNode, newParsedContext: any): void {

@@ -8,17 +8,20 @@ export class PureContextNode implements IContextNode {
   public parsedContext: any = {}
   public children: IContextNode[] = []
   public insPoints: string[] = []
+  public element: HTMLElement | null = null;
 
   constructor(
     namespace: string,
     contextType: string,
     parsedContext: any = {},
-    insPoints: string[] = []
+    insPoints: string[] = [],
+    element: HTMLElement | null = null
   ) {
     this.namespace = namespace
     this.contextType = contextType
     this.parsedContext = parsedContext
     this.insPoints = insPoints
+    this.element = element
 
     // ToDo: the similar logic is in tree builder
     this.id = parsedContext.id ?? null

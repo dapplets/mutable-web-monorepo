@@ -119,7 +119,8 @@ export class DynamicHtmlAdapter implements IAdapter {
       this.namespace,
       contextName,
       parsedContext,
-      insPoints
+      insPoints,
+      element
     )
 
     const observer = new MutationObserver(() => this._handleMutations(element, context))
