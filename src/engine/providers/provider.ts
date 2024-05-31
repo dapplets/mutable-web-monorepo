@@ -46,9 +46,6 @@ export type AppMetadataTarget = ContextTarget & {
 
 export type InjectableTarget = ContextTarget & {
   injectTo: string
-  insteadOf?: {
-    linkId: string
-  }
 }
 
 export type AppMetadata = {
