@@ -1,5 +1,4 @@
-import { BosParserConfig } from '../core/parsers/bos-parser'
-import { JsonParserConfig } from '../core/parsers/json-parser'
+import { BosParserConfig, JsonParserConfig } from '../../core'
 
 export type UserLinkId = string
 export type AppId = string
@@ -47,9 +46,6 @@ export type AppMetadataTarget = ContextTarget & {
 
 export type InjectableTarget = ContextTarget & {
   injectTo: string
-  insteadOf?: {
-    linkId: string
-  }
 }
 
 export type AppMetadata = {

@@ -1,4 +1,4 @@
-import { IContextNode } from './core/tree/types'
+import { IContextNode } from '../core'
 import {
   AdapterType,
   AppId,

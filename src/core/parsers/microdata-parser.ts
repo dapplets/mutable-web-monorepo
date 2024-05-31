@@ -2,7 +2,7 @@ import { getChildContextElements } from './utils'
 import { IParser, InsertionPoint } from './interface'
 
 export class MicrodataParser implements IParser {
-  parseContext(element: Element) {
+  parseContext(element: HTMLElement) {
     const childElements = getChildContextElements(element, 'itemprop')
     const result: any = {}
 
@@ -20,24 +20,24 @@ export class MicrodataParser implements IParser {
     return result
   }
 
-  findChildElements(element: Element) {
+  findChildElements(element: HTMLElement) {
     return getChildContextElements(element, 'itemtype').map((element) => ({
       element,
       contextName: element.getAttribute('itemtype')!,
     }))
   }
 
-  findInsertionPoint(element: Element, _: string, insertionPoint: string): Element | null {
+  findInsertionPoint(element: HTMLElement, _: string, insertionPoint: string): HTMLElement | null {
     return element.querySelector(`[itemtype="${insertionPoint}"]`)
   }
 
-  getInsertionPoints(element: Element): InsertionPoint[] {
+  getInsertionPoints(element: HTMLElement): InsertionPoint[] {
     return getChildContextElements(element, 'itemtype').map((el) => ({
       name: el.getAttribute('itemtype')!,
     }))
   }
 
-  static getPropertyValue(element: Element) {
+  static getPropertyValue(element: HTMLElement) {
     if (element.hasAttribute('itemscope')) {
       return undefined
     } else if (element.tagName.toLowerCase() === 'meta') {

@@ -15,11 +15,11 @@ export interface IAdapter {
   start(): void
   stop(): void
 
-  injectElement(element: Element, context: IContextNode, insertionPoint: string): void
+  injectElement(element: HTMLElement, context: IContextNode, insertionPoint: string): void
 
   getInsertionPoints(context: IContextNode): InsertionPoint[]
 
   // For OverlayTrigger
-  getContextElement(context: IContextNode): Element | null
-  getInsertionPointElement(context: IContextNode, insPointName: string): Element | null
+  getContextElement(context: IContextNode): HTMLElement | null
+  getInsertionPointElement(context: IContextNode, insPointName: string): HTMLElement | null
 }

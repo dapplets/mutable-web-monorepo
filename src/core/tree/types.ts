@@ -7,6 +7,7 @@ export interface IContextNode {
   contextType: string
   namespace: string
   parentNode: IContextNode | null
+  element: HTMLElement | null
 
   parsedContext: ParsedContext
   insPoints: string[]
@@ -26,14 +27,7 @@ export interface ITreeBuilder {
     namespace: string | null,
     contextType: string,
     parsedContext?: any,
-    insPoints?: string[]
+    insPoints?: string[],
+    element?: HTMLElement
   ): IContextNode
-}
-
-export interface IContextListener {
-  handleContextStarted(context: IContextNode): void
-  handleContextChanged(context: IContextNode, oldParsedContext: any): void
-  handleContextFinished(context: IContextNode): void
-  handleInsPointStarted(context: IContextNode, newInsPoint: string): void
-  handleInsPointFinished(context: IContextNode, oldInsPoint: string): void
 }

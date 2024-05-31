@@ -22,7 +22,7 @@ export type JsonParserConfig = {
   }
 }
 
-const query = (cssOrXPath: string, element: Element) => {
+const query = (cssOrXPath: string, element: HTMLElement) => {
   try {
     const result = element.querySelector(cssOrXPath)
     if (result) return result.textContent
@@ -57,7 +57,7 @@ export class JsonParser implements IParser {
     this.config = config
   }
 
-  parseContext(element: Element, contextName: string) {
+  parseContext(element: HTMLElement, contextName: string) {
     const contextProperties = this.config.contexts[contextName].props
     if (!contextProperties) return {}
 
@@ -72,19 +72,19 @@ export class JsonParser implements IParser {
   }
 
   findChildElements(
-    element: Element,
+    element: HTMLElement,
     contextName: string
-  ): { element: Element; contextName: string }[] {
+  ): { element: HTMLElement; contextName: string }[] {
     const contextConfig = this.config.contexts[contextName]
     if (!contextConfig.children?.length) return []
 
-    const result: { element: Element; contextName: string }[] = []
+    const result: { element: HTMLElement; contextName: string }[] = []
 
     for (const childContextName of contextConfig.children ?? []) {
       const childConfig = this.config.contexts[childContextName]
       if (!childConfig.selector) continue
 
-      const childElements = Array.from(element.querySelectorAll(childConfig.selector))
+      const childElements = Array.from(element.querySelectorAll<HTMLElement>(childConfig.selector))
 
       for (const childElement of childElements) {
         result.push({ element: childElement, contextName: childContextName })
@@ -95,10 +95,10 @@ export class JsonParser implements IParser {
   }
 
   findInsertionPoint(
-    element: Element,
+    element: HTMLElement,
     contextName: string,
     insertionPoint: string
-  ): Element | null {
+  ): HTMLElement | null {
     const contextConfig = this.config.contexts[contextName]
     const selectorOrObject = contextConfig.insertionPoints?.[insertionPoint]
 
@@ -113,7 +113,7 @@ export class JsonParser implements IParser {
     }
   }
 
-  getInsertionPoints(_: Element, contextName: string): InsertionPoint[] {
+  getInsertionPoints(_: HTMLElement, contextName: string): InsertionPoint[] {
     const contextConfig = this.config.contexts[contextName]
     if (!contextConfig.insertionPoints) return []
 

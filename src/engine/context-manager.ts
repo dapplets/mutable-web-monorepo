@@ -1,6 +1,5 @@
 import { BosWidgetFactory } from './bos/bos-widget-factory'
-import { IAdapter } from './core/adapters/interface'
-import { IContextNode } from './core/tree/types'
+import { IAdapter, IContextNode } from '../core'
 import { LayoutManager } from './layout-manager'
 import { MutationManager } from './mutation-manager'
 import {

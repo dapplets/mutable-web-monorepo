@@ -1,15 +1,12 @@
-import { IAdapter } from './core/adapters/interface'
-import { DynamicHtmlAdapter } from './core/adapters/dynamic-html-adapter'
+import { IContextNode, PureTreeBuilder, PureContextNode, Core } from '../core'
 import { BosWidgetFactory } from './bos/bos-widget-factory'
 import {
-  AdapterType,
   AppMetadata,
   AppWithSettings,
   IProvider,
   InjectableTarget,
   Mutation,
   MutationWithSettings,
-  ParserConfig,
 } from './providers/provider'
 import { WalletSelector } from '@near-wallet-selector/core'
 import {
@@ -21,14 +18,8 @@ import {
 } from './constants'
 import { NearSigner } from './providers/near-signer'
 import { SocialDbProvider } from './providers/social-db-provider'
-import { IContextListener, IContextNode, ITreeBuilder } from './core/tree/types'
-import { PureTreeBuilder } from './core/tree/pure-tree/pure-tree-builder'
 import { ContextManager } from './context-manager'
 import { MutationManager } from './mutation-manager'
-import { JsonParser, JsonParserConfig } from './core/parsers/json-parser'
-import { BosParser, BosParserConfig } from './core/parsers/bos-parser'
-import { MutableWebParser } from './core/parsers/mweb-parser'
-import { PureContextNode } from './core/tree/pure-tree/pure-context-node'
 import { IStorage } from './storage/storage'
 import { Repository } from './storage/repository'
 import { JsonStorage } from './storage/json-storage'
@@ -46,7 +37,7 @@ export type EngineConfig = {
 // ToDo: dirty hack
 export let engineSingleton: Engine | null = null
 
-export class Engine implements IContextListener {
+export class Engine {
   #provider: IProvider
   #bosWidgetFactory: BosWidgetFactory
   #selector: WalletSelector
@@ -61,9 +52,8 @@ export class Engine implements IContextListener {
   // ToDo: duplcated in ContextManager and LayoutManager
   #refComponents = new Map<React.FC<unknown>, InjectableTarget>()
 
-  adapters = new Map<string, IAdapter>()
-  treeBuilder: ITreeBuilder | null = null
   started: boolean = false
+  core: Core
 
   constructor(private config: EngineConfig) {
     if (!this.config.storage) {
@@ -83,21 +73,28 @@ export class Engine implements IContextListener {
     this.#provider = new SocialDbProvider(nearSigner, nearConfig.contractName)
     this.#mutationManager = new MutationManager(this.#provider)
 
+    this.core = new Core()
+
+    this.core.on('contextStarted', this.handleContextStarted.bind(this))
+    this.core.on('contextFinished', this.handleContextFinished.bind(this))
+    this.core.on('contextChanged', this.handleContextChanged.bind(this))
+    this.core.on('insertionPointStarted', this.handleInsPointStarted.bind(this))
+    this.core.on('insertionPointFinished', this.handleInsPointFinished.bind(this))
+
     engineSingleton = this
   }
 
-  async handleContextStarted(context: IContextNode): Promise<void> {
+  async handleContextStarted({ context }: { context: IContextNode }): Promise<void> {
     // if (!this.started) return;
     if (!context.id) return
 
     // We don't wait adapters here
     const parserConfigs = this.#mutationManager.filterSuitableParsers(context)
     for (const config of parserConfigs) {
-      const adapter = this.createAdapter(config)
-      this.registerAdapter(adapter)
+      this.core.attachParserConfig(config)
     }
 
-    const adapter = this.adapters.get(context.namespace)
+    const adapter = this.core.adapters.get(context.namespace)
 
     if (!adapter) return
 
@@ -123,25 +120,37 @@ export class Engine implements IContextListener {
     })
   }
 
-  handleContextChanged(context: IContextNode, oldParsedContext: any): void {
+  handleContextChanged({ context }: { context: IContextNode }): void {
     if (!this.started) return
 
     this.#contextManagers.get(context)?.forceUpdate()
   }
 
-  handleContextFinished(context: IContextNode): void {
+  handleContextFinished({ context }: { context: IContextNode }): void {
     if (!this.started) return
 
     this.#contextManagers.get(context)?.destroy()
     this.#contextManagers.delete(context)
   }
 
-  handleInsPointStarted(context: IContextNode, newInsPoint: string): void {
-    this.#contextManagers.get(context)?.injectLayoutManager(newInsPoint)
+  handleInsPointStarted({
+    context,
+    insertionPoint,
+  }: {
+    context: IContextNode
+    insertionPoint: string
+  }): void {
+    this.#contextManagers.get(context)?.injectLayoutManager(insertionPoint)
   }
 
-  handleInsPointFinished(context: IContextNode, oldInsPoint: string): void {
-    this.#contextManagers.get(context)?.destroyLayoutManager(oldInsPoint)
+  handleInsPointFinished({
+    context,
+    insertionPoint,
+  }: {
+    context: IContextNode
+    insertionPoint: string
+  }): void {
+    this.#contextManagers.get(context)?.destroyLayoutManager(insertionPoint)
   }
 
   getLastUsedMutation = async (): Promise<string | null> => {
@@ -207,7 +216,6 @@ export class Engine implements IContextListener {
       }
     }
 
-    this.treeBuilder = new PureTreeBuilder(this)
     this.started = true
 
     this._attachViewport()
@@ -221,11 +229,9 @@ export class Engine implements IContextListener {
 
   stop() {
     this.started = false
-    this.adapters.forEach((adapter) => this.unregisterAdapter(adapter))
     this.#contextManagers.forEach((cm) => cm.destroy())
-    this.adapters.clear()
+    this.core.clear()
     this.#contextManagers.clear()
-    this.treeBuilder = null
     this._detachViewport()
   }
 
@@ -273,56 +279,6 @@ export class Engine implements IContextListener {
 
     this.#redirectMap = null
     this.#contextManagers.forEach((cm) => cm.setRedirectMap(null))
-  }
-
-  registerAdapter(adapter: IAdapter) {
-    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
-    this.treeBuilder.appendChild(this.treeBuilder.root, adapter.context)
-    this.adapters.set(adapter.namespace, adapter)
-    adapter.start()
-    console.log(`[MutableWeb] Loaded new adapter: ${adapter.namespace}`)
-  }
-
-  unregisterAdapter(adapter: IAdapter) {
-    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
-    adapter.stop()
-    this.treeBuilder.removeChild(this.treeBuilder.root, adapter.context)
-    this.adapters.delete(adapter.namespace)
-  }
-
-  createAdapter(config: ParserConfig): IAdapter {
-    if (!this.treeBuilder) {
-      throw new Error('Tree builder is not inited')
-    }
-
-    switch (config.parserType) {
-      case AdapterType.Json:
-        return new DynamicHtmlAdapter(
-          document.documentElement,
-          this.treeBuilder,
-          config.id,
-          new JsonParser(config) // ToDo: add try catch because config can be invalid
-        )
-
-      case AdapterType.Bos:
-        return new DynamicHtmlAdapter(
-          document.documentElement,
-          this.treeBuilder,
-          config.id,
-          new BosParser(config)
-        )
-
-      case AdapterType.MWeb:
-        return new DynamicHtmlAdapter(
-          document.body,
-          this.treeBuilder,
-          config.id,
-          new MutableWebParser()
-        )
-
-      default:
-        throw new Error('Incompatible adapter type')
-    }
   }
 
   async setFavoriteMutation(mutationId: string | null): Promise<void> {
@@ -460,13 +416,9 @@ export class Engine implements IContextListener {
   }
 
   private _updateRootContext() {
-    if (!this.treeBuilder) throw new Error('Tree builder is not inited')
-
     // ToDo: instantiate root context with data initially
     // ToDo: looks like circular dependency
-    this.treeBuilder.updateParsedContext(this.treeBuilder.root, {
-      id: window.location.hostname,
-      url: window.location.href,
+    this.core.updateRootContext({
       mutationId: this.#mutationManager.mutation?.id ?? null,
       gatewayId: this.config.gatewayId,
     })
@@ -551,22 +503,18 @@ export class Engine implements IContextListener {
   }
 
   private async _startApp(appId: string): Promise<void> {
-    if (!this.treeBuilder) throw new Error('Engine is not started')
-
     await this.#mutationManager.loadApp(appId)
 
     await this._traverseContextTree(
       (context) => this._addAppsAndLinks(context, [appId]),
-      this.treeBuilder.root
+      this.core.tree
     )
   }
 
   private async _stopApp(appId: string): Promise<void> {
-    if (!this.treeBuilder) throw new Error('Engine is not started')
-
     await this._traverseContextTree(
       (context) => this._removeAppsAndLinks(context, [appId]),
-      this.treeBuilder.root
+      this.core.tree
     )
 
     await this.#mutationManager.unloadApp(appId)
