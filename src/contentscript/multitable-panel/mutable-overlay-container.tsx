@@ -10,8 +10,10 @@ function AppSwitcherContainer({ app }: { app: AppWithSettings }) {
   )
 }
 
-function MutableOverlayContainer() {
+function MutableOverlayContainer({ notchRef }: { notchRef: React.RefObject<HTMLDivElement> }) {
   const { selectedMutation, mutationApps } = useMutableWeb()
+  const trackingRefs = new Set<React.RefObject<HTMLDivElement>>()
+  trackingRefs.add(notchRef)
   return (
     <MiniOverlay
       baseMutation={selectedMutation}
@@ -19,6 +21,7 @@ function MutableOverlayContainer() {
       nearNetwork={NEAR_NETWORK}
       connectWallet={Background.connectWallet}
       disconnectWallet={Background.disconnectWallet}
+      trackingRefs={trackingRefs}
     >
       <>
         {mutationApps.map((app) => (

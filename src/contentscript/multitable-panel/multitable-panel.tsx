@@ -1,5 +1,5 @@
 import { EventEmitter as NEventEmitter } from 'events'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
 import { useMutableWeb } from '../contexts/mutable-web-context'
@@ -152,6 +152,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const [isDragging, setIsDragging] = useState(false)
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const notchRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -202,7 +203,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   return (
     <>
-      <MutableOverlayContainer />
+      <MutableOverlayContainer notchRef={notchRef} />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal
@@ -232,6 +233,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
                     : 'visible-notch'
                 }
                 $isAnimated={!isDragging}
+                ref={notchRef}
               >
                 <div>
                   <DragWrapper className="dragWrapper">
