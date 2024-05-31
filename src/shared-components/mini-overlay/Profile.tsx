@@ -288,6 +288,8 @@ export interface IWalletConnect {
 export interface IProfileProps extends IWalletConnect {
   accountId: string | null
   closeProfile: () => void
+  trackingRefs: Set<React.RefObject<HTMLDivElement>>
+  openCloseWalletPopupRef: React.RefObject<HTMLButtonElement>
 }
 
 const Profile: FC<IProfileProps> = ({
@@ -296,11 +298,13 @@ const Profile: FC<IProfileProps> = ({
   connectWallet,
   disconnectWallet,
   nearNetwork,
+  trackingRefs,
+  openCloseWalletPopupRef,
 }) => {
   const [waiting, setWaiting] = useState(false)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
-  useOutside(wrapperRef, closeProfile)
+  useOutside(wrapperRef, closeProfile, trackingRefs, openCloseWalletPopupRef)
 
   const handleSignIn = async () => {
     setWaiting(true)

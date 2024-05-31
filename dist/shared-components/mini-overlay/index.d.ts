@@ -1,5 +1,5 @@
 import { AppWithSettings, Mutation } from '../../providers/provider';
-import { FC, ReactElement } from 'react';
+import React, { FC, ReactElement } from 'react';
 import { IWalletConnect } from './Profile';
 interface IMutationAppsControl {
     enableApp: () => Promise<void>;
@@ -13,6 +13,7 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
     baseMutation: Mutation | null;
     mutationApps: AppWithSettings[];
     children: ReactElement;
+    trackingRefs?: Set<React.RefObject<HTMLDivElement>>;
 }
 export declare const AppSwitcher: FC<IAppSwitcherProps>;
 export declare const MiniOverlay: FC<IMiniOverlayProps>;

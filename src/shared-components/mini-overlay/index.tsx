@@ -1,6 +1,6 @@
 import { AppWithSettings, Mutation } from '../../providers/provider'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState } from 'react'
+import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/Image'
@@ -131,11 +131,13 @@ const LabelAppCenter = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  top: 25%;
-  left: 25%;
-  width: 24px;
-  height: 24px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 23px;
+  height: 23px;
   cursor: pointer;
+  box-sizing: border-box;
 `
 
 const LabelAppTop = styled.div`
@@ -341,6 +343,7 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
   baseMutation: Mutation | null
   mutationApps: AppWithSettings[]
   children: ReactElement
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }
 
 export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp, isLoading }) => (
@@ -384,10 +387,15 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   disconnectWallet,
   nearNetwork,
   children,
+  trackingRefs = new Set(),
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isProfileOpen, setProfileOpen] = useState(false)
   const loggedInAccountId = useAccountId()
+
+  const rootRef = useRef<HTMLDivElement>(null)
+  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
+  trackingRefs.add(rootRef)
 
   const handleMutationIconClick = () => {
     setProfileOpen((val) => !val)
@@ -397,6 +405,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
 
   return (
     <SidePanelWrapper
+      ref={rootRef}
       $isApps={mutationApps.length > 0}
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
@@ -406,6 +415,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
           onClick={handleMutationIconClick}
+          ref={openCloseWalletPopupRef}
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
             id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
@@ -453,6 +463,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           connectWallet={connectWallet}
           disconnectWallet={disconnectWallet}
           nearNetwork={nearNetwork}
+          trackingRefs={trackingRefs}
+          openCloseWalletPopupRef={openCloseWalletPopupRef}
         />
       ) : null}
       <div data-mweb-insertion-point="mweb-overlay" style={{ display: 'none' }} />

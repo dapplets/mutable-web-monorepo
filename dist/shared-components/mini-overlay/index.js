@@ -150,11 +150,13 @@ const LabelAppCenter = styled_components_1.default.div `
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  top: 25%;
-  left: 25%;
-  width: 24px;
-  height: 24px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 23px;
+  height: 23px;
   cursor: pointer;
+  box-sizing: border-box;
 `;
 const LabelAppTop = styled_components_1.default.div `
   position: absolute;
@@ -272,17 +274,20 @@ const AppSwitcher = ({ app, enableApp, disableApp, isLoading }) => (react_1.defa
         react_1.default.createElement(StopCenterIcon, null))) : (react_1.default.createElement(LabelAppCenter, { className: "labelAppCenter", onClick: enableApp },
         react_1.default.createElement(PlayCenterIcon, null)))))));
 exports.AppSwitcher = AppSwitcher;
-const MiniOverlay = ({ baseMutation, mutationApps, connectWallet, disconnectWallet, nearNetwork, children, }) => {
+const MiniOverlay = ({ baseMutation, mutationApps, connectWallet, disconnectWallet, nearNetwork, children, trackingRefs = new Set(), }) => {
     const [isOpen, setIsOpen] = (0, react_1.useState)(false);
     const [isProfileOpen, setProfileOpen] = (0, react_1.useState)(false);
     const loggedInAccountId = (0, near_social_vm_1.useAccountId)();
+    const rootRef = (0, react_1.useRef)(null);
+    const openCloseWalletPopupRef = (0, react_1.useRef)(null);
+    trackingRefs.add(rootRef);
     const handleMutationIconClick = () => {
         setProfileOpen((val) => !val);
     };
     const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork;
-    return (react_1.default.createElement(SidePanelWrapper, { "$isApps": mutationApps.length > 0, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({ id: 'mweb-overlay' }) },
+    return (react_1.default.createElement(SidePanelWrapper, { ref: rootRef, "$isApps": mutationApps.length > 0, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({ id: 'mweb-overlay' }) },
         react_1.default.createElement(TopBlock, { "$open": isOpen || mutationApps.length > 0, "$noMutations": !mutationApps.length },
-            react_1.default.createElement(MutationIconWrapper, { "$isButton": isMutationIconButton, title: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.name, onClick: handleMutationIconClick, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({
+            react_1.default.createElement(MutationIconWrapper, { "$isButton": isMutationIconButton, title: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.name, onClick: handleMutationIconClick, ref: openCloseWalletPopupRef, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({
                     id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
                 }) },
                 (baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image) ? (react_1.default.createElement(Image_1.Image, { image: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image })) : (react_1.default.createElement(MutationFallbackIcon, null)),
@@ -293,7 +298,7 @@ const MiniOverlay = ({ baseMutation, mutationApps, connectWallet, disconnectWall
             react_1.default.createElement(ButtonOpen, { "$open": isOpen, className: isOpen ? 'svgTransform' : '', onClick: () => setIsOpen(!isOpen) },
                 react_1.default.createElement(ArrowSvg, null)),
             react_1.default.createElement("div", { "data-mweb-insertion-point": "open-apps-button", style: { display: 'none' } }))) : null,
-        isProfileOpen && isMutationIconButton ? (react_1.default.createElement(Profile_1.default, { accountId: loggedInAccountId, closeProfile: () => setProfileOpen(false), connectWallet: connectWallet, disconnectWallet: disconnectWallet, nearNetwork: nearNetwork })) : null,
+        isProfileOpen && isMutationIconButton ? (react_1.default.createElement(Profile_1.default, { accountId: loggedInAccountId, closeProfile: () => setProfileOpen(false), connectWallet: connectWallet, disconnectWallet: disconnectWallet, nearNetwork: nearNetwork, trackingRefs: trackingRefs, openCloseWalletPopupRef: openCloseWalletPopupRef })) : null,
         react_1.default.createElement("div", { "data-mweb-insertion-point": "mweb-overlay", style: { display: 'none' } })));
 };
 exports.MiniOverlay = MiniOverlay;
