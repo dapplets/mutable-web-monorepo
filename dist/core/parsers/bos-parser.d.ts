@@ -21,13 +21,13 @@ export type BosParserConfig = {
 export declare class BosParser implements IParser {
     protected config: BosParserConfig;
     constructor(config: BosParserConfig);
-    parseContext(element: Element, contextName: string): any;
-    findChildElements(element: Element, contextName: string): {
-        element: Element;
+    parseContext(element: HTMLElement, contextName: string): any;
+    findChildElements(element: HTMLElement, contextName: string): {
+        element: HTMLElement;
         contextName: string;
     }[];
-    findInsertionPoint(element: Element, contextName: string, insertionPoint: string): Element | null;
-    getInsertionPoints(_: Element, contextName: string): InsertionPoint[];
+    findInsertionPoint(element: HTMLElement, contextName: string, insertionPoint: string): HTMLElement | null;
+    getInsertionPoints(_: HTMLElement, contextName: string): InsertionPoint[];
 }
 /**
  * Executes a template string by replacing placeholders with corresponding values from the provided data object.

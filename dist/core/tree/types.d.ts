@@ -6,6 +6,7 @@ export interface IContextNode {
     contextType: string;
     namespace: string;
     parentNode: IContextNode | null;
+    element: HTMLElement | null;
     parsedContext: ParsedContext;
     insPoints: string[];
     children: IContextNode[];
@@ -18,13 +19,6 @@ export interface ITreeBuilder {
     removeChild(parent: IContextNode, child: IContextNode): void;
     updateParsedContext(context: IContextNode, parsedContext: any): void;
     updateInsertionPoints(context: IContextNode, insPoints: string[]): void;
-    createNode(namespace: string | null, contextType: string, parsedContext?: any, insPoints?: string[]): IContextNode;
-}
-export interface IContextListener {
-    handleContextStarted(context: IContextNode): void;
-    handleContextChanged(context: IContextNode, oldParsedContext: any): void;
-    handleContextFinished(context: IContextNode): void;
-    handleInsPointStarted(context: IContextNode, newInsPoint: string): void;
-    handleInsPointFinished(context: IContextNode, oldInsPoint: string): void;
+    createNode(namespace: string | null, contextType: string, parsedContext?: any, insPoints?: string[], element?: HTMLElement): IContextNode;
 }
 //# sourceMappingURL=types.d.ts.map

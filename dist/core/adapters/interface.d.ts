@@ -11,9 +11,9 @@ export interface IAdapter {
     context: IContextNode;
     start(): void;
     stop(): void;
-    injectElement(element: Element, context: IContextNode, insertionPoint: string): void;
+    injectElement(element: HTMLElement, context: IContextNode, insertionPoint: string): void;
     getInsertionPoints(context: IContextNode): InsertionPoint[];
-    getContextElement(context: IContextNode): Element | null;
-    getInsertionPointElement(context: IContextNode, insPointName: string): Element | null;
+    getContextElement(context: IContextNode): HTMLElement | null;
+    getInsertionPointElement(context: IContextNode, insPointName: string): HTMLElement | null;
 }
 //# sourceMappingURL=interface.d.ts.map

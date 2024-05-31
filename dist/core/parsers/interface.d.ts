@@ -5,12 +5,12 @@ export type InsertionPoint = {
     bosLayoutManager?: string;
 };
 export interface IParser {
-    parseContext(element: Element, contextName: string): any;
-    findChildElements(element: Element, contextName: string): {
-        element: Element;
+    parseContext(element: HTMLElement, contextName: string): any;
+    findChildElements(element: HTMLElement, contextName: string): {
+        element: HTMLElement;
         contextName: string;
     }[];
-    findInsertionPoint(element: Element, contextName: string, insertionPoint: string): Element | null;
-    getInsertionPoints(element: Element, contextName: string): InsertionPoint[];
+    findInsertionPoint(element: HTMLElement, contextName: string, insertionPoint: string): HTMLElement | null;
+    getInsertionPoints(element: HTMLElement, contextName: string): InsertionPoint[];
 }
 //# sourceMappingURL=interface.d.ts.map

@@ -97,7 +97,7 @@ class DynamicHtmlAdapter {
     _createContextForElement(element, contextName) {
         const parsedContext = this.parser.parseContext(element, contextName);
         const insPoints = this._findAvailableInsPoints(element, contextName);
-        const context = this.treeBuilder.createNode(this.namespace, contextName, parsedContext, insPoints);
+        const context = this.treeBuilder.createNode(this.namespace, contextName, parsedContext, insPoints, element);
         const observer = new MutationObserver(() => this._handleMutations(element, context));
         __classPrivateFieldGet(this, _DynamicHtmlAdapter_observerByElement, "f").set(element, observer);
         __classPrivateFieldGet(this, _DynamicHtmlAdapter_elementByContext, "f").set(context, element);

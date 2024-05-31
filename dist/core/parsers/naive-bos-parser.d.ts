@@ -1,11 +1,11 @@
 import { IParser, InsertionPoint } from './interface';
 export declare class NaiveBosParser implements IParser {
-    parseContext(element: Element): any;
-    findChildElements(element: Element): {
-        element: Element;
+    parseContext(element: HTMLElement): any;
+    findChildElements(element: HTMLElement): {
+        element: HTMLElement;
         contextName: string;
     }[];
-    findInsertionPoint(element: Element, _: string, insertionPoint: string): Element | null;
-    getInsertionPoints(element: Element): InsertionPoint[];
+    findInsertionPoint(element: HTMLElement, _: string, insertionPoint: string): HTMLElement | null;
+    getInsertionPoints(element: HTMLElement): InsertionPoint[];
 }
 //# sourceMappingURL=naive-bos-parser.d.ts.map

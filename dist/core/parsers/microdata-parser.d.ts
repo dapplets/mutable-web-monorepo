@@ -1,12 +1,12 @@
 import { IParser, InsertionPoint } from './interface';
 export declare class MicrodataParser implements IParser {
-    parseContext(element: Element): any;
-    findChildElements(element: Element): {
-        element: Element;
+    parseContext(element: HTMLElement): any;
+    findChildElements(element: HTMLElement): {
+        element: HTMLElement;
         contextName: string;
     }[];
-    findInsertionPoint(element: Element, _: string, insertionPoint: string): Element | null;
-    getInsertionPoints(element: Element): InsertionPoint[];
-    static getPropertyValue(element: Element): string | undefined;
+    findInsertionPoint(element: HTMLElement, _: string, insertionPoint: string): HTMLElement | null;
+    getInsertionPoints(element: HTMLElement): InsertionPoint[];
+    static getPropertyValue(element: HTMLElement): string | undefined;
 }
 //# sourceMappingURL=microdata-parser.d.ts.map

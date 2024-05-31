@@ -1,0 +1,1 @@
+{"version":3,"file":"shadow-dom-wrapper.d.ts","sourceRoot":"","sources":["../../../src/engine/bos/shadow-dom-wrapper.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAA;AAI9B,MAAM,WAAW,qBAAqB;IACpC,QAAQ,CAAC,EAAE,KAAK,CAAC,SAAS,CAAA;IAC1B,aAAa,CAAC,EAAE,MAAM,CAAA;CACvB;AAED,eAAO,MAAM,gBAAgB,8FAoF5B,CAAA"}

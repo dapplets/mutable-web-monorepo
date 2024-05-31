@@ -1,4 +1,4 @@
-import { AppWithSettings, Mutation } from '../../providers/provider';
+import { AppWithSettings, Mutation } from '../../engine';
 import React, { FC, ReactElement } from 'react';
 import { IWalletConnect } from './Profile';
 interface IMutationAppsControl {

@@ -1,36 +1,11 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppSwitcher = exports.MiniOverlay = exports.LocalStorage = exports.customElements = void 0;
-__exportStar(require("./engine"), exports);
-exports.customElements = __importStar(require("./custom-elements"));
-var local_storage_1 = require("./storage/local-storage");
-Object.defineProperty(exports, "LocalStorage", { enumerable: true, get: function () { return local_storage_1.LocalStorage; } });
-var mini_overlay_1 = require("./shared-components/mini-overlay");
-Object.defineProperty(exports, "MiniOverlay", { enumerable: true, get: function () { return mini_overlay_1.MiniOverlay; } });
-Object.defineProperty(exports, "AppSwitcher", { enumerable: true, get: function () { return mini_overlay_1.AppSwitcher; } });
+exports.AppSwitcher = exports.MiniOverlay = exports.Engine = exports.engineSingleton = exports.LocalStorage = exports.customElements = void 0;
+var engine_1 = require("./engine");
+Object.defineProperty(exports, "customElements", { enumerable: true, get: function () { return engine_1.customElements; } });
+Object.defineProperty(exports, "LocalStorage", { enumerable: true, get: function () { return engine_1.LocalStorage; } });
+Object.defineProperty(exports, "engineSingleton", { enumerable: true, get: function () { return engine_1.engineSingleton; } });
+Object.defineProperty(exports, "Engine", { enumerable: true, get: function () { return engine_1.Engine; } });
+var shared_components_1 = require("./shared-components");
+Object.defineProperty(exports, "MiniOverlay", { enumerable: true, get: function () { return shared_components_1.MiniOverlay; } });
+Object.defineProperty(exports, "AppSwitcher", { enumerable: true, get: function () { return shared_components_1.AppSwitcher; } });

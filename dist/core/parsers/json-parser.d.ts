@@ -21,12 +21,12 @@ export type JsonParserConfig = {
 export declare class JsonParser implements IParser {
     protected config: JsonParserConfig;
     constructor(config: JsonParserConfig);
-    parseContext(element: Element, contextName: string): any;
-    findChildElements(element: Element, contextName: string): {
-        element: Element;
+    parseContext(element: HTMLElement, contextName: string): any;
+    findChildElements(element: HTMLElement, contextName: string): {
+        element: HTMLElement;
         contextName: string;
     }[];
-    findInsertionPoint(element: Element, contextName: string, insertionPoint: string): Element | null;
-    getInsertionPoints(_: Element, contextName: string): InsertionPoint[];
+    findInsertionPoint(element: HTMLElement, contextName: string, insertionPoint: string): HTMLElement | null;
+    getInsertionPoints(_: HTMLElement, contextName: string): InsertionPoint[];
 }
 //# sourceMappingURL=json-parser.d.ts.map

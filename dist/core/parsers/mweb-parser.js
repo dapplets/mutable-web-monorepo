@@ -26,7 +26,9 @@ class MutableWebParser {
         const insPointElement = element.querySelector(`[${InsPointAttr}="${insertionPoint}"]`);
         if (insPointElement)
             return insPointElement;
-        if (element instanceof Element && element.hasAttribute(ShadowHostAttr) && element.shadowRoot) {
+        if (element instanceof HTMLElement &&
+            element.hasAttribute(ShadowHostAttr) &&
+            element.shadowRoot) {
             return this.findInsertionPoint(element.shadowRoot, contextName, insertionPoint);
         }
         const shadowHosts = element.querySelectorAll(`[${ShadowHostAttr}]`);

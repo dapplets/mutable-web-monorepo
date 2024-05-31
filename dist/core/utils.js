@@ -1,12 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isDeepEqual = exports.generateGuid = void 0;
-function generateGuid() {
-    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-        .map((b) => b.toString(16).padStart(2, '0'))
-        .join('');
-}
-exports.generateGuid = generateGuid;
+exports.isDeepEqual = void 0;
 function isDeepEqual(obj1, obj2) {
     if (obj1 === obj2)
         return true;
