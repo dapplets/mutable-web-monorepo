@@ -37,6 +37,9 @@ const App: FC = () => {
     if (initNear) {
       initNear({
         networkId: networkConfig.networkId,
+        config: {
+          nodeUrl: networkConfig.nodeUrl,
+        },
         selector: selectorPromise,
         features: {
           skipTxConfirmationPopup: true,

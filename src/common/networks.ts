@@ -3,7 +3,7 @@ const networkId = NEAR_NETWORK ?? 'mainnet'
 const networkConfigs = {
   mainnet: {
     networkId: 'mainnet',
-    nodeUrl: 'https://rpc.mainnet.near.org',
+    nodeUrl: 'https://go.getblock.io/75e825521eeb49c9bbb15e6c977b147c',
     walletUrl: 'https://app.mynearwallet.com',
     helperUrl: 'https://helper.mainnet.near.org',
     explorerUrl: 'https://nearblocks.io',
