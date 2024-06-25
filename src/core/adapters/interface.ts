@@ -1,4 +1,3 @@
-import { InsertionPoint } from '../parsers/interface'
 import { IContextNode } from '../tree/types'
 
 export enum InsertionType {
@@ -14,12 +13,4 @@ export interface IAdapter {
 
   start(): void
   stop(): void
-
-  injectElement(element: HTMLElement, context: IContextNode, insertionPoint: string): void
-
-  getInsertionPoints(context: IContextNode): InsertionPoint[]
-
-  // For OverlayTrigger
-  getContextElement(context: IContextNode): HTMLElement | null
-  getInsertionPointElement(context: IContextNode, insPointName: string): HTMLElement | null
 }

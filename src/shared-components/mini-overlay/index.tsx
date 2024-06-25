@@ -25,7 +25,6 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
   display: flex;
-  width: 58px;
   flex-direction: column;
   justify-content: center;
   padding: 6px;

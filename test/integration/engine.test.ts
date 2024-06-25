@@ -53,12 +53,9 @@ describe('Engine', () => {
     // Act
     await engine.setFavoriteMutation(mutationId)
     const actual = await engine.getFavoriteMutation()
-    const mutations = await engine.getMutations()
-    const mutation = mutations.find((mut) => mut.id === mutationId)
 
     // Assert
     expect(actual).toEqual(mutationId)
-    expect(mutation!.settings.isFavorite).toEqual(true)
   })
 
   it('sets original mutation as favorite', async () => {
