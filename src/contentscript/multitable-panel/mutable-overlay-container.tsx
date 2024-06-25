@@ -1,7 +1,12 @@
-import { AppSwitcher, AppWithSettings, MiniOverlay } from 'mutable-web-engine'
+import {
+  AppSwitcher,
+  AppWithSettings,
+  MiniOverlay,
+  useMutableWeb,
+  useMutationApp,
+} from 'mutable-web-engine'
 import React from 'react'
 import Background from '../background'
-import { useMutableWeb, useMutationApp } from '../contexts/mutable-web-context'
 
 function AppSwitcherContainer({ app }: { app: AppWithSettings }) {
   const { enableApp, disableApp, isLoading } = useMutationApp(app.id)
