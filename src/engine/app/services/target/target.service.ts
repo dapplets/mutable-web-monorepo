@@ -1,19 +1,37 @@
 import { IContextNode } from '../../../../core'
+import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
 export class TargetService {
-  static isTargetMet(target: Target, context: IContextNode): boolean {
+  static isTargetMet(target: Target | TransferableContext, context: IContextNode): boolean {
     // ToDo: check insertion points?
-    return (
-      target.namespace === context.namespace &&
-      target.contextType === context.contextType &&
-      this._areConditionsMet(target.if, context.parsedContext) &&
-      (target.parent
-        ? context.parentNode
-          ? this.isTargetMet(target.parent, context.parentNode)
-          : false
-        : true)
-    )
+
+    if (target.namespace && target.namespace !== context.namespace) {
+      return false
+    }
+
+    // for Target
+    if ('contextType' in target && target.contextType !== context.contextType) {
+      return false
+    }
+
+    // for TransferableContext
+    if ('type' in target && target.type !== context.contextType) {
+      return false
+    }
+
+    if ('if' in target && !this._areConditionsMet(target.if, context.parsedContext)) {
+      return false
+    }
+
+    if (
+      target.parent &&
+      (!context.parentNode || !this.isTargetMet(target.parent, context.parentNode))
+    ) {
+      return false
+    }
+
+    return true
   }
 
   static _areConditionsMet(

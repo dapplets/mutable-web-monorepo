@@ -19,12 +19,12 @@ export type ParsedContext = {
 
 export interface IContextNode {
   id: string | null
-  contextType: string
+  contextType: string // ToDo: rename to type
   namespace: string
-  parentNode: IContextNode | null
+  parentNode: IContextNode | null // ToDo: rename to parent
   element: HTMLElement | null
 
-  parsedContext: ParsedContext
+  parsedContext: ParsedContext // ToDo: rename to parsed
   insPoints: InsertionPointWithElement[]
   children: IContextNode[]
   removeChild(child: IContextNode): void
