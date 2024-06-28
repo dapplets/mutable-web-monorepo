@@ -11,6 +11,7 @@ import { useContextApps } from '../contexts/mutable-web-context/use-context-apps
 import { AppId, AppMetadata } from '../services/application/application.entity'
 import { BosUserLink, UserLinkId } from '../services/user-link/user-link.entity'
 import { TransferableContext, buildTransferableContext } from '../common/transferable-context'
+import { useModal } from '../contexts/modal-context'
 
 export const ContextManager: FC = () => {
   return <ContextTree children={ContextHandler} />
@@ -111,6 +112,7 @@ const InsPointHandler: FC<{
 }) => {
   const { redirectMap } = useEngine()
   const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
+  const { notify } = useModal()
 
   const attachInsPointRef = useCallback(
     (callback: (r: React.Component | Element | null | undefined) => void) => {
@@ -142,6 +144,7 @@ const InsPointHandler: FC<{
           id: link.id,
           authorId: link.authorId,
         },
+        notify,
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -157,6 +160,8 @@ const InsPointHandler: FC<{
     // For OverlayTrigger
     attachContextRef: onAttachContextRef,
     attachInsPointRef,
+
+    notify,
   }
 
   // Don't render layout manager if there are no components
@@ -170,7 +175,7 @@ const InsPointHandler: FC<{
   }
 
   return (
-    <ShadowDomWrapper>
+    <ShadowDomWrapper className="mweb-layout-manager">
       <Widget
         src={bosLayoutManager ?? defaultLayoutManager}
         props={props}

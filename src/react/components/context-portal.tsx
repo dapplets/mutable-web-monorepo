@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect, useRef } from 'react'
+import React, { FC, ReactElement, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { IContextNode } from '../../core'
 import { InsertionType } from '../../core/adapters/interface'
@@ -21,6 +21,7 @@ export const ContextPortal: FC<{
     if (!target || !target.element) return
     if (!containerRef.current) {
       containerRef.current = document.createElement('div')
+      containerRef.current.className = 'mweb-context-portal'
     }
 
     const { element, insertionType } = target
