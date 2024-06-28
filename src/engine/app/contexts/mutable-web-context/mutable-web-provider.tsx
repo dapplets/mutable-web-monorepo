@@ -17,6 +17,8 @@ import { useMutations } from './use-mutations'
 import { useApplications } from './use-applications'
 import { TargetService } from '../../services/target/target.service'
 import { AdapterType, ParserConfig } from '../../services/parser-config/parser-config.entity'
+import { useModal } from '../modal-context'
+import { mutationDisabled, mutationSwitched } from './notifications'
 
 type Props = {
   config: EngineConfig
@@ -39,6 +41,7 @@ const MWebParserConfig: ParserConfig = {
 const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) => {
   const { tree, attachParserConfig, detachParserConfig, updateRootContext } = useCore()
   const engineRef = useRef<Engine | null>(null)
+  const { notify } = useModal()
 
   if (!engineRef.current) {
     engineRef.current = new Engine(config)
@@ -60,23 +63,44 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
   }, [engine])
 
   const getMutationToBeLoaded = useCallback(async () => {
-    return (
-      defaultMutationId ??
-      (await engine.mutationService.getFavoriteMutation()) ??
-      (tree ? await engine.mutationService.getLastUsedMutation(tree) : null)
-    )
-  }, [defaultMutationId, engine, tree])
+    const favoriteMutation = await engine.mutationService.getFavoriteMutation()
+    const lastUsedMutation = tree ? await engine.mutationService.getLastUsedMutation(tree) : null
 
-  useEffect(() => {
-    getMutationToBeLoaded().then((mutationId) => {
-      setSelectedMutationId(mutationId)
-    })
-  }, [getMutationToBeLoaded])
+    return favoriteMutation ?? lastUsedMutation
+  }, [engine, tree])
 
   const selectedMutation = useMemo(
     () => mutations.find((mut) => mut.id === selectedMutationId) ?? null,
     [mutations, selectedMutationId]
   )
+
+  useEffect(() => {
+    getMutationToBeLoaded().then((favoriteMutationId) => {
+      if (mutations.length === 0) return
+
+      if (defaultMutationId && favoriteMutationId && defaultMutationId !== favoriteMutationId) {
+        const hasMutation = mutations.some((mutation) => mutation.id === defaultMutationId)
+
+        if (hasMutation) {
+          notify(
+            mutationSwitched({
+              fromMutationId: favoriteMutationId,
+              toMutationId: defaultMutationId,
+              onBack: () => setSelectedMutationId(favoriteMutationId),
+            })
+          )
+        } else {
+          notify(
+            mutationDisabled({
+              onBack: () => setSelectedMutationId(favoriteMutationId),
+            })
+          )
+        }
+      }
+
+      setSelectedMutationId(defaultMutationId ?? favoriteMutationId)
+    })
+  }, [getMutationToBeLoaded, defaultMutationId, mutations])
 
   const {
     mutationApps,
