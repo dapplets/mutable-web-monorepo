@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useMemo, useState } from 'react'
 import { ContextTree, useCore } from '../../../react'
-import { Highlighter } from '../../../highlighter'
+import { PickerHighlighter } from './picker-highlighter'
 import { TargetService } from '../services/target/target.service'
 import { IContextNode } from '../../../core'
 import { usePicker } from '../contexts/picker-context'
@@ -24,16 +24,9 @@ export const ContextPicker: FC = () => {
         if (!isSuitable) return null
 
         const variant = useMemo(() => {
-          if (focusedContext === context) {
-            return 'primary'
-          }
-
-          if (
-            focusedContext === context.parentNode ||
-            (focusedContext && context.children.includes(focusedContext))
-          ) {
-            return 'secondary'
-          }
+          if (focusedContext === context) return 'current'
+          if (focusedContext === context.parentNode) return 'child'
+          if (focusedContext && context.children.includes(focusedContext)) return 'parent'
         }, [focusedContext, context])
 
         const handleClick = useCallback(() => {
@@ -49,7 +42,7 @@ export const ContextPicker: FC = () => {
         }, [context])
 
         return (
-          <Highlighter
+          <PickerHighlighter
             focusedContext={focusedContext} // ToDo: looks like SRP violation
             context={context}
             variant={variant}

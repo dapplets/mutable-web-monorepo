@@ -9,6 +9,8 @@ import { ContextPicker } from './components/context-picker'
 import { ContextManager } from './components/context-manager'
 import { ModalProvider } from './contexts/modal-context'
 import { PickerProvider } from './contexts/picker-context'
+import { ContextHighlighter } from './components/context-highlighter'
+import { HighlighterProvider } from './contexts/highlighter-context'
 
 export const App: FC<{
   config: EngineConfig
@@ -21,11 +23,14 @@ export const App: FC<{
         <CoreProvider>
           <EngineProvider>
             <PickerProvider>
-              <MutableWebProvider config={config} defaultMutationId={defaultMutationId}>
-                <ContextPicker />
-                <ContextManager />
-                <Fragment>{children}</Fragment>
-              </MutableWebProvider>
+              <HighlighterProvider>
+                <MutableWebProvider config={config} defaultMutationId={defaultMutationId}>
+                  <ContextPicker />
+                  <ContextManager />
+                  <ContextHighlighter />
+                  <Fragment>{children}</Fragment>
+                </MutableWebProvider>
+              </HighlighterProvider>
             </PickerProvider>
           </EngineProvider>
         </CoreProvider>

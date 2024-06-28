@@ -2,7 +2,7 @@ import { createContext } from 'react'
 import { Target } from '../../services/target/target.entity'
 import { IContextNode } from '../../../../core'
 
-export type TLatchVariant = 'primary' | 'secondary'
+export type TLatchVariant = 'current' | 'parent' | 'child'
 
 export type PickerTask = {
   target?: Target[]
