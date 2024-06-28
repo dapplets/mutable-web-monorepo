@@ -66,7 +66,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
     const favoriteMutation = await engine.mutationService.getFavoriteMutation()
     const lastUsedMutation = tree ? await engine.mutationService.getLastUsedMutation(tree) : null
 
-    return favoriteMutation ?? lastUsedMutation
+    return lastUsedMutation ?? favoriteMutation
   }, [engine, tree])
 
   const selectedMutation = useMemo(
@@ -86,19 +86,19 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
             mutationSwitched({
               fromMutationId: favoriteMutationId,
               toMutationId: defaultMutationId,
-              onBack: () => setSelectedMutationId(favoriteMutationId),
+              onBack: () => switchMutation(favoriteMutationId),
             })
           )
         } else {
           notify(
             mutationDisabled({
-              onBack: () => setSelectedMutationId(favoriteMutationId),
+              onBack: () => switchMutation(favoriteMutationId),
             })
           )
         }
       }
 
-      setSelectedMutationId(defaultMutationId ?? favoriteMutationId)
+      switchMutation(defaultMutationId ?? favoriteMutationId)
     })
   }, [getMutationToBeLoaded, defaultMutationId, mutations])
 
@@ -154,13 +154,21 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
     async (mutationId: string | null) => {
       if (selectedMutationId === mutationId) return
 
-      setSelectedMutationId(mutationId)
-
       if (mutationId) {
-        await engine.mutationService.updateMutationLastUsage(mutationId, window.location.hostname)
+        const lastUsage = await engine.mutationService.updateMutationLastUsage(
+          mutationId,
+          window.location.hostname
+        )
 
-        // ToDo: update lastUsage in the state?
+        // Update last usage for selected mutation
+        setMutations((prev) =>
+          prev.map((mut) =>
+            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage } } : mut
+          )
+        )
       }
+
+      setSelectedMutationId(mutationId)
     },
     [selectedMutationId]
   )

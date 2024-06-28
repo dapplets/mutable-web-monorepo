@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react'
 import { ViewportContext, ViewportContextState } from './viewport-context'
-import { ShadowDomWrapper } from '../../../bos/shadow-dom-wrapper'
+import { ShadowDomWrapper } from '../../components/shadow-dom-wrapper'
 
 type Props = {
   children?: ReactNode

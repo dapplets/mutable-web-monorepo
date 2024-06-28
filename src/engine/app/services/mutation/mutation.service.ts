@@ -84,10 +84,11 @@ export class MutationService {
     await this.mutationRepository.setMutationLastUsage(mutationId, null, window.location.hostname)
   }
 
-  public async updateMutationLastUsage(mutationId: MutationId, hostname: string): Promise<void> {
+  public async updateMutationLastUsage(mutationId: MutationId, hostname: string): Promise<string> {
     // save last usage
     const currentDate = new Date().toISOString()
     await this.mutationRepository.setMutationLastUsage(mutationId, currentDate, hostname)
+    return currentDate
   }
 
   public async populateMutationWithSettings(mutation: Mutation): Promise<MutationWithSettings> {
