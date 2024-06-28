@@ -1,0 +1,1 @@
+{"version":3,"file":"parser-config.service.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/services/parser-config/parser-config.service.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,wBAAwB,CAAA;AACvD,OAAO,EAAE,sBAAsB,EAAE,MAAM,4BAA4B,CAAA;AAEnE,qBAAa,mBAAmB;IAClB,OAAO,CAAC,sBAAsB;gBAAtB,sBAAsB,EAAE,sBAAsB;IAErD,eAAe,CAAC,QAAQ,EAAE,cAAc;CAGtD"}

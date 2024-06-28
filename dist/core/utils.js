@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isDeepEqual = void 0;
+exports.getContextDepth = exports.getElementDepth = exports.isDeepEqual = void 0;
 function isDeepEqual(obj1, obj2) {
     if (obj1 === obj2)
         return true;
@@ -29,3 +29,20 @@ function isDeepEqual(obj1, obj2) {
     return result;
 }
 exports.isDeepEqual = isDeepEqual;
+const getElementDepth = (el) => {
+    let depth = 0;
+    let host = el.host;
+    while (el.parentNode !== null || host) {
+        if (host)
+            el = host;
+        el = el.parentNode;
+        host = el.host;
+        depth++;
+    }
+    return depth;
+};
+exports.getElementDepth = getElementDepth;
+const getContextDepth = (context) => {
+    return context.element ? (0, exports.getElementDepth)(context.element) : 0;
+};
+exports.getContextDepth = getContextDepth;

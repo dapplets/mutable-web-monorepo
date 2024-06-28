@@ -1,0 +1,1 @@
+{"version":3,"file":"engine-provider.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/contexts/engine-context/engine-provider.tsx"],"names":[],"mappings":"AAAA,OAAc,EAAE,EAAE,EAAE,YAAY,EAAa,MAAM,OAAO,CAAA;AAK1D,KAAK,KAAK,GAAG;IACX,QAAQ,CAAC,EAAE,YAAY,CAAA;CACxB,CAAA;AAED,QAAA,MAAM,cAAc,EAAE,EAAE,CAAC,KAAK,CAqB7B,CAAA;AAED,OAAO,EAAE,cAAc,EAAE,CAAA"}

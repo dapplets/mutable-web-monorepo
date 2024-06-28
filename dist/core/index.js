@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Core = exports.AdapterType = exports.PureContextNode = exports.MutableWebParser = exports.BosParser = exports.JsonParser = exports.PureTreeBuilder = exports.DynamicHtmlAdapter = void 0;
+exports.isDeepEqual = exports.Core = exports.AdapterType = exports.PureContextNode = exports.MutableWebParser = exports.BosParser = exports.JsonParser = exports.PureTreeBuilder = exports.DynamicHtmlAdapter = void 0;
 var dynamic_html_adapter_1 = require("./adapters/dynamic-html-adapter");
 Object.defineProperty(exports, "DynamicHtmlAdapter", { enumerable: true, get: function () { return dynamic_html_adapter_1.DynamicHtmlAdapter; } });
 var pure_tree_builder_1 = require("./tree/pure-tree/pure-tree-builder");
@@ -17,3 +17,5 @@ var types_1 = require("./types");
 Object.defineProperty(exports, "AdapterType", { enumerable: true, get: function () { return types_1.AdapterType; } });
 var core_1 = require("./core");
 Object.defineProperty(exports, "Core", { enumerable: true, get: function () { return core_1.Core; } });
+var utils_1 = require("./utils");
+Object.defineProperty(exports, "isDeepEqual", { enumerable: true, get: function () { return utils_1.isDeepEqual; } });

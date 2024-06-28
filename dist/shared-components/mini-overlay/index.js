@@ -51,7 +51,6 @@ const SidePanelWrapper = styled_components_1.default.div `
 `;
 const TopBlock = styled_components_1.default.div `
   display: flex;
-  width: 58px;
   flex-direction: column;
   justify-content: center;
   padding: 6px;

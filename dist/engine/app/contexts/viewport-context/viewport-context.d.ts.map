@@ -1,0 +1,1 @@
+{"version":3,"file":"viewport-context.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/contexts/viewport-context/viewport-context.tsx"],"names":[],"mappings":";AAEA,MAAM,MAAM,oBAAoB,GAAG;IACjC,WAAW,EAAE,KAAK,CAAC,SAAS,CAAC,cAAc,CAAC,CAAA;CAC7C,CAAA;AAED,eAAO,MAAM,oBAAoB,EAAE,oBAElC,CAAA;AAED,eAAO,MAAM,eAAe,+CAA4D,CAAA"}

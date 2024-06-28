@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DappletTooltip = exports.DappletPortal = exports.DappletOverlayTrigger = exports.DappletOverlay = void 0;
+exports.Highlighter = exports.DappletContextPicker = exports.DappletTooltip = exports.DappletPortal = exports.DappletOverlayTrigger = exports.DappletOverlay = void 0;
 var dapplet_overlay_1 = require("./dapplet-overlay");
 Object.defineProperty(exports, "DappletOverlay", { enumerable: true, get: function () { return dapplet_overlay_1.DappletOverlay; } });
 var dapplet_overlay_trigger_1 = require("./dapplet-overlay-trigger");
@@ -9,3 +9,7 @@ var dapplet_portal_1 = require("./dapplet-portal");
 Object.defineProperty(exports, "DappletPortal", { enumerable: true, get: function () { return dapplet_portal_1.DappletPortal; } });
 var dapplet_tooltip_1 = require("./dapplet-tooltip");
 Object.defineProperty(exports, "DappletTooltip", { enumerable: true, get: function () { return dapplet_tooltip_1.DappletTooltip; } });
+var dapplet_context_picker_1 = require("./dapplet-context-picker");
+Object.defineProperty(exports, "DappletContextPicker", { enumerable: true, get: function () { return dapplet_context_picker_1.DappletContextPicker; } });
+var dapplet_highlighter_1 = require("./dapplet-highlighter");
+Object.defineProperty(exports, "Highlighter", { enumerable: true, get: function () { return dapplet_highlighter_1.DappletHighlighter; } });

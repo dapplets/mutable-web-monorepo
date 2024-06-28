@@ -1,0 +1,1 @@
+{"version":3,"file":"use-mutation-apps.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/contexts/mutable-web-context/use-mutation-apps.ts"],"names":[],"mappings":";AACA,OAAO,EAAE,eAAe,EAAE,MAAM,+CAA+C,CAAA;AAC/E,OAAO,EAAE,QAAQ,EAAE,MAAM,yCAAyC,CAAA;AAClE,OAAO,EAAE,MAAM,EAAE,MAAM,iBAAiB,CAAA;AAExC,eAAO,MAAM,eAAe,WAAY,MAAM,aAAa,QAAQ,GAAG,IAAI;;;;;CAiDzE,CAAA"}

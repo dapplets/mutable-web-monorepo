@@ -1,0 +1,1 @@
+{"version":3,"file":"use-portals.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/contexts/engine-context/use-portals.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,gBAAgB,EAAE,MAAM,kBAAkB,CAAC;AAEpD,eAAO,MAAM,UAAU;;mBAEU,MAAM,EAAE,CAAC,OAAO,CAAC;gBAAU,gBAAgB;;wBAI/D,MAAM,UAAU,gBAAgB,aAAa,MAAM,EAAE,CAAC,CAAC,CAAC;wBAQ5B,MAAM;CAY9C,CAAA"}

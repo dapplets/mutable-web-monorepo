@@ -1,0 +1,1 @@
+{"version":3,"file":"core-provider.d.ts","sourceRoot":"","sources":["../../../../src/react/contexts/core-context/core-provider.tsx"],"names":[],"mappings":"AAAA,OAAc,EAAE,EAAE,EAAE,YAAY,EAA4C,MAAM,OAAO,CAAA;AAIzF,KAAK,KAAK,GAAG;IACX,QAAQ,EAAE,YAAY,CAAA;CACvB,CAAA;AAED,QAAA,MAAM,YAAY,EAAE,EAAE,CAAC,KAAK,CAuC3B,CAAA;AAED,OAAO,EAAE,YAAY,EAAE,CAAA"}

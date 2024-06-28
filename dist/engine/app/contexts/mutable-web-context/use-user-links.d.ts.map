@@ -1,0 +1,1 @@
+{"version":3,"file":"use-user-links.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/contexts/mutable-web-context/use-user-links.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,YAAY,EAAE,MAAM,kBAAkB,CAAA;AAC/C,OAAO,EAAE,WAAW,EAAE,UAAU,EAAE,MAAM,2CAA2C,CAAA;AAGnF,OAAO,EAAE,KAAK,EAAE,MAAM,+CAA+C,CAAA;AAErE,eAAO,MAAM,YAAY,YAAa,YAAY;;4BAgChC,KAAK;6BAqBJ,UAAU;;CAY5B,CAAA"}

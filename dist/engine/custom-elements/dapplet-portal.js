@@ -25,15 +25,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DappletPortal = void 0;
 const React = __importStar(require("react"));
-const engine_1 = require("../engine");
+const engine_context_1 = require("../app/contexts/engine-context");
 const _DappletPortal = ({ component: Component, target, }) => {
-    // ToDo: remove singleton
+    const key = React.useId();
+    const { addPortal, removePortal } = (0, engine_context_1.useEngine)();
     React.useEffect(() => {
-        engine_1.engineSingleton === null || engine_1.engineSingleton === void 0 ? void 0 : engine_1.engineSingleton.injectComponent(target, Component);
-        return () => {
-            engine_1.engineSingleton === null || engine_1.engineSingleton === void 0 ? void 0 : engine_1.engineSingleton.unjectComponent(target, Component);
-        };
-    }, [target, Component]);
+        addPortal(key, target, Component);
+        return () => removePortal(key);
+    }, [target, Component, key]);
     return null;
 };
 const DappletPortal = (props) => {

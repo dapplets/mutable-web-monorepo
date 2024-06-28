@@ -34,23 +34,28 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DappletOverlayTrigger = void 0;
+exports.DappletOverlayTrigger = exports._DappletOverlayTrigger = void 0;
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_bootstrap_1 = require("react-bootstrap");
-const common_1 = require("../common");
 const styled_components_1 = require("styled-components");
+const viewport_context_1 = require("../app/contexts/viewport-context");
+const _DappletOverlayTrigger = (_a) => {
+    var { children } = _a, attributes = __rest(_a, ["children"]);
+    const { viewportRef } = (0, viewport_context_1.useViewport)();
+    if (!viewportRef.current)
+        return null;
+    const Overlay = React.useCallback((0, react_1.forwardRef)((props, ref) => {
+        const stylesRef = (0, react_1.useRef)(null);
+        return (React.createElement("div", { ref: stylesRef }, stylesRef.current ? (React.createElement(styled_components_1.StyleSheetManager, { target: stylesRef.current }, (0, react_1.cloneElement)(attributes.overlay, Object.assign(Object.assign({}, props), { ref })))) : null));
+    }), [attributes.overlay]);
+    return (React.createElement(react_bootstrap_1.OverlayTrigger, Object.assign({}, attributes, { container: viewportRef.current, overlay: React.createElement(Overlay, null) }), children));
+};
+exports._DappletOverlayTrigger = _DappletOverlayTrigger;
 // ToDo: remove any
 const DappletOverlayTrigger = (_a) => {
     var { children } = _a, attributes = __rest(_a, ["children"]);
     const child = children.filter((c) => typeof c !== 'string' || !!c.trim())[0];
-    const viewport = (0, common_1.getViewport)();
-    if (!viewport)
-        return null;
-    const Overlay = (0, react_1.forwardRef)((props, ref) => {
-        const stylesRef = (0, react_1.useRef)(null);
-        return (React.createElement("div", { ref: stylesRef }, stylesRef.current ? (React.createElement(styled_components_1.StyleSheetManager, { target: stylesRef.current }, (0, react_1.cloneElement)(attributes.overlay, Object.assign(Object.assign({}, props), { ref })))) : null));
-    });
-    return (React.createElement(react_bootstrap_1.OverlayTrigger, Object.assign({}, attributes, { container: viewport, overlay: React.createElement(Overlay, null) }), child));
+    return React.createElement(exports._DappletOverlayTrigger, Object.assign({}, attributes), child);
 };
 exports.DappletOverlayTrigger = DappletOverlayTrigger;

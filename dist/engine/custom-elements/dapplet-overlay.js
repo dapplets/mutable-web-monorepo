@@ -22,12 +22,41 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DappletOverlay = void 0;
+exports.DappletOverlay = exports.Overlay = void 0;
 const React = __importStar(require("react"));
-const overlay_1 = require("../bos/overlay");
+const react_dom_1 = require("react-dom");
+const styled_components_1 = __importDefault(require("styled-components"));
+const viewport_context_1 = require("../app/contexts/viewport-context");
+const shadow_dom_wrapper_1 = require("../app/components/shadow-dom-wrapper");
+const ModalBackdrop = styled_components_1.default.div `
+  background: #ffffff88;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  outline: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  z-index: 2147483647;
+  visibility: visible;
+`;
+const Overlay = ({ children }) => {
+    const { viewportRef } = (0, viewport_context_1.useViewport)();
+    if (!viewportRef.current)
+        return null;
+    return (0, react_dom_1.createPortal)(React.createElement(shadow_dom_wrapper_1.ShadowDomWrapper, { className: "mweb-overlay" },
+        React.createElement(ModalBackdrop, null, children)), viewportRef.current);
+};
+exports.Overlay = Overlay;
 const DappletOverlay = ({ children }) => {
     const child = children.filter((c) => typeof c !== 'string' || !!c.trim())[0];
-    return React.createElement(overlay_1.Overlay, null, child);
+    return React.createElement(exports.Overlay, null, child);
 };
 exports.DappletOverlay = DappletOverlay;

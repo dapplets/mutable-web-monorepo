@@ -1,0 +1,1 @@
+{"version":3,"file":"modal-provider.d.ts","sourceRoot":"","sources":["../../../../../src/engine/app/contexts/modal-context/modal-provider.tsx"],"names":[],"mappings":"AAAA,OAAc,EAAE,EAAE,EAAE,YAAY,EAAuB,MAAM,OAAO,CAAA;AAKpE,KAAK,KAAK,GAAG;IACX,QAAQ,CAAC,EAAE,YAAY,CAAA;CACxB,CAAA;AAED,QAAA,MAAM,aAAa,EAAE,EAAE,CAAC,KAAK,CAyD5B,CAAA;AAED,OAAO,EAAE,aAAa,EAAE,CAAA"}
