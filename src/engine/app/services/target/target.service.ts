@@ -1,4 +1,4 @@
-import { IContextNode } from '../../../../core'
+import { IContextNode, isDeepEqual } from '../../../../core'
 import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
@@ -20,7 +20,13 @@ export class TargetService {
       return false
     }
 
+    // for Target
     if ('if' in target && !this._areConditionsMet(target.if, context.parsedContext)) {
+      return false
+    }
+
+    // for TransferableContext
+    if ('parsed' in target && !isDeepEqual(target.parsed, context.parsedContext)) {
       return false
     }
 
