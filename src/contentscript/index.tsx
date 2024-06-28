@@ -8,7 +8,6 @@ import browser from 'webextension-polyfill'
 import { networkConfig } from '../common/networks'
 import Background from './background'
 import { ExtensionStorage } from './extension-storage'
-import { ShadowDomWrapper } from './multitable-panel/components/shadow-dom-wrapper'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
 import { setupWallet } from './wallet'
 
@@ -54,7 +53,7 @@ const App: FC = () => {
 async function main() {
   // Execute useInitNear hook before start the engine
   // It's necessary for widgets from near-social-vm
-  createRoot(document.createElement('div')).render(<App />)
+  createRoot(document.createDocumentFragment()).render(<App />)
 
   const tabState = await Background.popTabState()
   const selector = await selectorPromise
@@ -92,24 +91,14 @@ async function main() {
     }
   })
 
-  const outer = document.createElement('div')
-  outer.style.display = 'flex'
-  const stylesMountPoint = document.createElement('div')
-  outer.appendChild(stylesMountPoint)
-  const inner = document.createElement('div')
-  inner.style.display = 'flex'
-  outer.appendChild(inner)
-  document.body.appendChild(outer)
-  const root = createRoot(inner)
+  const container = document.createElement('div')
+  container.className = 'mweb-extension'
+  container.style.display = 'flex'
+  document.body.appendChild(container)
+  const root = createRoot(container)
   root.render(
-    <MWebApp
-      config={engineConfig}
-      stylesMountPoint={stylesMountPoint}
-      defaultMutationId={mutationIdToLoad}
-    >
-      <ShadowDomWrapper stylesheetSrc={bootstrapCssUrl}>
-        <MultitablePanel eventEmitter={eventEmitter} />
-      </ShadowDomWrapper>
+    <MWebApp config={engineConfig} defaultMutationId={mutationIdToLoad}>
+      <MultitablePanel eventEmitter={eventEmitter} />
     </MWebApp>
   )
 }
