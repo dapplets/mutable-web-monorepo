@@ -30,7 +30,7 @@ export const Overlay: React.FC<OverlayProps> = ({ children }) => {
   if (!viewportRef.current) return null
 
   return createPortal(
-    <ShadowDomWrapper>
+    <ShadowDomWrapper className="mweb-overlay">
       <ModalBackdrop>{children}</ModalBackdrop>
     </ShadowDomWrapper>,
     viewportRef.current

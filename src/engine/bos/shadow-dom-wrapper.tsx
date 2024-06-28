@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { createPortal } from 'react-dom'
 import { StyleSheetManager } from 'styled-components'
+import { StyleProvider } from '@ant-design/cssinjs'
 
 const generateGuid = () => {
   return Array.from(crypto.getRandomValues(new Uint8Array(16)))
@@ -11,10 +12,11 @@ const generateGuid = () => {
 export interface ShadowDomWrapperProps {
   children?: React.ReactNode
   stylesheetSrc?: string
+  className?: string
 }
 
 export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrapperProps>(
-  ({ children, stylesheetSrc }, ref) => {
+  ({ children, stylesheetSrc, className }, ref) => {
     const myRef = React.useRef<HTMLDivElement | null>(null)
     const [root, setRoot] = React.useState<{
       container: HTMLDivElement
@@ -86,15 +88,13 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
     }, [myRef, stylesheetSrc])
 
     return (
-      <div
-        ref={(node) => {
-          myRef.current = node
-        }}
-      >
+      <div className={className} ref={myRef}>
         {root && children
           ? createPortal(
               <StyleSheetManager target={root.stylesMountPoint}>
-                <>{children}</>
+                <StyleProvider container={root.stylesMountPoint}>
+                  <>{children}</>
+                </StyleProvider>
               </StyleSheetManager>,
               root.container
             )

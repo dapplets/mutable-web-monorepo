@@ -47,6 +47,8 @@
     "styled-components": "^5.3.6"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.21.0",
+    "antd": "^5.18.3",
     "big.js": "^6.2.1",
     "caching-decorator": "^1.0.3",
     "ethereum-blockies-base64": "^1.0.2",
