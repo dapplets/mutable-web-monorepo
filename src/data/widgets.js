@@ -3,22 +3,26 @@ const TestnetDomains = {
   "127.0.0.1": true,
   "mutable-near-social-testnet.netlify.app": true,
   "social.test.dapplets.org": true,
+  "social.testnet.dapplets.org": true,
 };
 
 export const NetworkId =
   window.location.hostname in TestnetDomains ? "testnet" : "mainnet";
 
 const TestnetWidgets = {
-  image: "eugenethedream/widget/Image",
-  default: "eugenethedream/widget/Welcome",
-  viewSource: "eugenethedream/widget/WidgetSource",
-  widgetMetadataEditor: "eugenethedream/widget/WidgetMetadataEditor",
-  widgetMetadata: "eugenethedream/widget/WidgetMetadata",
-  profileImage: "eugenethedream/widget/ProfileImage",
-  profilePage: "eugenethedream/widget/Profile",
-  profileName: "eugenethedream/widget/ProfileName",
-  profileInlineBlock: "eugenethedream/widget/Profile",
-  notificationButton: "eugenethedream/widget/NotificationButton",
+  image: "mob.dapplets.testnet/widget/Image",
+  default: "mob.dapplets.testnet/widget/Homepage",
+  viewSource: "mob.dapplets.testnet/widget/WidgetSource",
+  widgetMetadataEditor: "mob.dapplets.testnet/widget/WidgetMetadataEditor",
+  widgetMetadata: "mob.dapplets.testnet/widget/WidgetMetadata",
+  profileImage: "mob.dapplets.testnet/widget/ProfileImage",
+  notificationButton: "mob.dapplets.testnet/widget/NotificationButton",
+  profilePage: "mob.dapplets.testnet/widget/ProfilePage",
+  profileName: "mob.dapplets.testnet/widget/ProfileName",
+  editorComponentSearch: "mob.dapplets.testnet/widget/Editor.ComponentSearch",
+  profileInlineBlock: "mob.dapplets.testnet/widget/Profile.InlineBlock",
+  viewHistory: "mob.dapplets.testnet/widget/WidgetHistory",
+  starButton: "mob.dapplets.testnet/widget/N.StarButton",
 };
 
 const MainnetWidgets = {
