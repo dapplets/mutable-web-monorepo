@@ -1,7 +1,6 @@
 const TestnetDomains = {
   "test.near.social": true,
   "127.0.0.1": true,
-  "mutable-near-social-testnet.netlify.app": true,
   "social.test.dapplets.org": true,
   "social.testnet.dapplets.org": true,
 };
