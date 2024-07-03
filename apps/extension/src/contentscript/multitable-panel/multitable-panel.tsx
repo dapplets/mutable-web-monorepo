@@ -1,5 +1,5 @@
 import { EventEmitter as NEventEmitter } from 'events'
-import { useMutableWeb } from 'mutable-web-engine'
+import { useMutableWeb } from '@mweb/engine'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'

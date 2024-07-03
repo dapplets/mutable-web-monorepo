@@ -38,7 +38,7 @@ import {
   Trash,
 } from '../assets/vectors'
 
-import { MutationWithSettings, useMutableWeb } from 'mutable-web-engine'
+import { MutationWithSettings, useMutableWeb } from '@mweb/engine'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
 

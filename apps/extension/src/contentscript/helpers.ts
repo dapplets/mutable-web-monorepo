@@ -1,4 +1,4 @@
-import { Mutation } from 'mutable-web-engine'
+import { Mutation } from '@mweb/engine'
 
 /**
  * Simple object check.

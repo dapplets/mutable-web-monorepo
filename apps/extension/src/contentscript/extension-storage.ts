@@ -1,5 +1,5 @@
 import { StorageService } from '@near-wallet-selector/core'
-import { IStorage } from 'mutable-web-engine'
+import { IStorage } from '@mweb/engine'
 import browser from 'webextension-polyfill'
 
 export class ExtensionStorage implements StorageService, IStorage {

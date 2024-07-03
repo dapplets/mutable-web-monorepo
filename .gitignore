@@ -24,3 +24,5 @@ test-keys/
 .turbo
 
 typedoc-docs/
+
+build

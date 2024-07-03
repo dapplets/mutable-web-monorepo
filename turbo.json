@@ -4,7 +4,8 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.ts", "test/**/*.js"],
-      "outputs": ["dist/**", "lib/**"]
+      "outputs": ["dist/**", "lib/**"],
+      "cache": false
     },
     "test": {
       "dependsOn": [],

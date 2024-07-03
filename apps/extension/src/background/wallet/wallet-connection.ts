@@ -1,9 +1,5 @@
-import { KeyPair } from '@near-js/crypto'
-import { KeyStore } from '@near-js/keystores'
-import { InMemorySigner } from '@near-js/signers'
-import { SCHEMA, Transaction } from '@near-js/transactions'
 import { serialize } from 'borsh'
-import { Near } from 'near-api-js'
+import NearApiJs, { Near, KeyPair, InMemorySigner } from 'near-api-js'
 import browser from 'webextension-polyfill'
 import { generateGuid, waitClosingTab, waitTab } from '../helpers'
 import { CustomConnectedWalletAccount } from './connected-wallet-account'
@@ -20,7 +16,7 @@ interface SignInOptions {
 }
 
 interface RequestSignTransactionsOptions {
-  transactions: Transaction[]
+  transactions: NearApiJs.transactions.Transaction[]
   callbackUrl?: string
   meta?: string
 }
@@ -28,7 +24,7 @@ interface RequestSignTransactionsOptions {
 export class CustomWalletConnection {
   _walletBaseUrl: string
   _authDataKey: string
-  _keyStore: KeyStore
+  _keyStore: NearApiJs.keyStores.KeyStore
   _authData: { accountId?: string; allKeys?: string[] }
   _networkId: string
   _near: Near
@@ -160,7 +156,7 @@ export class CustomWalletConnection {
     newUrl.searchParams.set(
       'transactions',
       transactions
-        .map((transaction) => serialize(SCHEMA, transaction))
+        .map((transaction) => serialize(NearApiJs.transactions.SCHEMA, transaction))
         .map((serialized) => Buffer.from(serialized).toString('base64'))
         .join(',')
     )

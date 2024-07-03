@@ -1,4 +1,4 @@
-import { AppMetadata } from 'mutable-web-engine'
+import { AppMetadata } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'

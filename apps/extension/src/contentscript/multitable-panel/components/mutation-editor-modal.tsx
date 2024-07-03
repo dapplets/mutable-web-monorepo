@@ -4,7 +4,7 @@ import {
   useCreateMutation,
   useEditMutation,
   useMutableWeb,
-} from 'mutable-web-engine'
+} from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
