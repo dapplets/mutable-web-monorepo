@@ -1,6 +1,11 @@
 import { NetworkId, setupWalletSelector } from '@near-wallet-selector/core'
 import { EventEmitter as NEventEmitter } from 'events'
-import { App as MWebApp, customElements, EngineConfig } from 'mutable-web-engine'
+import {
+  customElements,
+  EngineConfig,
+  MutableWebProvider,
+  ShadowDomWrapper,
+} from 'mutable-web-engine'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -97,9 +102,11 @@ async function main() {
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(
-    <MWebApp config={engineConfig} defaultMutationId={mutationIdToLoad}>
-      <MultitablePanel eventEmitter={eventEmitter} />
-    </MWebApp>
+    <MutableWebProvider config={engineConfig} defaultMutationId={mutationIdToLoad}>
+      <ShadowDomWrapper stylesheetSrc={engineConfig.bosElementStyleSrc}>
+        <MultitablePanel eventEmitter={eventEmitter} />
+      </ShadowDomWrapper>
+    </MutableWebProvider>
   )
 }
 
