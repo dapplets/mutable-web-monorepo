@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Widget } from "near-social-vm";
 import { Arrow } from "../../icons/Arrow";
 import { Back } from "../../icons/Back";
 import fallbackImage from "../../../images/fallback_image.svg";
-import { useMutableWeb } from "../../../contexts/mutable-web-context";
+import { useMutableWeb } from "mutable-web-engine";
 
 // #region MutationDropdown
 
@@ -275,15 +275,10 @@ function parseMutationId(mutationId) {
 }
 
 export function MutationDropdown({ imageSrc, listPosition = "right" }) {
-  const { engine, mutations, selectedMutation, switchMutation } =
+  const { mutations, selectedMutation, switchMutation, isLoading } =
     useMutableWeb();
 
   const [isOpen, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (engine) setIsLoading(false);
-  }, [engine]);
 
   const handleDropdownToggle = () => {
     setOpen(!isOpen);
@@ -291,28 +286,12 @@ export function MutationDropdown({ imageSrc, listPosition = "right" }) {
 
   const handleMutationClick = async (mutation) => {
     setOpen(false);
-
-    try {
-      setIsLoading(true);
-
-      if (engine.started) {
-        await switchMutation(mutation.id);
-      } else {
-        await engine.start(mutation.id);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-
-    window.sessionStorage.setItem("mutableweb:mutationId", mutation.id);
+    switchMutation(mutation.id);
   };
 
   const handleResetMutation = () => {
     setOpen(false);
-    engine.stop();
-    window.sessionStorage.setItem("mutableweb:mutationId", "null");
+    switchMutation(null);
   };
 
   if (isLoading) {

@@ -32,10 +32,9 @@ import { NetworkId, Widgets } from "./data/widgets";
 import { useEthersProviderContext } from "./data/web3";
 import SignInPage from "./pages/SignInPage";
 import { isValidAttribute } from "dompurify";
-import { Engine, customElements } from "mutable-web-engine";
-import { MutableWebProvider } from "./contexts/mutable-web-context";
 import MutableOverlayContainer from "./components/navigation/MutableOverlayContainer";
 import { useMatomoAnalytics } from "./hooks/useMatomoAnalytics";
+import { MutableWebProvider, customElements } from "mutable-web-engine";
 
 export const refreshAllowanceObj = {};
 const documentationHref = "https://social.near-docs.io/";
@@ -69,7 +68,7 @@ function App(props) {
   const [signedAccountId, setSignedAccountId] = useState(null);
   const [availableStorage, setAvailableStorage] = useState(null);
   const [walletModal, setWalletModal] = useState(null);
-  const [mutationEngine, setMutationEngine] = useState(null);
+  const [walletSelector, setWalletSelector] = useState(null);
   const [widgetSrc, setWidgetSrc] = useState(null);
 
   const ethersProviderContext = useEthersProviderContext();
@@ -154,33 +153,10 @@ function App(props) {
       return;
     }
     near.selector.then((selector) => {
+      setWalletSelector(selector);
       setWalletModal(
         setupModal(selector, { contractId: near.config.contractName })
       );
-    });
-  }, [near]);
-
-  useEffect(() => {
-    if (!near) {
-      return;
-    }
-    near.selector.then((selector) => {
-      const engine = new Engine({
-        networkId: NetworkId,
-        selector: selector,
-        gatewayId: "near-social",
-        bosElementStyleSrc: "/bootstrap.min.css",
-      });
-
-      const mutationId = window.sessionStorage.getItem("mutableweb:mutationId");
-
-      if (!mutationId) {
-        engine.start().then(() => setMutationEngine(engine));
-      } else if (mutationId !== "null") {
-        engine.start(mutationId).then(() => setMutationEngine(engine));
-      } else {
-        setMutationEngine(engine);
-      }
     });
   }, [near]);
 
@@ -248,13 +224,21 @@ function App(props) {
     requestSignIn,
     widgets: Widgets,
     documentationHref,
-    mutationEngine,
+  };
+
+  if (!walletSelector) return null;
+
+  const engineConfig = {
+    networkId: NetworkId,
+    gatewayId: "near-social",
+    selector: walletSelector,
+    bosElementStyleSrc: "/bootstrap.min.css",
   };
 
   return (
     <div className="App">
-      <EthersProviderContext.Provider value={ethersProviderContext}>
-        <MutableWebProvider engine={mutationEngine}>
+      <MutableWebProvider config={engineConfig}>
+        <EthersProviderContext.Provider value={ethersProviderContext}>
           <Router basename={process.env.PUBLIC_URL}>
             <Switch>
               <Route path={"/signin"}>
@@ -275,8 +259,8 @@ function App(props) {
             </Switch>
           </Router>
           <MutableOverlayContainer />
-        </MutableWebProvider>
-      </EthersProviderContext.Provider>
+        </EthersProviderContext.Provider>
+      </MutableWebProvider>
     </div>
   );
 }
