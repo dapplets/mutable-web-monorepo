@@ -4,7 +4,7 @@ import { Widget } from "near-social-vm";
 import { Arrow } from "../../icons/Arrow";
 import { Back } from "../../icons/Back";
 import fallbackImage from "../../../images/fallback_image.svg";
-import { useMutableWeb } from "mutable-web-engine";
+import { useMutableWeb } from "@mweb/engine";
 
 // #region MutationDropdown
 

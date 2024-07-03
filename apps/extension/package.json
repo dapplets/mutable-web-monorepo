@@ -1,5 +1,5 @@
 {
-  "name": "@dapplets/mutable-web-extension",
+  "name": "@mweb/extension",
   "version": "0.1.16",
   "description": "Bridge to the Mutable Web",
   "scripts": {

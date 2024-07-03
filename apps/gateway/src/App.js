@@ -34,7 +34,7 @@ import SignInPage from "./pages/SignInPage";
 import { isValidAttribute } from "dompurify";
 import MutableOverlayContainer from "./components/navigation/MutableOverlayContainer";
 import { useMatomoAnalytics } from "./hooks/useMatomoAnalytics";
-import { MutableWebProvider, customElements } from "mutable-web-engine";
+import { MutableWebProvider, customElements } from "@mweb/engine";
 
 export const refreshAllowanceObj = {};
 const documentationHref = "https://social.near-docs.io/";

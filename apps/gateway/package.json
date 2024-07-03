@@ -1,10 +1,12 @@
 {
-  "name": "frontend",
+  "name": "@mweb/gateway",
   "version": "0.18.18",
   "homepage": "/",
   "private": true,
   "dependencies": {
     "@monaco-editor/react": "^4.4.6",
+    "@mweb/engine": "workspace:*",
+    "@mweb/shared-components": "workspace:*",
     "@near-wallet-selector/core": "^8.9.7",
     "@near-wallet-selector/here-wallet": "^8.9.7",
     "@near-wallet-selector/meteor-wallet": "^8.9.7",
@@ -26,8 +28,9 @@
     "collections": "^5.1.12",
     "dompurify": "^3.0.6",
     "error-polyfill": "^0.1.2",
+    "ethers": "^5.7.2",
+    "events": "^3.3.0",
     "local-storage": "^2.0.0",
-    "mutable-web-engine": "github:dapplets/mutable-web-engine",
     "near-api-js": "^2.1.3",
     "near-social-vm": "github:dapplets/near-social-vm",
     "near-social-vm-types": "^1.0.0",
@@ -38,16 +41,18 @@
     "react-bootstrap-typeahead": "^6.1.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^5.2.0",
-    "styled-components": "^5.3.6"
+    "react-singleton-hook": "^4.0.1",
+    "styled-components": "^5.3.6",
+    "vm-browserify": "^1.1.2"
   },
   "scripts": {
     "serve": "webpack serve",
     "webpack": "webpack",
-    "dev": "yarn run serve -- --env mode=development",
-    "prod": "yarn run webpack -- --env mode=production",
-    "prod:analyze": "yarn run prod -- --env presets=analyze",
-    "build": "yarn run prod",
-    "start": "yarn run dev"
+    "dev": "pnpm serve -- --env mode=development",
+    "prod": "pnpm webpack -- --env mode=production",
+    "prod:analyze": "pnpm prod -- --env presets=analyze",
+    "build": "pnpm prod",
+    "start": "pnpm dev"
   },
   "eslintConfig": {
     "extends": [

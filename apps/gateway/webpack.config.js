@@ -45,12 +45,14 @@ module.exports = function (env) {
         extensions: [".js", ".jsx", ".json"],
         fallback: {
           crypto: require.resolve("crypto-browserify"),
+          vm: require.resolve("vm-browserify"),
           stream: require.resolve("stream-browserify"),
           http: require.resolve("stream-http"),
           https: require.resolve("https-browserify"),
           fs: false,
           path: require.resolve("path-browserify"),
           zlib: require.resolve("browserify-zlib"),
+          events: require.resolve("events"),
           'process/browser': false,
         },
         // Fix for using `yarn link "near-social-vm"`
@@ -60,6 +62,8 @@ module.exports = function (env) {
           "near-api-js": path.resolve(__dirname, "./node_modules/near-api-js"),
           "near-social-vm": path.resolve(__dirname, "./node_modules/near-social-vm"),
           'styled-components': path.resolve(__dirname, "./node_modules/styled-components"),
+          'bn.js': path.resolve(__dirname, "./node_modules/bn.js"),
+          'events': path.resolve(__dirname, "./node_modules/events"),
         },
       },
       plugins: [
