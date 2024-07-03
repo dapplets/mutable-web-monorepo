@@ -432,7 +432,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
       {isOpen || !mutationApps.length ? null : (
         <ButtonWrapper
           data-mweb-insertion-point="mweb-actions-panel"
-          data-mweb-layout-manager="bos.dapplets.near/widget/VerticalLayoutManager"
+          data-mweb-layout-manager="vertical"
         />
       )}
 

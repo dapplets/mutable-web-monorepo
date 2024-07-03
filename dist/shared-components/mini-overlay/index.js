@@ -291,7 +291,7 @@ const MiniOverlay = ({ baseMutation, mutationApps, connectWallet, disconnectWall
                 }) },
                 (baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image) ? (react_1.default.createElement(Image_1.Image, { image: baseMutation === null || baseMutation === void 0 ? void 0 : baseMutation.metadata.image })) : (react_1.default.createElement(MutationFallbackIcon, null)),
                 react_1.default.createElement("div", { "data-mweb-insertion-point": "mutation-icon", style: { display: 'none' } }))),
-        isOpen || !mutationApps.length ? null : (react_1.default.createElement(ButtonWrapper, { "data-mweb-insertion-point": "mweb-actions-panel", "data-mweb-layout-manager": "bos.dapplets.near/widget/VerticalLayoutManager" })),
+        isOpen || !mutationApps.length ? null : (react_1.default.createElement(ButtonWrapper, { "data-mweb-insertion-point": "mweb-actions-panel", "data-mweb-layout-manager": "vertical" })),
         isOpen ? react_1.default.createElement(AppsWrapper, null, children) : null,
         mutationApps.length > 0 ? (react_1.default.createElement(ButtonOpenWrapper, { "$open": isOpen || mutationApps.length > 0, "data-mweb-context-type": "mweb-overlay", "data-mweb-context-parsed": JSON.stringify({ id: 'open-apps-button' }) },
             react_1.default.createElement(ButtonOpen, { "$open": isOpen, className: isOpen ? 'svgTransform' : '', onClick: () => setIsOpen(!isOpen) },
