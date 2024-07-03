@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "Mutable Web",
+  "version": "",
+  "version_name": "",
+  "description": "",
+  "author": "",
+  "short_name": "Mutable Web",
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "minimum_chrome_version": "95",
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "exclude_globs": [
+        "https://mutable-near-social-testnet.netlify.app/*",
+        "https://mutable-near-social.netlify.app/*",
+        "https://social.dapplets.org/*",
+        "http://localhost/*",
+        "http://127.0.0.1:3000/*"
+      ],
+      "js": [
+        "custom-elements.min.js",
+        "contentscript.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://app.mynearwallet.com/*",
+        "https://testnet.mynearwallet.com/*"
+      ],
+      "js": [
+        "mnw-patch-inpage.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "callback.html",
+        "bootstrap.min.css"
+      ],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ],
+  "permissions": [
+    "storage",
+    "tabs",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "*://localhost/*",
+    "http://*/*",
+    "https://*/*"
+  ]
+}
