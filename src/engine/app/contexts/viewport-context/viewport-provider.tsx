@@ -16,9 +16,10 @@ const ViewportProvider: FC<Props> = ({ children, stylesheetSrc }) => {
 
   return (
     <ViewportContext.Provider value={state}>
-      <ShadowDomWrapper ref={viewportRef} stylesheetSrc={stylesheetSrc} className="mweb-layout">
+      <>
+        <ShadowDomWrapper ref={viewportRef} stylesheetSrc={stylesheetSrc} className="mweb-layout" />
         <>{children}</>
-      </ShadowDomWrapper>
+      </>
     </ViewportContext.Provider>
   )
 }

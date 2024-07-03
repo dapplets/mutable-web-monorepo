@@ -1,4 +1,4 @@
-import React, { ReactElement, Fragment } from 'react'
+import React, { ReactElement, Fragment, ReactNode } from 'react'
 import { FC } from 'react'
 import { CoreProvider } from '../../react'
 import { EngineConfig } from '../engine'
@@ -15,7 +15,7 @@ import { HighlighterProvider } from './contexts/highlighter-context'
 export const App: FC<{
   config: EngineConfig
   defaultMutationId?: string | null
-  children?: ReactElement
+  children?: ReactNode
 }> = ({ config, defaultMutationId, children }) => {
   return (
     <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>

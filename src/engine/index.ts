@@ -12,3 +12,4 @@ export {
   useEditMutation,
   useMutationApp,
 } from './app/contexts/mutable-web-context'
+export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper'

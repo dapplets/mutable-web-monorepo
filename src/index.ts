@@ -2,12 +2,13 @@ export {
   customElements,
   LocalStorage,
   Engine,
-  App,
+  App as MutableWebProvider, // ToDo: confuse with internal MutableWebProvider
   useEngine,
   useMutableWeb,
   useCreateMutation,
   useEditMutation,
   useMutationApp,
+  ShadowDomWrapper,
 } from './engine'
 
 export type {
