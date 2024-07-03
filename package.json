@@ -1,0 +1,14 @@
+{
+  "name": "mutable-web-monorepo",
+  "version": "0.1.0",
+  "description": "Mutable Web monorepository",
+  "main": "index.js",
+  "repository": "https://github.com/dapplets/mutable-web-monorepo",
+  "author": "Dapplets Team <contact@dapplets.org>",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "libs/*",
+    "apps/*"
+  ]
+}
