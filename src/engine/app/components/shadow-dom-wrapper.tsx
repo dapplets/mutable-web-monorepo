@@ -13,10 +13,11 @@ export interface ShadowDomWrapperProps {
   children?: React.ReactNode
   stylesheetSrc?: string
   className?: string
+  style?: React.CSSProperties
 }
 
 export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrapperProps>(
-  ({ children, stylesheetSrc, className }, ref) => {
+  ({ children, stylesheetSrc, className, style }, ref) => {
     const myRef = React.useRef<HTMLDivElement | null>(null)
     const [root, setRoot] = React.useState<{
       container: HTMLDivElement
@@ -88,7 +89,7 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
     }, [myRef, stylesheetSrc])
 
     return (
-      <div className={className} ref={myRef}>
+      <div className={className} ref={myRef} style={style}>
         {root && children
           ? createPortal(
               <StyleSheetManager target={root.stylesMountPoint}>

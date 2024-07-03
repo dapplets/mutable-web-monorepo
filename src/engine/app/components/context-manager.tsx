@@ -180,8 +180,13 @@ const InsPointHandler: FC<{
     return null
   }
 
+  // ToDo: hardcode. The ear should be positioned relative to the contexts.
+  // Inside of BOS-components impossible to set :host styles
+  const shadowDomHostStyles: React.CSSProperties | undefined =
+    config.layoutManagers.ear === layoutManagerId ? { position: 'relative' } : undefined
+
   return (
-    <ShadowDomWrapper className="mweb-layout-manager">
+    <ShadowDomWrapper className="mweb-layout-manager" style={shadowDomHostStyles}>
       <Widget
         src={layoutManagerId ?? config.layoutManagers.horizontal}
         props={props}
