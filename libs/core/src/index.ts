@@ -11,3 +11,6 @@ export { Core } from './core'
 export { Subscription } from './event-emitter'
 export { InsertionPointWithElement } from './tree/types'
 export { isDeepEqual } from './utils'
+
+
+export { MiniOverlay, AppSwitcher } from 'shared-components'
