@@ -35,6 +35,7 @@ const context_tree_1 = require("../../../react/components/context-tree");
 const use_context_apps_1 = require("../contexts/mutable-web-context/use-context-apps");
 const transferable_context_1 = require("../common/transferable-context");
 const modal_context_1 = require("../contexts/modal-context");
+const mutable_web_context_1 = require("../contexts/mutable-web-context");
 const ContextManager = () => {
     return react_1.default.createElement(context_tree_1.ContextTree, { children: ContextHandler });
 };
@@ -61,7 +62,9 @@ const ContextHandler = ({ context, insPoints, }) => {
             react_1.default.createElement(InsPointHandler, { context: context, transferableContext: transferableContext, allUserLinks: userLinks, apps: apps, isEditMode: isEditMode, onCreateUserLink: createUserLink, onDeleteUserLink: deleteUserLink, onEnableEditMode: handleEnableEditMode, onDisableEditMode: handleDisableEditMode, onAttachContextRef: attachContextRef }))));
 };
 const InsPointHandler = ({ insPointName, bosLayoutManager, context, transferableContext, allUserLinks, apps, isEditMode, onCreateUserLink, onDeleteUserLink, onEnableEditMode, onDisableEditMode, onAttachContextRef, }) => {
+    var _a;
     const { redirectMap } = (0, engine_context_1.useEngine)();
+    const { config } = (0, mutable_web_context_1.useMutableWeb)();
     const { components } = (0, use_portal_filter_1.usePortalFilter)(context, insPointName); // ToDo: extract to the separate AppManager component
     const { notify } = (0, modal_context_1.useModal)();
     const attachInsPointRef = (0, react_1.useCallback)((callback) => {
@@ -72,7 +75,6 @@ const InsPointHandler = ({ insPointName, bosLayoutManager, context, transferable
             : context.element;
         callback(targetElement);
     }, [context, insPointName]);
-    const defaultLayoutManager = 'bos.dapplets.near/widget/DefaultLayoutManager';
     const props = {
         // ToDo: unify context forwarding
         context: transferableContext,
@@ -106,14 +108,20 @@ const InsPointHandler = ({ insPointName, bosLayoutManager, context, transferable
         attachInsPointRef,
         notify,
     };
+    const layoutManagerId = bosLayoutManager
+        ? (_a = config.layoutManagers[bosLayoutManager]) !== null && _a !== void 0 ? _a : bosLayoutManager
+        : config.layoutManagers.horizontal;
     // Don't render layout manager if there are no components
     // It improves performance
     if (components.length === 0 &&
         !allUserLinks.some((link) => link.insertionPoint === insPointName) &&
-        bosLayoutManager !== 'bos.dapplets.near/widget/ContextActionsGroup' // ToDo: hardcode
+        layoutManagerId !== config.layoutManagers.ear // ToDo: hardcode
     ) {
         return null;
     }
-    return (react_1.default.createElement(shadow_dom_wrapper_1.ShadowDomWrapper, { className: "mweb-layout-manager" },
-        react_1.default.createElement(near_social_vm_1.Widget, { src: bosLayoutManager !== null && bosLayoutManager !== void 0 ? bosLayoutManager : defaultLayoutManager, props: props, loading: react_1.default.createElement(react_1.default.Fragment, null), config: { redirectMap } })));
+    // ToDo: hardcode. The ear should be positioned relative to the contexts.
+    // Inside of BOS-components impossible to set :host styles
+    const shadowDomHostStyles = config.layoutManagers.ear === layoutManagerId ? { position: 'relative' } : undefined;
+    return (react_1.default.createElement(shadow_dom_wrapper_1.ShadowDomWrapper, { className: "mweb-layout-manager", style: shadowDomHostStyles },
+        react_1.default.createElement(near_social_vm_1.Widget, { src: layoutManagerId !== null && layoutManagerId !== void 0 ? layoutManagerId : config.layoutManagers.horizontal, props: props, loading: react_1.default.createElement(react_1.default.Fragment, null), config: { redirectMap } })));
 };

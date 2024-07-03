@@ -26,7 +26,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.useMutationApp = exports.useEditMutation = exports.useCreateMutation = exports.useMutableWeb = exports.useEngine = exports.App = exports.LocalStorage = exports.customElements = void 0;
+exports.ShadowDomWrapper = exports.useMutationApp = exports.useEditMutation = exports.useCreateMutation = exports.useMutableWeb = exports.useEngine = exports.App = exports.LocalStorage = exports.customElements = void 0;
 __exportStar(require("./engine"), exports);
 exports.customElements = __importStar(require("./custom-elements"));
 var local_storage_1 = require("./app/services/local-db/local-storage");
@@ -40,3 +40,5 @@ Object.defineProperty(exports, "useMutableWeb", { enumerable: true, get: functio
 Object.defineProperty(exports, "useCreateMutation", { enumerable: true, get: function () { return mutable_web_context_1.useCreateMutation; } });
 Object.defineProperty(exports, "useEditMutation", { enumerable: true, get: function () { return mutable_web_context_1.useEditMutation; } });
 Object.defineProperty(exports, "useMutationApp", { enumerable: true, get: function () { return mutable_web_context_1.useMutationApp; } });
+var shadow_dom_wrapper_1 = require("./app/components/shadow-dom-wrapper");
+Object.defineProperty(exports, "ShadowDomWrapper", { enumerable: true, get: function () { return shadow_dom_wrapper_1.ShadowDomWrapper; } });

@@ -1,9 +1,9 @@
-import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { FC } from 'react';
 import { EngineConfig } from '../engine';
 export declare const App: FC<{
     config: EngineConfig;
     defaultMutationId?: string | null;
-    children?: ReactElement;
+    children?: ReactNode;
 }>;
 //# sourceMappingURL=app.d.ts.map

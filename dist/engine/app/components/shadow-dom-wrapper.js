@@ -33,7 +33,7 @@ const generateGuid = () => {
         .map((b) => b.toString(16).padStart(2, '0'))
         .join('');
 };
-exports.ShadowDomWrapper = React.forwardRef(({ children, stylesheetSrc, className }, ref) => {
+exports.ShadowDomWrapper = React.forwardRef(({ children, stylesheetSrc, className, style }, ref) => {
     const myRef = React.useRef(null);
     const [root, setRoot] = React.useState(null);
     // ToDo: to make sure that when stylesheetSrc changes, it doesn't get executed multiple times
@@ -91,7 +91,7 @@ exports.ShadowDomWrapper = React.forwardRef(({ children, stylesheetSrc, classNam
             setRoot(null);
         }
     }, [myRef, stylesheetSrc]);
-    return (React.createElement("div", { className: className, ref: myRef }, root && children
+    return (React.createElement("div", { className: className, ref: myRef, style: style }, root && children
         ? (0, react_dom_1.createPortal)(React.createElement(styled_components_1.StyleSheetManager, { target: root.stylesMountPoint },
             React.createElement(cssinjs_1.StyleProvider, { container: root.stylesMountPoint },
                 React.createElement(React.Fragment, null, children))), root.container)

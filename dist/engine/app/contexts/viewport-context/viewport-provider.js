@@ -13,7 +13,8 @@ const ViewportProvider = ({ children, stylesheetSrc }) => {
         viewportRef,
     };
     return (react_1.default.createElement(viewport_context_1.ViewportContext.Provider, { value: state },
-        react_1.default.createElement(shadow_dom_wrapper_1.ShadowDomWrapper, { ref: viewportRef, stylesheetSrc: stylesheetSrc, className: "mweb-layout" },
+        react_1.default.createElement(react_1.default.Fragment, null,
+            react_1.default.createElement(shadow_dom_wrapper_1.ShadowDomWrapper, { ref: viewportRef, stylesheetSrc: stylesheetSrc, className: "mweb-layout" }),
             react_1.default.createElement(react_1.default.Fragment, null, children))));
 };
 exports.ViewportProvider = ViewportProvider;

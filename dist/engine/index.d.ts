@@ -7,4 +7,5 @@ export { IStorage } from './app/services/local-db/local-storage';
 export { App } from './app/app';
 export { useEngine } from './app/contexts/engine-context';
 export { useMutableWeb, useCreateMutation, useEditMutation, useMutationApp, } from './app/contexts/mutable-web-context';
+export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper';
 //# sourceMappingURL=index.d.ts.map

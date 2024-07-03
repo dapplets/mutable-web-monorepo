@@ -1,10 +1,15 @@
+export type BuiltInLayoutManagers = {
+    vertical: string;
+    horizontal: string;
+    ear: string;
+};
 export type NearConfig = {
     networkId: string;
     nodeUrl: string;
     contractName: string;
     walletUrl: string;
     defaultMutationId: string;
-    defaultLayoutManager: string;
+    layoutManagers: BuiltInLayoutManagers;
 };
 export declare const NearConfigs: {
     [networkId: string]: NearConfig;

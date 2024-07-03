@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MutableWebContext = exports.contextDefaultValues = void 0;
 const react_1 = require("react");
 exports.contextDefaultValues = {
+    config: null, // ToDo
     engine: null, // ToDo
     mutations: [],
     allApps: [],

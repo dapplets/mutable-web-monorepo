@@ -2,7 +2,9 @@
 import { Engine } from '../../../engine';
 import { AppMetadata, AppWithSettings } from '../../services/application/application.entity';
 import { MutationWithSettings } from '../../services/mutation/mutation.entity';
+import { NearConfig } from '../../../constants';
 export type MutableWebContextState = {
+    config: NearConfig;
     engine: Engine;
     mutations: MutationWithSettings[];
     allApps: AppMetadata[];

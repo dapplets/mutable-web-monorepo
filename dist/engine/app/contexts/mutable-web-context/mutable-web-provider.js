@@ -45,6 +45,7 @@ const target_service_1 = require("../../services/target/target.service");
 const parser_config_entity_1 = require("../../services/parser-config/parser-config.entity");
 const modal_context_1 = require("../modal-context");
 const notifications_1 = require("./notifications");
+const constants_1 = require("../../../constants");
 const MWebParserConfig = {
     parserType: parser_config_entity_1.AdapterType.MWeb,
     id: 'mweb',
@@ -64,6 +65,7 @@ const MutableWebProvider = ({ config, defaultMutationId, children }) => {
         engineRef.current = new engine_1.Engine(config);
         attachParserConfig(MWebParserConfig); // ToDo: move
     }
+    const nearConfig = (0, react_1.useMemo)(() => (0, constants_1.getNearConfig)(config.networkId), [config.networkId]);
     const engine = engineRef.current;
     const { mutations, setMutations, isLoading: isMutationsLoading } = (0, use_mutations_1.useMutations)(engine);
     const { applications: allApps, isLoading: isAppsLoading } = (0, use_applications_1.useApplications)(engine);
@@ -163,6 +165,7 @@ const MutableWebProvider = ({ config, defaultMutationId, children }) => {
     }), [engine]);
     const isLoading = isMutationsLoading || isAppsLoading || isMutationAppsLoading || isMutationParsersLoading;
     const state = {
+        config: nearConfig,
         engine,
         mutations,
         allApps,
