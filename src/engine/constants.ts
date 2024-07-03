@@ -1,10 +1,16 @@
+export type BuiltInLayoutManagers = {
+  vertical: string
+  horizontal: string
+  ear: string
+}
+
 export type NearConfig = {
   networkId: string
   nodeUrl: string
   contractName: string
   walletUrl: string
   defaultMutationId: string
-  defaultLayoutManager: string
+  layoutManagers: BuiltInLayoutManagers
 }
 
 export const NearConfigs: { [networkId: string]: NearConfig } = {
@@ -14,7 +20,11 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
     contractName: 'social.dapplets.near',
     walletUrl: 'https://app.mynearwallet.com',
     defaultMutationId: 'bos.dapplets.near/mutation/Sandbox',
-    defaultLayoutManager: 'bos.dapplets.near/widget/DefaultLayoutManager',
+    layoutManagers: {
+      vertical: 'bos.dapplets.near/widget/VerticalLayoutManager',
+      horizontal: 'bos.dapplets.near/widget/DefaultLayoutManager',
+      ear: 'bos.dapplets.near/widget/ContextActionsGroup',
+    },
   },
   testnet: {
     networkId: 'testnet',
@@ -22,7 +32,11 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
     contractName: 'social.dapplets.testnet',
     walletUrl: 'https://testnet.mynearwallet.com',
     defaultMutationId: 'bos.dapplets.testnet/mutation/Sandbox',
-    defaultLayoutManager: 'bos.dapplets.testnet/widget/DefaultLayoutManager',
+    layoutManagers: {
+      vertical: 'bos.dapplets.testnet/widget/VerticalLayoutManager',
+      horizontal: 'bos.dapplets.testnet/widget/DefaultLayoutManager',
+      ear: 'bos.dapplets.testnet/widget/ContextActionsGroup',
+    },
   },
 }
 

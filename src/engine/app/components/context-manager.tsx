@@ -12,6 +12,8 @@ import { AppId, AppMetadata } from '../services/application/application.entity'
 import { BosUserLink, UserLinkId } from '../services/user-link/user-link.entity'
 import { TransferableContext, buildTransferableContext } from '../common/transferable-context'
 import { useModal } from '../contexts/modal-context'
+import { useMutableWeb } from '../contexts/mutable-web-context'
+import { BuiltInLayoutManagers } from '../../constants'
 
 export const ContextManager: FC = () => {
   return <ContextTree children={ContextHandler} />
@@ -111,6 +113,7 @@ const InsPointHandler: FC<{
   onAttachContextRef,
 }) => {
   const { redirectMap } = useEngine()
+  const { config } = useMutableWeb()
   const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
   const { notify } = useModal()
 
@@ -126,7 +129,6 @@ const InsPointHandler: FC<{
     [context, insPointName]
   )
 
-  const defaultLayoutManager = 'bos.dapplets.near/widget/DefaultLayoutManager'
   const props = {
     // ToDo: unify context forwarding
     context: transferableContext,
@@ -164,12 +166,16 @@ const InsPointHandler: FC<{
     notify,
   }
 
+  const layoutManagerId = bosLayoutManager
+    ? config.layoutManagers[bosLayoutManager as keyof BuiltInLayoutManagers] ?? bosLayoutManager
+    : config.layoutManagers.horizontal
+
   // Don't render layout manager if there are no components
   // It improves performance
   if (
     components.length === 0 &&
     !allUserLinks.some((link) => link.insertionPoint === insPointName) &&
-    bosLayoutManager !== 'bos.dapplets.near/widget/ContextActionsGroup' // ToDo: hardcode
+    layoutManagerId !== config.layoutManagers.ear // ToDo: hardcode
   ) {
     return null
   }
@@ -177,7 +183,7 @@ const InsPointHandler: FC<{
   return (
     <ShadowDomWrapper className="mweb-layout-manager">
       <Widget
-        src={bosLayoutManager ?? defaultLayoutManager}
+        src={layoutManagerId ?? config.layoutManagers.horizontal}
         props={props}
         loading={<></>}
         config={{ redirectMap }}

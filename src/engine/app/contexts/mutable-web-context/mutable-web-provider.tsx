@@ -19,6 +19,7 @@ import { TargetService } from '../../services/target/target.service'
 import { AdapterType, ParserConfig } from '../../services/parser-config/parser-config.entity'
 import { useModal } from '../modal-context'
 import { mutationDisabled, mutationSwitched } from './notifications'
+import { getNearConfig } from '../../../constants'
 
 type Props = {
   config: EngineConfig
@@ -47,6 +48,8 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
     engineRef.current = new Engine(config)
     attachParserConfig(MWebParserConfig) // ToDo: move
   }
+
+  const nearConfig = useMemo(() => getNearConfig(config.networkId), [config.networkId])
 
   const engine = engineRef.current
 
@@ -208,6 +211,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
     isMutationsLoading || isAppsLoading || isMutationAppsLoading || isMutationParsersLoading
 
   const state: MutableWebContextState = {
+    config: nearConfig,
     engine,
     mutations,
     allApps,

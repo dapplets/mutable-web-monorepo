@@ -2,8 +2,10 @@ import { Engine } from '../../../engine'
 import { createContext } from 'react'
 import { AppMetadata, AppWithSettings } from '../../services/application/application.entity'
 import { MutationWithSettings } from '../../services/mutation/mutation.entity'
+import { NearConfig } from '../../../constants'
 
 export type MutableWebContextState = {
+  config: NearConfig
   engine: Engine
   mutations: MutationWithSettings[]
   allApps: AppMetadata[]
@@ -20,6 +22,7 @@ export type MutableWebContextState = {
 }
 
 export const contextDefaultValues: MutableWebContextState = {
+  config: null as any as NearConfig, // ToDo
   engine: null as any as Engine, // ToDo
   mutations: [],
   allApps: [],
