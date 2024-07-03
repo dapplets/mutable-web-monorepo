@@ -1,4 +1,4 @@
-import { Core, IContextNode, ParserConfig } from '../../../core'
+import { Core, IContextNode, ParserConfig } from '@mweb/core'
 import { createContext } from 'react'
 
 export type CoreContextState = {

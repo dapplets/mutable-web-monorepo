@@ -1,5 +1,5 @@
 import React from 'react'
-import { ContextTree, useCore } from '../../../react'
+import { ContextTree, useCore } from '@mweb/react'
 import { TargetService } from '../services/target/target.service'
 import { useHighlighter } from '../contexts/highlighter-context'
 import { Highlighter } from './highlighter'

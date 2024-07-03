@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { IContextNode } from '../../../../core'
+import { IContextNode } from '@mweb/core'
 import { BosUserLink, UserLinkId } from '../../services/user-link/user-link.entity'
 import { useMutableWeb } from '.'
 import { MutationId } from '../../services/mutation/mutation.entity'

@@ -1,7 +1,7 @@
 import React, { FC, ReactElement, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { IContextNode } from '../../core'
-import { InsertionType } from '../../core/adapters/interface'
+import { IContextNode } from '@mweb/core'
+import { InsertionType } from '@mweb/core'
 
 const DefaultInsertionType: InsertionType = InsertionType.End
 

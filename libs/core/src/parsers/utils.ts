@@ -7,7 +7,7 @@ export function getChildContextElements(
 ) {
   const result: HTMLElement[] = []
 
-  for (const child of element.children) {
+  for (const child of Array.from(element.children)) {
     if (child instanceof HTMLElement) {
       if (excludeAttribute && child.hasAttribute(excludeAttribute)) {
         continue

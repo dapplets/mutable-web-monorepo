@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useMemo, useRef, ReactElement } from 'react'
 import ReactDOMServer from 'react-dom/server'
-import { IContextNode } from '../../../core'
-import { getContextDepth } from '../../../core/utils'
+import { IContextNode } from '@mweb/core'
+import { getContextDepth } from '@mweb/core'
 import { Highlighter } from './highlighter'
 
 const DEFAULT_INACTIVE_BORDER_COLOR = '#384BFF4D' // light blue

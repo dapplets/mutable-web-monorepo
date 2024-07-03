@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { IContextNode } from '../../../../core'
+import { IContextNode } from '@mweb/core'
 import { useMutableWeb } from './use-mutable-web'
 
 export const useContextApps = (context: IContextNode) => {

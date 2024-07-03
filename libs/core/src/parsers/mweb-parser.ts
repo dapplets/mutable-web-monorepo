@@ -42,7 +42,7 @@ export class MutableWebParser implements IParser {
       return this.findInsertionPoint(element.shadowRoot, contextName, insertionPoint)
     }
 
-    const shadowHosts = element.querySelectorAll(`[${ShadowHostAttr}]`)
+    const shadowHosts = Array.from(element.querySelectorAll(`[${ShadowHostAttr}]`))
     for (const shadowHost of shadowHosts) {
       if (!shadowHost.shadowRoot) continue
 

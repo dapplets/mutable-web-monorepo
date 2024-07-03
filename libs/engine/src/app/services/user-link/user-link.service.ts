@@ -1,4 +1,4 @@
-import { IContextNode } from '../../../../core'
+import { IContextNode } from '@mweb/core'
 import { AppId, AppMetadata, AppMetadataTarget } from '../application/application.entity'
 import { ApplicationService } from '../application/application.service'
 import { MutationId } from '../mutation/mutation.entity'

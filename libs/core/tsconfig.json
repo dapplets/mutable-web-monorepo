@@ -3,5 +3,5 @@
   "compilerOptions": {
     "outDir": "./lib"
   },
-  "files": ["src/index.ts", "src/types-patch.d.ts"]
+  "files": ["src/index.ts"]
 }

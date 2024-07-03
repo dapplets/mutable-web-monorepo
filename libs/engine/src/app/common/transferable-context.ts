@@ -1,4 +1,4 @@
-import { IContextNode } from "../../../core"
+import { IContextNode } from "@mweb/core"
 
 export interface TransferableContext {
   namespace: string | null

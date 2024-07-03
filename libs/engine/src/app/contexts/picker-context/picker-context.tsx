@@ -1,6 +1,6 @@
 import { createContext } from 'react'
 import { Target } from '../../services/target/target.entity'
-import { IContextNode } from '../../../../core'
+import { IContextNode } from '@mweb/core'
 
 export type TLatchVariant = 'current' | 'parent' | 'child'
 

@@ -1,4 +1,4 @@
-import { BosParserConfig, JsonParserConfig } from '../../../../core'
+import { BosParserConfig, JsonParserConfig } from '@mweb/core'
 import { Target } from '../target/target.entity'
 
 export type ParserConfigId = string

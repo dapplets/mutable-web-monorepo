@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useCore } from '../../../../react'
+import { useCore } from '@mweb/react'
 import { MutationWithSettings } from '../../services/mutation/mutation.entity'
 import { Engine } from '../../../engine'
 

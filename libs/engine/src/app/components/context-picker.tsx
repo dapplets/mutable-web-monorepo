@@ -1,8 +1,8 @@
 import React, { FC, useCallback, useMemo, useState } from 'react'
-import { ContextTree, useCore } from '../../../react'
+import { ContextTree, useCore } from '@mweb/react'
 import { PickerHighlighter } from './picker-highlighter'
 import { TargetService } from '../services/target/target.service'
-import { IContextNode } from '../../../core'
+import { IContextNode } from '@mweb/core'
 import { usePicker } from '../contexts/picker-context'
 
 export const ContextPicker: FC = () => {

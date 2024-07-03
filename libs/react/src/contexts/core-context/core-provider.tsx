@@ -1,6 +1,6 @@
 import React, { FC, ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import { CoreContext, CoreContextState } from './core-context'
-import { Core, IContextNode, ParserConfig } from '../../../core'
+import { Core, IContextNode, ParserConfig } from '@mweb/core'
 
 type Props = {
   children: ReactElement

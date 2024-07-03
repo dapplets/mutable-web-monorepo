@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react'
-import { IContextNode, InsertionPointWithElement } from '../../core'
+import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import React from 'react'
 import { useCore } from '../contexts/core-context'
 

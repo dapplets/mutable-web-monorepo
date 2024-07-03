@@ -1,4 +1,4 @@
-import { IContextNode, isDeepEqual } from '../../../../core'
+import { IContextNode, isDeepEqual } from '@mweb/core'
 import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 

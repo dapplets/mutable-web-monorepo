@@ -1,4 +1,4 @@
-import { IContextNode } from '../core'
+import { IContextNode } from './tree/types'
 
 export function isDeepEqual(obj1: any, obj2: any): boolean {
   if (obj1 === obj2) return true

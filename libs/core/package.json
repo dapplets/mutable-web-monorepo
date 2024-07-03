@@ -1,0 +1,20 @@
+{
+  "name": "@mweb/core",
+  "version": "0.1.0",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "compile": "tsc -p ./tsconfig.json",
+    "build": "pnpm compile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+  },
+  "peerDependencies": {
+  },
+  "dependencies": {
+    "json-stringify-deterministic": "^1.0.12"
+  }
+}

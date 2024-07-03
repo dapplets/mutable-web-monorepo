@@ -12,7 +12,7 @@ import { MutableWebContext, MutableWebContextState } from './mutable-web-context
 import { Engine, EngineConfig } from '../../../engine'
 import { useMutationApps } from './use-mutation-apps'
 import { useMutationParsers } from './use-mutation-parsers'
-import { useCore } from '../../../../react'
+import { useCore } from '@mweb/react'
 import { useMutations } from './use-mutations'
 import { useApplications } from './use-applications'
 import { TargetService } from '../../services/target/target.service'

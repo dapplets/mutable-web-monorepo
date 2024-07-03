@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useEngine } from './use-engine'
-import { IContextNode } from '../../../../core'
+import { IContextNode } from '@mweb/core'
 import { TargetService } from '../../services/target/target.service'
 
 export const usePortalFilter = (context: IContextNode, insPointName?: string) => {

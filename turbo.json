@@ -1,0 +1,38 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/*.ts", "test/**/*.js"],
+      "outputs": ["dist/**", "lib/**"]
+    },
+    "test": {
+      "dependsOn": [],
+      "inputs": ["src/**/*.ts", "test/**/*.js"]
+    },
+    "lint": {
+      "inputs": ["src/**/*.ts", "test/**/*.js"],
+      "outputs": []
+    },
+    "lint:js": {
+      "inputs": ["test/**/*.js"],
+      "outputs": []
+    },
+    "lint:js:fix": {
+      "inputs": ["test/**/*.js"],
+      "outputs": []
+    },
+    "lint:ts": {
+        "inputs": ["src/**/*.ts"],
+        "outputs": []
+    },
+    "lint:ts:fix": {
+        "inputs": ["src/**/*.ts"],
+        "outputs": []
+    },
+    "clean": {
+      "outputs": [],
+      "cache": false
+    }
+  }
+}

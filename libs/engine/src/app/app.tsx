@@ -1,6 +1,6 @@
 import React, { ReactElement, Fragment, ReactNode } from 'react'
 import { FC } from 'react'
-import { CoreProvider } from '../../react'
+import { CoreProvider } from '@mweb/react'
 import { EngineConfig } from '../engine'
 import { EngineProvider } from './contexts/engine-context'
 import { MutableWebProvider } from './contexts/mutable-web-context'
