@@ -47,6 +47,8 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
   if (!engineRef.current) {
     engineRef.current = new Engine(config)
     attachParserConfig(MWebParserConfig) // ToDo: move
+
+    console.log('[MutableWeb] Engine initialized', engineRef.current)
   }
 
   const nearConfig = useMemo(() => getNearConfig(config.networkId), [config.networkId])
