@@ -4,7 +4,7 @@
   "description": "Bridge to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
-    "start": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack -w --config webpack.dev.js",
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack -w --config webpack.dev.js",
     "lint": "npm run prettify && npm run stylelint && npm run eslint",
     "prettify": "prettier --write src",
     "eslint": "eslint ./src --ext .ts --fix",
