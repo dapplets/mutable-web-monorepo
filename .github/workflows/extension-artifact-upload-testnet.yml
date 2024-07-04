@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
       - name: Build extension for testnet
-        run: NEAR_MAINNET=testnet pnpm build
+        run: NEAR_NETWORK=testnet pnpm build
       - name: Upload a Build Artifact
         id: upload
         uses: actions/upload-artifact@v3.1.2
