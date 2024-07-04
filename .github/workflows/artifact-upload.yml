@@ -22,7 +22,7 @@ jobs:
       - name: Build extension for testnet
         run: NEAR_MAINNET=testnet pnpm build
       - name: Upload a Build Artifact
-        id: upload
+        id: upload-testnet
         uses: actions/upload-artifact@v3.1.2
         with:
           name: mutable-web-extension-${{ github.head_ref }}-testnet
@@ -31,7 +31,7 @@ jobs:
       - name: Build extension for mainnet
         run: NEAR_MAINNET=mainnet pnpm build
       - name: Upload a Build Artifact
-        id: upload
+        id: upload-mainnet
         uses: actions/upload-artifact@v3.1.2
         with:
           name: mutable-web-extension-${{ github.head_ref }}-mainnet
