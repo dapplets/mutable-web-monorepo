@@ -1,0 +1,34 @@
+name: Artifact Upload Mainnet
+on:
+  pull_request:
+    branches: [develop]
+jobs:
+  create-artifact:
+    name: Test build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8.15.5
+      - name: Reconfigure git to use HTTP authentication
+        run: >
+          git config --global url."https://github.com/".insteadOf
+          ssh://git@github.com/
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build extension for mainnet
+        run: NEAR_NETWORK=mainnet pnpm build
+      - name: Upload a Build Artifact
+        id: upload
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: mutable-web-extension-${{ github.head_ref }}-mainnet
+          path: apps/extension/build/
+          if-no-files-found: error
