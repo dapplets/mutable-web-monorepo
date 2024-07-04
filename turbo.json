@@ -5,7 +5,8 @@
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.ts", "test/**/*.js"],
       "outputs": ["dist/**", "lib/**"],
-      "cache": false
+      "cache": false,
+      "env": ["NEAR_NETWORK"]
     },
     "dev": {
       "persistent": true,
