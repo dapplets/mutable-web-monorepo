@@ -146,7 +146,6 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       EXTENSION_VERSION: JSON.stringify(package.version),
-      NEAR_NETWORK: JSON.stringify(process.env.NEAR_NETWORK ?? 'mainnet'),
     }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],

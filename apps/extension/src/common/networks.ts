@@ -1,6 +1,4 @@
-const networkId = NEAR_NETWORK ?? 'mainnet'
-
-const networkConfigs = {
+export const networkConfigs = {
   mainnet: {
     networkId: 'mainnet',
     nodeUrl: 'https://mainnet.near.dapplets.org',
@@ -19,4 +17,4 @@ const networkConfigs = {
   },
 }
 
-export const networkConfig = networkConfigs[networkId]
+export type NearNetworkId = 'testnet' | 'mainnet'

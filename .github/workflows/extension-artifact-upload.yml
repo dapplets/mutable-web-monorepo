@@ -1,4 +1,4 @@
-name: Artifact Upload Testnet
+name: Extension Artifact Upload
 on:
   pull_request:
     branches: [develop]
@@ -23,12 +23,12 @@ jobs:
           node-version: 18
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build extension for testnet
-        run: NEAR_NETWORK=testnet pnpm build
+      - name: Build extension
+        run: pnpm build:extension
       - name: Upload a Build Artifact
         id: upload
         uses: actions/upload-artifact@v3.1.2
         with:
-          name: mutable-web-extension-${{ github.head_ref }}-testnet
+          name: mutable-web-extension-${{ github.head_ref }}
           path: apps/extension/build/
           if-no-files-found: error

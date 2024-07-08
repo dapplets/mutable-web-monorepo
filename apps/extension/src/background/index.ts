@@ -2,10 +2,21 @@ import { SignInParams } from '@near-wallet-selector/core'
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
-import { networkConfig } from '../common/networks'
+import { NearNetworkId, networkConfigs } from '../common/networks'
 import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
+
+const getCurrentNetwork = async (): Promise<NearNetworkId> => {
+  return browser.storage.local.get('networkId').then(({ networkId }) => networkId)
+}
+
+const switchNetwork = async (networkId: NearNetworkId) => {
+  await browser.storage.local.set({ networkId })
+  browser.runtime.reload()
+}
+
+const networkConfigPromise = getCurrentNetwork().then((networkId) => networkConfigs[networkId])
 
 // Services
 
@@ -13,12 +24,14 @@ const tabStateService = new TabStateService()
 
 // NEAR wallet
 
-const near = new WalletImpl(networkConfig)
+const near = new WalletImpl(networkConfigPromise)
 
 const connectWallet = async (): Promise<void> => {
+  const { socialDbContract } = await networkConfigPromise
+
   const params: Partial<SignInParams> = {
     // ToDo: Another contract will be rejected by near-social-vm. It will sign out the user
-    contractId: networkConfig.socialDbContract,
+    contractId: socialDbContract,
     methodNames: [],
   }
   const accounts = await near.signIn(params)
@@ -62,6 +75,7 @@ export const bgFunctions = {
   popTabState: tabStateService.popForTab.bind(tabStateService),
   connectWallet,
   disconnectWallet,
+  getCurrentNetwork,
 }
 
 export type BgFunctions = typeof bgFunctions
@@ -85,7 +99,32 @@ const openNewMutationPopup = (tab: browser.Tabs.Tab) => {
 
 // Context menu updaters
 
-const updateMenuForDisconnectedState = (): void => {
+const updateNetworkMenu = async () => {
+  const networkId = await getCurrentNetwork()
+  const networkMenuId = browser.contextMenus.create({
+    title: 'Switch network',
+    id: 'network',
+    contexts: ['action'],
+  })
+  browser.contextMenus.create({
+    title: 'Mainnet',
+    parentId: networkMenuId,
+    id: 'mainnet',
+    contexts: ['action'],
+    checked: networkId === 'mainnet',
+    type: 'radio',
+  })
+  browser.contextMenus.create({
+    title: 'Testnet',
+    parentId: networkMenuId,
+    id: 'testnet',
+    contexts: ['action'],
+    checked: networkId === 'testnet',
+    type: 'radio',
+  })
+}
+
+const updateMenuForDisconnectedState = async () => {
   browser.contextMenus.removeAll()
   browser.contextMenus.create({
     title: 'Connect NEAR wallet',
@@ -97,25 +136,27 @@ const updateMenuForDisconnectedState = (): void => {
     id: 'mutate',
     contexts: ['action'],
   })
+
+  await updateNetworkMenu()
 }
 
-const updateMenuForConnectedState = (accountName: string): void => {
+const updateMenuForConnectedState = async (accountName: string) => {
   browser.contextMenus.removeAll()
-  const parentContextMenuId = browser.contextMenus.create({
+  const walletMenuId = browser.contextMenus.create({
     title: accountName,
     id: 'wallet',
     contexts: ['action'],
   })
   browser.contextMenus.create({
     title: 'Copy address',
-    parentId: parentContextMenuId,
+    parentId: walletMenuId,
     id: 'copy',
     contexts: ['action'],
     enabled: false,
   })
   browser.contextMenus.create({
     title: 'Disconnect NEAR wallet',
-    parentId: parentContextMenuId,
+    parentId: walletMenuId,
     id: 'disconnect',
     contexts: ['action'],
   })
@@ -124,14 +165,19 @@ const updateMenuForConnectedState = (accountName: string): void => {
     id: 'mutate',
     contexts: ['action'],
   })
+
+  await updateNetworkMenu()
 }
 
 // Set context menu
 
 const setActionMenu = async (): Promise<void> => {
   const accounts = await near.getAccounts()
-  if (accounts.length) updateMenuForConnectedState(accounts[0].accountId)
-  else updateMenuForDisconnectedState()
+  if (accounts.length) {
+    await updateMenuForConnectedState(accounts[0].accountId)
+  } else {
+    await updateMenuForDisconnectedState()
+  }
 }
 
 setActionMenu()
@@ -184,6 +230,12 @@ function handleContextMenuClick(
         return openNewMutationPopup(tab)
       }
       break
+
+    case 'testnet':
+      return switchNetwork('testnet')
+
+    case 'mainnet':
+      return switchNetwork('mainnet')
 
     default:
       console.log('There is no such a menu command')

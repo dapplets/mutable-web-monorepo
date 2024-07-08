@@ -8,6 +8,7 @@ import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
+import { NearNetworkId } from '../../common/networks'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -146,7 +147,7 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
-  const { mutations, allApps, selectedMutation } = useMutableWeb()
+  const { mutations, allApps, selectedMutation, config } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
@@ -203,7 +204,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   return (
     <>
-      <MutableOverlayContainer notchRef={notchRef} />
+      <MutableOverlayContainer notchRef={notchRef} networkId={config.networkId as NearNetworkId} />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal

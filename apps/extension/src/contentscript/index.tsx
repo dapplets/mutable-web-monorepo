@@ -5,30 +5,35 @@ import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
-import { networkConfig } from '../common/networks'
+import { NearNetworkId, networkConfigs } from '../common/networks'
 import Background from './background'
 import { ExtensionStorage } from './extension-storage'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
 import { setupWallet } from './wallet'
 
 const eventEmitter = new NEventEmitter()
+const networkIdPromise = Background.getCurrentNetwork()
 
 // The wallet selector looks like an unnecessary abstraction layer over the background wallet
 // but we have to use it because near-social-vm uses not only a wallet object, but also a selector state
 // object and its Observable for event subscription
-const selectorPromise = setupWalletSelector({
-  network: networkConfig.networkId as NetworkId,
-  // The storage is faked because it's not necessary. The selected wallet ID is hardcoded below
-  storage: new ExtensionStorage('wallet-selector'),
-  modules: [setupWallet({ eventEmitter })],
-}).then((selector) => {
-  // Use background wallet by default
-  const wallet = selector.wallet
-  selector.wallet = () => wallet('background')
-  return selector
-})
+const selectorPromise = networkIdPromise.then((networkId) =>
+  setupWalletSelector({
+    network: networkId,
+    // The storage is faked because it's not necessary. The selected wallet ID is hardcoded below
+    storage: new ExtensionStorage(`wallet-selector:${networkId}`),
+    modules: [setupWallet({ eventEmitter })],
+  }).then((selector) => {
+    // Use background wallet by default
+    const wallet = selector.wallet
+    selector.wallet = () => wallet('background')
+    return selector
+  })
+)
 
-const App: FC = () => {
+const App: FC<{ networkId: NearNetworkId }> = ({ networkId }) => {
+  const networkConfig = networkConfigs[networkId]
+
   const { initNear } = useInitNear()
 
   useEffect(() => {
@@ -51,9 +56,10 @@ const App: FC = () => {
 }
 
 async function main() {
+  const networkId = await networkIdPromise
   // Execute useInitNear hook before start the engine
   // It's necessary for widgets from near-social-vm
-  createRoot(document.createDocumentFragment()).render(<App />)
+  createRoot(document.createDocumentFragment()).render(<App networkId={networkId} />)
 
   const tabState = await Background.popTabState()
   const selector = await selectorPromise
@@ -62,7 +68,7 @@ async function main() {
 
   // ToDo: move to MutableWebContext
   const engineConfig: EngineConfig = {
-    networkId: networkConfig.networkId,
+    networkId,
     gatewayId: 'mutable-web-extension',
     selector,
     storage: new ExtensionStorage('mutableweb'),

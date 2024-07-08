@@ -2,6 +2,7 @@ import { AppWithSettings, useMutableWeb, useMutationApp } from '@mweb/engine'
 import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
 import React from 'react'
 import Background from '../background'
+import { NearNetworkId } from '../../common/networks'
 
 function AppSwitcherContainer({ app }: { app: AppWithSettings }) {
   const { enableApp, disableApp, isLoading } = useMutationApp(app.id)
@@ -10,7 +11,13 @@ function AppSwitcherContainer({ app }: { app: AppWithSettings }) {
   )
 }
 
-function MutableOverlayContainer({ notchRef }: { notchRef: React.RefObject<HTMLDivElement> }) {
+function MutableOverlayContainer({
+  notchRef,
+  networkId,
+}: {
+  notchRef: React.RefObject<HTMLDivElement>
+  networkId: NearNetworkId
+}) {
   const { selectedMutation, mutationApps } = useMutableWeb()
   const trackingRefs = new Set<React.RefObject<HTMLDivElement>>()
   trackingRefs.add(notchRef)
@@ -18,7 +25,7 @@ function MutableOverlayContainer({ notchRef }: { notchRef: React.RefObject<HTMLD
     <MiniOverlay
       baseMutation={selectedMutation}
       mutationApps={mutationApps}
-      nearNetwork={NEAR_NETWORK}
+      nearNetwork={networkId}
       connectWallet={Background.connectWallet}
       disconnectWallet={Background.disconnectWallet}
       trackingRefs={trackingRefs}

@@ -37,7 +37,7 @@ export class WalletImpl {
     keyStore: WebExtensionKeyStorage
   }>
 
-  constructor(private _config: WalletParams) {
+  constructor(private _configPromise: Promise<WalletParams>) {
     this._statePromise = this._setupWalletState()
   }
 
@@ -66,6 +66,7 @@ export class WalletImpl {
 
   getAccounts = async (): Promise<Account[]> => {
     const _state = await this._statePromise
+    const { networkId } = await this._configPromise
 
     const accountId = _state.wallet.getAccountId()
     const account = _state.wallet.account()
@@ -74,10 +75,7 @@ export class WalletImpl {
       return []
     }
 
-    const publicKey = await account.connection.signer.getPublicKey(
-      account.accountId,
-      this._config.networkId
-    )
+    const publicKey = await account.connection.signer.getPublicKey(account.accountId, networkId)
     return [
       {
         accountId,
@@ -135,23 +133,21 @@ export class WalletImpl {
     return finalExecutionOutcomes
   }
 
-  buildImportAccountsUrl = (): string => {
-    return `${this._config.walletUrl}/batch-import`
-  }
-
   private async _setupWalletState() {
     const keyStore = new WebExtensionKeyStorage()
 
+    const { walletUrl, networkId, nodeUrl, helperUrl } = await this._configPromise
+
     const near = new Near({
-      walletUrl: this._config.walletUrl,
-      networkId: this._config.networkId,
-      nodeUrl: this._config.nodeUrl,
-      helperUrl: this._config.helperUrl,
+      walletUrl,
+      networkId,
+      nodeUrl,
+      helperUrl,
       headers: {},
       deps: { keyStore },
     })
 
-    const appKeyPrefix = this._config.networkId
+    const appKeyPrefix = networkId
     const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX
     const authData = JSON.parse(
       (await browser.storage.local.get(authDataKey))[authDataKey] ?? 'null'
@@ -164,32 +160,6 @@ export class WalletImpl {
     return {
       wallet,
       keyStore,
-    }
-  }
-}
-
-const MyNearWallet: WalletBehaviourFactory<BridgeWallet, { params: WalletParams }> = async ({
-  params,
-}) => {
-  return new WalletImpl(params)
-}
-
-export function setupWallet(params: WalletParams): WalletModuleFactory<BridgeWallet> {
-  return async () => {
-    return {
-      id: 'background',
-      type: 'bridge',
-      metadata: {
-        name: 'background',
-        description: 'background',
-        available: true,
-        iconUrl: '',
-        deprecated: false,
-        walletUrl: '',
-      },
-      init: (options) => {
-        return MyNearWallet({ ...options, params })
-      },
     }
   }
 }

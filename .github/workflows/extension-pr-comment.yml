@@ -1,10 +1,10 @@
-name: Comment Artifact URL on PR
+name: Extension Comment Artifact URL on PR
 on:
   workflow_run:
     types:
       - 'completed'
     workflows:
-      - 'Artifact Upload Mainnet'
+      - 'Extension Artifact Upload'
 jobs:
   comment-on-pr:
     if: github.event.workflow_run.conclusion == 'success'
@@ -70,7 +70,6 @@ jobs:
             | :-------- | :--
             | Commit    | ${{ env.HEAD_SHA }}
             | Logs      | ${{ env.JOB_PATH }}
-            | Network   | mainnet
             | Extension Build | ${{ env.SUITES_PATH }}/${{ env.PREVIOUS_SUITE_ID }}/artifacts/${{ env.ARTIFACT_ID }}
 
             [badge]: https://img.shields.io/badge/Build-Success!-3fb950?logo=github&style=for-the-badge

@@ -11,6 +11,8 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
+    "build:extension": "turbo run build --filter=@mweb/extension",
+    "build:gateway": "turbo run build --filter=@mweb/gateway",
     "dev": "turbo run dev",
     "clean": "turbo run clean",
     "autoclave": "rimraf libs/**/dist && rimraf libs/**/lib && rimraf libs/**/node_modules && rimraf libs/**/coverage && rimraf libs/**/.turbo && rimraf apps/**/dist && rimraf apps/**/lib && rimraf apps/**/node_modules && rimraf apps/**/coverage && rimraf apps/**/build && rimraf apps/**/.turbo && rm -rf node_modules",
@@ -31,5 +33,48 @@
     "@typescript-eslint/parser": "5.31.0",
     "eslint": "8.20.0",
     "rimraf": "3.0.2"
+  },
+  "release": {
+    "branches": [
+      "master",
+      {
+        "name": "develop",
+        "prerelease": "alpha"
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "pnpm-lock.yaml"
+          ]
+        }
+      ],
+      [
+        "@semantic-release/exec",
+        {
+          "publishCmd": "pnpm run build:extension:testnet && cd build && zip -r mweb-extension-testnet.zip *"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "assets": [
+            {
+              "path": "build/dapplet-extension.zip",
+              "label": "Browser Extension (zip)"
+            },
+            {
+              "path": "lib/index.min.js",
+              "label": "Pure JSLib for browser (js)"
+            }
+          ]
+        }
+      ]
+    ]
   }
 }
