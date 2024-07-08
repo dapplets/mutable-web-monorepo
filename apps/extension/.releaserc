@@ -1,0 +1,45 @@
+{
+  "tagFormat": "@mweb/extension@${version}",
+  "branches": [
+    "master",
+    {
+      "name": "develop",
+      "prerelease": "alpha"
+    }
+  ],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    [
+      "@semantic-release/npm",
+      {
+        "npmPublish": false
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": [
+          "package.json"
+        ]
+      }
+    ],
+    [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "pnpm run build && cd build && zip -r mutable-web-extension.zip *"
+      }
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "build/mutable-web-extension.zip",
+            "label": "Browser Extension (zip)"
+          }
+        ]
+      }
+    ]
+  ]
+}

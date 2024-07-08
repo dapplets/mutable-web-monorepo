@@ -9,7 +9,8 @@
     "prettify": "prettier --write src",
     "eslint": "eslint ./src --ext .ts --fix",
     "stylelint": "stylelint ./src/**/*.{css,scss,module.scss} --fix",
-    "test": "playwright test"
+    "test": "playwright test",
+    "release": "semantic-release"
   },
   "devDependencies": {
     "@playwright/test": "^1.42.1",
@@ -87,66 +88,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dapplets/mutable-web-extension.git"
+    "url": "git+https://github.com/dapplets/mutable-web-monorepo.git"
   },
   "author": "Dapplets Team <contact@dapplets.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dapplets/mutable-web-extension/issues"
+    "url": "https://github.com/dapplets/mutable-web-monorepo/issues"
   },
-  "homepage": "https://github.com/dapplets/mutable-web-extension#readme",
+  "homepage": "https://github.com/dapplets/mutable-web-monorepo#readme",
   "files": [
     "lib/**/*"
   ],
   "publishConfig": {
     "access": "public"
-  },
-  "release": {
-    "branches": [
-      "master",
-      {
-        "name": "testing",
-        "prerelease": "beta"
-      },
-      {
-        "name": "develop",
-        "prerelease": "alpha"
-      }
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/npm",
-      [
-        "@semantic-release/git",
-        {
-          "assets": [
-            "package.json",
-            "package-lock.json"
-          ]
-        }
-      ],
-      [
-        "@semantic-release/exec",
-        {
-          "publishCmd": "npm run build:extension && cd build && zip -r dapplet-extension.zip *"
-        }
-      ],
-      [
-        "@semantic-release/github",
-        {
-          "assets": [
-            {
-              "path": "build/dapplet-extension.zip",
-              "label": "Browser Extension (zip)"
-            },
-            {
-              "path": "lib/index.min.js",
-              "label": "Pure JSLib for browser (js)"
-            }
-          ]
-        }
-      ]
-    ]
   }
 }
