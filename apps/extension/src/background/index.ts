@@ -2,13 +2,15 @@ import { SignInParams } from '@near-wallet-selector/core'
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
-import { NearNetworkId, networkConfigs } from '../common/networks'
+import { DefaultNetworkId, NearNetworkId, networkConfigs } from '../common/networks'
 import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
 
 const getCurrentNetwork = async (): Promise<NearNetworkId> => {
-  return browser.storage.local.get('networkId').then(({ networkId }) => networkId)
+  return browser.storage.local
+    .get('networkId')
+    .then(({ networkId }) => networkId ?? DefaultNetworkId)
 }
 
 const switchNetwork = async (networkId: NearNetworkId) => {

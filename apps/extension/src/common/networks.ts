@@ -18,3 +18,5 @@ export const networkConfigs = {
 }
 
 export type NearNetworkId = 'testnet' | 'mainnet'
+
+export const DefaultNetworkId: NearNetworkId = 'mainnet' 
