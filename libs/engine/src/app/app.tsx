@@ -11,6 +11,7 @@ import { ModalProvider } from './contexts/modal-context'
 import { PickerProvider } from './contexts/picker-context'
 import { ContextHighlighter } from './components/context-highlighter'
 import { HighlighterProvider } from './contexts/highlighter-context'
+import { ShadowDomWrapper } from './components/shadow-dom-wrapper'
 
 export const App: FC<{
   config: EngineConfig
@@ -25,9 +26,11 @@ export const App: FC<{
             <PickerProvider>
               <HighlighterProvider>
                 <MutableWebProvider config={config} defaultMutationId={defaultMutationId}>
-                  <ContextPicker />
-                  <ContextManager />
-                  <ContextHighlighter />
+                  <ShadowDomWrapper className="mweb-layout">
+                    <ContextPicker />
+                    <ContextManager />
+                    <ContextHighlighter />
+                  </ShadowDomWrapper>
                   <Fragment>{children}</Fragment>
                 </MutableWebProvider>
               </HighlighterProvider>
