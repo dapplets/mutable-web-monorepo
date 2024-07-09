@@ -42,6 +42,7 @@ export const Highlighter = ({
     const wrapperStyle: React.CSSProperties = {
       transition: 'all .2s ease-in-out',
       opacity: styles.opacity,
+      boxSizing: 'border-box',
     }
 
     const borderWidth = (styles.borderWidth as number) ?? DEFAULT_BORDER_WIDTH
@@ -54,6 +55,7 @@ export const Highlighter = ({
       position: 'absolute',
       zIndex,
       borderTop: border,
+      boxSizing: 'border-box',
     }
 
     const bottomStyle: React.CSSProperties = {
@@ -64,6 +66,7 @@ export const Highlighter = ({
       position: 'absolute',
       zIndex,
       borderBottom: border,
+      boxSizing: 'border-box',
     }
 
     const leftStyle: React.CSSProperties = {
@@ -77,6 +80,7 @@ export const Highlighter = ({
       borderTop: border,
       borderBottom: border,
       borderRadius: `${borderRadius}px 0 0 ${borderRadius}px`,
+      boxSizing: 'border-box',
     }
 
     const rightStyle: React.CSSProperties = {
@@ -90,6 +94,7 @@ export const Highlighter = ({
       borderTop: border,
       borderBottom: border,
       borderRadius: `0 ${borderRadius}px ${borderRadius}px 0`,
+      boxSizing: 'border-box',
     }
 
     return (
@@ -107,6 +112,7 @@ export const Highlighter = ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    boxSizing: 'border-box',
     top: targetOffset.top - bodyOffset.top,
     left: targetOffset.left - bodyOffset.left,
     width: targetOffset.width,
