@@ -21,11 +21,12 @@
         "https://*/*"
       ],
       "exclude_globs": [
-        "https://mutable-near-social-testnet.netlify.app/*",
-        "https://mutable-near-social.netlify.app/*",
         "https://social.dapplets.org/*",
+        "https://social.testnet.dapplets.org/*",
+        "https://*.social.testnet.apps.dapplets.org/*",
         "http://localhost/*",
-        "http://127.0.0.1:3000/*"
+        "http://127.0.0.1:3000/*",
+        "https://augm.link/*"
       ],
       "js": [
         "custom-elements.min.js",
