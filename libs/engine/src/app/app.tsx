@@ -1,4 +1,4 @@
-import React, { ReactElement, Fragment, ReactNode } from 'react'
+import React, { ReactElement, Fragment, ReactNode, useState } from 'react'
 import { FC } from 'react'
 import { CoreProvider } from '@mweb/react'
 import { EngineConfig } from '../engine'
@@ -11,30 +11,39 @@ import { ModalProvider } from './contexts/modal-context'
 import { PickerProvider } from './contexts/picker-context'
 import { ContextHighlighter } from './components/context-highlighter'
 import { HighlighterProvider } from './contexts/highlighter-context'
+import { ModalContextState } from './contexts/modal-context/modal-context'
 
 export const App: FC<{
   config: EngineConfig
   defaultMutationId?: string | null
   children?: ReactNode
 }> = ({ config, defaultMutationId, children }) => {
+  // ToDo: hack to make modal context available outside of its provider
+  // children should be outside of ViewportProvider, but MutableWebProvider should be inside it
+  const [modalApi, setModalApi] = useState<ModalContextState>({ notify: () => console.log('notify') })
+
   return (
-    <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
-      <ModalProvider>
-        <CoreProvider>
-          <EngineProvider>
-            <PickerProvider>
-              <HighlighterProvider>
-                <MutableWebProvider config={config} defaultMutationId={defaultMutationId}>
+    <CoreProvider>
+      <EngineProvider>
+        <PickerProvider>
+          <HighlighterProvider>
+            <MutableWebProvider
+              config={config}
+              defaultMutationId={defaultMutationId}
+              modalApi={modalApi}
+            >
+              <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
+                <ModalProvider onModalApiReady={setModalApi}>
                   <ContextPicker />
                   <ContextManager />
                   <ContextHighlighter />
-                  <Fragment>{children}</Fragment>
-                </MutableWebProvider>
-              </HighlighterProvider>
-            </PickerProvider>
-          </EngineProvider>
-        </CoreProvider>
-      </ModalProvider>
-    </ViewportProvider>
+                </ModalProvider>
+              </ViewportProvider>
+              <Fragment>{children}</Fragment>
+            </MutableWebProvider>
+          </HighlighterProvider>
+        </PickerProvider>
+      </EngineProvider>
+    </CoreProvider>
   )
 }
