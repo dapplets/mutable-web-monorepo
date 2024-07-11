@@ -52,6 +52,7 @@ module.exports = {
   entry: {
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
     contentscript: path.join(__dirname, 'src/contentscript/index.tsx'),
+    options: path.join(__dirname, 'src/options/index.tsx'),
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -133,6 +134,10 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         'resources',
+        {
+          from: 'src/options/index.html',
+          to: 'options.html'
+        },
         {
           from: 'manifest.json',
           to: 'manifest.json',

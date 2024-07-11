@@ -6,7 +6,7 @@ import React, { FC, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
 import { NearNetworkId, networkConfigs } from '../common/networks'
-import Background from './background'
+import Background from '../common/background'
 import { ExtensionStorage } from './extension-storage'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
 import { setupWallet } from './wallet'
@@ -57,6 +57,8 @@ const App: FC<{ networkId: NearNetworkId }> = ({ networkId }) => {
 
 async function main() {
   const networkId = await networkIdPromise
+  const devServerUrl = await Background.getDevServerUrl()
+
   // Execute useInitNear hook before start the engine
   // It's necessary for widgets from near-social-vm
   createRoot(document.createDocumentFragment()).render(<App networkId={networkId} />)
@@ -103,7 +105,11 @@ async function main() {
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(
-    <MutableWebProvider config={engineConfig} defaultMutationId={mutationIdToLoad}>
+    <MutableWebProvider
+      config={engineConfig}
+      defaultMutationId={mutationIdToLoad}
+      devServerUrl={devServerUrl}
+    >
       <ShadowDomWrapper stylesheetSrc={engineConfig.bosElementStyleSrc}>
         <MultitablePanel eventEmitter={eventEmitter} />
       </ShadowDomWrapper>

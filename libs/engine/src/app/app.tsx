@@ -16,15 +16,18 @@ import { ModalContextState } from './contexts/modal-context/modal-context'
 export const App: FC<{
   config: EngineConfig
   defaultMutationId?: string | null
+  devServerUrl?: string | null
   children?: ReactNode
-}> = ({ config, defaultMutationId, children }) => {
+}> = ({ config, defaultMutationId, devServerUrl, children }) => {
   // ToDo: hack to make modal context available outside of its provider
   // children should be outside of ViewportProvider, but MutableWebProvider should be inside it
-  const [modalApi, setModalApi] = useState<ModalContextState>({ notify: () => console.log('notify') })
+  const [modalApi, setModalApi] = useState<ModalContextState>({
+    notify: () => console.log('notify'),
+  })
 
   return (
     <CoreProvider>
-      <EngineProvider>
+      <EngineProvider devServerUrl={devServerUrl}>
         <PickerProvider>
           <HighlighterProvider>
             <MutableWebProvider
