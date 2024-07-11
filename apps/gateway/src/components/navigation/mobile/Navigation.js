@@ -1,12 +1,12 @@
-import React from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { MobileMenuButton } from "./MobileMenuButton";
-import { NearSocialLogo } from "../../icons/NearSocialLogo";
-import { NotificationWidget } from "../NotificationWidget";
-import { SignInButton } from "../SignInButton";
-import { StarButton } from "../StarButton";
-import { MutationDropdown } from "../desktop/MutationDropdown";
+import React from 'react'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import { MobileMenuButton } from './MobileMenuButton'
+import { NearSocialLogo } from '../../icons/NearSocialLogo'
+import { NotificationWidget } from '../NotificationWidget'
+import { SignInButton } from '../SignInButton'
+import { StarButton } from '../StarButton'
+import { MutationDropdown } from '../desktop/MutationDropdown'
 
 const StyledNavigation = styled.div`
   position: sticky;
@@ -15,7 +15,7 @@ const StyledNavigation = styled.div`
   right: 0;
   width: 100%;
   background-color: var(--slate-dark-1);
-  z-index: 1000;
+  z-index: 5000;
   padding: 16px 24px;
   display: flex;
   align-items: center;
@@ -52,16 +52,13 @@ const StyledNavigation = styled.div`
     border: none;
     padding-right: 0;
   }
-`;
+`
 
 export function Navigation(props) {
   return (
     <StyledNavigation>
       <div className="left-controls">
-        <MobileMenuButton
-          onClick={props.onClickShowMenu}
-          currentPage={props.currentPage}
-        />
+        <MobileMenuButton onClick={props.onClickShowMenu} currentPage={props.currentPage} />
         <div className="mutable-section">
           <MutationDropdown listPosition="left" />
         </div>
@@ -70,7 +67,7 @@ export function Navigation(props) {
         to="/"
         className="logo-link"
         onClick={() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          window.scrollTo({ top: 0, behavior: 'smooth' })
         }}
       >
         <NearSocialLogo />
@@ -78,13 +75,11 @@ export function Navigation(props) {
       {props.signedIn ? (
         <div className="d-flex">
           <StarButton {...props} />
-          <NotificationWidget
-            notificationButtonSrc={props.widgets.notificationButton}
-          />
+          <NotificationWidget notificationButtonSrc={props.widgets.notificationButton} />
         </div>
       ) : (
         <SignInButton onSignIn={() => props.requestSignIn()} />
       )}
     </StyledNavigation>
-  );
+  )
 }
