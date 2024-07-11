@@ -68,6 +68,15 @@ const disconnectWallet = async (): Promise<void> => {
   updateMenuForDisconnectedState()
 }
 
+const getDevServerUrl = async (): Promise<string | null> => {
+  const { devServerUrl } = await browser.storage.local.get('devServerUrl')
+  return devServerUrl ? devServerUrl : null
+}
+
+const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
+  await browser.storage.local.set({ devServerUrl })
+}
+
 export const bgFunctions = {
   near_signIn: near.signIn.bind(near),
   near_signOut: near.signOut.bind(near),
@@ -78,6 +87,8 @@ export const bgFunctions = {
   connectWallet,
   disconnectWallet,
   getCurrentNetwork,
+  getDevServerUrl,
+  setDevServerUrl,
 }
 
 export type BgFunctions = typeof bgFunctions

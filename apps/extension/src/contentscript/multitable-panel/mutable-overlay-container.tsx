@@ -1,7 +1,7 @@
 import { AppWithSettings, useMutableWeb, useMutationApp } from '@mweb/engine'
 import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
 import React from 'react'
-import Background from '../background'
+import Background from '../../common/background'
 import { NearNetworkId } from '../../common/networks'
 
 function AppSwitcherContainer({ app }: { app: AppWithSettings }) {
