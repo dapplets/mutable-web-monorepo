@@ -5,6 +5,7 @@ import stringify from 'json-stringify-deterministic'
 const DevModeUpdateInterval = 1500
 
 export const useDevMode = (devServerUrl?: string | null) => {
+  const [isLoading, setIsLoading] = useState(!!devServerUrl)
   const [redirectMap, setRedirectMap] = useState<BosRedirectMap | null>(null)
 
   useEffect(() => {
@@ -23,6 +24,8 @@ export const useDevMode = (devServerUrl?: string | null) => {
       setRedirectMap((prev) =>
         stringify(prev) !== stringify(newRedirectMap) ? newRedirectMap : prev
       )
+
+      setIsLoading(false)
     }, DevModeUpdateInterval)
 
     return () => {
@@ -33,5 +36,6 @@ export const useDevMode = (devServerUrl?: string | null) => {
 
   return {
     redirectMap,
+    isLoading,
   }
 }

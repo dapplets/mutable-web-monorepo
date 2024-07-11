@@ -10,13 +10,14 @@ type Props = {
 
 const EngineProvider: FC<Props> = ({ children, devServerUrl }) => {
   const { portals, addPortal, removePortal } = usePortals()
-  const { redirectMap } = useDevMode(devServerUrl)
+  const { redirectMap, isLoading: isDevServerLoading } = useDevMode(devServerUrl)
 
   const state: EngineContextState = {
     portals,
     addPortal,
     removePortal,
     redirectMap,
+    isDevServerLoading,
   }
 
   return <EngineContext.Provider value={state}>{children}</EngineContext.Provider>
