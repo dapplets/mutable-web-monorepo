@@ -1,15 +1,19 @@
 import { useCallback, useState } from 'react'
-import { InjectableTarget } from './engine-context';
+import { InjectableTarget } from './engine-context'
 
 export const usePortals = () => {
   const [portals, setPortals] = useState(
-    new Map<string, { component: React.FC<unknown>; target: InjectableTarget }>()
+    new Map<
+      string,
+      { component: React.FC<unknown>; target: InjectableTarget; ifNoTarget?: () => void }
+    >()
   )
 
   const addPortal = useCallback(
-    <T>(key: string, target: InjectableTarget, component: React.FC<T>) => {
+    <T>(key: string, target: InjectableTarget, component: React.FC<T>, ifNoTarget?: () => void) => {
       setPortals(
-        (prev) => new Map(prev.set(key, { component: component as React.FC<unknown>, target }))
+        (prev) =>
+          new Map(prev.set(key, { component: component as React.FC<unknown>, target, ifNoTarget }))
       )
     },
     []

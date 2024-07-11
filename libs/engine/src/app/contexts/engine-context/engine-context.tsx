@@ -7,8 +7,16 @@ export type InjectableTarget = Target & {
 }
 
 export type EngineContextState = {
-  portals: Map<string, { component: React.FC<unknown>; target: InjectableTarget }>
-  addPortal: <T>(key: string, target: InjectableTarget, cmp: React.FC<T>) => void
+  portals: Map<
+    string,
+    { component: React.FC<unknown>; target: InjectableTarget; ifNoTarget?: () => void }
+  >
+  addPortal: <T>(
+    key: string,
+    target: InjectableTarget,
+    cmp: React.FC<T>,
+    ifNoTarget?: () => void
+  ) => void
   removePortal: <T>(key: string) => void
   redirectMap: BosRedirectMap | null
   enableDevMode: () => void

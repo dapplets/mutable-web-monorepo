@@ -7,8 +7,15 @@ export const usePortalFilter = (context: IContextNode, insPointName?: string) =>
   const { portals } = useEngine()
 
   const components = useMemo(() => {
+    const portalsEntries = Array.from(portals.entries())
+    portalsEntries
+      .filter(
+        ([, { target }]) =>
+          !TargetService.isTargetMet(target, context) || target.injectTo === insPointName
+      )
+      .forEach(([, { ifNoTarget }]) => ifNoTarget?.())
     // ToDo: improve readability
-    return Array.from(portals.entries())
+    return portalsEntries
       .filter(
         ([, { target }]) =>
           TargetService.isTargetMet(target, context) && target.injectTo === insPointName
