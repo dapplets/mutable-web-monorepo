@@ -9,7 +9,7 @@ export const networkConfigs = {
   },
   testnet: {
     networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
+    nodeUrl: 'https://testnet.near.dapplets.org',
     walletUrl: 'https://testnet.mynearwallet.com',
     helperUrl: 'https://helper.testnet.near.org',
     explorerUrl: 'https://testnet.nearblocks.io',

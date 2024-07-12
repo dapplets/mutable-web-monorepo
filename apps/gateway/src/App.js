@@ -53,7 +53,7 @@ const getNetworkPreset = (networkId) => {
     case "testnet":
       return {
         networkId,
-        nodeUrl: "https://rpc.testnet.near.org",
+        nodeUrl: "https://testnet.near.dapplets.org",
         helperUrl: "https://helper.testnet.near.org",
         explorerUrl: "https://testnet.nearblocks.io",
         indexerUrl: "https://testnet-api.kitwallet.app",
@@ -94,7 +94,7 @@ function App(props) {
         ? "https://rpc.fastnear.com"
         : NetworkId === "mainnet"
         ? "https://mainnet.near.dapplets.org"
-        : "https://rpc.testnet.near.org");
+        : "https://testnet.near.dapplets.org");
     if (injectedConfig?.skipConfirmations) {
       features.commitModalBypass = {
         bypassAll: true,
