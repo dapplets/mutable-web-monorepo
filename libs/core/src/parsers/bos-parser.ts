@@ -35,7 +35,7 @@ export class BosParser implements IParser {
         props: {
           id: 'root',
         },
-        children: ['post'], // ToDo:
+        children: Object.keys(this.config.contexts), // ToDo:
       }
     }
   }
