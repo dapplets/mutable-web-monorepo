@@ -112,7 +112,7 @@ const InsPointHandler: FC<{
   onDisableEditMode,
   onAttachContextRef,
 }) => {
-  const { redirectMap } = useEngine()
+  const { redirectMap, isDevServerLoading } = useEngine()
   const { config } = useMutableWeb()
   const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
   const { notify } = useModal()
@@ -164,6 +164,11 @@ const InsPointHandler: FC<{
     attachInsPointRef,
 
     notify,
+  }
+
+  // prevents blinking
+  if (isDevServerLoading) {
+    return null
   }
 
   const layoutManagerId = bosLayoutManager

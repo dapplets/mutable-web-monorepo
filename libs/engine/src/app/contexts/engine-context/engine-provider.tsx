@@ -4,27 +4,20 @@ import { usePortals } from './use-portals'
 import { useDevMode } from './use-dev-mode'
 
 type Props = {
+  devServerUrl?: string | null
   children?: ReactElement
 }
 
-const EngineProvider: FC<Props> = ({ children }) => {
+const EngineProvider: FC<Props> = ({ children, devServerUrl }) => {
   const { portals, addPortal, removePortal } = usePortals()
-  const { redirectMap, enableDevMode, disableDevMode } = useDevMode()
-
-  useEffect(() => {
-    console.log('[MutableWeb] Dev mode:', {
-      enableDevMode,
-      disableDevMode,
-    })
-  }, [enableDevMode, disableDevMode])
+  const { redirectMap, isLoading: isDevServerLoading } = useDevMode(devServerUrl)
 
   const state: EngineContextState = {
     portals,
     addPortal,
     removePortal,
     redirectMap,
-    enableDevMode,
-    disableDevMode,
+    isDevServerLoading,
   }
 
   return <EngineContext.Provider value={state}>{children}</EngineContext.Provider>

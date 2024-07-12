@@ -46,8 +46,6 @@ export const getNearConfig = (networkId: string): NearConfig => {
   return config
 }
 
-export const bosLoaderUrl = 'http://127.0.0.1:3030/'
-
 export const ViewportElementId = 'mweb-engine-viewport'
 
 export const ViewportInnerElementId = 'mweb-engine-viewport-inner'
