@@ -11,8 +11,7 @@ export type EngineContextState = {
   addPortal: <T>(key: string, target: InjectableTarget, cmp: React.FC<T>) => void
   removePortal: <T>(key: string) => void
   redirectMap: BosRedirectMap | null
-  enableDevMode: () => void
-  disableDevMode: () => void
+  isDevServerLoading: boolean
 }
 
 export const contextDefaultValues: EngineContextState = {
@@ -20,8 +19,7 @@ export const contextDefaultValues: EngineContextState = {
   addPortal: () => undefined,
   removePortal: () => undefined,
   redirectMap: null,
-  enableDevMode: () => undefined,
-  disableDevMode: () => undefined,
+  isDevServerLoading: false,
 }
 
 export const EngineContext = createContext<EngineContextState>(contextDefaultValues)

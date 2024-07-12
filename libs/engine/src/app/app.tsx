@@ -15,13 +15,14 @@ import { HighlighterProvider } from './contexts/highlighter-context'
 export const App: FC<{
   config: EngineConfig
   defaultMutationId?: string | null
+  devServerUrl?: string | null
   children?: ReactNode
-}> = ({ config, defaultMutationId, children }) => {
+}> = ({ config, defaultMutationId, devServerUrl, children }) => {
   return (
     <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
       <ModalProvider>
         <CoreProvider>
-          <EngineProvider>
+          <EngineProvider devServerUrl={devServerUrl}>
             <PickerProvider>
               <HighlighterProvider>
                 <MutableWebProvider config={config} defaultMutationId={defaultMutationId}>

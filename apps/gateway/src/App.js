@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "error-polyfill";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "@near-wallet-selector/modal-ui/styles.css";
@@ -35,6 +35,7 @@ import { isValidAttribute } from "dompurify";
 import MutableOverlayContainer from "./components/navigation/MutableOverlayContainer";
 import { useMatomoAnalytics } from "./hooks/useMatomoAnalytics";
 import { MutableWebProvider, customElements } from "@mweb/engine";
+import OptionsPage from "./pages/OptionsPage";
 
 export const refreshAllowanceObj = {};
 const documentationHref = "https://social.near-docs.io/";
@@ -206,6 +207,11 @@ function App(props) {
     );
   }, [account]);
 
+  const devServerUrl = useMemo(() => {
+    const url = localStorage.getItem("devServerUrl") 
+    return url ? url : null
+  }, [])
+
   // Mutable Web
   useMatomoAnalytics({
     matomoUrl: "https://mtmo.mooo.com",
@@ -237,13 +243,17 @@ function App(props) {
 
   return (
     <div className="App">
-      <MutableWebProvider config={engineConfig}>
+      <MutableWebProvider config={engineConfig} devServerUrl={devServerUrl}>
         <EthersProviderContext.Provider value={ethersProviderContext}>
           <Router basename={process.env.PUBLIC_URL}>
             <Switch>
               <Route path={"/signin"}>
                 <NavigationWrapper {...passProps} />
                 <SignInPage {...passProps} />
+              </Route>
+              <Route path={"/options"}>
+                <NavigationWrapper {...passProps} />
+                <OptionsPage {...passProps} />
               </Route>
               <Route path={"/embed/:widgetSrc*"}>
                 <EmbedPage {...passProps} />

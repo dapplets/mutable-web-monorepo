@@ -12,7 +12,7 @@ import {
   WalletModuleFactory,
 } from '@near-wallet-selector/core'
 import { EventEmitter as NEventEmitter } from 'events'
-import Background from '../background'
+import Background from '../../common/background'
 
 export interface BrowserWalletSignInParams extends SignInParams {
   successUrl?: string

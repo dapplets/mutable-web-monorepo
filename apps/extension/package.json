@@ -1,6 +1,6 @@
 {
   "name": "@mweb/extension",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.4",
   "description": "Bridge to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
@@ -81,7 +81,8 @@
     "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
     "react-singleton-hook": "^4.0.1",
-    "styled-components": "^5.3.6"
+    "styled-components": "^5.3.6",
+    "antd": "^5.18.3"
   },
   "directories": {
     "doc": "docs"

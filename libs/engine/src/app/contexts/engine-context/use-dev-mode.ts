@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BosRedirectMap, getRedirectMap } from '../../services/dev-server-service'
 import stringify from 'json-stringify-deterministic'
 
 const DevModeUpdateInterval = 1500
 
-export const useDevMode = () => {
+export const useDevMode = (devServerUrl?: string | null) => {
+  const [isLoading, setIsLoading] = useState(!!devServerUrl)
   const [redirectMap, setRedirectMap] = useState<BosRedirectMap | null>(null)
-  const [isDevMode, setIsDevMode] = useState(false)
 
   useEffect(() => {
-    if (!isDevMode) {
+    if (!devServerUrl) {
       setRedirectMap(null)
       return
     }
@@ -17,32 +17,25 @@ export const useDevMode = () => {
     let isMount = true
 
     const timer = setInterval(async () => {
-      const newRedirectMap = await getRedirectMap()
+      const newRedirectMap = await getRedirectMap(devServerUrl)
       if (!isMount) return
 
       // prevents rerendering
       setRedirectMap((prev) =>
         stringify(prev) !== stringify(newRedirectMap) ? newRedirectMap : prev
       )
+
+      setIsLoading(false)
     }, DevModeUpdateInterval)
 
     return () => {
       isMount = false
       clearInterval(timer)
     }
-  }, [isDevMode])
-
-  const enableDevMode = useCallback(() => {
-    setIsDevMode(true)
-  }, [])
-
-  const disableDevMode = useCallback(() => {
-    setIsDevMode(false)
-  }, [])
+  }, [devServerUrl])
 
   return {
     redirectMap,
-    enableDevMode,
-    disableDevMode,
+    isLoading,
   }
 }
