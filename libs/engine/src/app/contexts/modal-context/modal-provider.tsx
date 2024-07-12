@@ -1,13 +1,14 @@
-import React, { FC, ReactElement, useCallback, useRef } from 'react'
+import React, { FC, ReactNode, useCallback, useEffect, useRef } from 'react'
 import { ModalContext, ModalContextState, ModalProps, NotificationType } from './modal-context'
 import { Button, Space, notification } from 'antd'
 import { useViewport } from '../viewport-context'
 
 type Props = {
-  children?: ReactElement
+  children?: ReactNode
+  onModalApiReady: (modalApi: ModalContextState) => void
 }
 
-const ModalProvider: FC<Props> = ({ children }) => {
+const ModalProvider: FC<Props> = ({ children, onModalApiReady }) => {
   const { viewportRef } = useViewport()
   const counterRef = useRef(0)
   const [api, contextHolder] = notification.useNotification({
@@ -53,6 +54,10 @@ const ModalProvider: FC<Props> = ({ children }) => {
     },
     [api]
   )
+
+  useEffect(() => {
+    onModalApiReady({ notify })
+  }, [notify, onModalApiReady]);
 
   const state: ModalContextState = {
     notify,

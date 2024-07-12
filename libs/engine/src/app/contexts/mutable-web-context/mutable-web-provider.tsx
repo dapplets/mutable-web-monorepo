@@ -17,13 +17,14 @@ import { useMutations } from './use-mutations'
 import { useApplications } from './use-applications'
 import { TargetService } from '../../services/target/target.service'
 import { AdapterType, ParserConfig } from '../../services/parser-config/parser-config.entity'
-import { useModal } from '../modal-context'
 import { mutationDisabled, mutationSwitched } from './notifications'
 import { getNearConfig } from '../../../constants'
+import { ModalContextState } from '../modal-context/modal-context'
 
 type Props = {
   config: EngineConfig
   defaultMutationId?: string | null
+  modalApi: ModalContextState
   children: ReactNode
 }
 
@@ -39,10 +40,9 @@ const MWebParserConfig: ParserConfig = {
   ],
 }
 
-const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) => {
+const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, children }) => {
   const { tree, attachParserConfig, detachParserConfig, updateRootContext } = useCore()
   const engineRef = useRef<Engine | null>(null)
-  const { notify } = useModal()
 
   if (!engineRef.current) {
     engineRef.current = new Engine(config)
@@ -87,7 +87,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
         const hasMutation = mutations.some((mutation) => mutation.id === defaultMutationId)
 
         if (hasMutation) {
-          notify(
+          modalApi.notify(
             mutationSwitched({
               fromMutationId: favoriteMutationId,
               toMutationId: defaultMutationId,
@@ -95,7 +95,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
             })
           )
         } else {
-          notify(
+          modalApi.notify(
             mutationDisabled({
               onBack: () => switchMutation(favoriteMutationId),
             })
@@ -105,7 +105,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, children }) 
 
       switchMutation(defaultMutationId ?? favoriteMutationId)
     })
-  }, [getMutationToBeLoaded, defaultMutationId, mutations])
+  }, [getMutationToBeLoaded, defaultMutationId, mutations, modalApi])
 
   const {
     mutationApps,

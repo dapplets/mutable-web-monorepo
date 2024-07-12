@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect, useRef } from 'react'
+import React, { FC, ReactElement, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { IContextNode } from '@mweb/core'
 import { InsertionType } from '@mweb/core'
@@ -15,40 +15,53 @@ export const ContextPortal: FC<{
     ? context.insPoints.find((ip) => ip.name === injectTo)
     : { element: context.element, insertionType: DefaultInsertionType }
 
-  const containerRef = useRef<HTMLElement | null>(null)
+  if (!target?.element) return null
+  if (!target?.insertionType) return null
+
+  return (
+    <InsPointPortal element={target.element} insertionType={target.insertionType}>
+      {children}
+    </InsPointPortal>
+  )
+}
+
+const InsPointPortal: FC<{
+  children: ReactElement
+  element: HTMLElement
+  insertionType: InsertionType
+}> = ({ children, element, insertionType }) => {
+  const [container, setContainer] = useState<HTMLElement | null>(null)
 
   useEffect(() => {
-    if (!target || !target.element) return
-    if (!containerRef.current) {
-      containerRef.current = document.createElement('div')
-      containerRef.current.className = 'mweb-context-portal'
-    }
-
-    const { element, insertionType } = target
+    const _container = document.createElement('div')
+    _container.className = 'mweb-context-portal'
 
     switch (insertionType) {
       case InsertionType.Before:
-        element.before(containerRef.current)
+        element.before(_container)
         break
       case InsertionType.After:
-        element.after(containerRef.current)
+        element.after(_container)
         break
       case InsertionType.Begin:
-        element.insertBefore(containerRef.current, element.firstChild)
+        element.insertBefore(_container, element.firstChild)
         break
       case InsertionType.End:
-        element.appendChild(containerRef.current)
+        element.appendChild(_container)
         break
       default:
         break
     }
 
+    setContainer(_container)
+
     return () => {
-      containerRef.current?.remove()
+      _container.remove()
+      setContainer(null)
     }
-  }, [target])
+  }, [])
 
-  if (!target || !target.element || !containerRef.current) return null
+  if (!container) return null
 
-  return createPortal(children, containerRef.current)
+  return createPortal(children, container)
 }
