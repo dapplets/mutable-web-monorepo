@@ -28,7 +28,7 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
   },
   testnet: {
     networkId: 'testnet',
-    nodeUrl: 'https://rpc.testnet.near.org',
+    nodeUrl: 'https://testnet.near.dapplets.org',
     contractName: 'social.dapplets.testnet',
     walletUrl: 'https://testnet.mynearwallet.com',
     defaultMutationId: 'bos.dapplets.testnet/mutation/Sandbox',
