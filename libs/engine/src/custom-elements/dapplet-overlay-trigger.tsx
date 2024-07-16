@@ -4,30 +4,34 @@ import { OverlayTrigger as RbOverlayTrigger } from 'react-bootstrap'
 import { StyleSheetManager } from 'styled-components'
 import { useViewport } from '../app/contexts/viewport-context'
 
+
+const Overlay: React.FC<{ overlay: React.ReactElement }> = forwardRef(
+  ({ overlay, ...otherProps }, ref) => {
+    const stylesRef = useRef<HTMLDivElement | null>(null)
+
+    return (
+      <div ref={stylesRef} className="mweb-overlay-trigger">
+        {stylesRef.current ? (
+          <StyleSheetManager target={stylesRef.current}>
+            {cloneElement(overlay, { ...otherProps, ref })}
+          </StyleSheetManager>
+        ) : null}
+      </div>
+    )
+  }
+)
+
 export const _DappletOverlayTrigger = ({ children, ...attributes }: any) => {
   const { viewportRef } = useViewport()
 
   if (!viewportRef.current) return null
 
-  const Overlay = React.useCallback(
-    forwardRef((props, ref) => {
-      const stylesRef = useRef<HTMLDivElement | null>(null)
-
-      return (
-        <div ref={stylesRef}>
-          {stylesRef.current ? (
-            <StyleSheetManager target={stylesRef.current}>
-              {cloneElement(attributes.overlay, { ...props, ref })}
-            </StyleSheetManager>
-          ) : null}
-        </div>
-      )
-    }),
-    [attributes.overlay]
-  )
-
   return (
-    <RbOverlayTrigger {...attributes} container={viewportRef.current} overlay={<Overlay />}>
+    <RbOverlayTrigger
+      {...attributes}
+      container={viewportRef.current}
+      overlay={<Overlay overlay={attributes.overlay} />}
+    >
       {children}
     </RbOverlayTrigger>
   )

@@ -1,7 +1,7 @@
 import React, { useEffect, useImperativeHandle, useRef } from 'react'
 import { Tooltip as RbTooltip } from 'react-bootstrap'
 
-const ShowDelay = 300;
+const ShowDelay = 300
 
 export const DappletTooltip = React.forwardRef(({ children, ...attributes }: any, ref) => {
   const innerRef = useRef<HTMLDivElement>(null)
