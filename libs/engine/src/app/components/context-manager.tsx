@@ -23,7 +23,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   context,
   insPoints,
 }) => {
-  const { userLinks, createUserLink, deleteUserLink } = useUserLinks(context)
+  const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
 
   const [isEditMode, setIsEditMode] = useState(false)
@@ -55,7 +55,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
             bosLayoutManager={ip.bosLayoutManager}
             context={context}
             transferableContext={transferableContext}
-            allUserLinks={userLinks}
+            allUserLinks={links}
             apps={apps}
             isEditMode={isEditMode}
             onCreateUserLink={createUserLink}
@@ -71,7 +71,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         <InsPointHandler
           context={context}
           transferableContext={transferableContext}
-          allUserLinks={userLinks}
+          allUserLinks={links}
           apps={apps}
           isEditMode={isEditMode}
           onCreateUserLink={createUserLink}
@@ -113,7 +113,7 @@ const InsPointHandler: FC<{
   onAttachContextRef,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
-  const { config } = useMutableWeb()
+  const { config, engine } = useMutableWeb()
   const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
   const { notify } = useModal()
 
@@ -139,6 +139,7 @@ const InsPointHandler: FC<{
     widgets: allUserLinks.map((link) => ({
       linkId: link.id,
       linkAuthorId: link.authorId,
+      static: link.static,
       src: link.bosWidgetId,
       props: {
         context: transferableContext,

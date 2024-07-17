@@ -37,6 +37,23 @@ export class UserLinkSerivce {
     return appLinksNested.flat(2)
   }
 
+  getStaticLinksForApp(appsToCheck: AppMetadata[], context: IContextNode): BosUserLink[] {
+    return appsToCheck.flatMap((app) =>
+      app.targets
+        .filter((target) => target.static)
+        .filter((target) => TargetService.isTargetMet(target, context))
+        .map((target, i) => ({
+          id: `${app.id}/${i}`, // ToDo: id
+          appId: app.id,
+          namespace: target.namespace,
+          insertionPoint: target.injectTo,
+          bosWidgetId: target.componentId,
+          authorId: app.authorId,
+          static: true,
+        }))
+    )
+  }
+
   async createLink(
     mutationId: MutationId,
     appGlobalId: AppId,
@@ -83,6 +100,7 @@ export class UserLinkSerivce {
       authorId: indexedLink.authorId,
       bosWidgetId: target.componentId,
       insertionPoint: target.injectTo,
+      static: false,
     }
   }
 
@@ -110,6 +128,7 @@ export class UserLinkSerivce {
       namespace: target.namespace,
       bosWidgetId: target.componentId, // ToDo: unify
       insertionPoint: target.injectTo, // ToDo: unify
+      static: false,
     }))
   }
 

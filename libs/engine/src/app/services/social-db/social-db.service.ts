@@ -121,10 +121,14 @@ export class SocialDbService {
   }
 
   async set(originalData: Value): Promise<void> {
+    if (SocialDbService._isObjectEmpty(originalData)) {
+      throw new Error('No data to save')
+    }
+
     const accountIds = Object.keys(originalData)
 
     if (accountIds.length !== 1) {
-      throw new Error('Only one account can be updated at a time')
+      throw new Error(`Only one account can be updated at a time. Got ${accountIds.length}`)
     }
 
     const [accountId] = accountIds
@@ -202,6 +206,10 @@ export class SocialDbService {
         return [key, nullVal]
       })
     )
+  }
+
+  static _isObjectEmpty(obj: any): boolean {
+    return Object.keys(obj).length === 0
   }
 
   public static buildNestedData(keys: string[], data: any): any {

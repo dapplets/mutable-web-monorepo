@@ -3,6 +3,7 @@ import { Target } from '../target/target.entity'
 export type AppId = string
 
 export type AppMetadataTarget = Target & {
+  static?: boolean
   componentId: string
   injectTo: string
   injectOnce?: boolean

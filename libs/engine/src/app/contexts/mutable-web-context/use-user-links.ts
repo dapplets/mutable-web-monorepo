@@ -1,14 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { IContextNode } from '@mweb/core'
 import { BosUserLink, UserLinkId } from '../../services/user-link/user-link.entity'
 import { useMutableWeb } from '.'
-import { MutationId } from '../../services/mutation/mutation.entity'
 import { AppId } from '../../services/application/application.entity'
 
 export const useUserLinks = (context: IContextNode) => {
   const { engine, selectedMutation, activeApps } = useMutableWeb()
   const [userLinks, setUserLinks] = useState<BosUserLink[]>([])
   const [error, setError] = useState<Error | null>(null)
+
+  const staticLinks = useMemo(() => {
+    if (!engine || !selectedMutation?.id) {
+      return []
+    } else {
+      return engine.userLinkService.getStaticLinksForApp(activeApps, context)
+    }
+  }, [engine, selectedMutation, activeApps, context])
 
   const fetchUserLinks = useCallback(async () => {
     if (!engine || !selectedMutation?.id) {
@@ -35,6 +42,8 @@ export const useUserLinks = (context: IContextNode) => {
   useEffect(() => {
     fetchUserLinks()
   }, [fetchUserLinks])
+
+  const links = useMemo(() => [...userLinks, ...staticLinks], [userLinks, staticLinks])
 
   const createUserLink = useCallback(
     async (appId: AppId) => {
@@ -69,5 +78,5 @@ export const useUserLinks = (context: IContextNode) => {
     [engine]
   )
 
-  return { userLinks, createUserLink, deleteUserLink, error }
+  return { links, createUserLink, deleteUserLink, error }
 }

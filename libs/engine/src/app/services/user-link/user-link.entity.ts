@@ -28,5 +28,6 @@ export type BosUserLink = {
   insertionPoint: string
   bosWidgetId: string
   authorId: string
+  static: boolean
   // ToDo: add props
 }
