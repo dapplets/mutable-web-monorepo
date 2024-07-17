@@ -44,6 +44,11 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
             justify-content: center;
             /* position: relative; */
             visibility: visible !important;
+
+            font-family: -apple-system, BlinkMacSystemFont, 
+              "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", 
+              "Fira Sans", "Droid Sans", "Helvetica Neue", 
+              sans-serif;
             }
         `
         const disableCssInheritanceStyle = document.createElement('style')

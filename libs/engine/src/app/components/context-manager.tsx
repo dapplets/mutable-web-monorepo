@@ -192,7 +192,11 @@ const InsPointHandler: FC<{
     config.layoutManagers.ear === layoutManagerId ? { position: 'relative' } : undefined
 
   return (
-    <ShadowDomWrapper className="mweb-layout-manager" style={shadowDomHostStyles}>
+    <ShadowDomWrapper
+      className="mweb-layout-manager"
+      style={shadowDomHostStyles}
+      stylesheetSrc={engine.config.bosElementStyleSrc}
+    >
       <Widget
         src={layoutManagerId ?? config.layoutManagers.horizontal}
         props={props}
