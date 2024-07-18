@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import styled from 'styled-components'
 import { useViewport } from '../app/contexts/viewport-context'
 import { ShadowDomWrapper } from '../app/components/shadow-dom-wrapper'
+import { useMutableWeb } from '../app/contexts/mutable-web-context'
 
 const ModalBackdrop = styled.div`
   background: #ffffff88;
@@ -25,12 +26,13 @@ export interface OverlayProps {
 }
 
 export const Overlay: React.FC<OverlayProps> = ({ children }) => {
+  const { engine } = useMutableWeb()
   const { viewportRef } = useViewport()
 
   if (!viewportRef.current) return null
 
   return createPortal(
-    <ShadowDomWrapper className="mweb-overlay">
+    <ShadowDomWrapper className="mweb-overlay" stylesheetSrc={engine.config.bosElementStyleSrc}>
       <ModalBackdrop>{children}</ModalBackdrop>
     </ShadowDomWrapper>,
     viewportRef.current
