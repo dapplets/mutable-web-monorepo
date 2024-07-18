@@ -14,6 +14,7 @@ import { TransferableContext, buildTransferableContext } from '../common/transfe
 import { useModal } from '../contexts/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
 import { BuiltInLayoutManagers } from '../../constants'
+import { TargetService } from '../services/target/target.service'
 
 export const ContextManager: FC = () => {
   return <ContextTree children={ContextHandler} />
@@ -132,10 +133,33 @@ const InsPointHandler: FC<{
   const props = {
     // ToDo: unify context forwarding
     context: transferableContext,
-    apps: apps.map((app) => ({
-      id: app.id,
-      metadata: app.metadata,
-    })),
+    apps: apps
+      .filter((app) => {
+        const suitableNonStaticTargets = app.targets.filter(
+          (target) => !target.static && TargetService.isTargetMet(target, context)
+        )
+
+        if (suitableNonStaticTargets.length === 0) {
+          return false
+        }
+
+        if (suitableNonStaticTargets.some((target) => !target.injectOnce)) {
+          return true
+        }
+
+        const injectedWidgets = allUserLinks.filter((link) => link.appId === app.id)
+
+        // ToDo: the similar logic is used in createLink
+        const isThereInjectedWidgets = suitableNonStaticTargets
+          .filter((target) => target.injectOnce)
+          .some((target) => injectedWidgets.some((link) => link.insertionPoint === target.injectTo))
+
+        return !isThereInjectedWidgets
+      })
+      .map((app) => ({
+        id: app.id,
+        metadata: app.metadata,
+      })),
     widgets: allUserLinks.map((link) => ({
       linkId: link.id,
       linkAuthorId: link.authorId,
