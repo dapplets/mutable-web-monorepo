@@ -15,6 +15,8 @@ import { useModal } from '../contexts/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
 import { BuiltInLayoutManagers } from '../../constants'
 import { TargetService } from '../services/target/target.service'
+import { LinkedDataByAccount, LinkIndexRules } from '../services/link-db/link-db.entity'
+import { memoize } from '../common/memoize'
 
 export const ContextManager: FC = () => {
   return <ContextTree children={ContextHandler} />
@@ -114,7 +116,7 @@ const InsPointHandler: FC<{
   onAttachContextRef,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
-  const { config, engine } = useMutableWeb()
+  const { config, engine, selectedMutation } = useMutableWeb()
   const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
   const { notify } = useModal()
 
@@ -129,6 +131,60 @@ const InsPointHandler: FC<{
     },
     [context, insPointName]
   )
+
+  // These handlers are memoized to prevent unnecessary rerenders
+  const handleGetLinkDataCurry = useCallback(
+    memoize(
+      (appId: AppId) =>
+        (ctx: TransferableContext, accountIds?: string[] | string, indexRules?: LinkIndexRules) => {
+          if (!selectedMutation) throw new Error('No selected mutation')
+          return engine.linkDbService.get(selectedMutation.id, appId, ctx, accountIds, indexRules)
+        }
+    ),
+    [engine, selectedMutation]
+  )
+
+  const handleSetLinkDataCurry = useCallback(
+    memoize(
+      (appId: AppId) =>
+        (
+          ctx: TransferableContext,
+          dataByAccount: LinkedDataByAccount,
+          indexRules: LinkIndexRules
+        ) => {
+          if (!selectedMutation) throw new Error('No selected mutation')
+          return engine.linkDbService.set(
+            selectedMutation.id,
+            appId,
+            ctx,
+            dataByAccount,
+            indexRules
+          )
+        }
+    ),
+    [engine, selectedMutation]
+  )
+
+  // prevents blinking
+  if (isDevServerLoading) {
+    return null
+  }
+
+  const layoutManagerId = bosLayoutManager
+    ? config.layoutManagers[bosLayoutManager as keyof BuiltInLayoutManagers] ?? bosLayoutManager
+    : config.layoutManagers.horizontal
+
+  // Don't render layout manager if there are no components
+  // It improves performance
+  if (
+    components.length === 0 &&
+    !allUserLinks.some((link) => link.insertionPoint === insPointName) &&
+    layoutManagerId !== config.layoutManagers.ear // ToDo: hardcode
+  ) {
+    return null
+  }
+
+  // ToDo: extract App specific links to the separate AppManager component
 
   const props = {
     // ToDo: unify context forwarding
@@ -172,6 +228,10 @@ const InsPointHandler: FC<{
           authorId: link.authorId,
         },
         notify,
+        linkDb: {
+          get: handleGetLinkDataCurry(link.appId),
+          set: handleSetLinkDataCurry(link.appId),
+        },
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -189,25 +249,6 @@ const InsPointHandler: FC<{
     attachInsPointRef,
 
     notify,
-  }
-
-  // prevents blinking
-  if (isDevServerLoading) {
-    return null
-  }
-
-  const layoutManagerId = bosLayoutManager
-    ? config.layoutManagers[bosLayoutManager as keyof BuiltInLayoutManagers] ?? bosLayoutManager
-    : config.layoutManagers.horizontal
-
-  // Don't render layout manager if there are no components
-  // It improves performance
-  if (
-    components.length === 0 &&
-    !allUserLinks.some((link) => link.insertionPoint === insPointName) &&
-    layoutManagerId !== config.layoutManagers.ear // ToDo: hardcode
-  ) {
-    return null
   }
 
   // ToDo: hardcode. The ear should be positioned relative to the contexts.

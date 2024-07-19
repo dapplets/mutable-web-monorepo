@@ -1,7 +1,7 @@
 import { IContextNode } from "@mweb/core"
 
 export interface TransferableContext {
-  namespace: string | null
+  namespace: string
   type: string
   id: string | null
   parsed: any

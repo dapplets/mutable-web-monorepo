@@ -139,7 +139,9 @@ export class SocialDbService {
     }
 
     if (accountId !== signedAccountId) {
-      throw new Error('Only the owner can update the account')
+      throw new Error(
+        `Only the owner can update the account. Got ${accountId}, expected ${signedAccountId}`
+      )
     }
 
     const accountStorage = await this._getAccountStorage(signedAccountId)

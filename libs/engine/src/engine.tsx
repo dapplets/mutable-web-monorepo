@@ -13,6 +13,7 @@ import { MutationService } from './app/services/mutation/mutation.service'
 import { ApplicationService } from './app/services/application/application.service'
 import { UserLinkSerivce } from './app/services/user-link/user-link.service'
 import { ParserConfigService } from './app/services/parser-config/parser-config.service'
+import { LinkDbService } from './app/services/link-db/link-db.service'
 
 export type EngineConfig = {
   networkId: string
@@ -26,6 +27,7 @@ export type EngineConfig = {
 export class Engine {
   #selector: WalletSelector
 
+  linkDbService: LinkDbService
   mutationService: MutationService
   applicationService: ApplicationService
   userLinkService: UserLinkSerivce
@@ -38,6 +40,7 @@ export class Engine {
 
     this.#selector = this.config.selector
     const nearConfig = getNearConfig(this.config.networkId)
+
     const localDb = new LocalDbService(this.config.storage)
     const nearSigner = new NearSigner(this.#selector, localDb, nearConfig)
     const socialDb = new SocialDbService(nearSigner, nearConfig.contractName)
@@ -45,6 +48,8 @@ export class Engine {
     const applicationRepository = new ApplicationRepository(socialDb, localDb)
     const userLinkRepository = new UserLinkRepository(socialDb, nearSigner)
     const parserConfigRepository = new ParserConfigRepository(socialDb)
+
+    this.linkDbService = new LinkDbService(socialDb)
     this.mutationService = new MutationService(mutationRepository, nearConfig)
     this.applicationService = new ApplicationService(applicationRepository)
     this.userLinkService = new UserLinkSerivce(userLinkRepository, this.applicationService)
