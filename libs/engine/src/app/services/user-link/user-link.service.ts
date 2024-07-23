@@ -4,7 +4,7 @@ import { ApplicationService } from '../application/application.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { ScalarType, TargetCondition } from '../target/target.entity'
 import { TargetService } from '../target/target.service'
-import { BosUserLink, LinkIndexObject, UserLinkId } from './user-link.entity'
+import { BosUserLink, ControllerLink, LinkIndexObject, UserLinkId } from './user-link.entity'
 import { UserLinkRepository } from './user-link.repository'
 
 export class UserLinkSerivce {
@@ -37,7 +37,7 @@ export class UserLinkSerivce {
     return appLinksNested.flat(2)
   }
 
-  getStaticLinksForApp(appsToCheck: AppMetadata[], context: IContextNode): BosUserLink[] {
+  getStaticLinksForApps(appsToCheck: AppMetadata[], context: IContextNode): BosUserLink[] {
     return appsToCheck.flatMap((app) =>
       app.targets
         .filter((target) => target.static)
@@ -52,6 +52,20 @@ export class UserLinkSerivce {
           static: true,
         }))
     )
+  }
+
+  getControllersForApps(appsToCheck: AppMetadata[], context: IContextNode): ControllerLink[] {
+    return appsToCheck
+      .filter((app) => app.controller)
+      .flatMap((app) =>
+        app.targets
+          .filter((target) => TargetService.isTargetMet(target, context))
+          .map((_, i) => ({
+            id: `${app.id}/${i}`, // ToDo: id
+            appId: app.id,
+            bosWidgetId: app.controller!, // ! - because it's filtered above
+          }))
+      )
   }
 
   async createLink(

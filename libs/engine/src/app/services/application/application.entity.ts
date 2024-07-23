@@ -14,6 +14,7 @@ export type AppMetadata = {
   authorId: string
   appLocalId: string
   targets: AppMetadataTarget[]
+  controller?: string // BOS Widget ID
   metadata: {
     name?: string
     description?: string

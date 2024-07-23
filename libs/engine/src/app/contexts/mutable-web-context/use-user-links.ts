@@ -13,7 +13,7 @@ export const useUserLinks = (context: IContextNode) => {
     if (!engine || !selectedMutation?.id) {
       return []
     } else {
-      return engine.userLinkService.getStaticLinksForApp(activeApps, context)
+      return engine.userLinkService.getStaticLinksForApps(activeApps, context)
     }
   }, [engine, selectedMutation, activeApps, context])
 

@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useState } from 'react'
+import React, { FC, useCallback, useMemo, useRef, useState } from 'react'
 import { ContextPortal } from '@mweb/react'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { useEngine } from '../contexts/engine-context'
@@ -8,8 +8,9 @@ import { usePortalFilter } from '../contexts/engine-context/use-portal-filter'
 import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
 import { ContextTree } from '@mweb/react'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
+import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
 import { AppId, AppMetadata } from '../services/application/application.entity'
-import { BosUserLink, UserLinkId } from '../services/user-link/user-link.entity'
+import { BosUserLink, ControllerLink, UserLinkId } from '../services/user-link/user-link.entity'
 import { TransferableContext, buildTransferableContext } from '../common/transferable-context'
 import { useModal } from '../contexts/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
@@ -17,6 +18,65 @@ import { BuiltInLayoutManagers } from '../../constants'
 import { TargetService } from '../services/target/target.service'
 import { LinkedDataByAccount, LinkIndexRules } from '../services/link-db/link-db.entity'
 import { memoize } from '../common/memoize'
+import { createPortal } from 'react-dom'
+import { ModalProps } from '../contexts/modal-context/modal-context'
+import { InjectableTarget } from '../contexts/engine-context/engine-context'
+
+interface WidgetProps {
+  context: TransferableContext
+  link?: {
+    id: UserLinkId // Static link ID can also be here
+    authorId: string
+  }
+  notify: (modalProps: ModalProps) => void
+  linkDb: {
+    get: (
+      ctx: TransferableContext,
+      accountIds?: string[] | string,
+      indexRules?: LinkIndexRules
+    ) => Promise<LinkedDataByAccount>
+    set: (
+      ctx: TransferableContext,
+      dataByAccount: LinkedDataByAccount,
+      indexRules: LinkIndexRules
+    ) => Promise<void>
+  }
+}
+
+interface LayoutManagerProps {
+  context: TransferableContext
+  apps: {
+    id: string
+    metadata: {
+      name?: string
+      description?: string
+      image?: {
+        ipfs_cid?: string
+      }
+    }
+  }[]
+  widgets: {
+    linkId: UserLinkId // Static link ID can also be here
+    linkAuthorId: string
+    static: boolean
+    src: string
+    props: WidgetProps
+    isSuitable: boolean
+  }[]
+  components: {
+    key: string
+    target: InjectableTarget
+    component: React.FC<unknown>
+  }[]
+  isEditMode: boolean
+  createUserLink: (appId: AppId) => Promise<void>
+  deleteUserLink: (userLinkId: UserLinkId) => Promise<void>
+  enableEditMode: () => void
+  disableEditMode: () => void
+  attachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
+  attachInsPointRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
+  notify: (modalProps: ModalProps) => void
+}
 
 export const ContextManager: FC = () => {
   return <ContextTree children={ContextHandler} />
@@ -26,8 +86,10 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   context,
   insPoints,
 }) => {
+  const { controllers } = useAppControllers(context)
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
+  const { engine, selectedMutation } = useMutableWeb()
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -49,90 +111,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     setIsEditMode(false)
   }, [setIsEditMode])
 
-  return (
-    <>
-      {insPoints.map((ip) => (
-        <ContextPortal key={ip.name} context={context} injectTo={ip.name}>
-          <InsPointHandler
-            insPointName={ip.name}
-            bosLayoutManager={ip.bosLayoutManager}
-            context={context}
-            transferableContext={transferableContext}
-            allUserLinks={links}
-            apps={apps}
-            isEditMode={isEditMode}
-            onCreateUserLink={createUserLink}
-            onDeleteUserLink={deleteUserLink}
-            onEnableEditMode={handleEnableEditMode}
-            onDisableEditMode={handleDisableEditMode}
-            onAttachContextRef={attachContextRef}
-          />
-        </ContextPortal>
-      ))}
-      {/* For OverlayTrigger */}
-      <ContextPortal context={context}>
-        <InsPointHandler
-          context={context}
-          transferableContext={transferableContext}
-          allUserLinks={links}
-          apps={apps}
-          isEditMode={isEditMode}
-          onCreateUserLink={createUserLink}
-          onDeleteUserLink={deleteUserLink}
-          onEnableEditMode={handleEnableEditMode}
-          onDisableEditMode={handleDisableEditMode}
-          onAttachContextRef={attachContextRef}
-        />
-      </ContextPortal>
-    </>
-  )
-}
-
-const InsPointHandler: FC<{
-  insPointName?: string
-  bosLayoutManager?: string
-  context: IContextNode
-  transferableContext: TransferableContext
-  allUserLinks: BosUserLink[]
-  apps: AppMetadata[]
-  isEditMode: boolean
-  onCreateUserLink: (appId: AppId) => Promise<void>
-  onDeleteUserLink: (userLinkId: UserLinkId) => Promise<void>
-  onEnableEditMode: () => void
-  onDisableEditMode: () => void
-  onAttachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
-}> = ({
-  insPointName,
-  bosLayoutManager,
-  context,
-  transferableContext,
-  allUserLinks,
-  apps,
-  isEditMode,
-  onCreateUserLink,
-  onDeleteUserLink,
-  onEnableEditMode,
-  onDisableEditMode,
-  onAttachContextRef,
-}) => {
-  const { redirectMap, isDevServerLoading } = useEngine()
-  const { config, engine, selectedMutation } = useMutableWeb()
-  const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
-  const { notify } = useModal()
-
-  const attachInsPointRef = useCallback(
-    (callback: (r: React.Component | Element | null | undefined) => void) => {
-      // ToDo: the similar logic is used in ContextPortal
-      const targetElement = insPointName
-        ? context.insPoints.find((ip) => ip.name === insPointName)?.element
-        : context.element
-
-      callback(targetElement)
-    },
-    [context, insPointName]
-  )
-
   // These handlers are memoized to prevent unnecessary rerenders
+  // Move to a separate hook when App wrapper is ready
   const handleGetLinkDataCurry = useCallback(
     memoize(
       (appId: AppId) =>
@@ -165,6 +145,119 @@ const InsPointHandler: FC<{
     [engine, selectedMutation]
   )
 
+  return (
+    <>
+      {insPoints.map((ip) => (
+        <ContextPortal key={ip.name} context={context} injectTo={ip.name}>
+          <InsPointHandler
+            insPointName={ip.name}
+            bosLayoutManager={ip.bosLayoutManager}
+            context={context}
+            transferableContext={transferableContext}
+            allUserLinks={links}
+            apps={apps}
+            isEditMode={isEditMode}
+            onCreateUserLink={createUserLink}
+            onDeleteUserLink={deleteUserLink}
+            onEnableEditMode={handleEnableEditMode}
+            onDisableEditMode={handleDisableEditMode}
+            onAttachContextRef={attachContextRef}
+            onGetLinkDataCurry={handleGetLinkDataCurry}
+            onSetLinkDataCurry={handleSetLinkDataCurry}
+          />
+        </ContextPortal>
+      ))}
+      {/* For OverlayTrigger */}
+      <ContextPortal context={context}>
+        <InsPointHandler
+          context={context}
+          transferableContext={transferableContext}
+          allUserLinks={links}
+          apps={apps}
+          isEditMode={isEditMode}
+          onCreateUserLink={createUserLink}
+          onDeleteUserLink={deleteUserLink}
+          onEnableEditMode={handleEnableEditMode}
+          onDisableEditMode={handleDisableEditMode}
+          onAttachContextRef={attachContextRef}
+          onGetLinkDataCurry={handleGetLinkDataCurry}
+          onSetLinkDataCurry={handleSetLinkDataCurry}
+        />
+      </ContextPortal>
+
+      {controllers.map((c) => (
+        <ControllerHandler
+          key={c.id}
+          transferableContext={transferableContext}
+          controller={c}
+          onGetLinkDataCurry={handleGetLinkDataCurry}
+          onSetLinkDataCurry={handleSetLinkDataCurry}
+        />
+      ))}
+    </>
+  )
+}
+
+const InsPointHandler: FC<{
+  insPointName?: string
+  bosLayoutManager?: string
+  context: IContextNode
+  transferableContext: TransferableContext
+  allUserLinks: BosUserLink[]
+  apps: AppMetadata[]
+  isEditMode: boolean
+  onCreateUserLink: (appId: AppId) => Promise<void>
+  onDeleteUserLink: (userLinkId: UserLinkId) => Promise<void>
+  onEnableEditMode: () => void
+  onDisableEditMode: () => void
+  onAttachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
+  onGetLinkDataCurry: (
+    appId: string
+  ) => (
+    ctx: TransferableContext,
+    accountIds?: string[] | string,
+    indexRules?: LinkIndexRules
+  ) => Promise<LinkedDataByAccount>
+  onSetLinkDataCurry: (
+    appId: string
+  ) => (
+    ctx: TransferableContext,
+    dataByAccount: LinkedDataByAccount,
+    indexRules: LinkIndexRules
+  ) => Promise<void>
+}> = ({
+  insPointName,
+  bosLayoutManager,
+  context,
+  transferableContext,
+  allUserLinks,
+  apps,
+  isEditMode,
+  onCreateUserLink,
+  onDeleteUserLink,
+  onEnableEditMode,
+  onDisableEditMode,
+  onAttachContextRef,
+  onGetLinkDataCurry,
+  onSetLinkDataCurry,
+}) => {
+  const { redirectMap, isDevServerLoading } = useEngine()
+  const { config, engine } = useMutableWeb()
+  const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
+  const { notify } = useModal()
+
+  const attachInsPointRef = useCallback(
+    (callback: (r: React.Component | Element | null | undefined) => void) => {
+      // ToDo: the similar logic is used in ContextPortal
+      const targetElement = insPointName
+        ? context.insPoints.find((ip) => ip.name === insPointName)?.element
+        : context.element
+
+      callback(targetElement)
+    },
+    [context, insPointName]
+  )
+
   // prevents blinking
   if (isDevServerLoading) {
     return null
@@ -186,7 +279,7 @@ const InsPointHandler: FC<{
 
   // ToDo: extract App specific links to the separate AppManager component
 
-  const props = {
+  const props: LayoutManagerProps = {
     // ToDo: unify context forwarding
     context: transferableContext,
     apps: apps
@@ -229,8 +322,8 @@ const InsPointHandler: FC<{
         },
         notify,
         linkDb: {
-          get: handleGetLinkDataCurry(link.appId),
-          set: handleSetLinkDataCurry(link.appId),
+          get: onGetLinkDataCurry(link.appId),
+          set: onSetLinkDataCurry(link.appId),
         },
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
@@ -269,5 +362,54 @@ const InsPointHandler: FC<{
         config={{ redirectMap }}
       />
     </ShadowDomWrapper>
+  )
+}
+
+/**
+ * Executes a BOS widget in-memory without rendering it
+ */
+const ControllerHandler: FC<{
+  transferableContext: TransferableContext
+  controller: ControllerLink
+  onGetLinkDataCurry: (
+    appId: string
+  ) => (
+    ctx: TransferableContext,
+    accountIds?: string[] | string,
+    indexRules?: LinkIndexRules
+  ) => Promise<LinkedDataByAccount>
+  onSetLinkDataCurry: (
+    appId: string
+  ) => (
+    ctx: TransferableContext,
+    dataByAccount: LinkedDataByAccount,
+    indexRules: LinkIndexRules
+  ) => Promise<void>
+}> = ({ transferableContext, controller, onGetLinkDataCurry, onSetLinkDataCurry }) => {
+  const { redirectMap, isDevServerLoading } = useEngine()
+  const portalRef = useRef<DocumentFragment | null>(null)
+  const { notify } = useModal()
+
+  if (!portalRef.current) {
+    // A document fragment where BOS widget will be "rendered" to
+    portalRef.current = document.createDocumentFragment()
+  }
+
+  if (isDevServerLoading) {
+    return null
+  }
+
+  const props: WidgetProps = {
+    context: transferableContext,
+    notify,
+    linkDb: {
+      get: onGetLinkDataCurry(controller.appId),
+      set: onSetLinkDataCurry(controller.appId),
+    },
+  }
+
+  return createPortal(
+    <Widget src={controller.bosWidgetId} props={props} loading={<></>} config={{ redirectMap }} />,
+    portalRef.current
   )
 }

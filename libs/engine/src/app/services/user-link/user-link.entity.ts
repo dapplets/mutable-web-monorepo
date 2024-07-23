@@ -31,3 +31,9 @@ export type BosUserLink = {
   static: boolean
   // ToDo: add props
 }
+
+export type ControllerLink = {
+  id: string
+  appId: string
+  bosWidgetId: string
+}
