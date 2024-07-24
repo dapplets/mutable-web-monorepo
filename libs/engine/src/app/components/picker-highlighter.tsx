@@ -1,12 +1,23 @@
 import React, { FC, useEffect, useMemo, useRef, ReactElement } from 'react'
 import ReactDOMServer from 'react-dom/server'
 import { IContextNode } from '@mweb/core'
-import { getContextDepth } from '@mweb/core'
 import { Highlighter } from './highlighter'
 
 const DEFAULT_INACTIVE_BORDER_COLOR = '#384BFF4D' // light blue
 const DEFAULT_CHILDREN_BORDER_STYLE = 'dashed'
 const PRIVILEGED_NAMESPACE = 'mweb' // ToDo: hardcode. Needs to be fixed.
+
+const getElementDepth = (el: Element | Node) => {
+  let depth = 0
+  let host = (el as any).host
+  while (el.parentNode !== null || host) {
+    if (host) el = host as Node
+    el = el.parentNode!
+    host = (el as any).host
+    depth++
+  }
+  return depth
+}
 
 interface IPickerHighlighter {
   focusedContext: IContextNode | null
@@ -82,7 +93,7 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
   if (!context.element || !targetOffset) return null
 
   const isFirstLevelContext = !context.parentNode || context.parentNode.contextType === 'root'
-  const contextDepth = getContextDepth(context)
+  const contextDepth = context.element ? getElementDepth(context.element) : 0
 
   const backgroundColor = onClick ? styles?.backgroundColor : 'transparent'
 

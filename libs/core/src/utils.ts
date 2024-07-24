@@ -34,19 +34,3 @@ export function isDeepEqual(obj1: any, obj2: any): boolean {
 
   return result
 }
-
-export const getElementDepth = (el: Element | Node) => {
-  let depth = 0
-  let host = (el as any).host
-  while (el.parentNode !== null || host) {
-    if (host) el = host as Node
-    el = el.parentNode!
-    host = (el as any).host
-    depth++
-  }
-  return depth
-}
-
-export const getContextDepth = (context: IContextNode): number => {
-  return context.element ? getElementDepth(context.element) : 0
-}
