@@ -3,6 +3,8 @@ import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import React from 'react'
 import { useCore } from '../contexts/core-context'
 
+// ToDo: move to React context to reuse semantic tree?
+
 export const ContextTree: FC<{
   children: React.FC<{ context: IContextNode; insPoints: InsertionPointWithElement[] }>
 }> = ({ children }) => {
@@ -13,10 +15,12 @@ export const ContextTree: FC<{
   return <TreeItem node={tree} component={children} />
 }
 
-const ChildrenTreeItem: FC<{
+const TreeItem: FC<{
   node: IContextNode
   component: React.FC<{ context: IContextNode; insPoints: InsertionPointWithElement[] }>
 }> = ({ node, component: Component }) => {
+  const [wrappedNode, setWrappedNode] = useState({ node })
+  const [insPoints, setInsPoints] = useState([...node.insPoints])
   const [children, setChildren] = useState([...node.children])
 
   // ToDo: refactor it. It stores unique key for each context node
@@ -24,39 +28,6 @@ const ChildrenTreeItem: FC<{
     new WeakMap<IContextNode, number>(node.children.map((c, i) => [c, i]))
   )
   const contextKeyCounter = useRef(node.children.length - 1) // last index
-
-  useEffect(() => {
-    const subscriptions = [
-      node.on('childContextAdded', ({ child }) => {
-        contextKeyRef.current.set(child, ++contextKeyCounter.current)
-        setChildren((prev) => [...prev, child])
-      }),
-      node.on('childContextRemoved', ({ child }) => {
-        setChildren((prev) => prev.filter((c) => c !== child))
-      }),
-    ]
-
-    return () => {
-      subscriptions.forEach((sub) => sub.remove())
-    }
-  }, [node])
-
-  return children.map((child) => (
-    <TreeItem
-      // key={`${child.namespace}/${child.contextType}/${child.id}`}
-      key={contextKeyRef.current.get(child)}
-      node={child}
-      component={Component}
-    />
-  ))
-}
-
-const TreeItem: FC<{
-  node: IContextNode
-  component: React.FC<{ context: IContextNode; insPoints: InsertionPointWithElement[] }>
-}> = ({ node, component: Component }) => {
-  const [wrappedNode, setWrappedNode] = useState({ node })
-  const [insPoints, setInsPoints] = useState([...node.insPoints])
 
   useEffect(() => {
     // The Component re-renders when the current node changes only.
@@ -73,6 +44,13 @@ const TreeItem: FC<{
         setWrappedNode({ node })
         // ToDo: don't replace whole node
       }),
+      node.on('childContextAdded', ({ child }) => {
+        contextKeyRef.current.set(child, ++contextKeyCounter.current)
+        setChildren((prev) => [...prev, child])
+      }),
+      node.on('childContextRemoved', ({ child }) => {
+        setChildren((prev) => prev.filter((c) => c !== child))
+      }),
     ]
 
     return () => {
@@ -85,7 +63,14 @@ const TreeItem: FC<{
       {wrappedNode.node.element ? (
         <Component context={wrappedNode.node} insPoints={insPoints} />
       ) : null}
-      <ChildrenTreeItem node={wrappedNode.node} component={Component} />
+      {children.map((child) => (
+        <TreeItem
+          // key={`${child.namespace}/${child.contextType}/${child.id}`}
+          key={contextKeyRef.current.get(child)}
+          node={child}
+          component={Component}
+        />
+      ))}
     </>
   )
 }
