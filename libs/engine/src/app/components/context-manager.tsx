@@ -21,6 +21,11 @@ import { memoize } from '../common/memoize'
 import { createPortal } from 'react-dom'
 import { ModalProps } from '../contexts/modal-context/modal-context'
 import { InjectableTarget } from '../contexts/engine-context/engine-context'
+import { Target } from '../services/target/target.entity'
+
+const getRootContext = (context: IContextNode): IContextNode => {
+  return context.parentNode ? getRootContext(context.parentNode) : context
+}
 
 interface WidgetProps {
   context: TransferableContext
@@ -29,6 +34,7 @@ interface WidgetProps {
     authorId: string
   }
   notify: (modalProps: ModalProps) => void
+  query: (target: Target) => TransferableContext | null
   linkDb: {
     get: (
       ctx: TransferableContext,
@@ -103,6 +109,15 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [context]
   )
 
+  const handleContextQuery = useCallback(
+    (target: Target): TransferableContext | null => {
+      const rootContext = getRootContext(context)
+      const foundContext = TargetService.findContextByTarget(target, rootContext)
+      return foundContext ? buildTransferableContext(foundContext) : null
+    },
+    [context]
+  )
+
   const handleEnableEditMode = useCallback(() => {
     setIsEditMode(true)
   }, [setIsEditMode])
@@ -157,6 +172,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
             allUserLinks={links}
             apps={apps}
             isEditMode={isEditMode}
+            onContextQuery={handleContextQuery}
             onCreateUserLink={createUserLink}
             onDeleteUserLink={deleteUserLink}
             onEnableEditMode={handleEnableEditMode}
@@ -175,6 +191,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           allUserLinks={links}
           apps={apps}
           isEditMode={isEditMode}
+          onContextQuery={handleContextQuery}
           onCreateUserLink={createUserLink}
           onDeleteUserLink={deleteUserLink}
           onEnableEditMode={handleEnableEditMode}
@@ -190,6 +207,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           key={c.id}
           transferableContext={transferableContext}
           controller={c}
+          onContextQuery={handleContextQuery}
           onGetLinkDataCurry={handleGetLinkDataCurry}
           onSetLinkDataCurry={handleSetLinkDataCurry}
         />
@@ -206,6 +224,7 @@ const InsPointHandler: FC<{
   allUserLinks: BosUserLink[]
   apps: AppMetadata[]
   isEditMode: boolean
+  onContextQuery: (target: Target) => TransferableContext | null
   onCreateUserLink: (appId: AppId) => Promise<void>
   onDeleteUserLink: (userLinkId: UserLinkId) => Promise<void>
   onEnableEditMode: () => void
@@ -233,6 +252,7 @@ const InsPointHandler: FC<{
   allUserLinks,
   apps,
   isEditMode,
+  onContextQuery,
   onCreateUserLink,
   onDeleteUserLink,
   onEnableEditMode,
@@ -316,6 +336,7 @@ const InsPointHandler: FC<{
       src: link.bosWidgetId,
       props: {
         context: transferableContext,
+        query: onContextQuery,
         link: {
           id: link.id,
           authorId: link.authorId,
@@ -371,6 +392,7 @@ const InsPointHandler: FC<{
 const ControllerHandler: FC<{
   transferableContext: TransferableContext
   controller: ControllerLink
+  onContextQuery: (target: Target) => TransferableContext | null
   onGetLinkDataCurry: (
     appId: string
   ) => (
@@ -385,7 +407,13 @@ const ControllerHandler: FC<{
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules
   ) => Promise<void>
-}> = ({ transferableContext, controller, onGetLinkDataCurry, onSetLinkDataCurry }) => {
+}> = ({
+  transferableContext,
+  controller,
+  onContextQuery,
+  onGetLinkDataCurry,
+  onSetLinkDataCurry,
+}) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const portalRef = useRef<DocumentFragment | null>(null)
   const { notify } = useModal()
@@ -401,6 +429,7 @@ const ControllerHandler: FC<{
 
   const props: WidgetProps = {
     context: transferableContext,
+    query: onContextQuery,
     notify,
     linkDb: {
       get: onGetLinkDataCurry(controller.appId),

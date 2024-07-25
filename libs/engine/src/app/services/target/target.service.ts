@@ -3,6 +3,22 @@ import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
 export class TargetService {
+  static findContextByTarget(target: Target, context: IContextNode): IContextNode | null {
+    if (this.isTargetMet(target, context)) {
+      return context
+    }
+
+    for (const child of context.children) {
+      const found = this.findContextByTarget(target, child)
+
+      if (found) {
+        return found
+      }
+    }
+
+    return null
+  }
+
   static isTargetMet(target: Target | TransferableContext, context: IContextNode): boolean {
     // ToDo: check insertion points?
 
