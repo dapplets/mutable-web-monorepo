@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ContextPortal } from '@mweb/react'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { useEngine } from '../contexts/engine-context'
@@ -72,7 +72,7 @@ interface LayoutManagerProps {
   components: {
     key: string
     target: InjectableTarget
-    component: React.FC<unknown>
+    component: React.FC
   }[]
   isEditMode: boolean
   createUserLink: (appId: AppId) => Promise<void>
@@ -266,6 +266,24 @@ const InsPointHandler: FC<{
   const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
   const { notify } = useModal()
 
+  useEffect(() => {
+    components.forEach(({ onContextStarted }) => onContextStarted?.(transferableContext))
+
+    return () => {
+      components.forEach(({ onContextFinished }) => onContextFinished?.(transferableContext))
+    }
+  }, [components, transferableContext])
+
+  const nonEmptyComponents = useMemo(() => {
+    return components
+      .filter((c) => c.component)
+      .map((c) => ({
+        key: c.key,
+        target: c.target,
+        component: c.component!,
+      }))
+  }, [components])
+
   const attachInsPointRef = useCallback(
     (callback: (r: React.Component | Element | null | undefined) => void) => {
       // ToDo: the similar logic is used in ContextPortal
@@ -349,7 +367,7 @@ const InsPointHandler: FC<{
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
-    components: components,
+    components: nonEmptyComponents,
     isEditMode: isEditMode,
 
     // ToDo: move functions to separate api namespace?

@@ -13,11 +13,10 @@ export const usePortalFilter = (context: IContextNode, insPointName?: string) =>
         ([, { target }]) =>
           TargetService.isTargetMet(target, context) && target.injectTo === insPointName
       )
-      .map(([key, { component, target }]) => ({
+      .map(([key, portal]) => ({
         key,
-        target,
-        component,
-      }))
+        ...portal,
+      })) // ToDo: don't copy the whole object
       .sort((a, b) => (b.key > a.key ? 1 : -1))
   }, [portals, context, insPointName])
 
