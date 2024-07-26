@@ -4,6 +4,7 @@ import { Target } from '../../services/target/target.entity'
 
 export type InjectableTarget = Target & {
   injectTo: string
+  floating?: boolean
 }
 
 export type EngineContextState = {

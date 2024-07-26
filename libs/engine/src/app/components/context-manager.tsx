@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ContextPortal } from '@mweb/react'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { useEngine } from '../contexts/engine-context'
@@ -22,6 +22,7 @@ import { createPortal } from 'react-dom'
 import { ModalProps } from '../contexts/modal-context/modal-context'
 import { InjectableTarget } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
+import { _DappletOverlayTrigger } from '../../custom-elements/dapplet-overlay-trigger'
 
 const getRootContext = (context: IContextNode): IContextNode => {
   return context.parentNode ? getRootContext(context.parentNode) : context
@@ -278,6 +279,14 @@ const InsPointHandler: FC<{
     [context, insPointName]
   )
 
+  const nonFloatingComponents = useMemo(() => {
+    return components.filter((c) => !c.target.floating)
+  }, [components])
+
+  const floatingComponents = useMemo(() => {
+    return components.filter((c) => c.target.floating)
+  }, [components])
+
   // prevents blinking
   if (isDevServerLoading) {
     return null
@@ -349,7 +358,7 @@ const InsPointHandler: FC<{
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
-    components: components,
+    components: nonFloatingComponents,
     isEditMode: isEditMode,
 
     // ToDo: move functions to separate api namespace?
@@ -359,6 +368,7 @@ const InsPointHandler: FC<{
     disableEditMode: onDisableEditMode,
 
     // For OverlayTrigger
+    // ToDo: deprecate?
     attachContextRef: onAttachContextRef,
     attachInsPointRef,
 
@@ -371,18 +381,34 @@ const InsPointHandler: FC<{
     config.layoutManagers.ear === layoutManagerId ? { position: 'relative' } : undefined
 
   return (
-    <ShadowDomWrapper
-      className="mweb-layout-manager"
-      style={shadowDomHostStyles}
-      stylesheetSrc={engine.config.bosElementStyleSrc}
-    >
-      <Widget
-        src={layoutManagerId ?? config.layoutManagers.horizontal}
-        props={props}
-        loading={<></>}
-        config={{ redirectMap }}
-      />
-    </ShadowDomWrapper>
+    <>
+      <ShadowDomWrapper
+        className="mweb-layout-manager"
+        style={shadowDomHostStyles}
+        stylesheetSrc={engine.config.bosElementStyleSrc}
+      >
+        <Widget
+          src={layoutManagerId ?? config.layoutManagers.horizontal}
+          props={props}
+          loading={<></>}
+          config={{ redirectMap }}
+        />
+      </ShadowDomWrapper>
+      {floatingComponents.map(({ key, target, component: FloatingComponent }) => (
+        <_DappletOverlayTrigger
+          key={key}
+          show={true}
+          overlay={<div><FloatingComponent /></div>}
+          placement={'auto'}
+          offset={[0, 20]}
+          popperConfig={{ strategy: 'absolute' }}
+        >
+          {insPointName
+            ? ({ ref }: any) => attachInsPointRef(ref)
+            : ({ ref }: any) => onAttachContextRef(ref)}
+        </_DappletOverlayTrigger>
+      ))}
+    </>
   )
 }
 
@@ -427,6 +453,7 @@ const ControllerHandler: FC<{
     return null
   }
 
+  // ToDo: merge with InsPointHandler?
   const props: WidgetProps = {
     context: transferableContext,
     query: onContextQuery,
