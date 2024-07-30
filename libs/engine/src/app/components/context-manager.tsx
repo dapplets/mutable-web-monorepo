@@ -163,29 +163,10 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   return (
     <>
       {insPoints.map((ip) => (
-        <ContextPortal key={ip.name} context={context} injectTo={ip.name}>
-          <InsPointHandler
-            insPointName={ip.name}
-            bosLayoutManager={ip.bosLayoutManager}
-            context={context}
-            transferableContext={transferableContext}
-            allUserLinks={links}
-            apps={apps}
-            isEditMode={isEditMode}
-            onContextQuery={handleContextQuery}
-            onCreateUserLink={createUserLink}
-            onDeleteUserLink={deleteUserLink}
-            onEnableEditMode={handleEnableEditMode}
-            onDisableEditMode={handleDisableEditMode}
-            onAttachContextRef={attachContextRef}
-            onGetLinkDataCurry={handleGetLinkDataCurry}
-            onSetLinkDataCurry={handleSetLinkDataCurry}
-          />
-        </ContextPortal>
-      ))}
-      {/* For OverlayTrigger */}
-      <ContextPortal context={context}>
         <InsPointHandler
+          key={ip.name}
+          insPointName={ip.name}
+          bosLayoutManager={ip.bosLayoutManager}
           context={context}
           transferableContext={transferableContext}
           allUserLinks={links}
@@ -200,7 +181,23 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onGetLinkDataCurry={handleGetLinkDataCurry}
           onSetLinkDataCurry={handleSetLinkDataCurry}
         />
-      </ContextPortal>
+      ))}
+      {/* For OverlayTrigger */}
+      <InsPointHandler
+        context={context}
+        transferableContext={transferableContext}
+        allUserLinks={links}
+        apps={apps}
+        isEditMode={isEditMode}
+        onContextQuery={handleContextQuery}
+        onCreateUserLink={createUserLink}
+        onDeleteUserLink={deleteUserLink}
+        onEnableEditMode={handleEnableEditMode}
+        onDisableEditMode={handleDisableEditMode}
+        onAttachContextRef={attachContextRef}
+        onGetLinkDataCurry={handleGetLinkDataCurry}
+        onSetLinkDataCurry={handleSetLinkDataCurry}
+      />
 
       {controllers.map((c) => (
         <ControllerHandler
@@ -371,18 +368,20 @@ const InsPointHandler: FC<{
     config.layoutManagers.ear === layoutManagerId ? { position: 'relative' } : undefined
 
   return (
-    <ShadowDomWrapper
-      className="mweb-layout-manager"
-      style={shadowDomHostStyles}
-      stylesheetSrc={engine.config.bosElementStyleSrc}
-    >
-      <Widget
-        src={layoutManagerId ?? config.layoutManagers.horizontal}
-        props={props}
-        loading={<></>}
-        config={{ redirectMap }}
-      />
-    </ShadowDomWrapper>
+    <ContextPortal context={context} injectTo={insPointName}>
+      <ShadowDomWrapper
+        className="mweb-layout-manager"
+        style={shadowDomHostStyles}
+        stylesheetSrc={engine.config.bosElementStyleSrc}
+      >
+        <Widget
+          src={layoutManagerId ?? config.layoutManagers.horizontal}
+          props={props}
+          loading={<></>}
+          config={{ redirectMap }}
+        />
+      </ShadowDomWrapper>
+    </ContextPortal>
   )
 }
 
