@@ -1,18 +1,19 @@
 import * as React from 'react'
 import { useEngine } from '../app/contexts/engine-context'
-import { InjectableTarget } from '../app/contexts/engine-context/engine-context'
+import { InjectableTarget, Portal } from '../app/contexts/engine-context/engine-context'
 
-const _DappletPortal: React.FC<{ component: React.FC; target: InjectableTarget }> = ({
-  component: Component,
-  target,
-}) => {
+const _DappletPortal: React.FC<{
+  component: React.FC
+  target: InjectableTarget
+}> = ({ component, target }) => {
   const key = React.useId()
   const { addPortal, removePortal } = useEngine()
 
   React.useEffect(() => {
-    addPortal(key, target, Component)
+    const portal: Portal = { key, target, component }
+    addPortal(key, portal)
     return () => removePortal(key)
-  }, [target, Component, key])
+  }, [target, component, key])
 
   return null
 }

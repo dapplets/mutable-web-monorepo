@@ -20,7 +20,7 @@ import { LinkedDataByAccount, LinkIndexRules } from '../services/link-db/link-db
 import { memoize } from '../common/memoize'
 import { createPortal } from 'react-dom'
 import { ModalProps } from '../contexts/modal-context/modal-context'
-import { InjectableTarget } from '../contexts/engine-context/engine-context'
+import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
 
 const getRootContext = (context: IContextNode): IContextNode => {
@@ -69,11 +69,7 @@ interface LayoutManagerProps {
     props: WidgetProps
     isSuitable: boolean
   }[]
-  components: {
-    key: string
-    target: InjectableTarget
-    component: React.FC<unknown>
-  }[]
+  components: Portal[]
   isEditMode: boolean
   createUserLink: (appId: AppId) => Promise<void>
   deleteUserLink: (userLinkId: UserLinkId) => Promise<void>

@@ -8,16 +8,11 @@ export const usePortalFilter = (context: IContextNode, insPointName?: string) =>
 
   const components = useMemo(() => {
     // ToDo: improve readability
-    return Array.from(portals.entries())
+    return Array.from(portals.values())
       .filter(
-        ([, { target }]) =>
+        ({ target }) =>
           TargetService.isTargetMet(target, context) && target.injectTo === insPointName
       )
-      .map(([key, { component, target }]) => ({
-        key,
-        target,
-        component,
-      }))
       .sort((a, b) => (b.key > a.key ? 1 : -1))
   }, [portals, context, insPointName])
 
