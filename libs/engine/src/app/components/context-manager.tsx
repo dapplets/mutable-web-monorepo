@@ -414,13 +414,7 @@ const ControllerHandler: FC<{
   onSetLinkDataCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
-  const portalRef = useRef<DocumentFragment | null>(null)
   const { notify } = useModal()
-
-  if (!portalRef.current) {
-    // A document fragment where BOS widget will be "rendered" to
-    portalRef.current = document.createDocumentFragment()
-  }
 
   if (isDevServerLoading) {
     return null
@@ -436,8 +430,20 @@ const ControllerHandler: FC<{
     },
   }
 
-  return createPortal(
-    <Widget src={controller.bosWidgetId} props={props} loading={<></>} config={{ redirectMap }} />,
-    portalRef.current
+  return (
+    <InMemoryRenderer>
+      <Widget src={controller.bosWidgetId} props={props} loading={<></>} config={{ redirectMap }} />
+    </InMemoryRenderer>
   )
+}
+
+const InMemoryRenderer: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const portalRef = useRef<DocumentFragment | null>(null)
+
+  if (!portalRef.current) {
+    // A document fragment where BOS widget will be "rendered" to
+    portalRef.current = document.createDocumentFragment()
+  }
+
+  return createPortal(children, portalRef.current)
 }
