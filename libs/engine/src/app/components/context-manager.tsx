@@ -4,7 +4,6 @@ import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { useEngine } from '../contexts/engine-context'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
 import { Widget } from 'near-social-vm'
-import { usePortalFilter } from '../contexts/engine-context/use-portal-filter'
 import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
 import { ContextTree } from '@mweb/react'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
@@ -22,6 +21,7 @@ import { createPortal } from 'react-dom'
 import { ModalProps } from '../contexts/modal-context/modal-context'
 import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
+import { filterAndDiscriminate } from '../common/filter-and-discriminate'
 
 const getRootContext = (context: IContextNode): IContextNode => {
   return context.parentNode ? getRootContext(context.parentNode) : context
@@ -92,6 +92,27 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
   const { engine, selectedMutation } = useMutableWeb()
+  const { portals } = useEngine()
+
+  const portalComponents = useMemo(() => {
+    return Array.from(portals.values())
+      .filter(({ target }) => TargetService.isTargetMet(target, context))
+      .sort((a, b) => (b.key > a.key ? 1 : -1))
+  }, [portals, context])
+
+  const [materializedComponents, nonMaterializedComponents] = useMemo(() => {
+    return filterAndDiscriminate(portalComponents, (portal) => portal.inMemory)
+  }, [portalComponents])
+
+  const componentsByInsPoint = useMemo(() => {
+    return insPoints.map((insPoint) =>
+      materializedComponents.filter(({ target }) => target.injectTo === insPoint.name)
+    )
+  }, [insPoints, materializedComponents])
+
+  const componentsForContextInsPoint = useMemo(() => {
+    return materializedComponents.filter(({ target }) => target.injectTo === undefined)
+  }, [materializedComponents])
 
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -158,14 +179,16 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   return (
     <>
-      {insPoints.map((ip) => (
+      {insPoints.map((ip, index) => (
         <InsPointHandler
           key={ip.name}
+          element={ip.element}
           insPointName={ip.name}
           bosLayoutManager={ip.bosLayoutManager}
           context={context}
           transferableContext={transferableContext}
           allUserLinks={links}
+          components={componentsByInsPoint[index]}
           apps={apps}
           isEditMode={isEditMode}
           onContextQuery={handleContextQuery}
@@ -178,11 +201,14 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onSetLinkDataCurry={handleSetLinkDataCurry}
         />
       ))}
+
       {/* For OverlayTrigger */}
       <InsPointHandler
+        element={context.element}
         context={context}
         transferableContext={transferableContext}
         allUserLinks={links}
+        components={componentsForContextInsPoint}
         apps={apps}
         isEditMode={isEditMode}
         onContextQuery={handleContextQuery}
@@ -205,16 +231,28 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onSetLinkDataCurry={handleSetLinkDataCurry}
         />
       ))}
+
+      {nonMaterializedComponents.map((portal) => (
+        <PortalRenderer
+          key={portal.key}
+          portal={portal}
+          context={context}
+          transferableContext={transferableContext}
+          onAttachContextRef={attachContextRef}
+        />
+      ))}
     </>
   )
 }
 
 const InsPointHandler: FC<{
   insPointName?: string
+  element: HTMLElement | null
   bosLayoutManager?: string
   context: IContextNode
   transferableContext: TransferableContext
   allUserLinks: BosUserLink[]
+  components: Portal[]
   apps: AppMetadata[]
   isEditMode: boolean
   onContextQuery: (target: Target) => TransferableContext | null
@@ -239,10 +277,12 @@ const InsPointHandler: FC<{
   ) => Promise<void>
 }> = ({
   insPointName,
+  element,
   bosLayoutManager,
   context,
   transferableContext,
   allUserLinks,
+  components,
   apps,
   isEditMode,
   onContextQuery,
@@ -256,19 +296,11 @@ const InsPointHandler: FC<{
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { config, engine } = useMutableWeb()
-  const { components } = usePortalFilter(context, insPointName) // ToDo: extract to the separate AppManager component
   const { notify } = useModal()
 
   const attachInsPointRef = useCallback(
-    (callback: (r: React.Component | Element | null | undefined) => void) => {
-      // ToDo: the similar logic is used in ContextPortal
-      const targetElement = insPointName
-        ? context.insPoints.find((ip) => ip.name === insPointName)?.element
-        : context.element
-
-      callback(targetElement)
-    },
-    [context, insPointName]
+    (callback: (r: React.Component | Element | null | undefined) => void) => callback(element),
+    [element]
   )
 
   // prevents blinking
@@ -442,4 +474,31 @@ const InMemoryRenderer: FC<{ children: React.ReactNode }> = ({ children }) => {
   }
 
   return createPortal(children, portalRef.current)
+}
+
+const PortalRenderer: FC<{
+  portal: Portal
+  context: IContextNode
+  transferableContext: TransferableContext
+  onAttachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
+}> = ({ portal, context, transferableContext, onAttachContextRef }) => {
+  const { component: PortalComponent, target } = portal
+
+  const attachInsPointRef = useCallback(
+    (callback: (r: React.Component | Element | null | undefined) => void) => {
+      const ip = context.insPoints.find((ip) => ip.name === target.injectTo)
+      callback(ip ? ip.element : null)
+    },
+    [target, context]
+  )
+
+  return (
+    <InMemoryRenderer>
+      <PortalComponent
+        context={transferableContext}
+        attachContextRef={onAttachContextRef}
+        attachInsPointRef={attachInsPointRef}
+      />
+    </InMemoryRenderer>
+  )
 }

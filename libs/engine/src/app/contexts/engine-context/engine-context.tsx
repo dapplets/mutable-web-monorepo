@@ -17,6 +17,7 @@ export type Portal = {
   component: PortalComponent
   target: InjectableTarget
   key: string
+  inMemory: boolean
 }
 
 export type EngineContextState = {

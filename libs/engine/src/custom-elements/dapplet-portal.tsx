@@ -5,15 +5,16 @@ import { InjectableTarget, Portal } from '../app/contexts/engine-context/engine-
 const _DappletPortal: React.FC<{
   component: React.FC
   target: InjectableTarget
-}> = ({ component, target }) => {
+  inMemory?: boolean
+}> = ({ component, target, inMemory }) => {
   const key = React.useId()
   const { addPortal, removePortal } = useEngine()
 
   React.useEffect(() => {
-    const portal: Portal = { key, target, component }
+    const portal: Portal = { key, target, component, inMemory: inMemory ?? false }
     addPortal(key, portal)
     return () => removePortal(key)
-  }, [target, component, key])
+  }, [target, component, key, inMemory])
 
   return null
 }
