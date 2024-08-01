@@ -2,6 +2,8 @@ import { IParser } from '../parsers/interface'
 import { IContextNode, ITreeBuilder, InsertionPointWithElement } from '../tree/types'
 import { IAdapter } from './interface'
 
+const ShadowHostAttr = 'data-mweb-shadow-host'
+
 export class DynamicHtmlAdapter implements IAdapter {
   protected element: HTMLElement
   protected treeBuilder: ITreeBuilder
@@ -22,7 +24,7 @@ export class DynamicHtmlAdapter implements IAdapter {
     this.parser = parser
 
     // Namespace is used as ID for the root context
-    this.context = this._tryCreateContextForElement(element, 'root', this.namespace)
+    this.context = this._tryCreateContextForElement(element, 'root', 'global')
   }
 
   start() {
@@ -35,7 +37,7 @@ export class DynamicHtmlAdapter implements IAdapter {
       })
 
       // initial parsing without waiting for mutations in the DOM
-      this._handleMutations(element, this.#contextByElement.get(element)!)
+      this._handleMutations([], observer, element, this.#contextByElement.get(element)!)
     })
     this.#isStarted = true
   }
@@ -75,7 +77,9 @@ export class DynamicHtmlAdapter implements IAdapter {
       element
     )
 
-    const observer = new MutationObserver(() => this._handleMutations(element, context))
+    const observer = new MutationObserver((mutations, observer) =>
+      this._handleMutations(mutations, observer, element, context)
+    )
 
     this.#observerByElement.set(element, observer)
     this.#elementByContext.set(context, element)
@@ -94,7 +98,12 @@ export class DynamicHtmlAdapter implements IAdapter {
     return context
   }
 
-  private _handleMutations(element: HTMLElement, context: IContextNode) {
+  private _handleMutations(
+    mutations: MutationRecord[],
+    observer: MutationObserver,
+    element: HTMLElement,
+    context: IContextNode
+  ) {
     const parsedContext = this.parser.parseContext(element, context.contextType)
     const pairs = this.parser.findChildElements(element, context.contextType)
     const insPoints = this._findAvailableInsPoints(element, context.contextType)
@@ -102,12 +111,17 @@ export class DynamicHtmlAdapter implements IAdapter {
     this.treeBuilder.updateParsedContext(context, parsedContext)
     this.treeBuilder.updateInsertionPoints(context, insPoints)
     this._removeOldChildContexts(pairs, context)
-    this._appendNewChildContexts(pairs, context)
+    this._appendNewChildContexts(pairs, context, observer)
+
+    if (this.parser.shouldParseShadowDom) {
+      this._observeShadowRoots(mutations, observer)
+    }
   }
 
   private _appendNewChildContexts(
     childPairs: { element: HTMLElement; contextName: string }[],
-    parentContext: IContextNode
+    parentContext: IContextNode,
+    observer: MutationObserver
   ) {
     for (const { element, contextName } of childPairs) {
       if (!this.#contextByElement.has(element)) {
@@ -121,7 +135,7 @@ export class DynamicHtmlAdapter implements IAdapter {
         this.treeBuilder.appendChild(parentContext, childContext)
 
         // initial parsing
-        this._handleMutations(element, childContext)
+        this._handleMutations([], observer, element, childContext)
       }
     }
   }
@@ -139,6 +153,27 @@ export class DynamicHtmlAdapter implements IAdapter {
         this.#observerByElement.delete(element)
       }
     }
+  }
+
+  private _observeShadowRoots(mutations: MutationRecord[], observer: MutationObserver) {
+    mutations.forEach((mutation) => {
+      if (mutation.type !== 'childList') return
+
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType !== Node.ELEMENT_NODE) return
+        if (!(node instanceof Element)) return
+        if (!node.shadowRoot) return
+        if (!node.hasAttribute(ShadowHostAttr)) return // ToDo: it's mweb-parser specific logic
+
+        // ToDo: the similar logic as in _tryCreateContextForElement
+        observer.observe(node.shadowRoot, {
+          attributes: true,
+          childList: true,
+          subtree: true,
+          characterData: true,
+        })
+      })
+    })
   }
 
   // ToDo: move to parser?

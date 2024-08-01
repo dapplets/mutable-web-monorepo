@@ -3,12 +3,6 @@ import { createPortal } from 'react-dom'
 import { StyleSheetManager } from 'styled-components'
 import { StyleProvider } from '@ant-design/cssinjs'
 
-const generateGuid = () => {
-  return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
 export interface ShadowDomWrapperProps {
   children?: React.ReactNode
   stylesheetSrc?: string
@@ -67,11 +61,6 @@ export const ShadowDomWrapper = React.forwardRef<HTMLDivElement, ShadowDomWrappe
 
         // For mweb parser that looks for contexts in shadow dom
         myRef.current.setAttribute('data-mweb-shadow-host', '')
-
-        // Context cannot be a shadow root node because mutation observer doesn't work there
-        // So we need to select a child node for context
-        container.setAttribute('data-mweb-context-type', 'shadow-dom')
-        container.setAttribute('data-mweb-context-parsed', `{"id":"${generateGuid()}"}`)
 
         shadowRoot.appendChild(container)
 
