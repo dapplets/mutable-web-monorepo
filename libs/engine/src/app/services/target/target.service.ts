@@ -36,15 +36,21 @@ export class TargetService {
       return false
     }
 
+    // for TransferableContext
+    if ('id' in target && target.id !== context.id) {
+      return false
+    }
+
     // for Target
     if ('if' in target && !this._areConditionsMet(target.if, context.parsedContext)) {
       return false
     }
 
+    // ToDo: disabled 
     // for TransferableContext
-    if ('parsed' in target && !isDeepEqual(target.parsed, context.parsedContext)) {
-      return false
-    }
+    // if ('parsed' in target && !isDeepEqual(target.parsed, context.parsedContext)) {
+    //   return false
+    // }
 
     if (
       target.parent &&
