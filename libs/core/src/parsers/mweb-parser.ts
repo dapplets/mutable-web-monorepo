@@ -9,7 +9,10 @@ const ShadowHostAttr = 'data-mweb-shadow-host'
 const LayoutManagerAttr = 'data-mweb-layout-manager'
 
 export class MutableWebParser implements IParser {
+  shouldParseShadowDom = true
+
   parseContext(element: HTMLElement, contextName: string) {
+    if (contextName === 'root') return { id: 'global' }
     const json = element.getAttribute(ParsedContextAttr)
     if (!json) return {}
     return JSON.parse(json)
