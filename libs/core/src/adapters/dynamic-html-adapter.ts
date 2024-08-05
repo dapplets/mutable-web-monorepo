@@ -12,7 +12,6 @@ export class DynamicHtmlAdapter implements IAdapter {
   public context: IContextNode
 
   #observerByElement: Map<HTMLElement, MutationObserver> = new Map()
-  #elementByContext: WeakMap<IContextNode, HTMLElement> = new WeakMap()
   #contextByElement: Map<HTMLElement, IContextNode> = new Map()
 
   #isStarted = false // ToDo: find another way to check if adapter is started
@@ -37,7 +36,7 @@ export class DynamicHtmlAdapter implements IAdapter {
       })
 
       // initial parsing without waiting for mutations in the DOM
-      this._handleMutations([], observer, element, this.#contextByElement.get(element)!)
+      this._handleMutations(element, this.#contextByElement.get(element)!)
     })
     this.#isStarted = true
   }
@@ -77,12 +76,15 @@ export class DynamicHtmlAdapter implements IAdapter {
       element
     )
 
-    const observer = new MutationObserver((mutations, observer) =>
-      this._handleMutations(mutations, observer, element, context)
-    )
+    const observer = new MutationObserver((mutations, observer) => {
+      this._handleMutations(element, context)
+
+      if (this.parser.shouldParseShadowDom) {
+        this._observeShadowRoots(mutations, observer)
+      }
+    })
 
     this.#observerByElement.set(element, observer)
-    this.#elementByContext.set(context, element)
     this.#contextByElement.set(element, context)
 
     // ToDo: duplicate code
@@ -99,8 +101,6 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   private _handleMutations(
-    mutations: MutationRecord[],
-    observer: MutationObserver,
     element: HTMLElement,
     context: IContextNode
   ) {
@@ -111,17 +111,14 @@ export class DynamicHtmlAdapter implements IAdapter {
     this.treeBuilder.updateParsedContext(context, parsedContext)
     this.treeBuilder.updateInsertionPoints(context, insPoints)
     this._removeOldChildContexts(pairs, context)
-    this._appendNewChildContexts(pairs, context, observer)
+    this._appendNewChildContexts(pairs, context)
 
-    if (this.parser.shouldParseShadowDom) {
-      this._observeShadowRoots(mutations, observer)
-    }
+    // ToDo: add warning about similar contexts
   }
 
   private _appendNewChildContexts(
     childPairs: { element: HTMLElement; contextName: string }[],
-    parentContext: IContextNode,
-    observer: MutationObserver
+    parentContext: IContextNode
   ) {
     for (const { element, contextName } of childPairs) {
       if (!this.#contextByElement.has(element)) {
@@ -131,11 +128,10 @@ export class DynamicHtmlAdapter implements IAdapter {
           continue
         }
 
-        this.#contextByElement.set(element, childContext)
         this.treeBuilder.appendChild(parentContext, childContext)
 
         // initial parsing
-        this._handleMutations([], observer, element, childContext)
+        this._handleMutations(element, childContext)
       }
     }
   }
