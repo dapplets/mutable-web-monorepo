@@ -18,7 +18,7 @@ export const ContextTree: FC<{
 const TreeItem: FC<{
   node: IContextNode
   component: React.FC<{ context: IContextNode; insPoints: InsertionPointWithElement[] }>
-}> = ({ node, component: Component }) => {
+}> = React.memo(({ node, component: Component }) => {
   const [wrappedNode, setWrappedNode] = useState({ node })
   const [insPoints, setInsPoints] = useState([...node.insPoints])
   const [children, setChildren] = useState([...node.children])
@@ -73,4 +73,4 @@ const TreeItem: FC<{
       ))}
     </>
   )
-}
+})
