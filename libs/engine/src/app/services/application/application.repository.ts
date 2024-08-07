@@ -82,6 +82,7 @@ export class ApplicationRepository {
     const storedAppMetadata = {
       [SelfKey]: JSON.stringify({
         targets: appMetadata.targets,
+        parsers: appMetadata.parsers,
       }),
       metadata: appMetadata.metadata,
     }

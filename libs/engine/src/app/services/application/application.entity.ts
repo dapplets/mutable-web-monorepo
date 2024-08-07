@@ -1,6 +1,9 @@
+import { ParserConfigId } from '../parser-config/parser-config.entity'
 import { Target } from '../target/target.entity'
 
 export type AppId = string
+
+export const AnyParserValue = 'any'
 
 export type AppMetadataTarget = Target & {
   static?: boolean
@@ -14,6 +17,7 @@ export type AppMetadata = {
   authorId: string
   appLocalId: string
   targets: AppMetadataTarget[]
+  parsers?: typeof AnyParserValue | ParserConfigId[]
   controller?: string // BOS Widget ID
   metadata: {
     name?: string

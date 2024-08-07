@@ -12,23 +12,9 @@ export const useMutationParsers = (engine: Engine, apps: AppMetadata[]) => {
     try {
       setIsLoading(true)
 
-      // ToDo: move to service
-      const uniqueNamespaces = Array.from(
-        new Set(
-          apps
-            .map((app) => app.targets?.map((target) => target.namespace))
-            .flat()
-            .filter((ns) => !!ns)
-        )
-      )
+      const parserConfigs = await engine.parserConfigService.getParserConfigsForApps(apps)
 
-      const parserConfigs = (
-        await Promise.all(
-          uniqueNamespaces.map((ns) => engine.parserConfigService.getParserConfig(ns))
-        )
-      ).filter((pc) => pc !== null)
-
-      setParserConfigs(parserConfigs as ParserConfig[])
+      setParserConfigs(parserConfigs)
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message)
