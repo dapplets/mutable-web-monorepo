@@ -60,9 +60,8 @@ const TreeItem: FC<{
 
   return (
     <>
-      {wrappedNode.node.element ? (
-        <Component context={wrappedNode.node} insPoints={insPoints} />
-      ) : null}
+      <Component context={wrappedNode.node} insPoints={insPoints} />
+
       {children.map((child) => (
         <TreeItem
           // key={`${child.namespace}/${child.contextType}/${child.id}`}

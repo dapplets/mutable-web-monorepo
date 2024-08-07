@@ -177,6 +177,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [engine, selectedMutation]
   )
 
+  // ToDo: check context.element
+
   return (
     <>
       {insPoints.map((ip, index) => (
