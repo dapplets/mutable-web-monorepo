@@ -19,6 +19,7 @@ const ContextLinkKey = 'ctxlink'
 const WildcardKey = '*'
 const KeyDelimiter = '/'
 const DataKey = 'data'
+const IndexKey = 'index'
 
 export class LinkDbService {
   constructor(private _socialDb: SocialDbService) {}
@@ -46,6 +47,7 @@ export class LinkDbService {
 
     const dataToStore = {
       [DataKey]: serializeToDeterministicJson(dataByAccount[accountId]),
+      [IndexKey]: indexObject,
     }
 
     await this._socialDb.set(SocialDbService.buildNestedData(keys, dataToStore))
