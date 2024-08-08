@@ -8,6 +8,8 @@ const _DappletFileDownloader: React.FC<{
 }> = ({ onClick, className, disabled, children }) => {
   const handleClick = () => {
     const file = onClick()
+    if (!file) return
+    
     const url = URL.createObjectURL(file)
 
     const a = document.createElement('a')
