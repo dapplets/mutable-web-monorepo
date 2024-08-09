@@ -116,7 +116,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const [isEditMode, setIsEditMode] = useState(false)
 
-  const transferableContext = useMemo(() => buildTransferableContext(context), [context])
+  // ToDo: memoize
+  const transferableContext = buildTransferableContext(context)
 
   // For OverlayTrigger
   const attachContextRef = useCallback(
