@@ -4,6 +4,7 @@ import { DynamicHtmlAdapter } from './adapters/dynamic-html-adapter'
 import { JsonParser } from './parsers/json-parser'
 import { BosParser } from './parsers/bos-parser'
 import { MutableWebParser } from './parsers/mweb-parser'
+import { BlinkParser } from './parsers/blink-parser'
 import { AdapterType, ParserConfig } from './types'
 
 export class Core {
@@ -91,6 +92,14 @@ export class Core {
           this._treeBuilder,
           config.id,
           new MutableWebParser()
+        )
+
+      case AdapterType.Blink:
+        return new DynamicHtmlAdapter(
+          document.body,
+          this._treeBuilder,
+          config.id,
+          new BlinkParser()
         )
 
       default:

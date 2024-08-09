@@ -40,6 +40,18 @@ const MWebParserConfig: ParserConfig = {
   ],
 }
 
+const BlinkParserConfig: ParserConfig = {
+  parserType: AdapterType.Blink,
+  id: 'engine', // ToDo: id used as namespace
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: { id: { not: null } },
+    },
+  ],
+}
+
 const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, children }) => {
   const { tree, attachParserConfig, detachParserConfig, updateRootContext } = useCore()
   const engineRef = useRef<Engine | null>(null)
@@ -47,6 +59,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   if (!engineRef.current) {
     engineRef.current = new Engine(config)
     attachParserConfig(MWebParserConfig) // ToDo: move
+    attachParserConfig(BlinkParserConfig)
 
     console.log('[MutableWeb] Engine initialized', engineRef.current)
   }
