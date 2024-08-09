@@ -6,6 +6,9 @@ import { ShadowDomWrapper } from '../app/components/shadow-dom-wrapper'
 import { useMutableWeb } from '../app/contexts/mutable-web-context'
 
 const ModalBackdrop = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: #ffffff88;
   position: fixed;
   top: 0;
