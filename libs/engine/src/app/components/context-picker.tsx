@@ -16,6 +16,8 @@ export const ContextPicker: FC = () => {
   return (
     <ContextTree>
       {({ context }) => {
+        if (context.contextType === 'root' || context.contextType === 'website') return null
+
         const isSuitable = useMemo(
           () => pickerTask.target?.some((t) => TargetService.isTargetMet(t, context)) ?? true,
           [pickerTask, context]
