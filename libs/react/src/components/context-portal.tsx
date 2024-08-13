@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect, useRef, useState } from 'react'
+import React, { FC, ReactElement, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { IContextNode } from '@mweb/core'
 import { InsertionType } from '@mweb/core'
@@ -16,7 +16,10 @@ export const ContextPortal: FC<{
     : {
         element: context.element,
         insertionType:
-          context.contextType === 'blink' ? InsertionType.Replace : DefaultInsertionType,
+          // ToDo: de-hardcode when context modificators will be implemented (using contexts instead of insertion points)
+          context.namespace === 'engine' && context.contextType === 'blink'
+            ? InsertionType.Replace
+            : DefaultInsertionType,
       }
 
   if (!target?.element) return null
@@ -54,8 +57,14 @@ const InsPointPortal: FC<{
         element.appendChild(_container)
         break
       case InsertionType.Replace:
-        // ToDo: test with multiple apps
+        // Only one layout manager will be injected
+        // so this code will be executed only once for multiple widgets
+
+        // We hide the element instead of removing it
+        // because it must be shown again when the layout manager is unmounted.
+        // Also it prevents unexpected behaviour of an original website.
         element.style.display = 'none'
+
         element.after(_container)
         break
       default:
@@ -66,7 +75,7 @@ const InsPointPortal: FC<{
 
     return () => {
       if (insertionType === InsertionType.Replace) {
-        // ToDo: handle hidden contexts
+        // ToDo: hidden contexts will be shown
         element.style.display = ''
       }
 
