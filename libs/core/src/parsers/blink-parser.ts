@@ -10,54 +10,50 @@ function tryParseUrl(text: string): URL | null {
   }
 }
 
-function getChildContextElements(element: HTMLElement) {
-  const result: HTMLElement[] = []
-
-  for (const child of Array.from(element.children)) {
-    if (child instanceof HTMLElement) {
-      if (child.tagName === 'A' && tryParseUrl(child.innerText)?.host === BlinkDomain) {
-        result.push(child)
-      } else {
-        result.push(...getChildContextElements(child))
-      }
-    }
-  }
-
-  return result
+function isBlinkUrl(url: string): boolean {
+  return tryParseUrl(url)?.host === BlinkDomain
 }
 
 // ToDo: move to the engine? It's mutable web specific logic
 export class BlinkParser implements IParser {
-  parseContext(element: HTMLElement, contextName: string) {
-    const url = tryParseUrl(element.innerText)
-    if (!url) return {}
-    if (url.host !== BlinkDomain) return {}
+  parseContext({ href, innerText }: HTMLAnchorElement) {
+    if (isBlinkUrl(href)) {
+      return {
+        id: href,
+        url: href,
+      }
+    } else if (isBlinkUrl(innerText)) {
+      // ToDo: twitter-specific logic. Twitter adds '…' to the end of the url
+      const cleanUrl = innerText.replace(/…$/g, '')
 
-    // ToDo: twitter-specific logic
-    const href = url.href.replace(/…$/g, '')
-
-    return {
-      id: href,
-      url: href,
+      return {
+        id: cleanUrl,
+        url: cleanUrl,
+      }
+    } else {
+      return {}
     }
   }
 
   findChildElements(element: HTMLElement) {
-    return getChildContextElements(element).map((element) => ({
-      element,
-      contextName: 'blink',
-    }))
+    // Using <a> inside of <a> is not valid, so only one level of nesting is possible
+    if (element.tagName === 'A') return []
+
+    return Array.from(element.querySelectorAll('a'))
+      .filter((a) => isBlinkUrl(a.href) || isBlinkUrl(a.innerText)) // ToDo: double check
+      .map((element) => ({
+        element,
+        contextName: 'blink',
+      }))
   }
 
-  findInsertionPoint(
-    element: HTMLElement | ShadowRoot,
-    contextName: string,
-    insertionPoint: string
-  ): HTMLElement | null {
+  findInsertionPoint(): HTMLElement | null {
+    // No insertions points in blinks
     return null
   }
 
-  getInsertionPoints(element: HTMLElement): InsertionPoint[] {
+  getInsertionPoints(): InsertionPoint[] {
+    // No insertions points in blinks
     return []
   }
 }
