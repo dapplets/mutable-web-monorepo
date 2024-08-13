@@ -1,5 +1,4 @@
 import { IParser, InsertionPoint } from './interface'
-import { InsertionType } from '../adapters/interface'
 
 const BlinkDomain = 'augm.link'
 
@@ -16,8 +15,7 @@ function getChildContextElements(element: HTMLElement) {
 
   for (const child of Array.from(element.children)) {
     if (child instanceof HTMLElement) {
-      const url = tryParseUrl(child.innerText)
-      if (url && url.host === BlinkDomain) {
+      if (child.tagName === 'A' && tryParseUrl(child.innerText)?.host === BlinkDomain) {
         result.push(child)
       } else {
         result.push(...getChildContextElements(child))
@@ -35,9 +33,12 @@ export class BlinkParser implements IParser {
     if (!url) return {}
     if (url.host !== BlinkDomain) return {}
 
+    // ToDo: twitter-specific logic
+    const href = url.href.replace(/…$/g, '')
+
     return {
-      id: url.href,
-      url: url.href,
+      id: href,
+      url: href,
     }
   }
 

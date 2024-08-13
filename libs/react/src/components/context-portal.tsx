@@ -13,7 +13,11 @@ export const ContextPortal: FC<{
   // ToDo: replace insPoints.find with Map
   const target = injectTo
     ? context.insPoints.find((ip) => ip.name === injectTo)
-    : { element: context.element, insertionType: DefaultInsertionType }
+    : {
+        element: context.element,
+        insertionType:
+          context.contextType === 'blink' ? InsertionType.Replace : DefaultInsertionType,
+      }
 
   if (!target?.element) return null
   if (!target?.insertionType) return null
@@ -49,6 +53,11 @@ const InsPointPortal: FC<{
       case InsertionType.End:
         element.appendChild(_container)
         break
+      case InsertionType.Replace:
+        // ToDo: test with multiple apps
+        element.style.display = 'none'
+        element.after(_container)
+        break
       default:
         break
     }
@@ -56,6 +65,11 @@ const InsPointPortal: FC<{
     setContainer(_container)
 
     return () => {
+      if (insertionType === InsertionType.Replace) {
+        // ToDo: handle hidden contexts
+        element.style.display = ''
+      }
+
       _container.remove()
       setContainer(null)
     }
