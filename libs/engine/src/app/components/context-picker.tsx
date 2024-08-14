@@ -5,6 +5,10 @@ import { TargetService } from '../services/target/target.service'
 import { IContextNode } from '@mweb/core'
 import { usePicker } from '../contexts/picker-context'
 
+const isTopContext = (context: IContextNode): boolean => {
+  return context.contextType === 'website' && context.namespace === 'engine'
+}
+
 export const ContextPicker: FC = () => {
   const { tree } = useCore()
   const { pickerTask } = usePicker()
@@ -16,6 +20,19 @@ export const ContextPicker: FC = () => {
   return (
     <ContextTree>
       {({ context }) => {
+        /** (ToDo)
+         * Top level context should not be selectable.
+         * They are used to retrieve information about the website and the logged in user,
+         * not as a container for adding widgets.
+         *  */
+        if (
+          (context.contextType === 'root' &&
+            context.parentNode &&
+            isTopContext(context.parentNode)) ||
+          isTopContext(context)
+        )
+          return null
+
         const isSuitable = useMemo(
           () => pickerTask.target?.some((t) => TargetService.isTargetMet(t, context)) ?? true,
           [pickerTask, context]
