@@ -204,6 +204,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
             axis="x"
             bounds="parent"
             handle=".dragWrapper"
+            nodeRef={notchRef}
             onStart={handleStartDrag}
             onStop={handleStopDrag}
             defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
