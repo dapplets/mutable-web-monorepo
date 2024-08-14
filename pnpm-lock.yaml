@@ -97,7 +97,7 @@ importers:
         version: 2.1.3
       near-social-vm:
         specifier: github:dapplets/near-social-vm
-        version: github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11)
+        version: github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -350,7 +350,7 @@ importers:
         version: 2.1.3
       near-social-vm:
         specifier: github:dapplets/near-social-vm
-        version: github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a(@popperjs/core@2.11.8)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11)
+        version: github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5(@popperjs/core@2.11.8)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11)
       near-social-vm-types:
         specifier: ^1.0.0
         version: 1.1.0
@@ -559,7 +559,7 @@ importers:
         version: 2.1.3
       near-social-vm:
         specifier: github:dapplets/near-social-vm
-        version: github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11)
+        version: github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11)
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -17249,8 +17249,8 @@ packages:
   /react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
-  /react-files@3.0.0(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-/Zz7S98vZFYxHw3RVSZcf3dD+xO714ZQd/jEhIp8q+MofBgydXWlHdw05TA4jradL7XpZFPvJaIvM6Z6I5nIHw==}
+  /react-files@3.0.1(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-QQScT6ppWmzSVfOmnndrRp8EXjbepZ6LwjlPl+7LfDaYCVUWQ1b+dXGTJWiHMfUfqvtACj8Nijv8XtEcHxoAVA==}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
@@ -20573,9 +20573,9 @@ packages:
     version: 1.0.6
     dev: false
 
-  github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11):
-    resolution: {tarball: https://codeload.github.com/dapplets/near-social-vm/tar.gz/37ae1fb4d63691ecd8b3823f72053aa689fbb89a}
-    id: github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a
+  github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11):
+    resolution: {tarball: https://codeload.github.com/dapplets/near-social-vm/tar.gz/de8a21deb305e3ffab72d67963dadc5fc6c00de5}
+    id: github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5
     name: near-social-vm
     version: 2.6.1
     peerDependencies:
@@ -20635,7 +20635,7 @@ packages:
       react-bootstrap-typeahead: 6.3.2(react-dom@18.3.1)(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
       react-error-boundary: 3.1.4(react@18.3.1)
-      react-files: 3.0.0(react-dom@18.3.1)(react@18.3.1)
+      react-files: 3.0.1(react-dom@18.3.1)(react@18.3.1)
       react-infinite-scroller: 1.2.6(react@18.3.1)
       react-markdown: 9.0.1(@types/react@18.3.3)(react@18.3.1)
       react-singleton-hook: 4.0.1(react-dom@18.3.1)(react@18.3.1)
@@ -20654,9 +20654,9 @@ packages:
       - supports-color
       - utf-8-validate
 
-  github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a(@popperjs/core@2.11.8)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11):
-    resolution: {tarball: https://codeload.github.com/dapplets/near-social-vm/tar.gz/37ae1fb4d63691ecd8b3823f72053aa689fbb89a}
-    id: github.com/dapplets/near-social-vm/37ae1fb4d63691ecd8b3823f72053aa689fbb89a
+  github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5(@popperjs/core@2.11.8)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1)(react@18.3.1)(styled-components@5.3.11):
+    resolution: {tarball: https://codeload.github.com/dapplets/near-social-vm/tar.gz/de8a21deb305e3ffab72d67963dadc5fc6c00de5}
+    id: github.com/dapplets/near-social-vm/de8a21deb305e3ffab72d67963dadc5fc6c00de5
     name: near-social-vm
     version: 2.6.1
     peerDependencies:
@@ -20716,7 +20716,7 @@ packages:
       react-bootstrap-typeahead: 6.3.2(react-dom@18.3.1)(react@18.3.1)
       react-dom: 18.3.1(react@18.3.1)
       react-error-boundary: 3.1.4(react@18.3.1)
-      react-files: 3.0.0(react-dom@18.3.1)(react@18.3.1)
+      react-files: 3.0.1(react-dom@18.3.1)(react@18.3.1)
       react-infinite-scroller: 1.2.6(react@18.3.1)
       react-markdown: 9.0.1(@types/react@18.3.3)(react@18.3.1)
       react-singleton-hook: 4.0.1(react-dom@18.3.1)(react@18.3.1)
