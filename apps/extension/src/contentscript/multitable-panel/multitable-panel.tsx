@@ -53,15 +53,9 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   }
 `
 
-const NotchWrapper = styled.span`
-  position: fixed;
-  height: 5px;
-`
-
 const Notch = styled.div<{ $isAnimated?: boolean }>`
   position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
@@ -83,16 +77,9 @@ const Notch = styled.div<{ $isAnimated?: boolean }>`
   transition: ${(props) =>
     props.$isAnimated ? 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out' : 'initial'};
 
-  & > div:first-child {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px;
-    padding-top: 0;
-    width: 100%;
-    height: 45px;
-  }
+  justify-content: space-between;
+  padding: 4px;
+  padding-top: 0;
 `
 
 const PinWrapper = styled.div`
@@ -221,39 +208,34 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
             onStop={handleStopDrag}
             defaultPosition={{ x: window.innerWidth / 2 - 159, y: 0 }}
           >
-            <NotchWrapper>
-              <Notch
-                data-testid="notch"
-                data-mweb-context-type="notch"
-                data-mweb-context-parsed={JSON.stringify({ id: 'notch' })}
-                className={
-                  isPin
-                    ? 'visible-pin'
-                    : isNotchDisplayed || isDropdownVisible || isDragging
-                    ? 'visible-default'
-                    : 'visible-notch'
-                }
-                $isAnimated={!isDragging}
-                ref={notchRef}
-              >
-                <div>
-                  <DragWrapper className="dragWrapper">
-                    <DragIconWrapper>
-                      <DragIcon />
-                    </DragIconWrapper>
-                  </DragWrapper>
-                  <Dropdown
-                    isVisible={isDropdownVisible}
-                    onVisibilityChange={setIsDropdownVisible}
-                    onMutateButtonClick={handleMutateButtonClick}
-                  />
-                  <PinWrapper onClick={handlePin}>
-                    {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-                  </PinWrapper>
-                </div>
-                <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-              </Notch>
-            </NotchWrapper>
+            <Notch
+              data-testid="notch"
+              data-mweb-context-type="notch"
+              data-mweb-context-parsed={JSON.stringify({ id: 'notch' })}
+              className={
+                isPin
+                  ? 'visible-pin'
+                  : isNotchDisplayed || isDropdownVisible || isDragging
+                  ? 'visible-default'
+                  : 'visible-notch'
+              }
+              $isAnimated={!isDragging}
+              ref={notchRef}
+            >
+              <DragWrapper className="dragWrapper">
+                <DragIconWrapper>
+                  <DragIcon />
+                </DragIconWrapper>
+              </DragWrapper>
+              <Dropdown
+                isVisible={isDropdownVisible}
+                onVisibilityChange={setIsDropdownVisible}
+                onMutateButtonClick={handleMutateButtonClick}
+              />
+              <PinWrapper onClick={handlePin}>
+                {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
+              </PinWrapper>
+            </Notch>
           </Draggable>
         )}
       </WrapperPanel>
