@@ -3,6 +3,7 @@ import { InsertionPoint } from '../parsers/interface'
 
 export type TreeNodeEvents = {
   contextChanged: {}
+  visibilityChanged: {}
   childContextAdded: { child: IContextNode }
   childContextRemoved: { child: IContextNode }
   insertionPointAdded: { insertionPoint: InsertionPointWithElement }
@@ -23,6 +24,7 @@ export interface IContextNode {
   namespace: string
   parentNode: IContextNode | null // ToDo: rename to parent
   element: HTMLElement | null
+  isVisible: boolean
 
   parsedContext: ParsedContext // ToDo: rename to parsed
   insPoints: InsertionPointWithElement[]
@@ -46,6 +48,7 @@ export interface ITreeBuilder {
   removeChild(parent: IContextNode, child: IContextNode): void
   updateParsedContext(context: IContextNode, parsedContext: any): void
   updateInsertionPoints(context: IContextNode, insPoints: InsertionPointWithElement[]): void
+  updateVisibility(context: IContextNode, isVisible: boolean): void
   createNode(
     namespace: string | null,
     contextType: string,

@@ -44,6 +44,13 @@ const TreeItem: FC<{
         setWrappedNode({ node })
         // ToDo: don't replace whole node
       }),
+      node.on('visibilityChanged', () => {
+        console.log(
+          `VISIBILITY: ${node.contextType}#${node.id} is ${node.isVisible ? 'visible' : 'not visible'}`
+        )
+        setWrappedNode({ node })
+        // ToDo: don't replace whole node
+      }),
       node.on('childContextAdded', ({ child }) => {
         contextKeyRef.current.set(child, ++contextKeyCounter.current)
         setChildren((prev) => [...prev, child])

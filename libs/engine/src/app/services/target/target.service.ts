@@ -46,7 +46,12 @@ export class TargetService {
       return false
     }
 
-    // ToDo: disabled 
+    // for Target
+    if ('isVisible' in target && target.isVisible !== context.isVisible) {
+      return false
+    }
+
+    // ToDo: disabled
     // for TransferableContext
     // if ('parsed' in target && !isDeepEqual(target.parsed, context.parsedContext)) {
     //   return false

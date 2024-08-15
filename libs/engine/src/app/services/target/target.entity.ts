@@ -1,6 +1,7 @@
 export type Target = {
   namespace: string
   contextType: string
+  isVisible?: boolean
   if: Record<string, TargetCondition>
   parent?: Target
 }

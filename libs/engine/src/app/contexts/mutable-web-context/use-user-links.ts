@@ -15,7 +15,7 @@ export const useUserLinks = (context: IContextNode) => {
     } else {
       return engine.userLinkService.getStaticLinksForApps(activeApps, context)
     }
-  }, [engine, selectedMutation, activeApps, context])
+  }, [engine, selectedMutation, activeApps, context.parsedContext, context.isVisible])
 
   const fetchUserLinks = useCallback(async () => {
     if (!engine || !selectedMutation?.id) {

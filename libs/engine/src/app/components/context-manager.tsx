@@ -98,7 +98,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     return Array.from(portals.values())
       .filter(({ target }) => TargetService.isTargetMet(target, context))
       .sort((a, b) => (b.key > a.key ? 1 : -1))
-  }, [portals, context])
+  }, [portals, context.parsedContext, context.isVisible])
 
   const [materializedComponents, nonMaterializedComponents] = useMemo(() => {
     return filterAndDiscriminate(portalComponents, (portal) => portal.inMemory)
