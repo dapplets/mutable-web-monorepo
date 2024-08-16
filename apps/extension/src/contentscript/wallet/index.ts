@@ -108,11 +108,11 @@ const MyNearWallet: WalletBehaviourFactory<BridgeWallet> = async (options) => {
 export function setupWallet(params: WalletParams): WalletModuleFactory<BridgeWallet> {
   return async () => {
     return {
-      id: 'background',
+      id: 'mutable-web-extension',
       type: 'bridge',
       metadata: {
-        name: 'background',
-        description: 'background',
+        name: 'mutable-web-extension',
+        description: 'mutable-web-extension',
         available: true,
         iconUrl: '',
         deprecated: false,

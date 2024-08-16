@@ -14,7 +14,7 @@ import { setupWallet } from './wallet'
 const eventEmitter = new NEventEmitter()
 const networkIdPromise = Background.getCurrentNetwork()
 
-// The wallet selector looks like an unnecessary abstraction layer over the background wallet
+// The wallet selector looks like an unnecessary abstraction layer over the "mutable-web-extension" wallet
 // but we have to use it because near-social-vm uses not only a wallet object, but also a selector state
 // object and its Observable for event subscription
 const selectorPromise = networkIdPromise.then((networkId) =>
@@ -26,7 +26,7 @@ const selectorPromise = networkIdPromise.then((networkId) =>
   }).then((selector) => {
     // Use background wallet by default
     const wallet = selector.wallet
-    selector.wallet = () => wallet('background')
+    selector.wallet = () => wallet('mutable-web-extension')
     return selector
   })
 )
