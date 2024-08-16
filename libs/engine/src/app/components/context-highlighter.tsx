@@ -20,6 +20,10 @@ export const ContextHighlighter = () => {
             : TargetService.isTargetMet(highlighterTask.target, context)
           : true
 
+        const calloutLevel =
+          context.contextLevel === 'callout' &&
+          context.element?.attributes?.getNamedItem('data-context-level')?.value
+
         return isSuitable && context.element ? (
           <Highlighter
             el={context.element}
@@ -30,10 +34,15 @@ export const ContextHighlighter = () => {
                 1000 *
                 (context.contextLevel === 'system'
                   ? 6
-                  : context.contextLevel === 'callout'
-                    ? 9
-                    : 1),
-              position: context.contextLevel === 'default' ? 'absolute' : 'fixed',
+                  : calloutLevel === 'default'
+                    ? 3
+                    : calloutLevel === 'system'
+                      ? 8
+                      : 1),
+              position:
+                context.contextLevel === 'default' || calloutLevel === 'default'
+                  ? 'absolute'
+                  : 'fixed',
             }}
             isFilled={highlighterTask.isFilled}
             children={highlighterTask.icon}

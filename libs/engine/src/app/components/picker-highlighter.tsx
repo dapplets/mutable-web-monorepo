@@ -111,8 +111,21 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
   const borderColor =
     styles?.borderColor ?? variant !== 'current' ? DEFAULT_INACTIVE_BORDER_COLOR : undefined
 
+  const calloutLevel =
+    context.contextLevel === 'callout' &&
+    context.element?.attributes?.getNamedItem('data-context-level')?.value
+
+  if (calloutLevel === 'callout') return
+
   const zIndex =
-    1000 * (context.contextLevel === 'system' ? 6 : context.contextLevel === 'callout' ? 9 : 1) +
+    1000 *
+      (context.contextLevel === 'system'
+        ? 6
+        : calloutLevel === 'default'
+          ? 3
+          : calloutLevel === 'system'
+            ? 8
+            : 1) +
     (contextDepth ?? 0)
 
   const doShowLatch = LatchComponent && (variant === 'current' || variant === 'parent')
@@ -150,7 +163,8 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
           borderColor,
           zIndex,
           opacity,
-          position: context.contextLevel === 'default' ? 'absolute' : 'fixed',
+          position:
+            context.contextLevel === 'default' || calloutLevel === 'default' ? 'absolute' : 'fixed',
         }}
         isFilled={!hasLatch}
         children={children}
