@@ -3,23 +3,47 @@ import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
 export class TargetService {
-  static findContextByTarget(target: Target, context: IContextNode): IContextNode | null {
+  static *findContextsByTarget(target: Target, context: IContextNode): Generator<IContextNode> {
     if (this.isTargetMet(target, context)) {
-      return context
+      yield context
     }
 
     for (const child of context.children) {
-      const found = this.findContextByTarget(target, child)
+      yield* this.findContextsByTarget(target, child)
+    }
+  }
 
-      if (found) {
-        return found
-      }
+  static findContextByTarget(target: Target, context: IContextNode): IContextNode | null {
+    for (const ctx of this.findContextsByTarget(target, context)) {
+      return ctx
     }
 
     return null
   }
 
   static isTargetMet(target: Target | TransferableContext, context: IContextNode): boolean {
+    // for Target
+    if ('limit' in target && target.limit !== undefined) {
+      const limitlessTarget = { ...target, limit: undefined }
+      const root = this.getRootContext(context)
+
+      const iterator = this.findContextsByTarget(limitlessTarget, root)
+
+      for (let i = 0; i < target.limit; i++) {
+        const result = iterator.next()
+
+        if (result.done) {
+          break
+        }
+
+        if (result.value === context) {
+          return true
+        }
+      }
+
+      return false
+    }
+
     // ToDo: check insertion points?
 
     if (target.namespace && target.namespace !== context.namespace) {
@@ -65,6 +89,10 @@ export class TargetService {
     }
 
     return true
+  }
+
+  static getRootContext(context: IContextNode): IContextNode {
+    return context.parentNode ? this.getRootContext(context.parentNode) : context
   }
 
   static _areConditionsMet(

@@ -45,9 +45,12 @@ const TreeItem: FC<{
         // ToDo: don't replace whole node
       }),
       node.on('visibilityChanged', () => {
-        console.log(
-          `VISIBILITY: ${node.contextType}#${node.id} is ${node.isVisible ? 'visible' : 'not visible'}`
-        )
+        if (node.isVisible) {
+          console.log(`[VISIBLE]: ${node.contextType}#${node.id}`)
+        } else {
+          console.log(`[NOT VISIBLE]: ${node.contextType}#${node.id}`)
+        }
+
         setWrappedNode({ node })
         // ToDo: don't replace whole node
       }),

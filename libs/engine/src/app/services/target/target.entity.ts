@@ -3,6 +3,7 @@ export type Target = {
   contextType: string
   isVisible?: boolean
   if: Record<string, TargetCondition>
+  limit?: number
   parent?: Target
 }
 

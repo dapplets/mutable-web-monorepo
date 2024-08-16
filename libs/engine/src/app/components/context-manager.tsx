@@ -23,10 +23,6 @@ import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
 
-const getRootContext = (context: IContextNode): IContextNode => {
-  return context.parentNode ? getRootContext(context.parentNode) : context
-}
-
 interface WidgetProps {
   context: TransferableContext
   link?: {
@@ -129,7 +125,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleContextQuery = useCallback(
     (target: Target): TransferableContext | null => {
-      const rootContext = getRootContext(context)
+      const rootContext = TargetService.getRootContext(context)
       const foundContext = TargetService.findContextByTarget(target, rootContext)
       return foundContext ? buildTransferableContext(foundContext) : null
     },
