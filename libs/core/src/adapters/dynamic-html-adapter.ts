@@ -100,10 +100,7 @@ export class DynamicHtmlAdapter implements IAdapter {
     return context
   }
 
-  private _handleMutations(
-    element: HTMLElement,
-    context: IContextNode
-  ) {
+  private _handleMutations(element: HTMLElement, context: IContextNode) {
     const parsedContext = this.parser.parseContext(element, context.contextType)
     const pairs = this.parser.findChildElements(element, context.contextType)
     const insPoints = this._findAvailableInsPoints(element, context.contextType)

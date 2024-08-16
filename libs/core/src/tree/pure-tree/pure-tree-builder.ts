@@ -1,6 +1,12 @@
 import { DappletsEngineNs } from '../../constants'
 import { isDeepEqual } from '../../utils'
-import { IContextNode, ITreeBuilder, InsertionPointWithElement, ParsedContext } from '../types'
+import {
+  ContextLevel,
+  IContextNode,
+  ITreeBuilder,
+  InsertionPointWithElement,
+  ParsedContext,
+} from '../types'
 import { PureContextNode } from './pure-context-node'
 
 export type TreeBuilderEvents = {
@@ -36,7 +42,14 @@ export class PureTreeBuilder implements ITreeBuilder {
     insPoints: InsertionPointWithElement[] = [],
     element: HTMLElement | null = null
   ): IContextNode {
-    return new PureContextNode(namespace, contextType, parsedContext, insPoints, element)
+    return new PureContextNode(
+      namespace,
+      contextType,
+      parsedContext,
+      insPoints,
+      element,
+      (element?.getAttribute('data-mweb-context-level') || 'default') as ContextLevel // ToDo: hardcoded
+    )
   }
 
   updateParsedContext(context: IContextNode, newParsedContext: any): void {

@@ -17,9 +17,12 @@ export type ParsedContext = {
   [key: string]: any
 }
 
+export type ContextLevel = 'default' | 'system' | 'callout'
+
 export interface IContextNode {
   id: string | null
   contextType: string // ToDo: rename to type
+  contextLevel: ContextLevel
   namespace: string
   parentNode: IContextNode | null // ToDo: rename to parent
   element: HTMLElement | null

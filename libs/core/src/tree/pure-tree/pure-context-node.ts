@@ -1,9 +1,10 @@
 import { EventEmitter, Subscription } from '../../event-emitter'
-import { IContextNode, InsertionPointWithElement, TreeNodeEvents } from '../types'
+import { ContextLevel, IContextNode, InsertionPointWithElement, TreeNodeEvents } from '../types'
 
 export class PureContextNode implements IContextNode {
   public id: string | null = null
   public contextType: string
+  public contextLevel: ContextLevel
   public namespace: string
   public parentNode: IContextNode | null = null
   public children: IContextNode[] = []
@@ -27,13 +28,15 @@ export class PureContextNode implements IContextNode {
     contextType: string,
     parsedContext: any = {},
     insPoints: InsertionPointWithElement[] = [],
-    element: HTMLElement | null = null
+    element: HTMLElement | null = null,
+    contextLevel: ContextLevel
   ) {
     this.namespace = namespace
     this.contextType = contextType
     this.parsedContext = parsedContext
     this.insPoints = insPoints
     this.element = element
+    this.contextLevel = contextLevel
 
     // ToDo: the similar logic is in tree builder
     this.id = parsedContext.id ?? null
@@ -43,7 +46,7 @@ export class PureContextNode implements IContextNode {
     child.parentNode = null
     this.children = this.children.filter((c) => c !== child)
     this.#eventEmitter.emit('childContextRemoved', { child })
-    
+
     // ToDo: remove children of removed context?
   }
 

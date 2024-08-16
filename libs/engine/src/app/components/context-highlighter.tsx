@@ -26,6 +26,14 @@ export const ContextHighlighter = () => {
             styles={{
               ...highlighterTask.styles,
               opacity: 1,
+              zIndex:
+                1000 *
+                (context.contextLevel === 'system'
+                  ? 6
+                  : context.contextLevel === 'callout'
+                    ? 9
+                    : 1),
+              position: context.contextLevel === 'default' ? 'absolute' : 'fixed',
             }}
             isFilled={highlighterTask.isFilled}
             children={highlighterTask.icon}
