@@ -5,6 +5,7 @@ export enum InsertionType {
   After = 'after',
   Begin = 'begin',
   End = 'end',
+  Replace = 'replace',
 }
 
 export interface IAdapter {

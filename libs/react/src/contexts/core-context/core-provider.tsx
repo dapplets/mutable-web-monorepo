@@ -11,6 +11,8 @@ const CoreProvider: FC<Props> = ({ children }) => {
 
   if (!coreRef.current) {
     coreRef.current = new Core()
+
+    console.log('[@mweb/react] Initialized core', coreRef.current)
   }
 
   const core = coreRef.current
