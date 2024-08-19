@@ -6,11 +6,11 @@ export enum AdapterType {
   Microdata = 'microdata',
   Json = 'json',
   MWeb = 'mweb',
-  Blink = 'blink',
+  Link = 'link',
 }
 
 export type ParserConfig =
   | ({ parserType: AdapterType.Json; id: string } & JsonParserConfig)
   | ({ parserType: AdapterType.Bos; id: string } & BosParserConfig)
   | { parserType: AdapterType.MWeb; id: string }
-  | { parserType: AdapterType.Blink; id: string }
+  | { parserType: AdapterType.Link; id: string }

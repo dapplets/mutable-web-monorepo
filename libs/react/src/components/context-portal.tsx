@@ -17,7 +17,7 @@ export const ContextPortal: FC<{
         element: context.element,
         insertionType:
           // ToDo: de-hardcode when context modificators will be implemented (using contexts instead of insertion points)
-          context.namespace === 'engine' && context.contextType === 'blink'
+          context.namespace === 'engine' && context.contextType === 'link'
             ? InsertionType.Replace
             : DefaultInsertionType,
       }
