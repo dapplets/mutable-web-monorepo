@@ -7,15 +7,14 @@ const DEFAULT_INACTIVE_BORDER_COLOR = '#384BFF4D' // light blue
 const DEFAULT_CHILDREN_BORDER_STYLE = 'dashed'
 const PRIVILEGED_NAMESPACE = 'mweb' // ToDo: hardcode. Needs to be fixed.
 
-const getElementDepth = (el: Element | Node) => {
+const getElementDepth = (el: Element | ShadowRoot | null | undefined) => {
   let depth = 0
-  let host = (el as any).host
-  while (el.parentNode !== null || host) {
-    if (host) el = host as Node
-    el = el.parentNode!
-    host = (el as any).host
+
+  while (el) {
     depth++
+    el = el instanceof ShadowRoot ? el.host : el.parentElement
   }
+
   return depth
 }
 
