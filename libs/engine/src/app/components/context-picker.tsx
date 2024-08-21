@@ -9,6 +9,30 @@ const isTopContext = (context: IContextNode): boolean => {
   return context.contextType === 'website' && context.namespace === 'engine'
 }
 
+/** (ToDo)
+ * Top level context should not be selectable.
+ * They are used to retrieve information about the website and the logged in user,
+ * not as a container for adding widgets.
+ *  */
+const isAllowedContext = (context: IContextNode): boolean => {
+  // Exclude top-level context that is the same for the entire core (L0)
+  if (isTopContext(context)) {
+    return false
+  }
+
+  // Exclude parser-specific root contexts (L1)
+  if (context.contextType === 'root' && context.parentNode && isTopContext(context.parentNode)) {
+    return false
+  }
+
+  // Exclude LinkParser contexts (L2)
+  if (context.namespace === 'engine' && context.contextType === 'link') {
+    return false
+  }
+
+  return true
+}
+
 export const ContextPicker: FC = () => {
   const { tree } = useCore()
   const { pickerTask } = usePicker()
@@ -20,18 +44,9 @@ export const ContextPicker: FC = () => {
   return (
     <ContextTree>
       {({ context }) => {
-        /** (ToDo)
-         * Top level context should not be selectable.
-         * They are used to retrieve information about the website and the logged in user,
-         * not as a container for adding widgets.
-         *  */
-        if (
-          (context.contextType === 'root' &&
-            context.parentNode &&
-            isTopContext(context.parentNode)) ||
-          isTopContext(context)
-        )
+        if (!isAllowedContext(context)) {
           return null
+        }
 
         const isSuitable = useMemo(
           () => pickerTask.target?.some((t) => TargetService.isTargetMet(t, context)) ?? true,

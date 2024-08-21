@@ -9,15 +9,17 @@ function tryParseUrl(text: string): URL | null {
 }
 
 export class LinkParser implements IParser {
-  parseContext({ href, innerText }: HTMLAnchorElement) {
+  parseContext(element: HTMLAnchorElement, contextName: string) {
+    if (contextName === 'root') return { id: 'global' }
+
     // ToDo: twitter-specific logic. Twitter adds '…' to the end of the url
-    const cleanUrl = innerText.replace(/…$/g, '')
+    const cleanUrl = element.innerText.replace(/…$/g, '')
 
     return {
-      id: href,
-      href: href,
+      id: element.href,
+      href: element.href,
       innerHref: tryParseUrl(cleanUrl)?.href,
-      innerText: innerText,
+      innerText: element.innerText,
     }
   }
 
