@@ -1,9 +1,12 @@
-import { IContextNode, isDeepEqual } from '@mweb/core'
+import { IContextNode } from '@mweb/core'
 import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
 export class TargetService {
-  static *findContextsByTarget(target: Target, context: IContextNode): Generator<IContextNode> {
+  static *findContextsByTarget(
+    target: Target | TransferableContext,
+    context: IContextNode
+  ): Generator<IContextNode> {
     if (this.isTargetMet(target, context)) {
       yield context
     }
@@ -13,7 +16,10 @@ export class TargetService {
     }
   }
 
-  static findContextByTarget(target: Target, context: IContextNode): IContextNode | null {
+  static findContextByTarget(
+    target: Target | TransferableContext,
+    context: IContextNode
+  ): IContextNode | null {
     for (const ctx of this.findContextsByTarget(target, context)) {
       return ctx
     }
@@ -22,28 +28,6 @@ export class TargetService {
   }
 
   static isTargetMet(target: Target | TransferableContext, context: IContextNode): boolean {
-    // for Target
-    if ('limit' in target && target.limit !== undefined) {
-      const limitlessTarget = { ...target, limit: undefined }
-      const root = this.getRootContext(context)
-
-      const iterator = this.findContextsByTarget(limitlessTarget, root)
-
-      for (let i = 0; i < target.limit; i++) {
-        const result = iterator.next()
-
-        if (result.done) {
-          break
-        }
-
-        if (result.value === context) {
-          return true
-        }
-      }
-
-      return false
-    }
-
     // ToDo: check insertion points?
 
     if (target.namespace && target.namespace !== context.namespace) {

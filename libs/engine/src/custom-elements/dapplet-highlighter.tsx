@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react'
 import { InjectableTarget } from '../app/contexts/engine-context/engine-context'
 import { useHighlighter, THighlighterTask } from '../app/contexts/highlighter-context'
+import { FirstTargetTransformerHoc } from './dapplet-portal'
 
 const _DappletHighlighter: React.FC<{
   target: InjectableTarget
@@ -8,7 +9,7 @@ const _DappletHighlighter: React.FC<{
   filled?: boolean
   icon?: ReactElement
   action?: () => void
-}> = ({ target, styles, filled, icon, action }) => {
+}> = FirstTargetTransformerHoc(({ target, styles, filled, icon, action }) => {
   const { setHighlighterTask } = useHighlighter()
 
   React.useEffect(() => {
@@ -23,7 +24,7 @@ const _DappletHighlighter: React.FC<{
   }, [target, styles, filled, icon, action])
 
   return null
-}
+})
 
 export const DappletHighlighter = (props: THighlighterTask) => {
   return <_DappletHighlighter {...props} />

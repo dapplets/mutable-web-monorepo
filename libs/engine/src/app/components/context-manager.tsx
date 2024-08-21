@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ContextPortal } from '@mweb/react'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { useEngine } from '../contexts/engine-context'
@@ -95,6 +95,18 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
       .filter(({ target }) => TargetService.isTargetMet(target, context))
       .sort((a, b) => (b.key > a.key ? 1 : -1))
   }, [portals, context.parsedContext, context.isVisible])
+
+  useEffect(() => {
+    portalComponents.forEach(({ onContextStarted }) => {
+      onContextStarted?.(context)
+    })
+
+    return () => {
+      portalComponents.forEach(({ onContextFinished }) => {
+        onContextFinished?.(context)
+      })
+    }
+  }, [portalComponents])
 
   const [materializedComponents, nonMaterializedComponents] = useMemo(() => {
     return filterAndDiscriminate(portalComponents, (portal) => portal.inMemory)
@@ -490,6 +502,8 @@ const PortalRenderer: FC<{
     },
     [target, context]
   )
+
+  if (!PortalComponent) return null
 
   return (
     <InMemoryRenderer>
