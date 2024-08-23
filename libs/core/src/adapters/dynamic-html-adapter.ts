@@ -103,9 +103,12 @@ export class DynamicHtmlAdapter implements IAdapter {
       })
     }
 
-    const intersectionObserver = new IntersectionObserver(([entry]) => {
-      this.treeBuilder.updateVisibility(context, entry.isIntersecting)
-    })
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => this.treeBuilder.updateVisibility(context, entry.isIntersecting),
+      {
+        threshold: 1, // isIntersecting is true when 100% of the context element is in viewport
+      }
+    )
 
     this.#intersectionObserverByElement.set(element, intersectionObserver)
 
