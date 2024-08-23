@@ -2,8 +2,9 @@ import { createContext } from 'react'
 import { BosRedirectMap } from '../../services/dev-server-service'
 import { Target } from '../../services/target/target.entity'
 import { TransferableContext } from '../../common/transferable-context'
+import { IContextNode } from '@mweb/core'
 
-export type InjectableTarget = Target & {
+export type InjectableTarget = (Target | TransferableContext) & {
   injectTo?: string
 }
 
@@ -14,10 +15,12 @@ export type PortalComponent = React.FC<{
 }>
 
 export type Portal = {
-  component: PortalComponent
+  component?: PortalComponent
   target: InjectableTarget
   key: string
   inMemory: boolean
+  onContextStarted?: (context: IContextNode) => void
+  onContextFinished?: (context: IContextNode) => void
 }
 
 export type EngineContextState = {
