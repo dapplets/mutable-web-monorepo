@@ -9,11 +9,13 @@ import { MutationRepository } from './app/services/mutation/mutation.repository'
 import { ApplicationRepository } from './app/services/application/application.repository'
 import { UserLinkRepository } from './app/services/user-link/user-link.repository'
 import { ParserConfigRepository } from './app/services/parser-config/parser-config.repository'
+import { DocumentRepository } from './app/services/document/document.repository'
 import { MutationService } from './app/services/mutation/mutation.service'
 import { ApplicationService } from './app/services/application/application.service'
 import { UserLinkSerivce } from './app/services/user-link/user-link.service'
 import { ParserConfigService } from './app/services/parser-config/parser-config.service'
 import { LinkDbService } from './app/services/link-db/link-db.service'
+import { DocumentSerivce } from './app/services/document/document.service'
 
 export type EngineConfig = {
   networkId: string
@@ -32,6 +34,7 @@ export class Engine {
   applicationService: ApplicationService
   userLinkService: UserLinkSerivce
   parserConfigService: ParserConfigService
+  documentService: DocumentSerivce
 
   constructor(public readonly config: EngineConfig) {
     if (!this.config.storage) {
@@ -48,11 +51,13 @@ export class Engine {
     const applicationRepository = new ApplicationRepository(socialDb, localDb)
     const userLinkRepository = new UserLinkRepository(socialDb, nearSigner)
     const parserConfigRepository = new ParserConfigRepository(socialDb)
+    const documentRepository = new DocumentRepository(socialDb)
 
     this.linkDbService = new LinkDbService(socialDb)
     this.mutationService = new MutationService(mutationRepository, nearConfig)
     this.applicationService = new ApplicationService(applicationRepository)
     this.userLinkService = new UserLinkSerivce(userLinkRepository, this.applicationService)
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
+    this.documentService = new DocumentSerivce(documentRepository)
   }
 }
