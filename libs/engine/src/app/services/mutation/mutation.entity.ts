@@ -1,6 +1,13 @@
+import { AppId } from '../application/application.entity'
+import { DocumentId } from '../document/document.entity'
 import { Target } from '../target/target.entity'
 
 export type MutationId = string
+
+export type AppInMutation = {
+  appId: AppId
+  documentId?: DocumentId
+}
 
 export type Mutation = {
   id: MutationId
@@ -11,7 +18,7 @@ export type Mutation = {
       ipfs_cid?: string
     }
   }
-  apps: string[]
+  apps: AppInMutation[]
   targets: Target[]
 }
 
