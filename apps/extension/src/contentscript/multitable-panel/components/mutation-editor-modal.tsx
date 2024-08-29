@@ -289,7 +289,9 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
-      const apps = checked ? [...mut.apps, appId] : mut.apps.filter((app) => app !== appId)
+      const apps = checked
+        ? [...mut.apps, { appId, documentId: null }]
+        : mut.apps.filter((app) => app.appId !== appId)
       return mergeDeep(cloneDeep(mut), { apps })
     })
   }
@@ -373,7 +375,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             key={app.id}
             src={app.id}
             metadata={app.metadata}
-            isChecked={editingMutation.apps.includes(app.id)}
+            isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
             onChange={(val) => handleAppCheckboxChange(app.id, val)}
             disabled={isFormDisabled}
           />

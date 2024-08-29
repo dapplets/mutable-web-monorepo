@@ -6,7 +6,7 @@ export type MutationId = string
 
 export type AppInMutation = {
   appId: AppId
-  documentId?: DocumentId
+  documentId: DocumentId | null
 }
 
 export type Mutation = {

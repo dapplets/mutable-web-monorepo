@@ -159,7 +159,20 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
       (appId: AppId) =>
         (ctx: TransferableContext, accountIds?: string[] | string, indexRules?: LinkIndexRules) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-          return engine.linkDbService.get(selectedMutation.id, appId, ctx, accountIds, indexRules)
+
+          // ToDo: handle multiple app instances
+          const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
+
+          if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+
+          return engine.linkDbService.get(
+            selectedMutation.id,
+            appId,
+            appFromMutation.documentId,
+            ctx,
+            accountIds,
+            indexRules
+          )
         }
     ),
     [engine, selectedMutation]
@@ -174,9 +187,16 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           indexRules: LinkIndexRules
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
+
+          // ToDo: handle multiple app instances
+          const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
+
+          if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+
           return engine.linkDbService.set(
             selectedMutation.id,
             appId,
+            appFromMutation.documentId,
             ctx,
             dataByAccount,
             indexRules
