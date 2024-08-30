@@ -14,3 +14,4 @@ export {
 export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper'
 export { EngineConfig } from './engine'
 export { App as MutableWebProvider } from './app/app'
+export { useAppDocuments } from './app/contexts/mutable-web-context/use-app-documents'
