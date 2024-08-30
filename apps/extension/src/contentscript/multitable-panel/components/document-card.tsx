@@ -2,13 +2,12 @@ import { AppMetadata } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
-import { DocumentCard } from './document-card'
 
 const Card = styled.div`
   position: relative;
   width: 100%;
   border-radius: 10px;
-  background: #fff;
+  background: #f8f9ff;
   border: 1px solid #eceef0;
   font-family: sans-serif;
   &:hover {
@@ -18,7 +17,7 @@ const Card = styled.div`
     opacity: 0.7;
   }
   &.disabled:hover {
-    background: #fff;
+    background: #f8f9ff;
   }
 `
 
@@ -68,12 +67,8 @@ const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolea
 // `
 
 const Thumbnail = styled.div`
-  display: block;
-  width: 60px;
-  height: 60px;
-  flex-shrink: 0;
   border: 1px solid #eceef0;
-  border-radius: 8px;
+  border-radius: 99em;
   overflow: hidden;
   outline: none;
   transition: border-color 200ms;
@@ -85,6 +80,33 @@ const Thumbnail = styled.div`
 
   img {
     object-fit: cover;
+    width: 100%;
+    height: 100%;
+  }
+`
+
+const ThumbnailMini = styled.div`
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border: 1px solid #eceef0;
+  border-radius: 4px;
+  overflow: hidden;
+  outline: none;
+  transition: border-color 200ms;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+
+  &:focus,
+  &:hover {
+    border-color: #d0d5dd;
+  }
+
+  img {
+    object-fit: cover;
+    vertical-align: unset;
     width: 100%;
     height: 100%;
   }
@@ -109,55 +131,6 @@ const ButtonLink = styled.button`
   }
 `
 
-const MoreIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-      d="M10 8L14 12L10 16"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <rect
-      x="3.75"
-      y="3.75"
-      width="16.5"
-      height="16.5"
-      rx="3.25"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-    />
-  </svg>
-)
-
-const UncheckedIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-    <rect
-      x="3.75"
-      y="3.75"
-      width="16.5"
-      height="16.5"
-      rx="3.25"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-    />
-    <path
-      d="M12 8V16"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M8 12H16"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
-
 const CheckedIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
     <path
@@ -169,83 +142,47 @@ const CheckedIcon = () => (
 
 export interface Props {
   src: string
-  metadata: AppMetadata['metadata']
-  isChecked: boolean
-  onChange: (isChecked: boolean) => void
+  metadata: AppMetadata['metadata'] // ToDo DocMetadata
+  onChange: () => void
   disabled: boolean
-  // hasDocuments: boolean - ToDo
-  // addedDocuments: IDocument[] - ToDo
 }
 
-export const ApplicationCard: React.FC<Props> = ({
-  src,
-  metadata,
-  isChecked,
-  onChange,
-  disabled,
-  // hasDocuments, - ToDo
-  // addedDocuments, - ToDo
-}) => {
-  const [accountId, , appId, docId] = src.split('/') // ToDo docID
+export const DocumentCard: React.FC<Props> = ({ src, metadata, onChange, disabled }) => {
+  const [accountId, , docName] = src.split('/')
 
   return (
     <Card className={disabled ? 'disabled' : ''}>
       <CardBody>
-        <Thumbnail>
-          <Image
-            image={metadata.image}
-            fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-            alt={metadata.name}
-          />
-        </Thumbnail>
+        <div style={{ position: 'relative', width: 32, height: 32, flexShrink: 0 }}>
+          <Thumbnail>
+            <Image
+              image={metadata.image}
+              fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+              alt={metadata.name}
+            />
+          </Thumbnail>
+          <ThumbnailMini>
+            <Image
+              image={metadata.image}
+              fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+              alt={metadata.name}
+            />
+          </ThumbnailMini>
+        </div>
 
         <CardContent>
           <TextLink bold ellipsis>
-            {metadata.name || appId}
+            {metadata.name || docName}
           </TextLink>
 
           <TextLink small ellipsis>
             @{accountId}
           </TextLink>
         </CardContent>
-        <ButtonLink
-          className={disabled ? 'disabled' : ''}
-          disabled={disabled}
-          onClick={() => onChange(!isChecked)}
-        >
-          {appId === 'WebGuide' ? ( // ToDo => hasDocuments
-            <MoreIcon />
-          ) : isChecked ? (
-            <CheckedIcon />
-          ) : (
-            <UncheckedIcon />
-          )}
+        <ButtonLink className={disabled ? 'disabled' : ''} disabled={disabled} onClick={onChange}>
+          <CheckedIcon />
         </ButtonLink>
       </CardBody>
-      {appId === 'WebGuide' ? ( // // ToDo => addedDocuments
-        <div style={{ display: 'flex', paddingBottom: 10 }}>
-          <div style={{ border: '1px solid #C1C6CE', margin: '0 10px' }}></div>
-          <div
-            style={{
-              width: '100%',
-              marginRight: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 6,
-            }}
-          >
-            {['My web guide', 'Your web guide', 'Their web guide'].map((document) => (
-              <DocumentCard
-                key={document}
-                src={src}
-                metadata={metadata}
-                onChange={() => onChange(false)}
-                disabled={disabled}
-              />
-            ))}
-          </div>
-        </div>
-      ) : null}
     </Card>
   )
 }
