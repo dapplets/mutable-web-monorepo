@@ -32,10 +32,16 @@ export class MutationRepository {
 
     if (!mutation) return null
 
+    const normalizedApps = mutation.apps
+      ? JSON.parse(mutation.apps).map((app: any) =>
+          typeof app === 'string' ? { appId: app } : app
+        )
+      : []
+
     return {
       id: globalMutationId,
       metadata: mutation.metadata,
-      apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+      apps: normalizedApps,
       targets: mutation.targets ? JSON.parse(mutation.targets) : [],
     }
   }
@@ -59,10 +65,16 @@ export class MutationRepository {
       const [accountId, , , , localMutationId] = key.split(KeyDelimiter)
       const mutationId = [accountId, MutationKey, localMutationId].join(KeyDelimiter)
 
+      const normalizedApps = mutation.apps
+        ? JSON.parse(mutation.apps).map((app: any) =>
+            typeof app === 'string' ? { appId: app } : app
+          )
+        : []
+
       return {
         id: mutationId,
         metadata: mutation.metadata,
-        apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+        apps: normalizedApps,
         targets: mutation.targets ? JSON.parse(mutation.targets) : [],
       }
     })
@@ -75,10 +87,12 @@ export class MutationRepository {
 
     const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId]
 
+    const denormalizedApps = mutation.apps.map((app) => (app.documentId ? app : app.appId))
+
     const storedAppMetadata = {
       metadata: mutation.metadata,
       targets: mutation.targets ? JSON.stringify(mutation.targets) : null,
-      apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
+      apps: mutation.apps ? JSON.stringify(denormalizedApps) : null,
     }
 
     await this.socialDb.set(SocialDbService.buildNestedData(keys, storedAppMetadata))

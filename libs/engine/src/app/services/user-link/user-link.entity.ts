@@ -23,7 +23,7 @@ export type LinkIndexObject = {
 
 export type BosUserLink = {
   id: UserLinkId
-  appId: string
+  appId: AppId
   namespace: string
   insertionPoint: string
   bosWidgetId: string
@@ -34,6 +34,6 @@ export type BosUserLink = {
 
 export type ControllerLink = {
   id: string
-  appId: string
+  appId: AppId
   bosWidgetId: string
 }

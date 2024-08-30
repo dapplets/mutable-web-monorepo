@@ -19,9 +19,9 @@ export const useMutationApps = (engine: Engine, mutation?: Mutation | null) => {
 
       // ToDo: move to service
       const apps = await Promise.all(
-        mutation.apps.map((appId) =>
+        mutation.apps.map((app) =>
           engine.applicationService
-            .getApplication(appId)
+            .getApplication(app.appId)
             .then((appMetadata) =>
               appMetadata
                 ? engine.applicationService.populateAppWithSettings(mutation.id, appMetadata)

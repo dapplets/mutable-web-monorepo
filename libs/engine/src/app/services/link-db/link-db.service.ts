@@ -6,6 +6,7 @@ import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
 import { UserLinkRepository } from '../user-link/user-link.repository'
 import { LinkIndexRules, IndexObject, LinkedDataByAccount } from './link-db.entity'
+import { DocumentId } from '../document/document.entity'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -27,6 +28,7 @@ export class LinkDbService {
   async set(
     mutationId: MutationId,
     appId: AppId,
+    docId: DocumentId | null,
     context: TransferableContext, // ToDo: replace with IContextNode?
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules = DefaultIndexRules
@@ -40,7 +42,7 @@ export class LinkDbService {
 
     const [accountId] = accounts
 
-    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, indexRules, context)
+    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
     const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
 
     const keys = [accountId, SettingsKey, ProjectIdKey, ContextLinkKey, index]
@@ -56,11 +58,12 @@ export class LinkDbService {
   async get(
     mutationId: MutationId,
     appId: AppId,
+    docId: DocumentId | null,
     context: TransferableContext,
     accountIds: string[] | string = [WildcardKey], // from any user by default
     indexRules: LinkIndexRules = DefaultIndexRules // use context id as index by default
   ): Promise<LinkedDataByAccount> {
-    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, indexRules, context)
+    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
     const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
 
     accountIds = Array.isArray(accountIds) ? accountIds : [accountIds]
@@ -95,17 +98,24 @@ export class LinkDbService {
   static _buildLinkIndex(
     mutationId: MutationId,
     appId: AppId,
+    documentId: DocumentId | null,
     indexRules: LinkIndexRules,
     context: TransferableContext
   ): IndexObject {
     // MutationId is a part of the index.
     // It means that a data of the same application is different in different mutations
 
-    return {
+    const index: IndexObject = {
       mutationId,
       appId,
       context: LinkDbService._buildIndexedContextValues(indexRules, context),
     }
+
+    if (documentId) {
+      index.documentId = documentId
+    }
+
+    return index
   }
 
   static _buildIndexedContextValues(indexes: any, values: any): any {

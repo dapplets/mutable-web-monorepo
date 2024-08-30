@@ -1,4 +1,4 @@
-import { IContextNode, PureContextNode } from '@mweb/core'
+import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
 import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
 import { MutationRepository } from './mutation.repository'
