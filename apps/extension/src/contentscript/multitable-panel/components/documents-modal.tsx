@@ -1,0 +1,312 @@
+import {
+  AppMetadata,
+  Mutation,
+  useAppDocuments,
+  useCreateMutation,
+  useEditMutation,
+  useMutableWeb,
+} from '@mweb/engine'
+import { useAccountId } from 'near-social-vm'
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import BsButton from 'react-bootstrap/Button'
+import BsSpinner from 'react-bootstrap/Spinner'
+import styled from 'styled-components'
+import {
+  cloneDeep,
+  compareMutations,
+  generateRandomHex,
+  isValidSocialIdCharacters,
+  mergeDeep,
+} from '../../helpers'
+import { useEscape } from '../../hooks/use-escape'
+import { Alert, AlertProps } from './alert'
+import { ApplicationCard } from './application-card'
+import { Button } from './button'
+import { DropdownButton } from './dropdown-button'
+import { Input } from './input'
+import { InputImage } from './upload-image'
+import { Document } from '@mweb/engine'
+import { PlusCircle } from '../assets/vectors'
+
+const SelectedMutationEditorWrapper = styled.div`
+  position: absolute;
+  z-index: 3;
+  top: calc(50% - 10px);
+  transform: translateY(-50%);
+  left: 0;
+  width: calc(100% - 20px);
+  max-height: calc(100% - 20px);
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #000;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: sans-serif;
+  background: #f8f9ff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+`
+
+const Close = styled.span`
+  cursor: pointer;
+  svg {
+    margin: 0;
+    width: 23px;
+    height: 23px;
+
+    path {
+      stroke: #838891;
+    }
+  }
+  &:hover {
+    opacity: 0.5;
+  }
+`
+
+const HeaderEditor = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: rgba(2, 25, 58, 1);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 21.09px;
+  text-align: left;
+  gap: 20px;
+
+  .edit {
+    margin-right: auto;
+    margin-bottom: 2px;
+  }
+`
+
+const HeaderTitle = styled.div`
+  color: #02193a;
+`
+
+const AppsList = styled.div`
+  overflow: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  background: white;
+  border-radius: 10px;
+
+  &::-webkit-scrollbar {
+    cursor: pointer;
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(244 244 244);
+    background: linear-gradient(
+      90deg,
+      rgb(244 244 244 / 0%) 10%,
+      rgb(227 227 227 / 100%) 50%,
+      rgb(244 244 244 / 0%) 90%
+    );
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 4px;
+    height: 2px;
+    background: #384bff;
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
+  }
+`
+
+const InlineButton = styled.button`
+  align-self: center;
+  width: fit-content;
+  border: none;
+  display: flex;
+  gap: 5px;
+  background: none;
+  color: #384bff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 150%;
+  text-decoration: none;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.5;
+  }
+`
+
+const ButtonsBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const CloseIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
+    <path
+      d="M21 9L9 21"
+      stroke="#02193A"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M9 9L21 21"
+      stroke="#02193A"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+// Mocked data
+const allDocs: Document[] = [
+  {
+    id: '1',
+    metadata: {
+      name: 'Document 1',
+      description: 'Document 1 description',
+    },
+    authorId: '1',
+    openWith: ['1'],
+    documentLocalId: '1',
+  },
+  {
+    id: '2',
+    metadata: {
+      name: 'Document 2',
+      description: 'Document 2 description',
+    },
+    authorId: '1',
+    openWith: ['1'],
+    documentLocalId: '2',
+  },
+  {
+    id: '3',
+    metadata: {
+      name: 'Document 3',
+      description: 'Document 3 description',
+    },
+    authorId: '1',
+    openWith: ['1'],
+    documentLocalId: '3',
+  },
+  {
+    id: '4',
+    metadata: {
+      name: 'Document 4',
+      description: 'Document 4 description',
+    },
+    authorId: '1',
+    openWith: ['1'],
+    documentLocalId: '4',
+  },
+]
+
+export interface Props {
+  appId: string
+  onClose: () => void
+  chosenDocumentsIds: string[]
+  setDocumentsIds: (ids: string[]) => void
+}
+
+export const DocumentsModal: FC<Props> = ({
+  appId,
+  onClose,
+  chosenDocumentsIds,
+  setDocumentsIds,
+}) => {
+  console.log('appId', appId)
+
+  const { documents } = useAppDocuments(appId)
+  console.log('documents', documents)
+
+  const [docs] = useState<Document[]>(allDocs)
+  const [chosenDocsIds, setChosenDocsIds] = useState<string[]>(chosenDocumentsIds)
+
+  const handleDocCheckboxChange = (id: string) =>
+    setChosenDocsIds((val) =>
+      chosenDocsIds.includes(id) ? val.filter((docId) => docId !== id) : [...val, id]
+    )
+
+  return (
+    <SelectedMutationEditorWrapper>
+      <HeaderEditor>
+        <HeaderTitle>Select your guide</HeaderTitle>
+        <Close onClick={onClose}>
+          <CloseIcon />
+        </Close>
+      </HeaderEditor>
+
+      <InlineButton
+        onClick={() => {
+          // TODO: add new document
+          console.log('add new document')
+          onClose()
+        }}
+      >
+        <PlusCircle />
+        Create from scratch
+      </InlineButton>
+
+      <AppsList>
+        {docs.map((doc) => (
+          <ApplicationCard
+            key={doc.id}
+            src={doc.id}
+            metadata={doc.metadata}
+            isChecked={chosenDocsIds.includes(doc.id)}
+            onChange={() => handleDocCheckboxChange(doc.id)}
+            disabled={false}
+            iconShape="circle"
+            textColor="#4E5E76"
+            backgroundColor="#F8F9FF"
+          />
+        ))}
+      </AppsList>
+
+      <ButtonsBlock>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button
+          primary
+          disabled={hasArrayTheSameData(chosenDocsIds, chosenDocumentsIds)}
+          onClick={() => {
+            setDocumentsIds(chosenDocsIds)
+            onClose()
+          }}
+        >
+          Confirm
+        </Button>
+      </ButtonsBlock>
+    </SelectedMutationEditorWrapper>
+  )
+}
+
+const hasArrayTheSameData = (a: string[], b: string[]) => {
+  if (a.length !== b.length) {
+    return false
+  }
+
+  const aMap = new Map<string, number>()
+  const bMap = new Map<string, number>()
+
+  for (const item of a) {
+    aMap.set(item, (aMap.get(item) ?? 0) + 1 || 1)
+  }
+
+  for (const item of b) {
+    bMap.set(item, (bMap.get(item) ?? 0) + 1 || 1)
+  }
+
+  for (const [key, value] of aMap) {
+    if (bMap.get(key) !== value) {
+      return false
+    }
+  }
+
+  return true
+}

@@ -4,13 +4,14 @@ import styled from 'styled-components'
 import { Image } from './image'
 import { DocumentCard } from './document-card'
 
-const Card = styled.div`
+const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;
   width: 100%;
   border-radius: 10px;
-  background: #fff;
+  background: ${(p) => p.$backgroundColor};
   border: 1px solid #eceef0;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   &:hover {
     background: rgba(24, 121, 206, 0.1);
   }
@@ -37,12 +38,18 @@ const CardContent = styled.div`
   width: 100%;
 `
 
-const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
+const TextLink = styled.div<{
+  bold?: boolean
+  small?: boolean
+  ellipsis?: boolean
+  $color?: string
+}>`
   display: block;
   margin: 0;
   font-size: 14px;
   line-height: 18px;
-  color: ${(p) => (p.bold ? '#11181C !important' : '#687076 !important')};
+  color: ${(p) =>
+    p.$color ? `${p.$color} !important` : p.bold ? '#11181C !important' : '#687076 !important'};
   font-weight: ${(p) => (p.bold ? '600' : '400')};
   font-size: ${(p) => (p.small ? '12px' : '14px')};
   overflow: ${(p) => (p.ellipsis ? 'hidden' : 'visible')};
@@ -67,13 +74,13 @@ const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolea
 //   }
 // `
 
-const Thumbnail = styled.div`
+const Thumbnail = styled.div<{ $shape: 'circle' | 'default' }>`
   display: block;
   width: 60px;
   height: 60px;
   flex-shrink: 0;
   border: 1px solid #eceef0;
-  border-radius: 8px;
+  border-radius: ${(props) => (props.$shape === 'circle' ? '99em' : '8px')};
   overflow: hidden;
   outline: none;
   transition: border-color 200ms;
@@ -173,6 +180,10 @@ export interface Props {
   isChecked: boolean
   onChange: (isChecked: boolean) => void
   disabled: boolean
+  setOpenDocumentsModal?: (appId: string) => void
+  iconShape?: 'circle'
+  textColor?: string
+  backgroundColor?: string
   // hasDocuments: boolean - ToDo
   // addedDocuments: IDocument[] - ToDo
 }
@@ -183,15 +194,19 @@ export const ApplicationCard: React.FC<Props> = ({
   isChecked,
   onChange,
   disabled,
+  setOpenDocumentsModal,
+  iconShape,
+  textColor,
+  backgroundColor,
   // hasDocuments, - ToDo
   // addedDocuments, - ToDo
 }) => {
   const [accountId, , appId, docId] = src.split('/') // ToDo docID
 
   return (
-    <Card className={disabled ? 'disabled' : ''}>
+    <Card $backgroundColor={backgroundColor ?? 'white'} className={disabled ? 'disabled' : ''}>
       <CardBody>
-        <Thumbnail>
+        <Thumbnail $shape={iconShape ?? 'default'}>
           <Image
             image={metadata.image}
             fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
@@ -200,7 +215,7 @@ export const ApplicationCard: React.FC<Props> = ({
         </Thumbnail>
 
         <CardContent>
-          <TextLink bold ellipsis>
+          <TextLink $color={textColor} bold ellipsis>
             {metadata.name || appId}
           </TextLink>
 
@@ -211,7 +226,11 @@ export const ApplicationCard: React.FC<Props> = ({
         <ButtonLink
           className={disabled ? 'disabled' : ''}
           disabled={disabled}
-          onClick={() => onChange(!isChecked)}
+          onClick={
+            appId === 'WebGuide' && setOpenDocumentsModal // ToDo => hasDocuments
+              ? () => setOpenDocumentsModal(appId)
+              : () => onChange(!isChecked)
+          }
         >
           {appId === 'WebGuide' ? ( // ToDo => hasDocuments
             <MoreIcon />

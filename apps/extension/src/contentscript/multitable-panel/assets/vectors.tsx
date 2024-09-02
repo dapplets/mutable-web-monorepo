@@ -168,3 +168,31 @@ export const AvailableIcon = () => (
     />
   </svg>
 )
+
+export const PlusCircle = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(-1.5)">
+      <path
+        d="M9.50065 14.6663C13.1825 14.6663 16.1673 11.6816 16.1673 7.99967C16.1673 4.31778 13.1825 1.33301 9.50065 1.33301C5.81875 1.33301 2.83398 4.31778 2.83398 7.99967C2.83398 11.6816 5.81875 14.6663 9.50065 14.6663Z"
+        stroke="#384BFF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 5.33301V10.6663"
+        stroke="#384BFF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M6.83301 8H12.1663"
+        stroke="#384BFF"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  </svg>
+)

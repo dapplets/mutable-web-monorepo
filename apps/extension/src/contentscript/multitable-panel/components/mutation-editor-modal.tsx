@@ -24,6 +24,7 @@ import { Button } from './button'
 import { DropdownButton } from './dropdown-button'
 import { Input } from './input'
 import { InputImage } from './upload-image'
+import { DocumentsModal } from './documents-modal'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -40,6 +41,9 @@ const SelectedMutationEditorWrapper = styled.div`
   background: #f8f9ff;
   width: 400px;
   max-height: 70vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 `
 
 const Close = styled.span`
@@ -108,6 +112,16 @@ const ButtonsBlock = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`
+
+const BlurredBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(255 255 255 / 75%);
+  backdrop-filter: blur(5px);
 `
 
 const CloseIcon = () => (
@@ -194,11 +208,14 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
+  console.log('baseMutation', baseMutation)
+  console.log('apps', apps)
   const loggedInAccountId = useAccountId()
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
   const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
+  const [openDocumentsModal, setOpenDocumentsModal] = useState<string | null>(null)
 
   // Close modal with escape key
   useEscape(onClose)
@@ -212,6 +229,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   // Too much mutations: baseMutation, preOriginalMutation, originalMutation, editingMutation
   const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
   const [editingMutation, setEditingMutation] = useState(originalMutation)
+  console.log('editingMutation', editingMutation)
 
   const [mutationAuthorId] = preOriginalMutation.id.split('/')
   const isOwn = mutationAuthorId === loggedInAccountId
@@ -378,6 +396,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
             onChange={(val) => handleAppCheckboxChange(app.id, val)}
             disabled={isFormDisabled}
+            setOpenDocumentsModal={setOpenDocumentsModal}
           />
         ))}
       </AppsList>
@@ -406,6 +425,18 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           </BsButton>
         )}
       </ButtonsBlock>
+
+      {openDocumentsModal ? (
+        <>
+          <BlurredBackground />
+          <DocumentsModal
+            appId={openDocumentsModal}
+            onClose={() => setOpenDocumentsModal('')}
+            chosenDocumentsIds={['1', '3']}
+            setDocumentsIds={() => console.log('saved!')}
+          />
+        </>
+      ) : null}
     </SelectedMutationEditorWrapper>
   )
 }

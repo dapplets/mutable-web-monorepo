@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 
-export const Button = styled.button`
+export const Button = styled.button<{ primary?: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid rgba(226, 226, 229, 1);
-  color: rgba(2, 25, 58, 1);
+  border: ${(p) => (p.primary ? 'none' : '1px solid rgba(226, 226, 229, 1)')};
+  color: ${(p) => (p.primary ? '#fff' : 'rgba(2, 25, 58, 1)')};
+  background: ${(p) => (p.primary ? 'rgba(56, 75, 255, 1)' : 'inherit')};
   width: 175px;
   height: 42px;
   border-radius: 10px;
