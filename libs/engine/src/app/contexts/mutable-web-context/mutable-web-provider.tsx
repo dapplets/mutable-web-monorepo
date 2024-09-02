@@ -20,6 +20,7 @@ import { AdapterType, ParserConfig } from '../../services/parser-config/parser-c
 import { mutationDisabled, mutationSwitched } from './notifications'
 import { getNearConfig } from '../../../constants'
 import { ModalContextState } from '../modal-context/modal-context'
+import { Mutation } from '../../services/mutation/mutation.entity'
 
 type Props = {
   config: EngineConfig
@@ -191,6 +192,12 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     [selectedMutationId]
   )
 
+  const refreshMutation = useCallback(async (mutation: Mutation) => {
+    const mutationWithSettings = await engine.mutationService.populateMutationWithSettings(mutation)
+
+    setMutations((prev) => prev.map((mut) => (mut.id === mutation.id ? mutationWithSettings : mut)))
+  }, [])
+
   // ToDo: move to separate hook
   const setFavoriteMutation = useCallback(
     async (mutationId: string | null) => {
@@ -235,6 +242,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     selectedMutation,
     isLoading,
     switchMutation,
+    refreshMutation,
     setFavoriteMutation,
     removeMutationFromRecents,
     favoriteMutationId,

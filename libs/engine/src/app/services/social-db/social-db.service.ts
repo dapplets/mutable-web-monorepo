@@ -1,5 +1,6 @@
 import Big from 'big.js'
 import { NearSigner } from '../near-signer/near-signer.service'
+import { mergeDeep } from '../../common/merge-deep'
 
 export type StorageUsage = string
 
@@ -175,6 +176,10 @@ export class SocialDbService {
       TGas.mul(100).toFixed(0), // gas
       deposit.toFixed(0)
     )
+  }
+
+  async setMultiple(data: Value[]): Promise<void> {
+    return this.set(mergeDeep({}, ...data))
   }
 
   async delete(keys: string[]): Promise<void> {

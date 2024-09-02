@@ -1,5 +1,5 @@
 import { AppId } from '../application/application.entity'
-import { SocialDbService } from '../social-db/social-db.service'
+import { SocialDbService, Value } from '../social-db/social-db.service'
 import { Document, DocumentId } from './document.entity'
 import { mergeDeep } from '../../common/merge-deep'
 
@@ -69,9 +69,23 @@ export class DocumentRepository {
     return documents
   }
 
-  async saveDocument(
+  async saveDocument(document: Omit<Document, 'authorId' | 'documentLocalId'>): Promise<Document> {
+    const [authorId, , documentLocalId] = document.id.split(KeyDelimiter) // ToDo: duplicate in prepareSaveDocument
+
+    const preparedDocument = await this.prepareSaveDocument(document)
+
+    await this.socialDb.set(preparedDocument)
+
+    return {
+      ...document,
+      documentLocalId,
+      authorId,
+    }
+  }
+
+  async prepareSaveDocument(
     document: Omit<Document, 'authorId' | 'documentLocalId'>
-  ): Promise<Document> {
+  ): Promise<Value> {
     const [authorId, , documentLocalId] = document.id.split(KeyDelimiter)
 
     const keys = [authorId, SettingsKey, ProjectIdKey, DocumentKey, documentLocalId]
@@ -86,12 +100,6 @@ export class DocumentRepository {
       ),
     }
 
-    await this.socialDb.set(SocialDbService.buildNestedData(keys, storedAppMetadata))
-
-    return {
-      ...document,
-      documentLocalId,
-      authorId,
-    }
+    return SocialDbService.buildNestedData(keys, storedAppMetadata)
   }
 }
