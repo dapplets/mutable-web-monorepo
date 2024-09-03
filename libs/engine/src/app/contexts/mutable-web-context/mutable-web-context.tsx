@@ -1,7 +1,7 @@
 import { Engine } from '../../../engine'
 import { createContext } from 'react'
 import { AppMetadata, AppWithSettings } from '../../services/application/application.entity'
-import { MutationWithSettings } from '../../services/mutation/mutation.entity'
+import { Mutation, MutationWithSettings } from '../../services/mutation/mutation.entity'
 import { NearConfig } from '../../../constants'
 
 export type MutableWebContextState = {
@@ -12,6 +12,7 @@ export type MutableWebContextState = {
   mutationApps: AppWithSettings[]
   activeApps: AppWithSettings[]
   selectedMutation: MutationWithSettings | null
+  refreshMutation: (mutation: Mutation) => Promise<void>
   isLoading: boolean
   switchMutation: (mutationId: string | null) => void
   favoriteMutationId: string | null
@@ -31,6 +32,7 @@ export const contextDefaultValues: MutableWebContextState = {
   isLoading: false,
   selectedMutation: null,
   switchMutation: () => undefined,
+  refreshMutation: () => Promise.resolve(undefined),
   favoriteMutationId: null,
   setFavoriteMutation: () => undefined,
   removeMutationFromRecents: () => undefined,

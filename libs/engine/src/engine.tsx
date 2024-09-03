@@ -58,6 +58,11 @@ export class Engine {
     this.applicationService = new ApplicationService(applicationRepository)
     this.userLinkService = new UserLinkSerivce(userLinkRepository, this.applicationService)
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
-    this.documentService = new DocumentSerivce(documentRepository)
+    this.documentService = new DocumentSerivce(
+      documentRepository,
+      this.linkDbService,
+      this.mutationService,
+      socialDb
+    )
   }
 }

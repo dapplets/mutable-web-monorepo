@@ -1,6 +1,6 @@
 import serializeToDeterministicJson from 'json-stringify-deterministic'
 
-import { SocialDbService } from '../social-db/social-db.service'
+import { SocialDbService, Value } from '../social-db/social-db.service'
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
@@ -33,26 +33,16 @@ export class LinkDbService {
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules = DefaultIndexRules
   ): Promise<void> {
-    const accounts = Object.keys(dataByAccount)
+    const preparedValue = await this.prepareSet(
+      mutationId,
+      appId,
+      docId,
+      context,
+      dataByAccount,
+      indexRules
+    )
 
-    // ToDo: implement multiple accounts
-    if (accounts.length !== 1) {
-      throw new Error('Only one account can be written at a time')
-    }
-
-    const [accountId] = accounts
-
-    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
-    const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
-
-    const keys = [accountId, SettingsKey, ProjectIdKey, ContextLinkKey, index]
-
-    const dataToStore = {
-      [DataKey]: serializeToDeterministicJson(dataByAccount[accountId]),
-      [IndexKey]: indexObject,
-    }
-
-    await this._socialDb.set(SocialDbService.buildNestedData(keys, dataToStore))
+    await this._socialDb.set(preparedValue)
   }
 
   async get(
@@ -93,6 +83,36 @@ export class LinkDbService {
     )
 
     return dataByAuthor
+  }
+
+  async prepareSet(
+    mutationId: MutationId,
+    appId: AppId,
+    docId: DocumentId | null,
+    context: TransferableContext, // ToDo: replace with IContextNode?
+    dataByAccount: LinkedDataByAccount,
+    indexRules: LinkIndexRules = DefaultIndexRules
+  ): Promise<Value> {
+    const accounts = Object.keys(dataByAccount)
+
+    // ToDo: implement multiple accounts
+    if (accounts.length !== 1) {
+      throw new Error('Only one account can be written at a time')
+    }
+
+    const [accountId] = accounts
+
+    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
+    const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
+
+    const keys = [accountId, SettingsKey, ProjectIdKey, ContextLinkKey, index]
+
+    const dataToStore = {
+      [DataKey]: serializeToDeterministicJson(dataByAccount[accountId]),
+      [IndexKey]: indexObject,
+    }
+
+    return SocialDbService.buildNestedData(keys, dataToStore)
   }
 
   static _buildLinkIndex(

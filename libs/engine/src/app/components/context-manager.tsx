@@ -22,6 +22,7 @@ import { ModalProps } from '../contexts/modal-context/modal-context'
 import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
+import { Document, DocumentId, DocumentMetadata } from '../services/document/document.entity'
 
 interface WidgetProps {
   context: TransferableContext
@@ -43,6 +44,12 @@ interface WidgetProps {
       indexRules: LinkIndexRules
     ) => Promise<void>
   }
+  commitDocument: (
+    appDocId: DocumentId,
+    appDocMeta: DocumentMetadata,
+    ctx: TransferableContext,
+    dataByAccount: LinkedDataByAccount
+  ) => Promise<void>
 }
 
 interface LayoutManagerProps {
@@ -87,7 +94,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { controllers } = useAppControllers(context)
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
-  const { engine, selectedMutation } = useMutableWeb()
+  const { engine, selectedMutation, refreshMutation } = useMutableWeb()
   const { portals } = useEngine()
 
   const portalComponents = useMemo(() => {
@@ -206,6 +213,45 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [engine, selectedMutation]
   )
 
+  const handleCommitDocumentCurry = useCallback(
+    memoize(
+      (appId: AppId) =>
+        async (
+          appDocId: DocumentId,
+          appDocMeta: DocumentMetadata,
+          ctx: TransferableContext,
+          dataByAccount: LinkedDataByAccount
+        ) => {
+          if (!selectedMutation) throw new Error('No selected mutation')
+
+          // ToDo: handle multiple app instances
+          const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
+
+          if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+
+          const document = {
+            id: appDocId,
+            metadata: appDocMeta,
+            openWith: [appId],
+          }
+
+          const { mutation } = await engine.documentService.createDocumentWithData(
+            selectedMutation.id,
+            appId,
+            document,
+            ctx,
+            dataByAccount
+          )
+
+          // ToDo: workaround to wait when blockchain changes will be propagated
+          await new Promise((resolve) => setTimeout(resolve, 3000))
+
+          await refreshMutation(mutation)
+        }
+    ),
+    [engine, selectedMutation, refreshMutation]
+  )
+
   // ToDo: check context.element
 
   return (
@@ -230,6 +276,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onAttachContextRef={attachContextRef}
           onGetLinkDataCurry={handleGetLinkDataCurry}
           onSetLinkDataCurry={handleSetLinkDataCurry}
+          onCommitDocumentCurry={handleCommitDocumentCurry}
         />
       ))}
 
@@ -250,6 +297,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         onAttachContextRef={attachContextRef}
         onGetLinkDataCurry={handleGetLinkDataCurry}
         onSetLinkDataCurry={handleSetLinkDataCurry}
+        onCommitDocumentCurry={handleCommitDocumentCurry}
       />
 
       {controllers.map((c) => (
@@ -260,6 +308,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onContextQuery={handleContextQuery}
           onGetLinkDataCurry={handleGetLinkDataCurry}
           onSetLinkDataCurry={handleSetLinkDataCurry}
+          onCommitDocumentCurry={handleCommitDocumentCurry}
         />
       ))}
 
@@ -306,6 +355,14 @@ const InsPointHandler: FC<{
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules
   ) => Promise<void>
+  onCommitDocumentCurry: (
+    appId: string
+  ) => (
+    appDocId: DocumentId,
+    appDocMetadata: DocumentMetadata,
+    ctx: TransferableContext,
+    dataByAccount: LinkedDataByAccount
+  ) => Promise<void>
 }> = ({
   insPointName,
   element,
@@ -324,6 +381,7 @@ const InsPointHandler: FC<{
   onAttachContextRef,
   onGetLinkDataCurry,
   onSetLinkDataCurry,
+  onCommitDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { config, engine } = useMutableWeb()
@@ -402,6 +460,7 @@ const InsPointHandler: FC<{
           get: onGetLinkDataCurry(link.appId),
           set: onSetLinkDataCurry(link.appId),
         },
+        commitDocument: onCommitDocumentCurry(link.appId),
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -465,12 +524,21 @@ const ControllerHandler: FC<{
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules
   ) => Promise<void>
+  onCommitDocumentCurry: (
+    appId: string
+  ) => (
+    appDocId: DocumentId,
+    appDocMetadata: DocumentMetadata,
+    ctx: TransferableContext,
+    dataByAccount: LinkedDataByAccount
+  ) => Promise<void>
 }> = ({
   transferableContext,
   controller,
   onContextQuery,
   onGetLinkDataCurry,
   onSetLinkDataCurry,
+  onCommitDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { notify } = useModal()
@@ -487,6 +555,7 @@ const ControllerHandler: FC<{
       get: onGetLinkDataCurry(controller.appId),
       set: onSetLinkDataCurry(controller.appId),
     },
+    commitDocument: onCommitDocumentCurry(controller.appId),
   }
 
   return (
