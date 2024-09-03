@@ -2,6 +2,7 @@ import { AppMetadata } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
+import { DocumentMetadata } from '@mweb/engine/lib/app/services/document/document.entity'
 
 const Card = styled.div`
   position: relative;
@@ -126,12 +127,19 @@ const CheckedIcon = () => (
 
 export interface Props {
   src: string
-  metadata: AppMetadata['metadata'] // ToDo DocMetadata
+  metadata: DocumentMetadata // ToDo DocMetadata
   onChange: () => void
   disabled: boolean
+  appMetadata: AppMetadata['metadata']
 }
 
-export const DocumentCard: React.FC<Props> = ({ src, metadata, onChange, disabled }) => {
+export const DocumentCard: React.FC<Props> = ({
+  src,
+  metadata,
+  onChange,
+  disabled,
+  appMetadata,
+}) => {
   const [accountId, , docName] = src.split('/')
 
   return (
@@ -147,9 +155,9 @@ export const DocumentCard: React.FC<Props> = ({ src, metadata, onChange, disable
           </Thumbnail>
           <ThumbnailMini>
             <Image
-              image={metadata.image}
+              image={appMetadata.image}
               fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-              alt={metadata.name}
+              alt={appMetadata.name}
             />
           </ThumbnailMini>
         </div>

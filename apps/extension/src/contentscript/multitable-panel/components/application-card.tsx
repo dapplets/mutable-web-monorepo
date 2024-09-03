@@ -1,8 +1,9 @@
-import { AppMetadata } from '@mweb/engine'
+import { AppMetadata, Document, useAppDocuments } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
 import { DocumentCard } from './document-card'
+import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
 
 const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;
@@ -180,12 +181,13 @@ export interface Props {
   isChecked: boolean
   onChange: (isChecked: boolean) => void
   disabled: boolean
-  setOpenDocumentsModal?: (appId: string) => void
+  setAppIdToOpenDocsModal?: (appId: string) => void
   iconShape?: 'circle'
   textColor?: string
   backgroundColor?: string
   // hasDocuments: boolean - ToDo
-  // addedDocuments: IDocument[] - ToDo
+  docsIds: AppInMutation['documentId'][]
+  onDocCheckboxChange?: (docId: string, isChecked: boolean) => void
 }
 
 export const ApplicationCard: React.FC<Props> = ({
@@ -194,14 +196,20 @@ export const ApplicationCard: React.FC<Props> = ({
   isChecked,
   onChange,
   disabled,
-  setOpenDocumentsModal,
+  setAppIdToOpenDocsModal,
   iconShape,
   textColor,
   backgroundColor,
   // hasDocuments, - ToDo
-  // addedDocuments, - ToDo
+  docsIds,
+  onDocCheckboxChange,
 }) => {
-  const [accountId, , appId, docId] = src.split('/') // ToDo docID
+  const [accountId, , appId] = src.split('/')
+
+  const { documents } = useAppDocuments(src) // hasDocuments, - ToDo
+  console.log('documents in ApplicationCard', documents)
+  const docs = documents?.filter((doc) => docsIds.includes(doc.id))
+  console.log('docs', docs)
 
   return (
     <Card $backgroundColor={backgroundColor ?? 'white'} className={disabled ? 'disabled' : ''}>
@@ -227,12 +235,12 @@ export const ApplicationCard: React.FC<Props> = ({
           className={disabled ? 'disabled' : ''}
           disabled={disabled}
           onClick={
-            appId === 'WebGuide' && setOpenDocumentsModal // ToDo => hasDocuments
-              ? () => setOpenDocumentsModal(appId)
+            docsIds.filter((document) => document).length && setAppIdToOpenDocsModal // ToDo => hasDocuments
+              ? () => setAppIdToOpenDocsModal(src)
               : () => onChange(!isChecked)
           }
         >
-          {appId === 'WebGuide' ? ( // ToDo => hasDocuments
+          {docsIds.filter((document) => document).length ? ( // ToDo => hasDocuments
             <MoreIcon />
           ) : isChecked ? (
             <CheckedIcon />
@@ -241,7 +249,7 @@ export const ApplicationCard: React.FC<Props> = ({
           )}
         </ButtonLink>
       </CardBody>
-      {appId === 'WebGuide' ? ( // // ToDo => addedDocuments
+      {docsIds.filter((document) => document).length && onDocCheckboxChange ? ( // ToDo => hasDocuments
         <div style={{ display: 'flex', paddingBottom: 10 }}>
           <div style={{ border: '1px solid #C1C6CE', margin: '0 10px' }}></div>
           <div
@@ -253,13 +261,14 @@ export const ApplicationCard: React.FC<Props> = ({
               gap: 6,
             }}
           >
-            {['My web guide', 'Your web guide', 'Their web guide'].map((document) => (
+            {docs.map((doc) => (
               <DocumentCard
-                key={document}
-                src={src}
-                metadata={metadata}
-                onChange={() => onChange(false)}
-                disabled={disabled}
+                key={doc.id}
+                src={doc.id}
+                metadata={doc.metadata}
+                onChange={() => onDocCheckboxChange(doc.id, false)}
+                disabled={false}
+                appMetadata={metadata}
               />
             ))}
           </div>

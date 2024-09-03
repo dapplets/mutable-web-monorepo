@@ -201,7 +201,7 @@ export const DocumentsModal: FC<Props> = ({
   console.log('appId', appId)
 
   const { documents } = useAppDocuments(appId)
-  console.log('documents', documents)
+  console.log('documents in DocumentsModal', documents)
 
   const [docs] = useState<Document[]>(allDocs)
   const [chosenDocsIds, setChosenDocsIds] = useState<string[]>(chosenDocumentsIds)
@@ -243,6 +243,7 @@ export const DocumentsModal: FC<Props> = ({
             iconShape="circle"
             textColor="#4E5E76"
             backgroundColor="#F8F9FF"
+            docsIds={[]} // ToDo => hasDocuments
           />
         ))}
       </AppsList>

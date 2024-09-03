@@ -215,7 +215,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   const { editMutation, isLoading: isEditing } = useEditMutation()
   const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
-  const [openDocumentsModal, setOpenDocumentsModal] = useState<string | null>(null)
+  const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
 
   // Close modal with escape key
   useEscape(onClose)
@@ -314,6 +314,15 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     })
   }
 
+  const handleDocCheckboxChange = (docId: string, appId: string, checked: boolean) => {
+    setEditingMutation((mut) => {
+      const apps = checked
+        ? [...mut.apps, { appId, documentId: docId }]
+        : mut.apps.filter((app) => app.appId !== appId || app.documentId !== docId)
+      return mergeDeep(cloneDeep(mut), { apps })
+    })
+  }
+
   const handleRevertClick = () => {
     setEditingMutation(cloneDeep(originalMutation))
   }
@@ -396,7 +405,13 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
             onChange={(val) => handleAppCheckboxChange(app.id, val)}
             disabled={isFormDisabled}
-            setOpenDocumentsModal={setOpenDocumentsModal}
+            docsIds={editingMutation.apps
+              .filter((_app) => _app.appId === app.id)
+              .map((_app) => _app.documentId)}
+            setAppIdToOpenDocsModal={setAppIdToOpenDocsModal}
+            onDocCheckboxChange={(docId: string, isChecked: boolean) =>
+              handleDocCheckboxChange(docId, app.id, isChecked)
+            }
           />
         ))}
       </AppsList>
@@ -426,12 +441,12 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
         )}
       </ButtonsBlock>
 
-      {openDocumentsModal ? (
+      {appIdToOpenDocsModal ? (
         <>
           <BlurredBackground />
           <DocumentsModal
-            appId={openDocumentsModal}
-            onClose={() => setOpenDocumentsModal('')}
+            appId={appIdToOpenDocsModal}
+            onClose={() => setAppIdToOpenDocsModal('')}
             chosenDocumentsIds={['1', '3']}
             setDocumentsIds={() => console.log('saved!')}
           />
