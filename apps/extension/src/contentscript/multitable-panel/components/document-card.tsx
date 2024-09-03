@@ -50,22 +50,6 @@ const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolea
   outline: none;
 `
 
-// const Text = styled.p<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
-//   margin: 0;
-//   font-size: 14px;
-//   line-height: 20px;
-//   color: ${(p) => (p.bold ? '#11181C' : '#687076')};
-//   font-weight: ${(p) => (p.bold ? '600' : '400')};
-//   font-size: ${(p) => (p.small ? '12px' : '14px')};
-//   overflow: ${(p) => (p.ellipsis ? 'hidden' : '')};
-//   text-overflow: ${(p) => (p.ellipsis ? 'ellipsis' : '')};
-//   white-space: nowrap;
-
-//   i {
-//     margin-right: 3px;
-//   }
-// `
-
 const Thumbnail = styled.div`
   border: 1px solid #eceef0;
   border-radius: 99em;

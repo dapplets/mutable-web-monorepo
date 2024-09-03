@@ -1,30 +1,8 @@
-import {
-  AppMetadata,
-  Mutation,
-  useAppDocuments,
-  useCreateMutation,
-  useEditMutation,
-  useMutableWeb,
-} from '@mweb/engine'
-import { useAccountId } from 'near-social-vm'
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
-import BsButton from 'react-bootstrap/Button'
-import BsSpinner from 'react-bootstrap/Spinner'
+import { useAppDocuments } from '@mweb/engine'
+import React, { FC, useState } from 'react'
 import styled from 'styled-components'
-import {
-  cloneDeep,
-  compareMutations,
-  generateRandomHex,
-  isValidSocialIdCharacters,
-  mergeDeep,
-} from '../../helpers'
-import { useEscape } from '../../hooks/use-escape'
-import { Alert, AlertProps } from './alert'
 import { ApplicationCard } from './application-card'
 import { Button } from './button'
-import { DropdownButton } from './dropdown-button'
-import { Input } from './input'
-import { InputImage } from './upload-image'
 import { Document } from '@mweb/engine'
 import { PlusCircle } from '../assets/vectors'
 
