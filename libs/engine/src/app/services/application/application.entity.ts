@@ -26,6 +26,9 @@ export type AppMetadata = {
       ipfs_cid?: string
     }
   }
+  permissions: {
+    documents: boolean
+  }
 }
 
 export type AppWithSettings = AppMetadata & {

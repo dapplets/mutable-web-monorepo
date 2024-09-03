@@ -32,12 +32,19 @@ export class ApplicationRepository {
 
     if (!app?.[SelfKey]) return null
 
+    const parsed = JSON.parse(app[SelfKey])
+
     return {
-      ...JSON.parse(app[SelfKey]),
-      metadata: app.metadata,
       id: globalAppId,
       appLocalId,
       authorId,
+      metadata: app.metadata,
+      controller: parsed.controller,
+      parsers: parsed.parsers,
+      targets: parsed.targets,
+      permissions: {
+        documents: parsed.permissions?.documents ?? false,
+      },
     }
   }
 
@@ -60,12 +67,19 @@ export class ApplicationRepository {
       const [authorId, , , , appLocalId] = key.split(KeyDelimiter)
       const globalAppId = [authorId, AppKey, appLocalId].join(KeyDelimiter)
 
+      const parsed = JSON.parse(app[SelfKey])
+
       return {
-        ...JSON.parse(app[SelfKey]),
-        metadata: app.metadata,
         id: globalAppId,
         appLocalId,
         authorId,
+        metadata: app.metadata,
+        controller: parsed.controller,
+        parsers: parsed.parsers,
+        targets: parsed.targets,
+        permissions: {
+          documents: parsed.permissions?.documents ?? false,
+        },
       }
     })
 
@@ -83,6 +97,7 @@ export class ApplicationRepository {
       [SelfKey]: JSON.stringify({
         targets: appMetadata.targets,
         parsers: appMetadata.parsers,
+        permissions: appMetadata.permissions,
       }),
       metadata: appMetadata.metadata,
     }
