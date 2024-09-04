@@ -33,22 +33,11 @@ const CardBody = styled.div`
   }
 `
 
-const CardContent = styled.div`
-  width: 100%;
-`
-
-const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
-  display: block;
-  margin: 0;
-  font-size: 14px;
-  line-height: 18px;
-  color: ${(p) => (p.bold ? '#11181C !important' : '#687076 !important')};
-  font-weight: ${(p) => (p.bold ? '600' : '400')};
-  font-size: ${(p) => (p.small ? '12px' : '14px')};
-  overflow: ${(p) => (p.ellipsis ? 'hidden' : 'visible')};
-  text-overflow: ${(p) => (p.ellipsis ? 'ellipsis' : 'unset')};
-  white-space: nowrap;
-  outline: none;
+const ThumbnailGroup = styled.div`
+  position: relative;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
 `
 
 const Thumbnail = styled.div`
@@ -97,6 +86,24 @@ const ThumbnailMini = styled.div`
   }
 `
 
+const CardContent = styled.div`
+  width: 100%;
+`
+
+const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
+  display: block;
+  margin: 0;
+  font-size: 14px;
+  line-height: 18px;
+  color: ${(p) => (p.bold ? '#11181C !important' : '#687076 !important')};
+  font-weight: ${(p) => (p.bold ? '600' : '400')};
+  font-size: ${(p) => (p.small ? '12px' : '14px')};
+  overflow: ${(p) => (p.ellipsis ? 'hidden' : 'visible')};
+  text-overflow: ${(p) => (p.ellipsis ? 'ellipsis' : 'unset')};
+  white-space: nowrap;
+  outline: none;
+`
+
 const ButtonLink = styled.button`
   padding: 8px;
   cursor: pointer;
@@ -125,6 +132,9 @@ const CheckedIcon = () => (
   </svg>
 )
 
+const FALLBACK_IMAGE_URL =
+  'https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu'
+
 export interface Props {
   src: string | null
   metadata: DocumentMetadata | null
@@ -145,22 +155,18 @@ export const DocumentCard: React.FC<Props> = ({
   return (
     <Card className={disabled ? 'disabled' : ''}>
       <CardBody>
-        <div style={{ position: 'relative', width: 32, height: 32, flexShrink: 0 }}>
+        <ThumbnailGroup>
           <Thumbnail>
-            <Image
-              image={metadata?.image}
-              fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-              alt={metadata?.name}
-            />
+            <Image image={metadata?.image} fallbackUrl={FALLBACK_IMAGE_URL} alt={metadata?.name} />
           </Thumbnail>
           <ThumbnailMini>
             <Image
               image={appMetadata.image}
-              fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+              fallbackUrl={FALLBACK_IMAGE_URL}
               alt={appMetadata.name}
             />
           </ThumbnailMini>
-        </div>
+        </ThumbnailGroup>
 
         <CardContent>
           <TextLink bold ellipsis>

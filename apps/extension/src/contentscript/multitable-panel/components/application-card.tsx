@@ -104,6 +104,24 @@ const ButtonLink = styled.button`
   }
 `
 
+const DocumentsWrapper = styled.div`
+  display: flex;
+  padding-bottom: 10px;
+`
+
+const SideLine = styled.div`
+  border: 1px solid #c1c6ce;
+  margin: 0 10px;
+`
+
+const DocumentCardList = styled.div`
+  width: 100%;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`
+
 const MoreIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
@@ -237,17 +255,9 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
       </CardBody>
 
       {hasDocuments && usingDocs.length ? (
-        <div style={{ display: 'flex', paddingBottom: 10 }}>
-          <div style={{ border: '1px solid #C1C6CE', margin: '0 10px' }}></div>
-          <div
-            style={{
-              width: '100%',
-              marginRight: 10,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 6,
-            }}
-          >
+        <DocumentsWrapper>
+          <SideLine />
+          <DocumentCardList>
             {usingDocs.map((doc) => (
               <DocumentCard
                 key={doc?.id || 'empty'}
@@ -258,8 +268,8 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
                 appMetadata={metadata}
               />
             ))}
-          </div>
-        </div>
+          </DocumentCardList>
+        </DocumentsWrapper>
       ) : null}
     </Card>
   )
