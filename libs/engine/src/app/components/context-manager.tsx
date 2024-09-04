@@ -50,6 +50,7 @@ interface WidgetProps {
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) => Promise<void>
+  getDocument: () => Promise<Document | null>
 }
 
 interface LayoutManagerProps {
@@ -94,7 +95,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { controllers } = useAppControllers(context)
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
-  const { engine, selectedMutation, refreshMutation } = useMutableWeb()
+  const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
   const { portals } = useEngine()
 
   const portalComponents = useMemo(() => {
@@ -213,6 +214,24 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [engine, selectedMutation]
   )
 
+  const handleGetDocumentCurry = useCallback(
+    memoize((appId: AppId) => async () => {
+      if (!selectedMutation) throw new Error('No selected mutation')
+
+      // ToDo: handle multiple app instances
+      const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
+
+      if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+
+      if (!appFromMutation.documentId) return null
+
+      const document = await engine.documentService.getDocument(appFromMutation.documentId)
+
+      return document
+    }),
+    [engine, selectedMutation, activeApps, refreshMutation]
+  )
+
   const handleCommitDocumentCurry = useCallback(
     memoize(
       (appId: AppId) =>
@@ -277,6 +296,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onGetLinkDataCurry={handleGetLinkDataCurry}
           onSetLinkDataCurry={handleSetLinkDataCurry}
           onCommitDocumentCurry={handleCommitDocumentCurry}
+          onGetDocumentCurry={handleGetDocumentCurry}
         />
       ))}
 
@@ -298,6 +318,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         onGetLinkDataCurry={handleGetLinkDataCurry}
         onSetLinkDataCurry={handleSetLinkDataCurry}
         onCommitDocumentCurry={handleCommitDocumentCurry}
+        onGetDocumentCurry={handleGetDocumentCurry}
       />
 
       {controllers.map((c) => (
@@ -309,6 +330,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onGetLinkDataCurry={handleGetLinkDataCurry}
           onSetLinkDataCurry={handleSetLinkDataCurry}
           onCommitDocumentCurry={handleCommitDocumentCurry}
+          onGetDocumentCurry={handleGetDocumentCurry}
         />
       ))}
 
@@ -363,6 +385,7 @@ const InsPointHandler: FC<{
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) => Promise<void>
+  onGetDocumentCurry: (appId: AppId) => () => Promise<Document | null>
 }> = ({
   insPointName,
   element,
@@ -382,6 +405,7 @@ const InsPointHandler: FC<{
   onGetLinkDataCurry,
   onSetLinkDataCurry,
   onCommitDocumentCurry,
+  onGetDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { config, engine } = useMutableWeb()
@@ -461,6 +485,7 @@ const InsPointHandler: FC<{
           set: onSetLinkDataCurry(link.appId),
         },
         commitDocument: onCommitDocumentCurry(link.appId),
+        getDocument: onGetDocumentCurry(link.appId),
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -532,6 +557,7 @@ const ControllerHandler: FC<{
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) => Promise<void>
+  onGetDocumentCurry: (appId: AppId) => () => Promise<Document | null>
 }> = ({
   transferableContext,
   controller,
@@ -539,6 +565,7 @@ const ControllerHandler: FC<{
   onGetLinkDataCurry,
   onSetLinkDataCurry,
   onCommitDocumentCurry,
+  onGetDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { notify } = useModal()
@@ -556,6 +583,7 @@ const ControllerHandler: FC<{
       set: onSetLinkDataCurry(controller.appId),
     },
     commitDocument: onCommitDocumentCurry(controller.appId),
+    getDocument: onGetDocumentCurry(controller.appId),
   }
 
   return (
