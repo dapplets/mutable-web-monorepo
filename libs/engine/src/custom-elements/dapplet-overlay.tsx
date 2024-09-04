@@ -20,7 +20,7 @@ const ModalBackdrop = styled.div`
   outline: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  z-index: 2147483647;
+  z-index: 2000;
   visibility: visible;
 `
 
