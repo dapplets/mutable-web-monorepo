@@ -126,8 +126,8 @@ const CheckedIcon = () => (
 )
 
 export interface Props {
-  src: string
-  metadata: DocumentMetadata // ToDo DocMetadata
+  src: string | null
+  metadata: DocumentMetadata | null
   onChange: () => void
   disabled: boolean
   appMetadata: AppMetadata['metadata']
@@ -140,7 +140,7 @@ export const DocumentCard: React.FC<Props> = ({
   disabled,
   appMetadata,
 }) => {
-  const [accountId, , docName] = src.split('/')
+  const srcParts = src?.split('/')
 
   return (
     <Card className={disabled ? 'disabled' : ''}>
@@ -148,9 +148,9 @@ export const DocumentCard: React.FC<Props> = ({
         <div style={{ position: 'relative', width: 32, height: 32, flexShrink: 0 }}>
           <Thumbnail>
             <Image
-              image={metadata.image}
+              image={metadata?.image}
               fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-              alt={metadata.name}
+              alt={metadata?.name}
             />
           </Thumbnail>
           <ThumbnailMini>
@@ -164,11 +164,11 @@ export const DocumentCard: React.FC<Props> = ({
 
         <CardContent>
           <TextLink bold ellipsis>
-            {metadata.name || docName}
+            {metadata?.name || (srcParts && srcParts[2])}
           </TextLink>
 
           <TextLink small ellipsis>
-            @{accountId}
+            {srcParts && `@${srcParts[0]}`}
           </TextLink>
         </CardContent>
         <ButtonLink className={disabled ? 'disabled' : ''} disabled={disabled} onClick={onChange}>

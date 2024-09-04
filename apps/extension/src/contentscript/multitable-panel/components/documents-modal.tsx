@@ -4,7 +4,8 @@ import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { Document } from '@mweb/engine'
-import { PlusCircle } from '../assets/vectors'
+import { MinusCircle, PlusCircle } from '../assets/vectors'
+import { Spin } from 'antd'
 
 const SelectedMutationEditorWrapper = styled.div`
   position: absolute;
@@ -188,8 +189,8 @@ const allDocs: Document[] = [
 export interface Props {
   appId: string
   onClose: () => void
-  chosenDocumentsIds: string[]
-  setDocumentsIds: (ids: string[]) => void
+  chosenDocumentsIds: (string | null)[]
+  setDocumentsIds: (ids: (string | null)[]) => void
 }
 
 export const DocumentsModal: FC<Props> = ({
@@ -198,14 +199,10 @@ export const DocumentsModal: FC<Props> = ({
   chosenDocumentsIds,
   setDocumentsIds,
 }) => {
-  console.log('appId', appId)
-  console.log('chosenDocumentsIds', chosenDocumentsIds)
+  const { documents, isLoading } = useAppDocuments(appId)
+  const [chosenDocsIds, setChosenDocsIds] = useState<(string | null)[]>(chosenDocumentsIds)
 
-  const { documents } = useAppDocuments(appId)
-  console.log('documents in DocumentsModal', documents)
-  const [chosenDocsIds, setChosenDocsIds] = useState<string[]>(chosenDocumentsIds)
-
-  const handleDocCheckboxChange = (id: string) =>
+  const handleDocCheckboxChange = (id: string | null) =>
     setChosenDocsIds((val) =>
       chosenDocsIds.includes(id) ? val.filter((docId) => docId !== id) : [...val, id]
     )
@@ -219,31 +216,38 @@ export const DocumentsModal: FC<Props> = ({
         </Close>
       </HeaderEditor>
 
-      <InlineButton
-        onClick={() => {
-          // TODO: add new document
-          console.log('add new document')
-          onClose()
-        }}
-      >
-        <PlusCircle />
-        Create from scratch
+      <InlineButton onClick={() => handleDocCheckboxChange(null)}>
+        {chosenDocsIds.includes(null) ? (
+          <>
+            <MinusCircle />
+            Delete document builder
+          </>
+        ) : (
+          <>
+            <PlusCircle />
+            Create from scratch
+          </>
+        )}
       </InlineButton>
 
       <AppsList>
-        {documents.map((doc) => (
-          <SimpleApplicationCard
-            key={doc.id}
-            src={doc.id}
-            metadata={doc.metadata}
-            isChecked={chosenDocsIds.includes(doc.id)}
-            onChange={() => handleDocCheckboxChange(doc.id)}
-            disabled={false}
-            iconShape="circle"
-            textColor="#4E5E76"
-            backgroundColor="#F8F9FF"
-          />
-        ))}
+        {isLoading ? (
+          <Spin />
+        ) : (
+          documents.map((doc) => (
+            <SimpleApplicationCard
+              key={doc.id}
+              src={doc.id}
+              metadata={doc.metadata}
+              isChecked={chosenDocsIds.includes(doc.id)}
+              onChange={() => handleDocCheckboxChange(doc.id)}
+              disabled={false}
+              iconShape="circle"
+              textColor="#4E5E76"
+              backgroundColor="#F8F9FF"
+            />
+          ))
+        )}
       </AppsList>
 
       <ButtonsBlock>
@@ -263,13 +267,13 @@ export const DocumentsModal: FC<Props> = ({
   )
 }
 
-const hasArrayTheSameData = (a: string[], b: string[]) => {
+const hasArrayTheSameData = (a: (string | null)[], b: (string | null)[]) => {
   if (a.length !== b.length) {
     return false
   }
 
-  const aMap = new Map<string, number>()
-  const bMap = new Map<string, number>()
+  const aMap = new Map<string | null, number>()
+  const bMap = new Map<string | null, number>()
 
   for (const item of a) {
     aMap.set(item, (aMap.get(item) ?? 0) + 1 || 1)

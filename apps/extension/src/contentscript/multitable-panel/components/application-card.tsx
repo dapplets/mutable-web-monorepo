@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { Image } from './image'
 import { DocumentCard } from './document-card'
 import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { Spin } from 'antd'
 
 const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;
@@ -164,9 +165,9 @@ const CheckedIcon = () => (
 export interface ISimpleApplicationCardProps {
   src: string
   metadata: AppMetadata['metadata']
+  disabled: boolean
   isChecked: boolean
   onChange: (isChecked: boolean) => void
-  disabled: boolean
   iconShape?: 'circle'
   textColor?: string
   backgroundColor?: string
@@ -175,16 +176,17 @@ export interface ISimpleApplicationCardProps {
 export interface IApplicationCardWithDocsProps {
   src: string
   metadata: AppMetadata['metadata']
+  disabled: boolean
   setAppIdToOpenDocsModal: (appId: string) => void
   docsIds: AppInMutation['documentId'][]
-  onDocCheckboxChange: (docId: string, isChecked: boolean) => void
+  onDocCheckboxChange: (docId: string | null, isChecked: boolean) => void
 }
 
 interface IApplicationCard
   extends ISimpleApplicationCardProps,
     Omit<IApplicationCardWithDocsProps, 'docsIds'> {
   hasDocuments: boolean
-  docs: Document[]
+  docs: (Document | null)[]
 }
 
 const ApplicationCard: React.FC<IApplicationCard> = ({
@@ -246,10 +248,10 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           >
             {docs.map((doc) => (
               <DocumentCard
-                key={doc.id}
-                src={doc.id}
-                metadata={doc.metadata}
-                onChange={() => onDocCheckboxChange(doc.id, false)}
+                key={doc?.id || 'empty'}
+                src={doc?.id ?? null}
+                metadata={doc?.metadata ?? null}
+                onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}
                 disabled={false}
                 appMetadata={metadata}
               />
@@ -273,17 +275,24 @@ export const SimpleApplicationCard: React.FC<ISimpleApplicationCardProps> = (pro
 
 export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = (props) => {
   const { src, docsIds } = props
-  const { documents } = useAppDocuments(src)
-  const docs = docsIds && documents?.filter((doc) => docsIds.includes(doc.id))
+  console.log('docsIds', docsIds)
+  const { documents, isLoading } = useAppDocuments(src)
+  const docs: (Document | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
+  if (docsIds.includes(null)) docs.push(null)
   console.log('docs', docs)
 
-  return (
+  return isLoading ? (
+    <Card>
+      <CardBody>
+        <Spin style={{ width: '100%' }} />
+      </CardBody>
+    </Card>
+  ) : (
     <ApplicationCard
       {...props}
       hasDocuments={true}
       isChecked={false}
       onChange={() => null}
-      disabled={false}
       docs={docs}
     />
   )

@@ -315,7 +315,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     })
   }
 
-  const handleDocCheckboxChange = (docId: string, appId: string, checked: boolean) => {
+  const handleDocCheckboxChange = (docId: string | null, appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
       const apps = checked
         ? [...mut.apps, { appId, documentId: docId }]
@@ -424,11 +424,12 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               key={app.id}
               src={app.id}
               metadata={app.metadata}
+              disabled={isFormDisabled}
               docsIds={editingMutation.apps
                 .filter((_app) => _app.appId === app.id)
                 .map((_app) => _app.documentId)}
               setAppIdToOpenDocsModal={setAppIdToOpenDocsModal}
-              onDocCheckboxChange={(docId: string, isChecked: boolean) =>
+              onDocCheckboxChange={(docId: string | null, isChecked: boolean) =>
                 handleDocCheckboxChange(docId, app.id, isChecked)
               }
             />
@@ -437,9 +438,9 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               key={app.id}
               src={app.id}
               metadata={app.metadata}
+              disabled={isFormDisabled}
               isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
               onChange={(val) => handleAppCheckboxChange(app.id, val)}
-              disabled={isFormDisabled}
             />
           )
         )}
@@ -476,11 +477,9 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           <DocumentsModal
             appId={appIdToOpenDocsModal}
             onClose={() => setAppIdToOpenDocsModal(null)}
-            chosenDocumentsIds={
-              editingMutation.apps
-                .filter((_app) => _app.appId === appIdToOpenDocsModal && !!_app.documentId)
-                .map((_app) => _app.documentId) as string[]
-            }
+            chosenDocumentsIds={editingMutation.apps
+              .filter((_app) => _app.appId === appIdToOpenDocsModal)
+              .map((_app) => _app.documentId)}
             setDocumentsIds={(val: (string | null)[]) =>
               handleDocCheckboxBanchChange(val, appIdToOpenDocsModal)
             }
