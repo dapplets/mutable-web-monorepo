@@ -19,12 +19,13 @@ import {
 } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
-import { ApplicationCard } from './application-card'
+import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { DropdownButton } from './dropdown-button'
 import { Input } from './input'
 import { InputImage } from './upload-image'
 import { DocumentsModal } from './documents-modal'
+import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -323,6 +324,26 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     })
   }
 
+  const handleDocCheckboxBanchChange = (docIds: (string | null)[], appId: string) => {
+    setEditingMutation((mut) => {
+      const docIdsToAdd = new Set<string | null>(docIds)
+      const apps = mut.apps.filter((_app) => {
+        if (_app.appId === appId) {
+          if (docIdsToAdd.has(_app.documentId)) {
+            docIdsToAdd.delete(_app.documentId)
+          } else {
+            return false
+          }
+        }
+        return true
+      })
+      docIdsToAdd.forEach((docId) => {
+        apps.push({ appId, documentId: docId })
+      })
+      return mergeDeep(cloneDeep(mut), { apps })
+    })
+  }
+
   const handleRevertClick = () => {
     setEditingMutation(cloneDeep(originalMutation))
   }
@@ -397,23 +418,31 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       />
 
       <AppsList>
-        {apps.map((app) => (
-          <ApplicationCard
-            key={app.id}
-            src={app.id}
-            metadata={app.metadata}
-            isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
-            onChange={(val) => handleAppCheckboxChange(app.id, val)}
-            disabled={isFormDisabled}
-            docsIds={editingMutation.apps
-              .filter((_app) => _app.appId === app.id)
-              .map((_app) => _app.documentId)}
-            setAppIdToOpenDocsModal={setAppIdToOpenDocsModal}
-            onDocCheckboxChange={(docId: string, isChecked: boolean) =>
-              handleDocCheckboxChange(docId, app.id, isChecked)
-            }
-          />
-        ))}
+        {apps.map((app) =>
+          app.permissions.documents ? (
+            <ApplicationCardWithDocs
+              key={app.id}
+              src={app.id}
+              metadata={app.metadata}
+              docsIds={editingMutation.apps
+                .filter((_app) => _app.appId === app.id)
+                .map((_app) => _app.documentId)}
+              setAppIdToOpenDocsModal={setAppIdToOpenDocsModal}
+              onDocCheckboxChange={(docId: string, isChecked: boolean) =>
+                handleDocCheckboxChange(docId, app.id, isChecked)
+              }
+            />
+          ) : (
+            <SimpleApplicationCard
+              key={app.id}
+              src={app.id}
+              metadata={app.metadata}
+              isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
+              onChange={(val) => handleAppCheckboxChange(app.id, val)}
+              disabled={isFormDisabled}
+            />
+          )
+        )}
       </AppsList>
 
       <ButtonsBlock>
@@ -446,9 +475,15 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           <BlurredBackground />
           <DocumentsModal
             appId={appIdToOpenDocsModal}
-            onClose={() => setAppIdToOpenDocsModal('')}
-            chosenDocumentsIds={['1', '3']}
-            setDocumentsIds={() => console.log('saved!')}
+            onClose={() => setAppIdToOpenDocsModal(null)}
+            chosenDocumentsIds={
+              editingMutation.apps
+                .filter((_app) => _app.appId === appIdToOpenDocsModal && !!_app.documentId)
+                .map((_app) => _app.documentId) as string[]
+            }
+            setDocumentsIds={(val: (string | null)[]) =>
+              handleDocCheckboxBanchChange(val, appIdToOpenDocsModal)
+            }
           />
         </>
       ) : null}

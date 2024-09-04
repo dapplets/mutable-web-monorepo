@@ -39,12 +39,14 @@ const CardContent = styled.div`
   width: 100%;
 `
 
-const TextLink = styled.div<{
+type TTextLink = {
   bold?: boolean
   small?: boolean
   ellipsis?: boolean
   $color?: string
-}>`
+}
+
+const TextLink = styled.div<TTextLink>`
   display: block;
   margin: 0;
   font-size: 14px;
@@ -58,22 +60,6 @@ const TextLink = styled.div<{
   white-space: nowrap;
   outline: none;
 `
-
-// const Text = styled.p<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
-//   margin: 0;
-//   font-size: 14px;
-//   line-height: 20px;
-//   color: ${(p) => (p.bold ? '#11181C' : '#687076')};
-//   font-weight: ${(p) => (p.bold ? '600' : '400')};
-//   font-size: ${(p) => (p.small ? '12px' : '14px')};
-//   overflow: ${(p) => (p.ellipsis ? 'hidden' : '')};
-//   text-overflow: ${(p) => (p.ellipsis ? 'ellipsis' : '')};
-//   white-space: nowrap;
-
-//   i {
-//     margin-right: 3px;
-//   }
-// `
 
 const Thumbnail = styled.div<{ $shape: 'circle' | 'default' }>`
   display: block;
@@ -175,42 +161,47 @@ const CheckedIcon = () => (
   </svg>
 )
 
-export interface Props {
+export interface ISimpleApplicationCardProps {
   src: string
   metadata: AppMetadata['metadata']
   isChecked: boolean
   onChange: (isChecked: boolean) => void
   disabled: boolean
-  setAppIdToOpenDocsModal?: (appId: string) => void
   iconShape?: 'circle'
   textColor?: string
   backgroundColor?: string
-  // hasDocuments: boolean - ToDo
-  docsIds: AppInMutation['documentId'][]
-  onDocCheckboxChange?: (docId: string, isChecked: boolean) => void
 }
 
-export const ApplicationCard: React.FC<Props> = ({
+export interface IApplicationCardWithDocsProps {
+  src: string
+  metadata: AppMetadata['metadata']
+  setAppIdToOpenDocsModal: (appId: string) => void
+  docsIds: AppInMutation['documentId'][]
+  onDocCheckboxChange: (docId: string, isChecked: boolean) => void
+}
+
+interface IApplicationCard
+  extends ISimpleApplicationCardProps,
+    Omit<IApplicationCardWithDocsProps, 'docsIds'> {
+  hasDocuments: boolean
+  docs: Document[]
+}
+
+const ApplicationCard: React.FC<IApplicationCard> = ({
   src,
   metadata,
-  isChecked,
-  onChange,
   disabled,
-  setAppIdToOpenDocsModal,
+  hasDocuments,
   iconShape,
   textColor,
   backgroundColor,
-  // hasDocuments, - ToDo
-  docsIds,
+  isChecked,
+  onChange,
+  docs,
   onDocCheckboxChange,
+  setAppIdToOpenDocsModal,
 }) => {
   const [accountId, , appId] = src.split('/')
-
-  const { documents } = useAppDocuments(src) // hasDocuments, - ToDo
-  console.log('documents in ApplicationCard', documents)
-  const docs = documents?.filter((doc) => docsIds.includes(doc.id))
-  console.log('docs', docs)
-
   return (
     <Card $backgroundColor={backgroundColor ?? 'white'} className={disabled ? 'disabled' : ''}>
       <CardBody>
@@ -231,25 +222,17 @@ export const ApplicationCard: React.FC<Props> = ({
             @{accountId}
           </TextLink>
         </CardContent>
+
         <ButtonLink
           className={disabled ? 'disabled' : ''}
           disabled={disabled}
-          onClick={
-            docsIds.filter((document) => document).length && setAppIdToOpenDocsModal // ToDo => hasDocuments
-              ? () => setAppIdToOpenDocsModal(src)
-              : () => onChange(!isChecked)
-          }
+          onClick={hasDocuments ? () => setAppIdToOpenDocsModal(src) : () => onChange(!isChecked)}
         >
-          {docsIds.filter((document) => document).length ? ( // ToDo => hasDocuments
-            <MoreIcon />
-          ) : isChecked ? (
-            <CheckedIcon />
-          ) : (
-            <UncheckedIcon />
-          )}
+          {hasDocuments ? <MoreIcon /> : isChecked ? <CheckedIcon /> : <UncheckedIcon />}
         </ButtonLink>
       </CardBody>
-      {docsIds.filter((document) => document).length && onDocCheckboxChange ? ( // ToDo => hasDocuments
+
+      {hasDocuments ? (
         <div style={{ display: 'flex', paddingBottom: 10 }}>
           <div style={{ border: '1px solid #C1C6CE', margin: '0 10px' }}></div>
           <div
@@ -275,5 +258,33 @@ export const ApplicationCard: React.FC<Props> = ({
         </div>
       ) : null}
     </Card>
+  )
+}
+
+export const SimpleApplicationCard: React.FC<ISimpleApplicationCardProps> = (props) => (
+  <ApplicationCard
+    {...props}
+    hasDocuments={false}
+    setAppIdToOpenDocsModal={() => null}
+    onDocCheckboxChange={() => null}
+    docs={[]}
+  />
+)
+
+export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = (props) => {
+  const { src, docsIds } = props
+  const { documents } = useAppDocuments(src)
+  const docs = docsIds && documents?.filter((doc) => docsIds.includes(doc.id))
+  console.log('docs', docs)
+
+  return (
+    <ApplicationCard
+      {...props}
+      hasDocuments={true}
+      isChecked={false}
+      onChange={() => null}
+      disabled={false}
+      docs={docs}
+    />
   )
 }

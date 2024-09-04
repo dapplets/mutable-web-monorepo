@@ -1,7 +1,7 @@
 import { useAppDocuments } from '@mweb/engine'
 import React, { FC, useState } from 'react'
 import styled from 'styled-components'
-import { ApplicationCard } from './application-card'
+import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { Document } from '@mweb/engine'
 import { PlusCircle } from '../assets/vectors'
@@ -199,11 +199,10 @@ export const DocumentsModal: FC<Props> = ({
   setDocumentsIds,
 }) => {
   console.log('appId', appId)
+  console.log('chosenDocumentsIds', chosenDocumentsIds)
 
   const { documents } = useAppDocuments(appId)
   console.log('documents in DocumentsModal', documents)
-
-  const [docs] = useState<Document[]>(allDocs)
   const [chosenDocsIds, setChosenDocsIds] = useState<string[]>(chosenDocumentsIds)
 
   const handleDocCheckboxChange = (id: string) =>
@@ -232,8 +231,8 @@ export const DocumentsModal: FC<Props> = ({
       </InlineButton>
 
       <AppsList>
-        {docs.map((doc) => (
-          <ApplicationCard
+        {documents.map((doc) => (
+          <SimpleApplicationCard
             key={doc.id}
             src={doc.id}
             metadata={doc.metadata}
@@ -243,7 +242,6 @@ export const DocumentsModal: FC<Props> = ({
             iconShape="circle"
             textColor="#4E5E76"
             backgroundColor="#F8F9FF"
-            docsIds={[]} // ToDo => hasDocuments
           />
         ))}
       </AppsList>
