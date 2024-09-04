@@ -9,6 +9,7 @@ export type ModalProps = {
   subject: string
   body: string
   type: NotificationType
+  duration: number
   actions: {
     label: string
     type?: 'primary' | 'default'

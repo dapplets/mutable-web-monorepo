@@ -32,7 +32,7 @@ const ModalProvider: FC<Props> = ({ children, onModalApiReady }) => {
         message: modalProps.subject,
         description: modalProps.body,
         placement: 'bottomRight',
-        duration: null,
+        duration: modalProps.duration,
         btn:
           modalProps.actions && modalProps.actions.length
             ? modalProps.actions.map((action, i) => (
@@ -57,7 +57,7 @@ const ModalProvider: FC<Props> = ({ children, onModalApiReady }) => {
 
   useEffect(() => {
     onModalApiReady({ notify })
-  }, [notify, onModalApiReady]);
+  }, [notify, onModalApiReady])
 
   const state: ModalContextState = {
     notify,
