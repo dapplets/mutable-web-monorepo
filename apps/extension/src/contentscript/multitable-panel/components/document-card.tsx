@@ -164,7 +164,7 @@ export const DocumentCard: React.FC<Props> = ({
 
         <CardContent>
           <TextLink bold ellipsis>
-            {metadata?.name || (srcParts && srcParts[2])}
+            {metadata?.name || (srcParts && srcParts[2]) || 'New Document'}
           </TextLink>
 
           <TextLink small ellipsis>

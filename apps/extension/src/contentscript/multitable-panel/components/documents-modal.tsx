@@ -3,7 +3,6 @@ import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
-import { Document } from '@mweb/engine'
 import { MinusCircle, PlusCircle } from '../assets/vectors'
 import { Spin } from 'antd'
 
@@ -141,50 +140,6 @@ const CloseIcon = () => (
     />
   </svg>
 )
-
-// Mocked data
-const allDocs: Document[] = [
-  {
-    id: '1',
-    metadata: {
-      name: 'Document 1',
-      description: 'Document 1 description',
-    },
-    authorId: '1',
-    openWith: ['1'],
-    documentLocalId: '1',
-  },
-  {
-    id: '2',
-    metadata: {
-      name: 'Document 2',
-      description: 'Document 2 description',
-    },
-    authorId: '1',
-    openWith: ['1'],
-    documentLocalId: '2',
-  },
-  {
-    id: '3',
-    metadata: {
-      name: 'Document 3',
-      description: 'Document 3 description',
-    },
-    authorId: '1',
-    openWith: ['1'],
-    documentLocalId: '3',
-  },
-  {
-    id: '4',
-    metadata: {
-      name: 'Document 4',
-      description: 'Document 4 description',
-    },
-    authorId: '1',
-    openWith: ['1'],
-    documentLocalId: '4',
-  },
-]
 
 export interface Props {
   appId: string

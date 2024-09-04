@@ -252,7 +252,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
                 src={doc?.id ?? null}
                 metadata={doc?.metadata ?? null}
                 onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}
-                disabled={false}
+                disabled={disabled}
                 appMetadata={metadata}
               />
             ))}
@@ -275,11 +275,9 @@ export const SimpleApplicationCard: React.FC<ISimpleApplicationCardProps> = (pro
 
 export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = (props) => {
   const { src, docsIds } = props
-  console.log('docsIds', docsIds)
   const { documents, isLoading } = useAppDocuments(src)
   const docs: (Document | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
-  if (docsIds.includes(null)) docs.push(null)
-  console.log('docs', docs)
+  if (docsIds.includes(null)) docs.unshift(null)
 
   return isLoading ? (
     <Card>
