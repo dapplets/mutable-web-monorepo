@@ -1,6 +1,6 @@
 import { LocalDbService } from '../local-db/local-db.service'
 import { SocialDbService, Value } from '../social-db/social-db.service'
-import { Mutation, MutationId } from './mutation.entity'
+import { AppInMutation, Mutation, MutationId } from './mutation.entity'
 
 // ToDo: move to repository?
 const ProjectIdKey = 'dapplets.near'
@@ -32,9 +32,9 @@ export class MutationRepository {
 
     if (!mutation) return null
 
-    const normalizedApps = mutation.apps
+    const normalizedApps: AppInMutation[] = mutation.apps
       ? JSON.parse(mutation.apps).map((app: any) =>
-          typeof app === 'string' ? { appId: app } : app
+          typeof app === 'string' ? { appId: app, documentId: null } : app
         )
       : []
 
@@ -65,9 +65,9 @@ export class MutationRepository {
       const [accountId, , , , localMutationId] = key.split(KeyDelimiter)
       const mutationId = [accountId, MutationKey, localMutationId].join(KeyDelimiter)
 
-      const normalizedApps = mutation.apps
+      const normalizedApps: AppInMutation[] = mutation.apps
         ? JSON.parse(mutation.apps).map((app: any) =>
-            typeof app === 'string' ? { appId: app } : app
+            typeof app === 'string' ? { appId: app, documentId: null } : app
           )
         : []
 
