@@ -1,12 +1,11 @@
-import { useAppDocuments } from '@mweb/engine'
+import { Document } from '@mweb/engine'
 import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { MinusCircle, PlusCircle } from '../assets/vectors'
-import { Spin } from 'antd'
 
-const SelectedMutationEditorWrapper = styled.div`
+const Wrapper = styled.div`
   position: absolute;
   z-index: 3;
   top: calc(50% - 10px);
@@ -43,7 +42,7 @@ const Close = styled.span`
   }
 `
 
-const HeaderEditor = styled.div`
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -60,7 +59,7 @@ const HeaderEditor = styled.div`
   }
 `
 
-const HeaderTitle = styled.div`
+const Title = styled.div`
   color: #02193a;
 `
 
@@ -142,19 +141,18 @@ const CloseIcon = () => (
 )
 
 export interface Props {
-  appId: string
-  onClose: () => void
+  docs: Document[] | null
   chosenDocumentsIds: (string | null)[]
   setDocumentsIds: (ids: (string | null)[]) => void
+  onClose: () => void
 }
 
 export const DocumentsModal: FC<Props> = ({
-  appId,
-  onClose,
+  docs,
   chosenDocumentsIds,
   setDocumentsIds,
+  onClose,
 }) => {
-  const { documents, isLoading } = useAppDocuments(appId)
   const [chosenDocsIds, setChosenDocsIds] = useState<(string | null)[]>(chosenDocumentsIds)
 
   const handleDocCheckboxChange = (id: string | null) =>
@@ -163,13 +161,13 @@ export const DocumentsModal: FC<Props> = ({
     )
 
   return (
-    <SelectedMutationEditorWrapper>
-      <HeaderEditor>
-        <HeaderTitle>Select your guide</HeaderTitle>
+    <Wrapper>
+      <Header>
+        <Title>Select your guide</Title>
         <Close onClick={onClose}>
           <CloseIcon />
         </Close>
-      </HeaderEditor>
+      </Header>
 
       <InlineButton onClick={() => handleDocCheckboxChange(null)}>
         {chosenDocsIds.includes(null) ? (
@@ -186,23 +184,19 @@ export const DocumentsModal: FC<Props> = ({
       </InlineButton>
 
       <AppsList>
-        {isLoading ? (
-          <Spin />
-        ) : (
-          documents.map((doc) => (
-            <SimpleApplicationCard
-              key={doc.id}
-              src={doc.id}
-              metadata={doc.metadata}
-              isChecked={chosenDocsIds.includes(doc.id)}
-              onChange={() => handleDocCheckboxChange(doc.id)}
-              disabled={false}
-              iconShape="circle"
-              textColor="#4E5E76"
-              backgroundColor="#F8F9FF"
-            />
-          ))
-        )}
+        {docs?.map((doc) => (
+          <SimpleApplicationCard
+            key={doc.id}
+            src={doc.id}
+            metadata={doc.metadata}
+            isChecked={chosenDocsIds.includes(doc.id)}
+            onChange={() => handleDocCheckboxChange(doc.id)}
+            disabled={false}
+            iconShape="circle"
+            textColor="#4E5E76"
+            backgroundColor="#F8F9FF"
+          />
+        ))}
       </AppsList>
 
       <ButtonsBlock>
@@ -218,7 +212,7 @@ export const DocumentsModal: FC<Props> = ({
           Confirm
         </Button>
       </ButtonsBlock>
-    </SelectedMutationEditorWrapper>
+    </Wrapper>
   )
 }
 

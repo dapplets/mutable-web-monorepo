@@ -1,5 +1,6 @@
 import {
   AppMetadata,
+  Document,
   Mutation,
   useCreateMutation,
   useEditMutation,
@@ -215,6 +216,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
+  const [docsForModal, setDocsForModal] = useState<Document[] | null>(null)
 
   // Close modal with escape key
   useEscape(onClose)
@@ -380,6 +382,11 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     setMode(itemId as MutationModalMode)
   }
 
+  const handleOpenDocumentsModal = (appId: string, docs: Document[]) => {
+    setAppIdToOpenDocsModal(appId)
+    setDocsForModal(docs)
+  }
+
   return (
     <SelectedMutationEditorWrapper>
       <HeaderEditor>
@@ -425,7 +432,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               docsIds={editingMutation.apps
                 .filter((_app) => _app.appId === app.id)
                 .map((_app) => _app.documentId)}
-              setAppIdToOpenDocsModal={setAppIdToOpenDocsModal}
+              onOpenDocumentsModal={(docs: Document[]) => handleOpenDocumentsModal(app.id, docs)}
               onDocCheckboxChange={(docId: string | null, isChecked: boolean) =>
                 handleDocCheckboxChange(docId, app.id, isChecked)
               }
@@ -472,7 +479,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
         <>
           <BlurredBackground />
           <DocumentsModal
-            appId={appIdToOpenDocsModal}
+            docs={docsForModal}
             onClose={() => setAppIdToOpenDocsModal(null)}
             chosenDocumentsIds={editingMutation.apps
               .filter((_app) => _app.appId === appIdToOpenDocsModal)

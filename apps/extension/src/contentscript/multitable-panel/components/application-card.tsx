@@ -177,16 +177,17 @@ export interface IApplicationCardWithDocsProps {
   src: string
   metadata: AppMetadata['metadata']
   disabled: boolean
-  setAppIdToOpenDocsModal: (appId: string) => void
   docsIds: AppInMutation['documentId'][]
   onDocCheckboxChange: (docId: string | null, isChecked: boolean) => void
+  onOpenDocumentsModal: (docs: Document[]) => void
 }
 
 interface IApplicationCard
   extends ISimpleApplicationCardProps,
     Omit<IApplicationCardWithDocsProps, 'docsIds'> {
   hasDocuments: boolean
-  docs: (Document | null)[]
+  usingDocs: (Document | null)[]
+  allDocs: Document[]
 }
 
 const ApplicationCard: React.FC<IApplicationCard> = ({
@@ -198,10 +199,11 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
   textColor,
   backgroundColor,
   isChecked,
+  usingDocs,
+  allDocs,
   onChange,
-  docs,
   onDocCheckboxChange,
-  setAppIdToOpenDocsModal,
+  onOpenDocumentsModal,
 }) => {
   const [accountId, , appId] = src.split('/')
   return (
@@ -228,13 +230,13 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
         <ButtonLink
           className={disabled ? 'disabled' : ''}
           disabled={disabled}
-          onClick={hasDocuments ? () => setAppIdToOpenDocsModal(src) : () => onChange(!isChecked)}
+          onClick={hasDocuments ? () => onOpenDocumentsModal(allDocs) : () => onChange(!isChecked)}
         >
           {hasDocuments ? <MoreIcon /> : isChecked ? <CheckedIcon /> : <UncheckedIcon />}
         </ButtonLink>
       </CardBody>
 
-      {hasDocuments ? (
+      {hasDocuments && usingDocs.length ? (
         <div style={{ display: 'flex', paddingBottom: 10 }}>
           <div style={{ border: '1px solid #C1C6CE', margin: '0 10px' }}></div>
           <div
@@ -246,7 +248,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
               gap: 6,
             }}
           >
-            {docs.map((doc) => (
+            {usingDocs.map((doc) => (
               <DocumentCard
                 key={doc?.id || 'empty'}
                 src={doc?.id ?? null}
@@ -267,17 +269,18 @@ export const SimpleApplicationCard: React.FC<ISimpleApplicationCardProps> = (pro
   <ApplicationCard
     {...props}
     hasDocuments={false}
-    setAppIdToOpenDocsModal={() => null}
+    onOpenDocumentsModal={() => null}
     onDocCheckboxChange={() => null}
-    docs={[]}
+    usingDocs={[]}
+    allDocs={[]}
   />
 )
 
 export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = (props) => {
   const { src, docsIds } = props
   const { documents, isLoading } = useAppDocuments(src)
-  const docs: (Document | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
-  if (docsIds.includes(null)) docs.unshift(null)
+  const usingDocs: (Document | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
+  if (docsIds.includes(null)) usingDocs.unshift(null)
 
   return isLoading ? (
     <Card>
@@ -291,7 +294,8 @@ export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = 
       hasDocuments={true}
       isChecked={false}
       onChange={() => null}
-      docs={docs}
+      usingDocs={usingDocs}
+      allDocs={documents}
     />
   )
 }
