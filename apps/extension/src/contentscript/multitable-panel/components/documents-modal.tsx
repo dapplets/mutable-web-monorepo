@@ -72,6 +72,7 @@ const AppsList = styled.div`
   padding: 10px;
   background: white;
   border-radius: 10px;
+  overscroll-behavior: contain;
 
   &::-webkit-scrollbar {
     cursor: pointer;

@@ -84,6 +84,8 @@ const AppsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  overscroll-behavior: contain;
+
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
