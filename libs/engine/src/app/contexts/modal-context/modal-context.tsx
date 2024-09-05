@@ -10,6 +10,8 @@ export type ModalProps = {
   body: string
   type: NotificationType
   duration: number
+  showProgress: boolean
+  pauseOnHover: boolean
   actions: {
     label: string
     type?: 'primary' | 'default'
