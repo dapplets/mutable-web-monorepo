@@ -4,7 +4,7 @@ import { MiniOverlay, AppSwitcher } from '@mweb/shared-components'
 
 function AppSwitcherContainer({ app }) {
   // ToDo: move to @mweb/engine
-  const { enableApp, disableApp, isLoading } = useMutationApp(app.id)
+  const { enableApp, disableApp, isLoading } = useMutationApp(app.instanceId)
   return (
     <AppSwitcher app={app} enableApp={enableApp} disableApp={disableApp} isLoading={isLoading} />
   )

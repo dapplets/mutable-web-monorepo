@@ -1,6 +1,6 @@
 import { LocalDbService } from '../local-db/local-db.service'
 import { SocialDbService } from '../social-db/social-db.service'
-import { AppId, AppMetadata } from './application.entity'
+import { AppId, AppInstanceId, AppMetadata } from './application.entity'
 
 // SocialDB
 const ProjectIdKey = 'dapplets.near'
@@ -111,13 +111,17 @@ export class ApplicationRepository {
     }
   }
 
-  async getAppEnabledStatus(mutationId: string, appId: string): Promise<boolean> {
-    const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appId)
+  async getAppEnabledStatus(mutationId: string, appInstanceId: AppInstanceId): Promise<boolean> {
+    const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appInstanceId)
     return (await this.localDb.getItem(key)) ?? true // app is active by default
   }
 
-  async setAppEnabledStatus(mutationId: string, appId: string, isEnabled: boolean): Promise<void> {
-    const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appId)
+  async setAppEnabledStatus(
+    mutationId: string,
+    appInstanceId: AppInstanceId,
+    isEnabled: boolean
+  ): Promise<void> {
+    const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appInstanceId)
     return this.localDb.setItem(key, isEnabled)
   }
 }
