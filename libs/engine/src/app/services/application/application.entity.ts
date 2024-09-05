@@ -1,3 +1,4 @@
+import { DocumentId } from '../document/document.entity'
 import { ParserConfigId } from '../parser-config/parser-config.entity'
 import { Target } from '../target/target.entity'
 
@@ -35,4 +36,9 @@ export type AppWithSettings = AppMetadata & {
   settings: {
     isEnabled: boolean
   }
+}
+
+export type AppInstanceWithSettings = AppWithSettings & {
+  instanceId: string
+  documentId: DocumentId | null
 }

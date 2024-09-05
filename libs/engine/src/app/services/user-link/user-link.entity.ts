@@ -32,8 +32,13 @@ export type BosUserLink = {
   // ToDo: add props
 }
 
+export type BosUserLinkWithInstance = BosUserLink & {
+  appInstanceId: string
+}
+
 export type ControllerLink = {
   id: string
   appId: AppId
+  appInstanceId: string
   bosWidgetId: string
 }

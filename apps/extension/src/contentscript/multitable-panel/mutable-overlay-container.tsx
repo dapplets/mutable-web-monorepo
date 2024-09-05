@@ -32,7 +32,7 @@ function MutableOverlayContainer({
     >
       <>
         {mutationApps.map((app) => (
-          <AppSwitcherContainer key={app.id} app={app} />
+          <AppSwitcherContainer key={`${app.id}/${app.instanceId}`} app={app} />
         ))}
       </>
     </MiniOverlay>
