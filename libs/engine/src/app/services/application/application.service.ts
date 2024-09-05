@@ -1,7 +1,7 @@
 import { IContextNode } from '@mweb/core'
-import { MutationId } from '../mutation/mutation.entity'
+import { Mutation, MutationId } from '../mutation/mutation.entity'
 import { TargetService } from '../target/target.service'
-import { AnyParserValue, AppId, AppMetadata, AppWithSettings } from './application.entity'
+import { AppId, AppInstanceWithSettings, AppMetadata, AppWithSettings } from './application.entity'
 import { ApplicationRepository } from './application.repository'
 
 export class ApplicationService {
@@ -14,6 +14,28 @@ export class ApplicationService {
 
   public getApplication(appId: AppId): Promise<AppMetadata | null> {
     return this.applicationRepository.getApplication(appId)
+  }
+
+  public async getAppWithSettings(
+    mutationId: MutationId,
+    appId: AppId
+  ): Promise<AppWithSettings | null> {
+    const app = await this.getApplication(appId)
+    if (!app) return null
+
+    return this.populateAppWithSettings(mutationId, app)
+  }
+
+  public async getAppsFromMutation(mutation: Mutation): Promise<AppInstanceWithSettings[]> {
+    return Promise.all(
+      mutation.apps.map((appInstance, index) =>
+        this.getAppWithSettings(mutation.id, appInstance.appId).then((app) => ({
+          ...app,
+          instanceId: index.toString(), // index is used as instance id
+          documentId: appInstance.documentId,
+        }))
+      )
+    ).then((apps) => apps.filter((app) => app !== null) as AppInstanceWithSettings[])
   }
 
   public async getAppEnabledStatus(mutationId: MutationId, appId: AppId): Promise<boolean> {

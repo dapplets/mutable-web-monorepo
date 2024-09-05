@@ -9,7 +9,12 @@ import { ContextTree } from '@mweb/react'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
 import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
 import { AppId, AppMetadata } from '../services/application/application.entity'
-import { BosUserLink, ControllerLink, UserLinkId } from '../services/user-link/user-link.entity'
+import {
+  BosUserLink,
+  BosUserLinkWithInstance,
+  ControllerLink,
+  UserLinkId,
+} from '../services/user-link/user-link.entity'
 import { TransferableContext, buildTransferableContext } from '../common/transferable-context'
 import { useModal } from '../contexts/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
@@ -164,19 +169,16 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   // Move to a separate hook when App wrapper is ready
   const handleGetLinkDataCurry = useCallback(
     memoize(
-      (appId: AppId) =>
+      (appInstanceId: string) =>
         (ctx: TransferableContext, accountIds?: string[] | string, indexRules?: LinkIndexRules) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-
-          // ToDo: handle multiple app instances
-          const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
-
-          if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+          const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+          if (!appInstance) throw new Error('The app is not active')
 
           return engine.linkDbService.get(
             selectedMutation.id,
-            appId,
-            appFromMutation.documentId,
+            appInstance.id,
+            appInstance.documentId,
             ctx,
             accountIds,
             indexRules
@@ -188,44 +190,38 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleSetLinkDataCurry = useCallback(
     memoize(
-      (appId: AppId) =>
+      (appInstanceId: string) =>
         (
           ctx: TransferableContext,
           dataByAccount: LinkedDataByAccount,
           indexRules: LinkIndexRules
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-
-          // ToDo: handle multiple app instances
-          const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
-
-          if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+          const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+          if (!appInstance) throw new Error('The app is not active')
 
           return engine.linkDbService.set(
             selectedMutation.id,
-            appId,
-            appFromMutation.documentId,
+            appInstance.id,
+            appInstance.documentId,
             ctx,
             dataByAccount,
             indexRules
           )
         }
     ),
-    [engine, selectedMutation]
+    [engine, selectedMutation, activeApps]
   )
 
   const handleGetDocumentCurry = useCallback(
-    memoize((appId: AppId) => async () => {
+    memoize((appInstanceId: string) => async () => {
       if (!selectedMutation) throw new Error('No selected mutation')
+      const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+      if (!appInstance) throw new Error('The app is not active')
 
-      // ToDo: handle multiple app instances
-      const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
+      if (!appInstance.documentId) return null
 
-      if (!appFromMutation) throw new Error('The app is not in the selected mutation')
-
-      if (!appFromMutation.documentId) return null
-
-      const document = await engine.documentService.getDocument(appFromMutation.documentId)
+      const document = await engine.documentService.getDocument(appInstance.documentId)
 
       return document
     }),
@@ -234,7 +230,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleCommitDocumentCurry = useCallback(
     memoize(
-      (appId: AppId) =>
+      (appInstanceId: string) =>
         async (
           appDocId: DocumentId,
           appDocMeta: DocumentMetadata,
@@ -242,21 +238,18 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           dataByAccount: LinkedDataByAccount
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-
-          // ToDo: handle multiple app instances
-          const appFromMutation = selectedMutation.apps.find((app) => app.appId === appId)
-
-          if (!appFromMutation) throw new Error('The app is not in the selected mutation')
+          const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+          if (!appInstance) throw new Error('The app is not active')
 
           const document = {
             id: appDocId,
             metadata: appDocMeta,
-            openWith: [appId],
+            openWith: [appInstance.id],
           }
 
           const { mutation } = await engine.documentService.createDocumentWithData(
             selectedMutation.id,
-            appId,
+            appInstance.id,
             document,
             ctx,
             dataByAccount
@@ -268,7 +261,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           await refreshMutation(mutation)
         }
     ),
-    [engine, selectedMutation, refreshMutation]
+    [engine, selectedMutation, activeApps, refreshMutation]
   )
 
   // ToDo: check context.element
@@ -353,7 +346,7 @@ const InsPointHandler: FC<{
   bosLayoutManager?: string
   context: IContextNode
   transferableContext: TransferableContext
-  allUserLinks: BosUserLink[]
+  allUserLinks: BosUserLinkWithInstance[]
   components: Portal[]
   apps: AppMetadata[]
   isEditMode: boolean
@@ -364,28 +357,28 @@ const InsPointHandler: FC<{
   onDisableEditMode: () => void
   onAttachContextRef: (callback: (r: React.Component | Element | null | undefined) => void) => void
   onGetLinkDataCurry: (
-    appId: string
+    appInstanceId: string
   ) => (
     ctx: TransferableContext,
     accountIds?: string[] | string,
     indexRules?: LinkIndexRules
   ) => Promise<LinkedDataByAccount>
   onSetLinkDataCurry: (
-    appId: string
+    appInstanceId: string
   ) => (
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules
   ) => Promise<void>
   onCommitDocumentCurry: (
-    appId: string
+    appInstanceId: string
   ) => (
     appDocId: DocumentId,
     appDocMetadata: DocumentMetadata,
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) => Promise<void>
-  onGetDocumentCurry: (appId: AppId) => () => Promise<Document | null>
+  onGetDocumentCurry: (appInstanceId: string) => () => Promise<Document | null>
 }> = ({
   insPointName,
   element,
@@ -481,11 +474,12 @@ const InsPointHandler: FC<{
         },
         notify,
         linkDb: {
-          get: onGetLinkDataCurry(link.appId),
-          set: onSetLinkDataCurry(link.appId),
+          // ToDo: which instance id should be used for user links?
+          get: onGetLinkDataCurry(link.appInstanceId),
+          set: onSetLinkDataCurry(link.appInstanceId),
         },
-        commitDocument: onCommitDocumentCurry(link.appId),
-        getDocument: onGetDocumentCurry(link.appId),
+        commitDocument: onCommitDocumentCurry(link.appInstanceId),
+        getDocument: onGetDocumentCurry(link.appInstanceId),
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -536,28 +530,28 @@ const ControllerHandler: FC<{
   controller: ControllerLink
   onContextQuery: (target: Target) => TransferableContext | null
   onGetLinkDataCurry: (
-    appId: string
+    appInstanceId: string
   ) => (
     ctx: TransferableContext,
     accountIds?: string[] | string,
     indexRules?: LinkIndexRules
   ) => Promise<LinkedDataByAccount>
   onSetLinkDataCurry: (
-    appId: string
+    appInstanceId: string
   ) => (
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules
   ) => Promise<void>
   onCommitDocumentCurry: (
-    appId: string
+    appInstanceId: string
   ) => (
     appDocId: DocumentId,
     appDocMetadata: DocumentMetadata,
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) => Promise<void>
-  onGetDocumentCurry: (appId: AppId) => () => Promise<Document | null>
+  onGetDocumentCurry: (appInstanceId: string) => () => Promise<Document | null>
 }> = ({
   transferableContext,
   controller,
@@ -579,11 +573,11 @@ const ControllerHandler: FC<{
     query: onContextQuery,
     notify,
     linkDb: {
-      get: onGetLinkDataCurry(controller.appId),
-      set: onSetLinkDataCurry(controller.appId),
+      get: onGetLinkDataCurry(controller.appInstanceId),
+      set: onSetLinkDataCurry(controller.appInstanceId),
     },
-    commitDocument: onCommitDocumentCurry(controller.appId),
-    getDocument: onGetDocumentCurry(controller.appId),
+    commitDocument: onCommitDocumentCurry(controller.appInstanceId),
+    getDocument: onGetDocumentCurry(controller.appInstanceId),
   }
 
   return (

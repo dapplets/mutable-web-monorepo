@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { AppWithSettings } from '../../services/application/application.entity'
+import { AppInstanceWithSettings } from '../../services/application/application.entity'
 import { Mutation } from '../../services/mutation/mutation.entity'
 import { Engine } from '../../../engine'
 
 export const useMutationApps = (engine: Engine, mutation?: Mutation | null) => {
-  const [mutationApps, setMutationApps] = useState<AppWithSettings[]>([])
+  const [mutationApps, setMutationApps] = useState<AppInstanceWithSettings[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -17,18 +17,7 @@ export const useMutationApps = (engine: Engine, mutation?: Mutation | null) => {
     try {
       setIsLoading(true)
 
-      // ToDo: move to service
-      const apps = await Promise.all(
-        mutation.apps.map((app) =>
-          engine.applicationService
-            .getApplication(app.appId)
-            .then((appMetadata) =>
-              appMetadata
-                ? engine.applicationService.populateAppWithSettings(mutation.id, appMetadata)
-                : null
-            )
-        )
-      ).then((apps) => apps.filter((app) => app !== null) as AppWithSettings[])
+      const apps = await engine.applicationService.getAppsFromMutation(mutation)
 
       setMutationApps(apps)
     } catch (err) {
