@@ -6,6 +6,8 @@ import styled from 'styled-components'
 import { Image } from '../common/Image'
 import Profile, { IWalletConnect } from './Profile'
 import { Button, Space, notification, Typography, Card } from 'antd'
+import { version } from 'os'
+import { log } from 'console'
 const { Text } = Typography
 
 const Context = React.createContext({ name: 'Default' })
@@ -25,10 +27,6 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
-
-  &:global(.ant-notification) {
-    position: fixed;
-  }
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
@@ -362,12 +360,27 @@ const IconBranchButton = () => (
   </svg>
 )
 
+const IconNotificationMessage = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
+    <path
+      d="M1.5 3.5C1.5 3.23478 1.60536 2.98043 1.79289 2.79289C1.98043 2.60536 2.23478 2.5 2.5 2.5H9.5C9.76522 2.5 10.0196 2.60536 10.2071 2.79289C10.3946 2.98043 10.5 3.23478 10.5 3.5V8.5C10.5 8.76522 10.3946 9.01957 10.2071 9.20711C10.0196 9.39464 9.76522 9.5 9.5 9.5H2.5C2.23478 9.5 1.98043 9.39464 1.79289 9.20711C1.60536 9.01957 1.5 8.76522 1.5 8.5V3.5Z"
+      stroke="#7A818B"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M1.5 3.5L6 6.5L10.5 3.5"
+      stroke="#7A818B"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+)
 const IconNotificationClose = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
     <path
-      d="M8 1.5L1 8.5M1 1.5L8 8.5"
+      d="M1.5 3.5L6 6.5L10.5 3.5"
       stroke="#7A818B"
-      stroke-width="1.16667"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
@@ -425,6 +438,42 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp,
   </>
 )
 
+export enum NotificationType {
+  Error = 'error',
+  Warning = 'warning',
+  Info = 'info',
+}
+
+export interface NotificationData {
+  author?: string
+  number?: string
+  date?: string
+  time?: string
+  name?: string
+  applicationCommitData?: {
+    name: string
+    version: string
+  }
+  targetApplication?: string
+  near?: string
+}
+
+export interface NotificationActions {
+  label: string
+  type?: 'primary' | 'default'
+  onClick?: () => void
+  icon?: React.ReactNode
+}
+
+export type NotificationProps = {
+  subject: NotificationData
+  body: NotificationData
+  type: NotificationType
+
+  actions: NotificationActions[]
+  duration: number
+}
+
 export const MiniOverlay: FC<IMiniOverlayProps> = ({
   baseMutation,
   mutationApps,
@@ -442,27 +491,22 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   })
 
   const openNotify = useCallback(
-    (id: string, name: string, author: string) => {
-      api.info({
+    (notificationProps: NotificationProps, id: string) => {
+      api[notificationProps.type]({
         key: id,
         duration: 0,
-        message: createSingleNotification('message', id, author, 'number', 'date', 'time', name),
-        description: createSingleNotification(
-          'description',
+        message: createSingleNotification('message', id, notificationProps.subject),
+        description: createSingleNotification('description', id, notificationProps.body),
+        btn: createSingleNotification(
+          'btn',
           id,
-          author,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          { name: 'name applicationCommitData', version: 'version' },
-          'handler ID',
-          'nearWallet'
+          notificationProps.body,
+          notificationProps.actions,
+          () => api.destroy(id)
         ),
-
         placement: 'bottomRight',
         icon: <IconBranch />,
-        closeIcon: <IconNotificationClose />,
+        closeIcon: <IconNotificationMessage />,
       })
     },
     [api]
@@ -477,7 +521,52 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   trackingRefs.add(rootRef)
 
   const handleMutationIconClick = () => {
-    openNotify(`${Date.now()}`, 'name', 'author')
+    openNotify(
+      {
+        subject: {
+          author: 'author',
+          number: 'number',
+          date: 'date',
+          time: 'time',
+          name: 'name',
+        },
+        body: {
+          author: 'author',
+          number: undefined,
+          date: undefined,
+          time: undefined,
+          name: undefined,
+          applicationCommitData: {
+            name: 'applicationCommitData name',
+            version: 'applicationCommitData version',
+          },
+          targetApplication: 'targetApplication',
+          near: 'near',
+        },
+        type: NotificationType.Info,
+        actions: [
+          {
+            label: 'Decline',
+
+            onClick: () => console.log('Decline'),
+            icon: <IconNotificationClose />,
+          },
+          {
+            label: 'Review',
+
+            onClick: () => console.log('Review'),
+          },
+          {
+            label: 'Accept',
+            type: 'primary',
+            onClick: () => console.log('Accept'),
+            icon: <IconBranchButton />,
+          },
+        ],
+        duration: 0,
+      },
+      `${Date.now()}`
+    )
     setProfileOpen((val) => !val)
   }
 
@@ -552,36 +641,30 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
 }
 
 export const createSingleNotification = (
-  type: 'description' | 'message',
+  type: 'description' | 'message' | 'btn',
   id: string,
-  author: string,
-  number?: string,
-  date?: string,
-  time?: string,
-  name?: string,
-  applicationCommitData?: {
-    name: string
-    version: string
-  },
-  targetApplication?: string,
-  near?: string
+
+  data: NotificationData,
+  actions?: NotificationActions[],
+  destroy?: any
 ) => {
   return type === 'message' ? (
     <Space direction="vertical">
       <Space size="large" direction="horizontal">
         <Text type="secondary">
-          #{number}
-          &ensp; {name}&ensp; {author}&ensp; on&ensp;{date} &ensp; at&ensp; {time}
+          #{data.number}
+          &ensp; {data.name}&ensp; {data.author}&ensp; on&ensp;{data.date} &ensp; at&ensp;{' '}
+          {data.time}
         </Text>
       </Space>
 
       <Space direction="horizontal">
         <Text strong underline>
-          {name}
+          {data.name}
         </Text>
       </Space>
     </Space>
-  ) : (
+  ) : type === 'description' ? (
     <Space direction="vertical">
       <Card
         style={{
@@ -593,25 +676,32 @@ export const createSingleNotification = (
         }}
       >
         <Text type="secondary">
-          <Text underline>{author}&ensp;</Text> asks you to accept changes from&ensp;
-          <Text underline> {applicationCommitData?.name} </Text>&ensp;
-          <Text underline> {applicationCommitData?.name} </Text>&ensp;
-          {applicationCommitData?.version} &ensp;({near})&ensp; into your&ensp;
-          <Text underline> {targetApplication} </Text>.
+          <Text underline>{data.author}&ensp;</Text> asks you to accept changes from&ensp;
+          <Text underline> {data.applicationCommitData?.name} </Text>&ensp;
+          <Text underline> {data.applicationCommitData?.version} </Text>&ensp;
+          {data.applicationCommitData?.version} &ensp;({data.near})&ensp; into your&ensp;
+          <Text underline> {data.targetApplication} </Text>.
         </Text>
       </Card>
-      <Space direction="horizontal">
-        <Button size="middle" onClick={() => {}}>
-          <IconNotificationClose />
-          Decline
-        </Button>
-        <Button size="middle" onClick={() => {}}>
-          Review
-        </Button>
-        <Button size="middle" type="primary" onClick={() => {}}>
-          <IconBranchButton /> Accept
-        </Button>
-      </Space>
+    </Space>
+  ) : (
+    <Space direction="horizontal">
+      {actions && actions.length
+        ? actions.map((action, i) => (
+            <Button
+              key={i}
+              type={action.type ?? 'primary'}
+              size="middle"
+              onClick={() => {
+                action.onClick?.()
+                destroy(id)
+              }}
+            >
+              {action.icon}
+              {action.label}
+            </Button>
+          ))
+        : null}
     </Space>
   )
 }
