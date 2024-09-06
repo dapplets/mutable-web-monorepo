@@ -1,11 +1,11 @@
-import { AppWithSettings, useMutableWeb, useMutationApp } from '@mweb/engine'
+import { AppInstanceWithSettings, useMutableWeb, useMutationApp } from '@mweb/engine'
 import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
 import React from 'react'
 import Background from '../../common/background'
 import { NearNetworkId } from '../../common/networks'
 
-function AppSwitcherContainer({ app }: { app: AppWithSettings }) {
-  const { enableApp, disableApp, isLoading } = useMutationApp(app.id)
+function AppSwitcherContainer({ app }: { app: AppInstanceWithSettings }) {
+  const { enableApp, disableApp, isLoading } = useMutationApp(app.instanceId)
   return (
     <AppSwitcher app={app} enableApp={enableApp} disableApp={disableApp} isLoading={isLoading} />
   )

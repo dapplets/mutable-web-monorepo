@@ -1,6 +1,10 @@
 export * as customElements from './custom-elements'
 export { Mutation, MutationWithSettings } from './app/services/mutation/mutation.entity'
-export { AppMetadata, AppWithSettings } from './app/services/application/application.entity'
+export {
+  AppMetadata,
+  AppWithSettings,
+  AppInstanceWithSettings,
+} from './app/services/application/application.entity'
 export { LocalStorage } from './app/services/local-db/local-storage'
 export { IStorage } from './app/services/local-db/local-storage'
 export { App } from './app/app'

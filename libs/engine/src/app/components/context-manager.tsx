@@ -28,6 +28,7 @@ import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
 import { Document, DocumentId, DocumentMetadata } from '../services/document/document.entity'
+import { ApplicationService } from '../services/application/application.service'
 
 interface WidgetProps {
   context: TransferableContext
@@ -172,12 +173,14 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
       (appInstanceId: string) =>
         (ctx: TransferableContext, accountIds?: string[] | string, indexRules?: LinkIndexRules) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-          const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+          const appInstance = selectedMutation.apps.find(
+            (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+          )
           if (!appInstance) throw new Error('The app is not active')
 
           return engine.linkDbService.get(
             selectedMutation.id,
-            appInstance.id,
+            appInstance.appId,
             appInstance.documentId,
             ctx,
             accountIds,
@@ -197,12 +200,14 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           indexRules: LinkIndexRules
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-          const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+          const appInstance = selectedMutation.apps.find(
+            (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+          )
           if (!appInstance) throw new Error('The app is not active')
 
           return engine.linkDbService.set(
             selectedMutation.id,
-            appInstance.id,
+            appInstance.appId,
             appInstance.documentId,
             ctx,
             dataByAccount,
@@ -210,13 +215,15 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
         }
     ),
-    [engine, selectedMutation, activeApps]
+    [engine, selectedMutation]
   )
 
   const handleGetDocumentCurry = useCallback(
     memoize((appInstanceId: string) => async () => {
       if (!selectedMutation) throw new Error('No selected mutation')
-      const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+      const appInstance = selectedMutation.apps.find(
+        (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+      )
       if (!appInstance) throw new Error('The app is not active')
 
       if (!appInstance.documentId) return null
@@ -225,7 +232,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
       return document
     }),
-    [engine, selectedMutation, activeApps, refreshMutation]
+    [engine, selectedMutation, refreshMutation]
   )
 
   const handleCommitDocumentCurry = useCallback(
@@ -238,18 +245,20 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           dataByAccount: LinkedDataByAccount
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
-          const appInstance = activeApps.find((app) => app.instanceId === appInstanceId)
+          const appInstance = selectedMutation.apps.find(
+            (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+          )
           if (!appInstance) throw new Error('The app is not active')
 
           const document = {
             id: appDocId,
             metadata: appDocMeta,
-            openWith: [appInstance.id],
+            openWith: [appInstance.appId],
           }
 
           const { mutation } = await engine.documentService.createDocumentWithData(
             selectedMutation.id,
-            appInstance.id,
+            appInstance.appId,
             document,
             ctx,
             dataByAccount
@@ -261,7 +270,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           await refreshMutation(mutation)
         }
     ),
-    [engine, selectedMutation, activeApps, refreshMutation]
+    [engine, selectedMutation, refreshMutation]
   )
 
   // ToDo: check context.element

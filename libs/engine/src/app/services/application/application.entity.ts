@@ -3,6 +3,7 @@ import { ParserConfigId } from '../parser-config/parser-config.entity'
 import { Target } from '../target/target.entity'
 
 export type AppId = string
+export type AppInstanceId = string
 
 export const AnyParserValue = 'any'
 
@@ -32,10 +33,12 @@ export type AppMetadata = {
   }
 }
 
+export type AppInstanceSettings = {
+  isEnabled: boolean
+}
+
 export type AppWithSettings = AppMetadata & {
-  settings: {
-    isEnabled: boolean
-  }
+  settings: AppInstanceSettings
 }
 
 export type AppInstanceWithSettings = AppWithSettings & {
