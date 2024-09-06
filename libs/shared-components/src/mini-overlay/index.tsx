@@ -6,8 +6,7 @@ import styled from 'styled-components'
 import { Image } from '../common/Image'
 import Profile, { IWalletConnect } from './Profile'
 import { Button, Space, notification, Typography, Card } from 'antd'
-import { version } from 'os'
-import { log } from 'console'
+
 const { Text } = Typography
 
 const Context = React.createContext({ name: 'Default' })
@@ -27,6 +26,24 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
+
+  .notifySingle {
+    .ant-notification-notice-icon {
+      display: none;
+    }
+
+    .ant-notification-notice-message {
+      margin-inline-start: 0 !important;
+    }
+
+    .ant-notification-notice-description {
+      margin-inline-start: 0 !important;
+    }
+
+    .ant-notification-notice-btn {
+      float: none !important;
+    }
+  }
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
@@ -379,8 +396,9 @@ const IconNotificationMessage = () => (
 const IconNotificationClose = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
     <path
-      d="M1.5 3.5L6 6.5L10.5 3.5"
+      d="M8 1.5L1 8.5M1 1.5L8 8.5"
       stroke="#7A818B"
+      stroke-width="1.16667"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
@@ -456,6 +474,7 @@ export interface NotificationData {
   }
   targetApplication?: string
   near?: string
+  iconName?: React.ReactNode
 }
 
 export interface NotificationActions {
@@ -505,7 +524,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           () => api.destroy(id)
         ),
         placement: 'bottomRight',
-        icon: <IconBranch />,
+        className: 'notifySingle',
+        icon: <></>,
         closeIcon: <IconNotificationMessage />,
       })
     },
@@ -529,6 +549,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           date: 'date',
           time: 'time',
           name: 'name',
+          iconName: <IconBranch />,
         },
         body: {
           author: 'author',
@@ -652,13 +673,13 @@ export const createSingleNotification = (
     <Space direction="vertical">
       <Space size="large" direction="horizontal">
         <Text type="secondary">
-          #{data.number}
-          &ensp; {data.name}&ensp; {data.author}&ensp; on&ensp;{data.date} &ensp; at&ensp;{' '}
+          #{data.number}&ensp;{data.name}&ensp;{data.author}&ensp;on&ensp;{data.date}&ensp;at&ensp;
           {data.time}
         </Text>
       </Space>
 
       <Space direction="horizontal">
+        {data.iconName}
         <Text strong underline>
           {data.name}
         </Text>
@@ -675,12 +696,10 @@ export const createSingleNotification = (
           display: 'inline-flex',
         }}
       >
-        <Text type="secondary">
-          <Text underline>{data.author}&ensp;</Text> asks you to accept changes from&ensp;
-          <Text underline> {data.applicationCommitData?.name} </Text>&ensp;
-          <Text underline> {data.applicationCommitData?.version} </Text>&ensp;
-          {data.applicationCommitData?.version} &ensp;({data.near})&ensp; into your&ensp;
-          <Text underline> {data.targetApplication} </Text>.
+        <Text underline type="secondary">
+          ${data.author} asks you to accept changes from ${data.applicationCommitData?.name} $
+          {data.applicationCommitData?.version} ${data.applicationCommitData?.version} (${data.near}
+          ) {data.targetApplication}
         </Text>
       </Card>
     </Space>
@@ -690,7 +709,7 @@ export const createSingleNotification = (
         ? actions.map((action, i) => (
             <Button
               key={i}
-              type={action.type ?? 'primary'}
+              type={action.type ?? 'default'}
               size="middle"
               onClick={() => {
                 action.onClick?.()
