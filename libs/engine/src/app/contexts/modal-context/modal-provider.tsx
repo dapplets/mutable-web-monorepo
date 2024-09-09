@@ -26,14 +26,15 @@ const ModalProvider: FC<Props> = ({ children, onModalApiReady }) => {
       }
 
       const modalId = counterRef.current++
+      const duration = modalProps.duration ?? 4.5
 
       api[modalProps.type]({
         key: modalId,
         message: modalProps.subject,
         description: modalProps.body,
         placement: 'bottomRight',
-        duration: modalProps.duration,
-        showProgress: modalProps.showProgress ?? false,
+        duration: duration,
+        showProgress: duration !== 0,
         pauseOnHover: false,
         btn:
           modalProps.actions && modalProps.actions.length
