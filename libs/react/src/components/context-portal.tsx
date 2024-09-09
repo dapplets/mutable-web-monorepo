@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect, useRef, useState } from 'react'
+import React, { FC, ReactElement, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { IContextNode } from '@mweb/core'
 import { InsertionType } from '@mweb/core'
@@ -13,7 +13,14 @@ export const ContextPortal: FC<{
   // ToDo: replace insPoints.find with Map
   const target = injectTo
     ? context.insPoints.find((ip) => ip.name === injectTo)
-    : { element: context.element, insertionType: DefaultInsertionType }
+    : {
+        element: context.element,
+        insertionType:
+          // ToDo: de-hardcode when context modificators will be implemented (using contexts instead of insertion points)
+          context.namespace === 'engine' && context.contextType === 'link'
+            ? InsertionType.Replace
+            : DefaultInsertionType,
+      }
 
   if (!target?.element) return null
   if (!target?.insertionType) return null
@@ -49,6 +56,17 @@ const InsPointPortal: FC<{
       case InsertionType.End:
         element.appendChild(_container)
         break
+      case InsertionType.Replace:
+        // Only one layout manager will be injected
+        // so this code will be executed only once for multiple widgets
+
+        // We hide the element instead of removing it
+        // because it must be shown again when the layout manager is unmounted.
+        // Also it prevents unexpected behaviour of an original website.
+        element.style.display = 'none'
+
+        element.after(_container)
+        break
       default:
         break
     }
@@ -56,6 +74,11 @@ const InsPointPortal: FC<{
     setContainer(_container)
 
     return () => {
+      if (insertionType === InsertionType.Replace) {
+        // ToDo: hidden contexts will be shown
+        element.style.display = ''
+      }
+
       _container.remove()
       setContainer(null)
     }

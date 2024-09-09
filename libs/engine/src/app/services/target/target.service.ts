@@ -1,19 +1,27 @@
-import { IContextNode, isDeepEqual } from '@mweb/core'
+import { IContextNode } from '@mweb/core'
 import { TransferableContext } from '../../common/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
 export class TargetService {
-  static findContextByTarget(target: Target, context: IContextNode): IContextNode | null {
+  static *findContextsByTarget(
+    target: Target | TransferableContext,
+    context: IContextNode
+  ): Generator<IContextNode> {
     if (this.isTargetMet(target, context)) {
-      return context
+      yield context
     }
 
     for (const child of context.children) {
-      const found = this.findContextByTarget(target, child)
+      yield* this.findContextsByTarget(target, child)
+    }
+  }
 
-      if (found) {
-        return found
-      }
+  static findContextByTarget(
+    target: Target | TransferableContext,
+    context: IContextNode
+  ): IContextNode | null {
+    for (const ctx of this.findContextsByTarget(target, context)) {
+      return ctx
     }
 
     return null
@@ -46,7 +54,12 @@ export class TargetService {
       return false
     }
 
-    // ToDo: disabled 
+    // for Target
+    if ('isVisible' in target && target.isVisible !== context.isVisible) {
+      return false
+    }
+
+    // ToDo: disabled
     // for TransferableContext
     // if ('parsed' in target && !isDeepEqual(target.parsed, context.parsedContext)) {
     //   return false
@@ -60,6 +73,10 @@ export class TargetService {
     }
 
     return true
+  }
+
+  static getRootContext(context: IContextNode): IContextNode {
+    return context.parentNode ? this.getRootContext(context.parentNode) : context
   }
 
   static _areConditionsMet(

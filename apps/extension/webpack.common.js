@@ -136,7 +136,7 @@ module.exports = {
         'resources',
         {
           from: 'src/options/index.html',
-          to: 'options.html'
+          to: 'options.html',
         },
         {
           from: 'manifest.json',

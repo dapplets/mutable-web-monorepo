@@ -3,3 +3,6 @@ build
 coverage
 dist
 package-lock.json
+node_modules
+pnpm-lock.yaml
+apps/extension/resources/custom-elements.min.js

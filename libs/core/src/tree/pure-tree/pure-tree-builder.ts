@@ -84,6 +84,12 @@ export class PureTreeBuilder implements ITreeBuilder {
     })
   }
 
+  updateVisibility(context: IContextNode, isVisible: boolean): void {
+    if (context.isVisible !== isVisible) {
+      context.isVisible = isVisible
+    }
+  }
+
   clear() {
     // ToDo: move to engine, it's not a core responsibility
     this.root = this.createNode(DappletsEngineNs, 'website') // default ns

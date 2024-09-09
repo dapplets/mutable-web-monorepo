@@ -4,6 +4,9 @@ import { BosUserLink, UserLinkId } from '../../services/user-link/user-link.enti
 import { useMutableWeb } from '.'
 import { AppId } from '../../services/application/application.entity'
 
+// Reuse reference to empty array to avoid unnecessary re-renders
+const NoLinks: BosUserLink[] = []
+
 export const useUserLinks = (context: IContextNode) => {
   const { engine, selectedMutation, activeApps } = useMutableWeb()
   const [userLinks, setUserLinks] = useState<BosUserLink[]>([])
@@ -15,7 +18,7 @@ export const useUserLinks = (context: IContextNode) => {
     } else {
       return engine.userLinkService.getStaticLinksForApps(activeApps, context)
     }
-  }, [engine, selectedMutation, activeApps, context])
+  }, [engine, selectedMutation, activeApps, context.parsedContext, context.isVisible])
 
   const fetchUserLinks = useCallback(async () => {
     if (!engine || !selectedMutation?.id) {
@@ -43,7 +46,9 @@ export const useUserLinks = (context: IContextNode) => {
     fetchUserLinks()
   }, [fetchUserLinks])
 
-  const links = useMemo(() => [...userLinks, ...staticLinks], [userLinks, staticLinks])
+  const links = useMemo(() => {
+    return userLinks.length || staticLinks.length ? [...userLinks, ...staticLinks] : NoLinks
+  }, [userLinks, staticLinks])
 
   const createUserLink = useCallback(
     async (appId: AppId) => {

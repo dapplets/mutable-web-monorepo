@@ -12,19 +12,19 @@ const WrapperAlert = styled.div<{ severity?: 'success' | 'info' | 'warning' | 'e
     p.severity === 'success'
       ? 'rgba(233, 252, 240, 1)'
       : p.severity === 'warning'
-      ? 'rgba(255, 248, 235, 1)'
-      : p.severity === 'error'
-      ? 'rgba(246, 240, 246, 1)'
-      : 'rgba(234, 241, 255, 1)'};
+        ? 'rgba(255, 248, 235, 1)'
+        : p.severity === 'error'
+          ? 'rgba(246, 240, 246, 1)'
+          : 'rgba(234, 241, 255, 1)'};
 
   color: ${(p) =>
     p.severity === 'success'
       ? 'rgba(3, 187, 66, 1)'
       : p.severity === 'warning'
-      ? 'rgba(208, 145, 26, 1)'
-      : p.severity === 'error'
-      ? 'rgba(219, 80, 74, 1)'
-      : 'rgba(36, 110, 253, 1)'};
+        ? 'rgba(208, 145, 26, 1)'
+        : p.severity === 'error'
+          ? 'rgba(219, 80, 74, 1)'
+          : 'rgba(36, 110, 253, 1)'};
 
   outline: none;
 `

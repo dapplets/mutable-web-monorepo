@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
 
 const StyledButton = styled.button`
   border-radius: 8px;
@@ -10,7 +10,7 @@ const StyledButton = styled.button`
   font-weight: var(--font-weight-bold);
   display: inline-block;
   height: 40px;
-`;
+`
 
 export function Button(props) {
   return (
@@ -22,5 +22,5 @@ export function Button(props) {
     >
       {props.children}
     </StyledButton>
-  );
+  )
 }

@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import { Widget, useAccount } from "near-social-vm";
+import React, { useState } from 'react'
+import Modal from 'react-bootstrap/Modal'
+import { Widget, useAccount } from 'near-social-vm'
 
 export default function PretendModal(props) {
-  const account = useAccount();
-  const onHide = props.onHide;
-  const show = props.show;
+  const account = useAccount()
+  const onHide = props.onHide
+  const show = props.show
 
-  const [accountId, setAccountId] = useState("");
+  const [accountId, setAccountId] = useState('')
 
   return (
     <Modal centered show={show} onHide={onHide}>
@@ -25,17 +25,12 @@ export default function PretendModal(props) {
             type="text"
             value={accountId}
             onChange={(e) =>
-              setAccountId(
-                e.target.value.toLowerCase().replaceAll(/[^a-z0-9_.\-]/g, "")
-              )
+              setAccountId(e.target.value.toLowerCase().replaceAll(/[^a-z0-9_.\-]/g, ''))
             }
           />
         </div>
         <div className="mt-2">
-          <Widget
-            src={props.widgets.profileInlineBlock}
-            props={{ accountId }}
-          />
+          <Widget src={props.widgets.profileInlineBlock} props={{ accountId }} />
         </div>
       </Modal.Body>
       <Modal.Footer>
@@ -43,10 +38,10 @@ export default function PretendModal(props) {
           className="btn btn-success"
           disabled={!accountId || !account.startPretending}
           onClick={(e) => {
-            e.preventDefault();
-            account.startPretending(accountId);
-            setAccountId("");
-            onHide();
+            e.preventDefault()
+            account.startPretending(accountId)
+            setAccountId('')
+            onHide()
           }}
         >
           Pretend
@@ -56,5 +51,5 @@ export default function PretendModal(props) {
         </button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }

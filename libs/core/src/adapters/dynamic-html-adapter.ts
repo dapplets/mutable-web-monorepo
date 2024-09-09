@@ -11,7 +11,8 @@ export class DynamicHtmlAdapter implements IAdapter {
   public namespace: string
   public context: IContextNode
 
-  #observerByElement: Map<HTMLElement, MutationObserver> = new Map()
+  #mutationObserverByElement: Map<HTMLElement, MutationObserver> = new Map()
+  #intersectionObserverByElement: Map<HTMLElement, IntersectionObserver> = new Map()
   #contextByElement: Map<HTMLElement, IContextNode> = new Map()
 
   #isStarted = false // ToDo: find another way to check if adapter is started
@@ -27,7 +28,7 @@ export class DynamicHtmlAdapter implements IAdapter {
   }
 
   start() {
-    this.#observerByElement.forEach((observer, element) => {
+    this.#mutationObserverByElement.forEach((observer, element) => {
       observer.observe(element, {
         attributes: true,
         childList: true,
@@ -38,12 +39,18 @@ export class DynamicHtmlAdapter implements IAdapter {
       // initial parsing without waiting for mutations in the DOM
       this._handleMutations(element, this.#contextByElement.get(element)!)
     })
+
+    this.#intersectionObserverByElement.forEach((observer, element) => {
+      observer.observe(element)
+    })
+
     this.#isStarted = true
   }
 
   stop() {
     this.#isStarted = false
-    this.#observerByElement.forEach((observer) => observer.disconnect())
+    this.#mutationObserverByElement.forEach((observer) => observer.disconnect())
+    this.#intersectionObserverByElement.forEach((observer) => observer.disconnect())
   }
 
   _tryCreateContextForElement(element: HTMLElement, contextName: string): IContextNode | null
@@ -76,7 +83,7 @@ export class DynamicHtmlAdapter implements IAdapter {
       element
     )
 
-    const observer = new MutationObserver((mutations, observer) => {
+    const mutationObserver = new MutationObserver((mutations, observer) => {
       this._handleMutations(element, context)
 
       if (this.parser.shouldParseShadowDom) {
@@ -84,18 +91,38 @@ export class DynamicHtmlAdapter implements IAdapter {
       }
     })
 
-    this.#observerByElement.set(element, observer)
-    this.#contextByElement.set(element, context)
+    this.#mutationObserverByElement.set(element, mutationObserver)
 
     // ToDo: duplicate code
     if (this.#isStarted) {
-      observer.observe(element, {
+      mutationObserver.observe(element, {
         attributes: true,
         childList: true,
         subtree: true,
         characterData: true,
       })
     }
+
+    // Only L2 contexts
+    if (element !== this.element) {
+      const intersectionObserver = new IntersectionObserver(
+        ([entry]) => {
+          this.treeBuilder.updateVisibility(context, entry.isIntersecting)
+        },
+        {
+          threshold: 1, // isIntersecting is true when 100% of the context element is in viewport
+        }
+      )
+
+      this.#intersectionObserverByElement.set(element, intersectionObserver)
+
+      // ToDo: duplicate code
+      if (this.#isStarted) {
+        intersectionObserver.observe(element)
+      }
+    }
+
+    this.#contextByElement.set(element, context)
 
     return context
   }
@@ -142,8 +169,10 @@ export class DynamicHtmlAdapter implements IAdapter {
       if (!childElementsSet.has(element) && context.parentNode === parentContext) {
         this.treeBuilder.removeChild(parentContext, context)
         this.#contextByElement.delete(element)
-        this.#observerByElement.get(element)?.disconnect()
-        this.#observerByElement.delete(element)
+        this.#mutationObserverByElement.get(element)?.disconnect()
+        this.#mutationObserverByElement.delete(element)
+        this.#intersectionObserverByElement.get(element)?.disconnect()
+        this.#intersectionObserverByElement.delete(element)
       }
     }
   }

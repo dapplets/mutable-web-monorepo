@@ -61,6 +61,7 @@ export class BosParser implements IParser {
 
     const result: { element: HTMLElement; contextName: string }[] = []
 
+    // ToDo: maybe querySelectorAll('.foo:not(.foo .foo)') is faster?
     for (const childContextName of contextConfig.children ?? []) {
       const childConfig = this.config.contexts[childContextName]
       if (!childConfig.component) continue

@@ -7,6 +7,7 @@ export interface TransferableContext {
   id: string | null
   parsed: any
   parent: TransferableContext | null
+  isVisible: boolean
 }
 
 // ToDo: reuse in ContextPicker
@@ -17,4 +18,5 @@ export const buildTransferableContext = (context: IContextNode): TransferableCon
   id: context.id,
   parsed: context.parsedContext,
   parent: context.parentNode ? buildTransferableContext(context.parentNode) : null,
+  isVisible: context.isVisible,
 })

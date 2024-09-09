@@ -1,14 +1,8 @@
-import React from "react";
+import React from 'react'
 
 export function NearSocialLogo() {
   return (
-    <svg
-      width="29"
-      height="20"
-      viewBox="0 0 29 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="29" height="20" viewBox="0 0 29 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M9.55396 17.509L2 9.99996L9.55396 2.49097"
         stroke="#3D7FFF"
@@ -24,5 +18,5 @@ export function NearSocialLogo() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }

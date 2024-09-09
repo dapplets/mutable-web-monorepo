@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo, useRef, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ContextPortal } from '@mweb/react'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { useEngine } from '../contexts/engine-context'
@@ -22,10 +22,6 @@ import { ModalProps } from '../contexts/modal-context/modal-context'
 import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
-
-const getRootContext = (context: IContextNode): IContextNode => {
-  return context.parentNode ? getRootContext(context.parentNode) : context
-}
 
 interface WidgetProps {
   context: TransferableContext
@@ -98,7 +94,19 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     return Array.from(portals.values())
       .filter(({ target }) => TargetService.isTargetMet(target, context))
       .sort((a, b) => (b.key > a.key ? 1 : -1))
-  }, [portals, context])
+  }, [portals, context.parsedContext, context.isVisible])
+
+  useEffect(() => {
+    portalComponents.forEach(({ onContextStarted }) => {
+      onContextStarted?.(context)
+    })
+
+    return () => {
+      portalComponents.forEach(({ onContextFinished }) => {
+        onContextFinished?.(context)
+      })
+    }
+  }, [portalComponents])
 
   const [materializedComponents, nonMaterializedComponents] = useMemo(() => {
     return filterAndDiscriminate(portalComponents, (portal) => portal.inMemory)
@@ -129,7 +137,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleContextQuery = useCallback(
     (target: Target): TransferableContext | null => {
-      const rootContext = getRootContext(context)
+      const rootContext = TargetService.getRootContext(context)
       const foundContext = TargetService.findContextByTarget(target, rootContext)
       return foundContext ? buildTransferableContext(foundContext) : null
     },
@@ -494,6 +502,8 @@ const PortalRenderer: FC<{
     },
     [target, context]
   )
+
+  if (!PortalComponent) return null
 
   return (
     <InMemoryRenderer>

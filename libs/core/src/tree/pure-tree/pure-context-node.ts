@@ -12,6 +12,7 @@ export class PureContextNode implements IContextNode {
   public element: HTMLElement | null = null
 
   #parsedContext: any = {}
+  #isVisible = false
   #eventEmitter = new EventEmitter<TreeNodeEvents>() // ToDo: implement event bubbling?
 
   public get parsedContext() {
@@ -21,6 +22,15 @@ export class PureContextNode implements IContextNode {
   public set parsedContext(parsedContext: any) {
     this.#parsedContext = parsedContext
     this.#eventEmitter.emit('contextChanged', {})
+  }
+
+  public get isVisible() {
+    return this.#isVisible
+  }
+
+  public set isVisible(value: boolean) {
+    this.#isVisible = value
+    this.#eventEmitter.emit('visibilityChanged', {})
   }
 
   constructor(
