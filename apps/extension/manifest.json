@@ -17,10 +17,7 @@
   "options_page": "options.html",
   "content_scripts": [
     {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
+      "matches": ["http://*/*", "https://*/*"],
       "exclude_globs": [
         "https://social.dapplets.org/*",
         "https://social.testnet.dapplets.org/*",
@@ -29,43 +26,22 @@
         "http://127.0.0.1:3000/*",
         "https://augm.link/*"
       ],
-      "js": [
-        "custom-elements.min.js",
-        "contentscript.js"
-      ],
+      "js": ["custom-elements.min.js", "contentscript.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": [
-        "https://app.mynearwallet.com/*",
-        "https://testnet.mynearwallet.com/*"
-      ],
-      "js": [
-        "mnw-patch-inpage.js"
-      ],
+      "matches": ["https://app.mynearwallet.com/*", "https://testnet.mynearwallet.com/*"],
+      "js": ["mnw-patch-inpage.js"],
       "run_at": "document_start",
       "world": "MAIN"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": [
-        "callback.html",
-        "bootstrap.min.css"
-      ],
-      "matches": [
-        "*://*/*"
-      ]
+      "resources": ["callback.html", "bootstrap.min.css"],
+      "matches": ["*://*/*"]
     }
   ],
-  "permissions": [
-    "storage",
-    "tabs",
-    "contextMenus"
-  ],
-  "host_permissions": [
-    "*://localhost/*",
-    "http://*/*",
-    "https://*/*"
-  ]
+  "permissions": ["storage", "tabs", "contextMenus"],
+  "host_permissions": ["*://localhost/*", "http://*/*", "https://*/*"]
 }

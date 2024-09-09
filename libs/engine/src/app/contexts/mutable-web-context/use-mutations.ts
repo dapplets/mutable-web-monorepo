@@ -10,7 +10,7 @@ export const useMutations = (engine: Engine) => {
   const [error, setError] = useState<string | null>(null)
 
   const loadMutations = useCallback(async () => {
-    if (!engine) return;
+    if (!engine) return
 
     try {
       setIsLoading(true)

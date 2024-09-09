@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import { useAccount } from "near-social-vm";
-import { QRCodeSVG } from "qrcode.react";
-import { getSocialKeyPair } from "../../data/near";
+import React, { useEffect, useState } from 'react'
+import Modal from 'react-bootstrap/Modal'
+import { useAccount } from 'near-social-vm'
+import { QRCodeSVG } from 'qrcode.react'
+import { getSocialKeyPair } from '../../data/near'
 
 export default function MobileQRModal(props) {
-  const account = useAccount();
-  const onHide = props.onHide;
-  const show = props.show;
+  const account = useAccount()
+  const onHide = props.onHide
+  const show = props.show
 
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState('')
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       if (!account || !account.accountId) {
-        return;
+        return
       }
-      const domain = new URL(window.location.href).origin;
-      const keyPair = await getSocialKeyPair(account.accountId);
+      const domain = new URL(window.location.href).origin
+      const keyPair = await getSocialKeyPair(account.accountId)
       if (!keyPair) {
-        return "";
+        return ''
       }
-      return `${domain}/signin#?a=${account.accountId}&k=${keyPair.toString()}`;
-    })().then(setUrl);
-  }, [account]);
+      return `${domain}/signin#?a=${account.accountId}&k=${keyPair.toString()}`
+    })().then(setUrl)
+  }, [account])
 
   return (
     <Modal centered show={show} onHide={onHide}>
@@ -46,5 +46,5 @@ export default function MobileQRModal(props) {
         </button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }

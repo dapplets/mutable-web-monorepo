@@ -18,8 +18,8 @@ export const Image: FC<Props> = ({ image, alt, fallbackUrl }) => {
     image?.ipfs_cid
       ? setImageUrl(`https://ipfs.near.social/ipfs/${image.ipfs_cid}`)
       : image?.url
-      ? setImageUrl(image?.url)
-      : setImageUrl(fallbackUrl)
+        ? setImageUrl(image?.url)
+        : setImageUrl(fallbackUrl)
   }, [image])
 
   return (

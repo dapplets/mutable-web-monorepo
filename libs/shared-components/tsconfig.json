@@ -1,8 +1,7 @@
 {
-    "extends": "../../tsconfig.base.json",
-    "compilerOptions": {
-      "outDir": "./lib"
-    },
-    "files": ["src/index.ts", "src/types-patch.d.ts"]
-  }
-  
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib"
+  },
+  "files": ["src/index.ts", "src/types-patch.d.ts"]
+}

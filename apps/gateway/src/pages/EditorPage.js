@@ -1,154 +1,135 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import ls from "local-storage";
-import prettier, { check } from "prettier";
-import parserBabel from "prettier/parser-babel";
-import { useHistory, useParams } from "react-router-dom";
-import Editor, { useMonaco } from "@monaco-editor/react";
-import {
-  Widget,
-  useCache,
-  useNear,
-  CommitButton,
-  useAccountId,
-} from "near-social-vm";
-import { Nav, OverlayTrigger, Tooltip } from "react-bootstrap";
-import RenameModal from "../components/Editor/RenameModal";
-import OpenModal from "../components/Editor/OpenModal";
-import {
-  FileTab,
-  Filetype,
-  StorageDomain,
-  StorageType,
-  toPath,
-} from "../components/Editor/FileTab";
-import { useHashRouterLegacy } from "../hooks/useHashRouterLegacy";
-import vmTypesDeclaration from "raw-loader!near-social-vm-types";
-import styled from "styled-components";
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import ls from 'local-storage'
+import prettier, { check } from 'prettier'
+import parserBabel from 'prettier/parser-babel'
+import { useHistory, useParams } from 'react-router-dom'
+import Editor, { useMonaco } from '@monaco-editor/react'
+import { Widget, useCache, useNear, CommitButton, useAccountId } from 'near-social-vm'
+import { Nav, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import RenameModal from '../components/Editor/RenameModal'
+import OpenModal from '../components/Editor/OpenModal'
+import { FileTab, Filetype, StorageDomain, StorageType, toPath } from '../components/Editor/FileTab'
+import { useHashRouterLegacy } from '../hooks/useHashRouterLegacy'
+import vmTypesDeclaration from 'raw-loader!near-social-vm-types'
+import styled from 'styled-components'
 
-const LsKey = "social.near:v01:";
-const EditorLayoutKey = LsKey + "editorLayout:";
-const WidgetPropsKey = LsKey + "widgetProps:";
-const EditorUncommittedPreviewsKey = LsKey + "editorUncommittedPreviews:";
+const LsKey = 'social.near:v01:'
+const EditorLayoutKey = LsKey + 'editorLayout:'
+const WidgetPropsKey = LsKey + 'widgetProps:'
+const EditorUncommittedPreviewsKey = LsKey + 'editorUncommittedPreviews:'
 
-const DefaultEditorCode = "return <div>Hello World</div>;";
+const DefaultEditorCode = 'return <div>Hello World</div>;'
 
 const Tab = {
-  Editor: "Editor",
-  Props: "Props",
-  Metadata: "Metadata",
-  Widget: "Widget",
-};
+  Editor: 'Editor',
+  Props: 'Props',
+  Metadata: 'Metadata',
+  Widget: 'Widget',
+}
 
 const Layout = {
-  Tabs: "Tabs",
-  Split: "Split",
-};
+  Tabs: 'Tabs',
+  Split: 'Split',
+}
 
 export default function EditorPage(props) {
-  useHashRouterLegacy();
-  const { widgetSrc } = useParams();
-  const [localWidgetSrc, setLocalWidgetSrc] = useState(widgetSrc);
-  const history = useHistory();
-  const setWidgetSrc = props.setWidgetSrc;
+  useHashRouterLegacy()
+  const { widgetSrc } = useParams()
+  const [localWidgetSrc, setLocalWidgetSrc] = useState(widgetSrc)
+  const history = useHistory()
+  const setWidgetSrc = props.setWidgetSrc
 
-  const [loading, setLoading] = useState(false);
-  const [code, setCode] = useState(undefined);
-  const [path, setPath] = useState(undefined);
-  const [files, setFiles] = useState(undefined);
-  const [lastPath, setLastPath] = useState(undefined);
-  const [showRenameModal, setShowRenameModal] = useState(false);
-  const [showOpenModal, setShowOpenModal] = useState(false);
-  const [allSaved, setAllSaved] = useState({});
+  const [loading, setLoading] = useState(false)
+  const [code, setCode] = useState(undefined)
+  const [path, setPath] = useState(undefined)
+  const [files, setFiles] = useState(undefined)
+  const [lastPath, setLastPath] = useState(undefined)
+  const [showRenameModal, setShowRenameModal] = useState(false)
+  const [showOpenModal, setShowOpenModal] = useState(false)
+  const [allSaved, setAllSaved] = useState({})
   const [uncommittedPreviews, setUncommittedPreviews] = useState(
     ls.get(EditorUncommittedPreviewsKey) ?? true
-  );
-  const [widgetConfig, setWidgetConfig] = useState(undefined);
+  )
+  const [widgetConfig, setWidgetConfig] = useState(undefined)
 
-  const [renderCode, setRenderCode] = useState(code);
-  const [widgetProps, setWidgetProps] = useState(
-    ls.get(WidgetPropsKey) || "{}"
-  );
-  const [parsedWidgetProps, setParsedWidgetProps] = useState({});
-  const [propsError, setPropsError] = useState(null);
-  const [metadata, setMetadata] = useState(undefined);
-  const [forkDetails, setForkDetails] = useState(undefined);
-  const near = useNear();
-  const cache = useCache();
-  const accountId = useAccountId();
+  const [renderCode, setRenderCode] = useState(code)
+  const [widgetProps, setWidgetProps] = useState(ls.get(WidgetPropsKey) || '{}')
+  const [parsedWidgetProps, setParsedWidgetProps] = useState({})
+  const [propsError, setPropsError] = useState(null)
+  const [metadata, setMetadata] = useState(undefined)
+  const [forkDetails, setForkDetails] = useState(undefined)
+  const near = useNear()
+  const cache = useCache()
+  const accountId = useAccountId()
 
-  const [tab, setTab] = useState(Tab.Editor);
-  const [layout, setLayoutState] = useState(
-    ls.get(EditorLayoutKey) || Layout.Split
-  );
-  const [previewKey, setPreviewKey] = useState("");
+  const [tab, setTab] = useState(Tab.Editor)
+  const [layout, setLayoutState] = useState(ls.get(EditorLayoutKey) || Layout.Split)
+  const [previewKey, setPreviewKey] = useState('')
 
-  const monaco = useMonaco();
+  const monaco = useMonaco()
 
   useEffect(() => {
     if (monaco) {
-      monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true);
-      monaco.languages.typescript.javascriptDefaults.addExtraLib(
-        vmTypesDeclaration
-      );
+      monaco.languages.typescript.javascriptDefaults.setEagerModelSync(true)
+      monaco.languages.typescript.javascriptDefaults.addExtraLib(vmTypesDeclaration)
     }
-  }, [monaco]);
+  }, [monaco])
 
   const setLayout = useCallback(
     (layout) => {
-      ls.set(EditorLayoutKey, layout);
-      setLayoutState(layout);
+      ls.set(EditorLayoutKey, layout)
+      setLayoutState(layout)
     },
     [setLayoutState]
-  );
+  )
 
   const getForkDetails = async (path) => {
     try {
       if (localWidgetSrc) {
         const res = await fetch(`${near.config.apiUrl}/keys`, {
-          method: "POST",
+          method: 'POST',
           body: JSON.stringify({
             keys: [localWidgetSrc],
-            options: { return_type: "BlockHeight" },
+            options: { return_type: 'BlockHeight' },
           }),
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
-        });
+        })
 
-        const sourceWidget = await res.json();
+        const sourceWidget = await res.json()
 
-        const srcArr = localWidgetSrc.split("/");
-        const forkOf =
-          localWidgetSrc + "@" + sourceWidget[srcArr[0]][srcArr[1]][srcArr[2]];
+        const srcArr = localWidgetSrc.split('/')
+        const forkOf = localWidgetSrc + '@' + sourceWidget[srcArr[0]][srcArr[1]][srcArr[2]]
 
-        storeForkDetails(path, forkOf);
-        return;
+        storeForkDetails(path, forkOf)
+        return
       }
     } catch (e) {
-      console.error(e);
+      console.error(e)
     }
-  };
+  }
 
   const checkForkDetails = async (path) => {
     try {
-      if (path.unnamed) return;
+      if (path.unnamed) return
       const response = await cache.asyncLocalStorageGet(StorageDomain, {
         path,
         type: StorageType.forkDetails,
-      });
+      })
 
       if (response?.fork_of) {
-        setForkDetails(response);
-        return response;
-      } else if (JSON.stringify(response) === "{}") {
-        setForkDetails(undefined);
-      } else if (localWidgetSrc && JSON.stringify(response) !== "{}") {
-        getForkDetails(path);
+        setForkDetails(response)
+        return response
+      } else if (JSON.stringify(response) === '{}') {
+        setForkDetails(undefined)
+      } else if (localWidgetSrc && JSON.stringify(response) !== '{}') {
+        getForkDetails(path)
       }
     } catch (e) {
-      console.error(e);
+      console.error(e)
     }
-  };
+  }
 
   const storeForkDetails = useCallback(
     async (path, forkOf) => {
@@ -156,9 +137,9 @@ export default function EditorPage(props) {
         let forkDetails = {
           fork_of: forkOf,
           time: Date.now(),
-        };
+        }
         // differentiate new components from forked components
-        forkOf === null ? (forkDetails = {}) : forkDetails;
+        forkOf === null ? (forkDetails = {}) : forkDetails
 
         await cache.localStorageSet(
           StorageDomain,
@@ -167,49 +148,49 @@ export default function EditorPage(props) {
             type: StorageType.forkDetails,
           },
           forkDetails
-        );
-        setForkDetails(forkDetails);
-        return;
+        )
+        setForkDetails(forkDetails)
+        return
       } catch (e) {
-        console.error(e);
-        return { error: e };
+        console.error(e)
+        return { error: e }
       }
     },
     [setForkDetails]
-  );
+  )
 
   useEffect(() => {
     if (forkDetails?.fork_of) {
       setMetadata({
         ...metadata,
         fork_of: forkDetails.fork_of,
-      });
+      })
     }
-  }, [forkDetails]);
+  }, [forkDetails])
 
   // prevent metadata from being overwritten by empty object
   useEffect(() => {
-    if (JSON.stringify(metadata) === "{}") {
-      setMetadata(undefined);
+    if (JSON.stringify(metadata) === '{}') {
+      setMetadata(undefined)
     }
-  }, [metadata]);
+  }, [metadata])
 
   useEffect(() => {
     if (path || (localWidgetSrc && path)) {
-      checkForkDetails(path);
+      checkForkDetails(path)
     }
-  }, [localWidgetSrc, path]);
+  }, [localWidgetSrc, path])
 
   useEffect(() => {
     setWidgetSrc({
       edit: null,
       view: localWidgetSrc,
-    });
+    })
 
     if (localWidgetSrc) {
-      checkForkDetails(localWidgetSrc);
+      checkForkDetails(localWidgetSrc)
     }
-  }, [localWidgetSrc, widgetSrc, setWidgetSrc]);
+  }, [localWidgetSrc, widgetSrc, setWidgetSrc])
 
   const updateCode = useCallback(
     (path, code) => {
@@ -223,49 +204,47 @@ export default function EditorPage(props) {
           code,
           time: Date.now(),
         }
-      );
-      setCode(code);
+      )
+      setCode(code)
     },
     [cache, setCode]
-  );
+  )
 
   useEffect(() => {
-    ls.set(WidgetPropsKey, widgetProps);
+    ls.set(WidgetPropsKey, widgetProps)
     try {
-      const parsedWidgetProps = JSON.parse(widgetProps);
-      setParsedWidgetProps(parsedWidgetProps);
-      setPropsError(null);
+      const parsedWidgetProps = JSON.parse(widgetProps)
+      setParsedWidgetProps(parsedWidgetProps)
+      setPropsError(null)
     } catch (e) {
-      setParsedWidgetProps({});
-      setPropsError(e.message);
+      setParsedWidgetProps({})
+      setPropsError(e.message)
     }
-  }, [widgetProps]);
+  }, [widgetProps])
 
   const removeFromFiles = useCallback(
     (path) => {
-      path = JSON.stringify(path);
-      setFiles((files) =>
-        files.filter((file) => JSON.stringify(file) !== path)
-      );
-      setLastPath(path);
+      path = JSON.stringify(path)
+      setFiles((files) => files.filter((file) => JSON.stringify(file) !== path))
+      setLastPath(path)
     },
     [setFiles, setLastPath]
-  );
+  )
 
   const addToFiles = useCallback(
     (path) => {
-      const jpath = JSON.stringify(path);
+      const jpath = JSON.stringify(path)
       setFiles((files) => {
-        const newFiles = [...files];
+        const newFiles = [...files]
         if (!files.find((file) => JSON.stringify(file) === jpath)) {
-          newFiles.push(path);
+          newFiles.push(path)
         }
-        return newFiles;
-      });
-      setLastPath(path);
+        return newFiles
+      })
+      setLastPath(path)
     },
     [setFiles, setLastPath]
-  );
+  )
 
   useEffect(() => {
     if (files && lastPath) {
@@ -275,239 +254,224 @@ export default function EditorPage(props) {
           type: StorageType.Files,
         },
         { files, lastPath }
-      );
+      )
     }
-  }, [files, lastPath, cache]);
+  }, [files, lastPath, cache])
 
   const openFile = useCallback(
     (path, code) => {
-      setPath(path);
-      addToFiles(path);
-      setMetadata(undefined);
-      setRenderCode(null);
+      setPath(path)
+      addToFiles(path)
+      setMetadata(undefined)
+      setRenderCode(null)
       if (code !== undefined) {
-        updateCode(path, code);
-        checkForkDetails(path);
+        updateCode(path, code)
+        checkForkDetails(path)
       } else {
-        setLoading(true);
+        setLoading(true)
         cache
           .asyncLocalStorageGet(StorageDomain, {
             path,
             type: StorageType.Code,
           })
           .then(({ code }) => {
-            updateCode(path, code);
+            updateCode(path, code)
 
-            checkForkDetails(path);
+            checkForkDetails(path)
           })
           .finally(() => {
-            setLoading(false);
-          });
+            setLoading(false)
+          })
       }
     },
     [updateCode, addToFiles]
-  );
+  )
 
   const updateSaved = useCallback((jp, saved, localCode) => {
     setAllSaved((allSaved) => {
-      return Object.assign({}, allSaved, { [jp]: saved || localCode });
-    });
-  }, []);
+      return Object.assign({}, allSaved, { [jp]: saved || localCode })
+    })
+  }, [])
 
   const loadFile = useCallback(
     (nameOrPath) => {
       if (!near) {
-        return;
+        return
       }
       const widgetSrc =
-        nameOrPath.indexOf("/") >= 0
-          ? nameOrPath
-          : `${accountId}/widget/${nameOrPath}`;
+        nameOrPath.indexOf('/') >= 0 ? nameOrPath : `${accountId}/widget/${nameOrPath}`
 
-      setLocalWidgetSrc(widgetSrc);
+      setLocalWidgetSrc(widgetSrc)
 
       const c = () => {
-        const code = cache.socialGet(
-          near,
-          widgetSrc,
-          false,
-          undefined,
-          undefined,
-          c
-        );
+        const code = cache.socialGet(near, widgetSrc, false, undefined, undefined, c)
         if (code) {
-          const name = widgetSrc.split("/").slice(2).join("/");
+          const name = widgetSrc.split('/').slice(2).join('/')
 
-          openFile(toPath(Filetype.Widget, widgetSrc), code);
+          openFile(toPath(Filetype.Widget, widgetSrc), code)
         }
-      };
+      }
 
-      c();
+      c()
     },
     [accountId, openFile, toPath, near, cache, setLocalWidgetSrc]
-  );
+  )
 
   const generateNewName = useCallback(
     (type) => {
       for (let i = 0; ; i++) {
-        const name = `New-Draft-${i}`;
-        const path = toPath(type, name);
-        path.unnamed = true;
-        const jPath = JSON.stringify(path);
+        const name = `New-Draft-${i}`
+        const path = toPath(type, name)
+        path.unnamed = true
+        const jPath = JSON.stringify(path)
         if (!files?.find((file) => JSON.stringify(file) === jPath)) {
-          return path;
+          return path
         }
       }
     },
     [toPath, files]
-  );
+  )
 
   const createFile = useCallback(
     (type) => {
-      setForkDetails(undefined);
-      setMetadata(undefined);
-      setLocalWidgetSrc("");
-      const path = generateNewName(type);
+      setForkDetails(undefined)
+      setMetadata(undefined)
+      setLocalWidgetSrc('')
+      const path = generateNewName(type)
 
-      openFile(path, DefaultEditorCode);
+      openFile(path, DefaultEditorCode)
     },
     [generateNewName, openFile]
-  );
+  )
 
   const renameFile = useCallback(
     async (newName, code) => {
       try {
-        const newPath = toPath(path.type, newName);
-        const jNewPath = JSON.stringify(newPath);
-        const jPath = JSON.stringify(path);
-        forkDetails?.fork_of && !path.name.includes("New-Draft")
+        const newPath = toPath(path.type, newName)
+        const jNewPath = JSON.stringify(newPath)
+        const jPath = JSON.stringify(path)
+        forkDetails?.fork_of && !path.name.includes('New-Draft')
           ? await storeForkDetails(newPath, forkDetails.fork_of)
-          : storeForkDetails(newPath, null);
+          : storeForkDetails(newPath, null)
         setFiles((files) => {
-          const newFiles = files.filter(
-            (file) => JSON.stringify(file) !== jNewPath
-          );
-          const i = newFiles.findIndex(
-            (file) => JSON.stringify(file) === jPath
-          );
+          const newFiles = files.filter((file) => JSON.stringify(file) !== jNewPath)
+          const i = newFiles.findIndex((file) => JSON.stringify(file) === jPath)
           if (i >= 0) {
-            newFiles[i] = newPath;
+            newFiles[i] = newPath
           }
-          return newFiles;
-        });
-        setLastPath(newPath);
-        setPath(newPath);
-        updateCode(newPath, code);
+          return newFiles
+        })
+        setLastPath(newPath)
+        setPath(newPath)
+        updateCode(newPath, code)
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     },
     [forkDetails, path, toPath, updateCode]
-  );
+  )
 
   useEffect(() => {
-    cache
-      .asyncLocalStorageGet(StorageDomain, { type: StorageType.Files })
-      .then((value) => {
-        const { files, lastPath } = value || {};
-        setFiles(files || []);
-        setLastPath(lastPath);
-      });
-  }, [cache]);
+    cache.asyncLocalStorageGet(StorageDomain, { type: StorageType.Files }).then((value) => {
+      const { files, lastPath } = value || {}
+      setFiles(files || [])
+      setLastPath(lastPath)
+    })
+  }, [cache])
 
   useEffect(() => {
     cache
       .asyncLocalStorageGet(StorageDomain, { type: StorageType.forkDetails })
       .then((value) => {})
       .catch((e) => {
-        console.error(e);
-      });
-  }, [cache]);
+        console.error(e)
+      })
+  }, [cache])
 
   useEffect(() => {
     if (!near || !files) {
-      return;
+      return
     }
     if (widgetSrc) {
-      if (widgetSrc === "new") {
-        createFile(Filetype.Widget);
+      if (widgetSrc === 'new') {
+        createFile(Filetype.Widget)
       } else {
-        loadFile(widgetSrc);
+        loadFile(widgetSrc)
       }
-      history.replace(`/edit/`);
+      history.replace(`/edit/`)
     } else if (path === undefined) {
       if (files.length === 0) {
-        createFile(Filetype.Widget);
+        createFile(Filetype.Widget)
       } else {
-        openFile(lastPath, undefined);
+        openFile(lastPath, undefined)
       }
     }
-  }, [near, createFile, lastPath, files, path, widgetSrc, openFile, loadFile]);
+  }, [near, createFile, lastPath, files, path, widgetSrc, openFile, loadFile])
 
   const reformat = useCallback(
     (path, code) => {
       try {
         const formattedCode = prettier.format(code, {
-          parser: "babel",
+          parser: 'babel',
           plugins: [parserBabel],
-        });
-        updateCode(path, formattedCode);
-        checkForkDetails(path);
+        })
+        updateCode(path, formattedCode)
+        checkForkDetails(path)
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     },
     [updateCode]
-  );
+  )
 
   const reformatProps = useCallback(
     (props) => {
       try {
-        const formattedProps = JSON.stringify(JSON.parse(props), null, 2);
-        setWidgetProps(formattedProps);
+        const formattedProps = JSON.stringify(JSON.parse(props), null, 2)
+        setWidgetProps(formattedProps)
       } catch (e) {
-        console.error(e);
+        console.error(e)
       }
     },
     [setWidgetProps]
-  );
+  )
 
   const closeCommitted = useCallback(
     (path, allSaved) => {
       setFiles((files) => {
-        files = files.filter((file) => allSaved[JSON.stringify(file)] !== true);
+        files = files.filter((file) => allSaved[JSON.stringify(file)] !== true)
         if (allSaved[JSON.stringify(path)] === true) {
           if (files.length > 0) {
-            openFile(files[files.length - 1], undefined);
+            openFile(files[files.length - 1], undefined)
           } else {
-            createFile(Filetype.Widget);
+            createFile(Filetype.Widget)
           }
         }
-        return files;
-      });
+        return files
+      })
     },
     [openFile, createFile]
-  );
+  )
 
-  const layoutClass = layout === Layout.Split ? "col-lg-6" : "";
+  const layoutClass = layout === Layout.Split ? 'col-lg-6' : ''
 
   const onLayoutChange = useCallback(
     (e) => {
-      const layout = e.target.value;
+      const layout = e.target.value
       if (layout === Layout.Split && tab === Tab.Widget) {
-        setTab(Tab.Editor);
+        setTab(Tab.Editor)
       }
-      setLayout(layout);
+      setLayout(layout)
     },
     [setLayout, tab, setTab]
-  );
+  )
 
   const pathToSrc = useCallback(
     (path) => {
-      return `${accountId}/${path?.type}/${path?.name}`;
+      return `${accountId}/${path?.type}/${path?.name}`
     },
     [accountId]
-  );
+  )
 
   const generateWidgetConfig = useCallback(
     (uncommittedPreviews) => {
@@ -517,22 +481,22 @@ export default function EditorPage(props) {
               Object.entries(allSaved)
                 .filter(([jpath, code]) => code !== true)
                 .map(([jpath, code]) => {
-                  const path = JSON.parse(jpath);
+                  const path = JSON.parse(jpath)
                   return [
                     pathToSrc(path),
                     {
                       code,
                     },
-                  ];
+                  ]
                 })
             ),
           }
-        : undefined;
+        : undefined
     },
     [allSaved, pathToSrc]
-  );
+  )
 
-  const widgetName = path?.name;
+  const widgetName = path?.name
 
   const commitButton = (
     <CommitButton
@@ -542,7 +506,7 @@ export default function EditorPage(props) {
       data={{
         widget: {
           [widgetName]: {
-            "": code,
+            '': code,
             metadata,
           },
         },
@@ -550,16 +514,16 @@ export default function EditorPage(props) {
     >
       Save
     </CommitButton>
-  );
+  )
 
-  const widgetPath = `${accountId}/${path?.type}/${path?.name}`;
-  const jpath = JSON.stringify(path);
+  const widgetPath = `${accountId}/${path?.type}/${path?.name}`
+  const jpath = JSON.stringify(path)
 
   const renderPreview = (code) => {
-    setWidgetConfig(generateWidgetConfig(uncommittedPreviews));
-    setRenderCode(code);
-    setPreviewKey(`preview-${Date.now()}`);
-  };
+    setWidgetConfig(generateWidgetConfig(uncommittedPreviews))
+    setRenderCode(code)
+    setPreviewKey(`preview-${Date.now()}`)
+  }
 
   const Buttons = styled.div`
     display: flex;
@@ -570,7 +534,7 @@ export default function EditorPage(props) {
       flex-basis: 0;
       white-space: nowrap;
     }
-  `;
+  `
 
   return (
     <div className="container-fluid mt-1">
@@ -592,14 +556,10 @@ export default function EditorPage(props) {
         onHide={() => setShowOpenModal(false)}
       />
       <div className="mb-3">
-        <Nav
-          variant="pills mb-1"
-          activeKey={jpath}
-          onSelect={(key) => openFile(JSON.parse(key))}
-        >
+        <Nav variant="pills mb-1" activeKey={jpath} onSelect={(key) => openFile(JSON.parse(key))}>
           {files?.map((p, idx) => {
-            const jp = JSON.stringify(p);
-            const active = jp === jpath;
+            const jp = JSON.stringify(p)
+            const active = jp === jpath
             return (
               <FileTab
                 key={jp}
@@ -620,13 +580,10 @@ export default function EditorPage(props) {
                   setLocalWidgetSrc,
                 }}
               />
-            );
+            )
           })}
           <Nav.Item>
-            <Nav.Link
-              className="text-decoration-none"
-              onClick={() => setShowOpenModal(true)}
-            >
+            <Nav.Link className="text-decoration-none" onClick={() => setShowOpenModal(true)}>
               <i className="bi bi-file-earmark-plus"></i> Add
             </Nav.Link>
           </Nav.Item>
@@ -648,18 +605,14 @@ export default function EditorPage(props) {
                   extraButtons: ({ widgetName, widgetPath, onHide }) => (
                     <OverlayTrigger
                       placement="auto"
-                      overlay={
-                        <Tooltip>
-                          Open "${widgetName}" component in the editor
-                        </Tooltip>
-                      }
+                      overlay={<Tooltip>Open "${widgetName}" component in the editor</Tooltip>}
                     >
                       <button
                         className="btn btn-outline-primary"
                         onClick={(e) => {
-                          e.preventDefault();
-                          loadFile(widgetPath);
-                          onHide && onHide();
+                          e.preventDefault()
+                          loadFile(widgetPath)
+                          onHide && onHide()
                         }}
                       >
                         Open
@@ -675,11 +628,7 @@ export default function EditorPage(props) {
       </div>
       <div className="d-flex align-content-start">
         <div className="me-2">
-          <div
-            className="btn-group-vertical"
-            role="group"
-            aria-label="Layout selection"
-          >
+          <div className="btn-group-vertical" role="group" aria-label="Layout selection">
             <input
               type="radio"
               className="btn-check"
@@ -689,7 +638,7 @@ export default function EditorPage(props) {
               checked={layout === Layout.Tabs}
               onChange={onLayoutChange}
               value={Layout.Tabs}
-              title={"Set layout to Tabs mode"}
+              title={'Set layout to Tabs mode'}
             />
             <label className="btn btn-outline-secondary" htmlFor="layout-tabs">
               <i className="bi bi-square" />
@@ -703,7 +652,7 @@ export default function EditorPage(props) {
               autoComplete="off"
               checked={layout === Layout.Split}
               value={Layout.Split}
-              title={"Set layout to Split mode"}
+              title={'Set layout to Split mode'}
               onChange={onLayoutChange}
             />
             <label className="btn btn-outline-secondary" htmlFor="layout-split">
@@ -717,7 +666,7 @@ export default function EditorPage(props) {
               <ul className={`nav nav-tabs mb-2`}>
                 <li className="nav-item">
                   <button
-                    className={`nav-link ${tab === Tab.Editor ? "active" : ""}`}
+                    className={`nav-link ${tab === Tab.Editor ? 'active' : ''}`}
                     aria-current="page"
                     onClick={() => setTab(Tab.Editor)}
                   >
@@ -726,7 +675,7 @@ export default function EditorPage(props) {
                 </li>
                 <li className="nav-item">
                   <button
-                    className={`nav-link ${tab === Tab.Props ? "active" : ""}`}
+                    className={`nav-link ${tab === Tab.Props ? 'active' : ''}`}
                     aria-current="page"
                     onClick={() => setTab(Tab.Props)}
                   >
@@ -736,9 +685,7 @@ export default function EditorPage(props) {
                 {props.widgets.widgetMetadataEditor && (
                   <li className="nav-item">
                     <button
-                      className={`nav-link ${
-                        tab === Tab.Metadata ? "active" : ""
-                      }`}
+                      className={`nav-link ${tab === Tab.Metadata ? 'active' : ''}`}
                       aria-current="page"
                       onClick={() => setTab(Tab.Metadata)}
                     >
@@ -749,13 +696,11 @@ export default function EditorPage(props) {
                 {layout === Layout.Tabs && (
                   <li className="nav-item">
                     <button
-                      className={`nav-link ${
-                        tab === Tab.Widget ? "active" : ""
-                      }`}
+                      className={`nav-link ${tab === Tab.Widget ? 'active' : ''}`}
                       aria-current="page"
                       onClick={() => {
-                        renderPreview(code);
-                        setTab(Tab.Widget);
+                        renderPreview(code)
+                        setTab(Tab.Widget)
                       }}
                     >
                       Preview
@@ -764,22 +709,16 @@ export default function EditorPage(props) {
                 )}
               </ul>
 
-              <div className={`${tab === Tab.Editor ? "" : "visually-hidden"}`}>
-                <div
-                  className="d-flex flex-column overflow-hidden"
-                  style={{ height: "80vh" }}
-                >
-                  <div
-                    className="mb-2 flex-grow-1 border"
-                    style={{ minHeight: 1 }}
-                  >
+              <div className={`${tab === Tab.Editor ? '' : 'visually-hidden'}`}>
+                <div className="d-flex flex-column overflow-hidden" style={{ height: '80vh' }}>
+                  <div className="mb-2 flex-grow-1 border" style={{ minHeight: 1 }}>
                     <Editor
                       value={code}
                       path={widgetPath}
                       defaultLanguage="javascript"
                       onChange={(code) => {
-                        updateCode(path, code);
-                        checkForkDetails(path);
+                        updateCode(path, code)
+                        checkForkDetails(path)
                       }}
                       wrapperProps={{
                         onBlur: () => reformat(path, code),
@@ -790,9 +729,9 @@ export default function EditorPage(props) {
                     <button
                       className="btn btn-outline-primary"
                       onClick={() => {
-                        renderPreview(code);
+                        renderPreview(code)
                         if (layout === Layout.Tabs) {
-                          setTab(Tab.Widget);
+                          setTab(Tab.Widget)
                         }
                       }}
                     >
@@ -800,11 +739,9 @@ export default function EditorPage(props) {
                     </button>
                     {!path?.unnamed && commitButton}
                     <button
-                      className={`btn ${
-                        path?.unnamed ? "btn-primary" : "btn-outline-secondary"
-                      }`}
+                      className={`btn ${path?.unnamed ? 'btn-primary' : 'btn-outline-secondary'}`}
                       onClick={() => {
-                        setShowRenameModal(true);
+                        setShowRenameModal(true)
                       }}
                     >
                       Rename
@@ -834,18 +771,18 @@ export default function EditorPage(props) {
                         <li>
                           <button
                             onClick={() => {
-                              const v = !uncommittedPreviews;
-                              ls.set(EditorUncommittedPreviewsKey, v);
-                              setUncommittedPreviews(v);
-                              setWidgetConfig(generateWidgetConfig(v));
+                              const v = !uncommittedPreviews
+                              ls.set(EditorUncommittedPreviewsKey, v)
+                              setUncommittedPreviews(v)
+                              setWidgetConfig(generateWidgetConfig(v))
                             }}
                             className={`dropdown-item text-nowrap`}
                             data-toggle="button"
                             aria-pressed={uncommittedPreviews}
                             title="When enabled, the preview uses uncommitted code from all opened files"
                           >
-                            <i className="bi bi-asterisk" /> Multi-file preview
-                            ({uncommittedPreviews ? "ON" : "OFF"})
+                            <i className="bi bi-asterisk" /> Multi-file preview (
+                            {uncommittedPreviews ? 'ON' : 'OFF'})
                           </button>
                         </li>
                       </ul>
@@ -853,15 +790,9 @@ export default function EditorPage(props) {
                   </Buttons>
                 </div>
               </div>
-              <div className={`${tab === Tab.Props ? "" : "visually-hidden"}`}>
-                <div
-                  className="d-flex flex-column overflow-hidden"
-                  style={{ height: "80vh" }}
-                >
-                  <div
-                    className="mb-2 flex-grow-1 border"
-                    style={{ minHeight: 1 }}
-                  >
+              <div className={`${tab === Tab.Props ? '' : 'visually-hidden'}`}>
+                <div className="d-flex flex-column overflow-hidden" style={{ height: '80vh' }}>
+                  <div className="mb-2 flex-grow-1 border" style={{ minHeight: 1 }}>
                     <Editor
                       value={widgetProps}
                       defaultLanguage="json"
@@ -872,16 +803,14 @@ export default function EditorPage(props) {
                     />
                   </div>
                   <div className=" mb-3">^^ Props for debugging (in JSON)</div>
-                  {propsError && (
-                    <pre className="alert alert-danger">{propsError}</pre>
-                  )}{" "}
+                  {propsError && <pre className="alert alert-danger">{propsError}</pre>}{' '}
                 </div>
               </div>
               <div
                 className={`${
                   tab === Tab.Metadata && props.widgets.widgetMetadataEditor
-                    ? ""
-                    : "visually-hidden"
+                    ? ''
+                    : 'visually-hidden'
                 }`}
               >
                 <div className="mb-3">
@@ -902,10 +831,9 @@ export default function EditorPage(props) {
             </div>
             <div
               className={`${
-                tab === Tab.Widget ||
-                (layout === Layout.Split && tab !== Tab.Metadata)
+                tab === Tab.Widget || (layout === Layout.Split && tab !== Tab.Metadata)
                   ? layoutClass
-                  : "visually-hidden"
+                  : 'visually-hidden'
               }`}
             >
               <div className="container">
@@ -925,11 +853,7 @@ export default function EditorPage(props) {
                 </div>
               </div>
             </div>
-            <div
-              className={`${
-                tab === Tab.Metadata ? layoutClass : "visually-hidden"
-              }`}
-            >
+            <div className={`${tab === Tab.Metadata ? layoutClass : 'visually-hidden'}`}>
               <div className="container">
                 <div className="row">
                   <div className="position-relative">
@@ -949,5 +873,5 @@ export default function EditorPage(props) {
         </div>
       </div>
     </div>
-  );
+  )
 }

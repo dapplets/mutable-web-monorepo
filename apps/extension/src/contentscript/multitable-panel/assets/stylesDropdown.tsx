@@ -123,7 +123,9 @@ export const MutationsList = styled.div`
   display: flex;
   flex-direction: column;
   background: #fff;
-  box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
+  box-shadow:
+    0 4px 5px rgb(45 52 60 / 10%),
+    0 4px 20px rgb(11 87 111 / 15%);
   width: 318px;
   left: -26px;
   top: 38px;
@@ -182,7 +184,9 @@ export const MutationsListWrapper = styled.div`
     height: 2px;
     background: #384bff;
     border-radius: 2px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 export const ButtonListBlock = styled.div`

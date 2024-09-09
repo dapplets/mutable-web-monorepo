@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import { Widget } from "near-social-vm";
+import React from 'react'
+import styled from 'styled-components'
+import { Widget } from 'near-social-vm'
 
 const StyledNotificationWidget = styled.div`
   margin: 0 15px;
@@ -32,12 +32,12 @@ const StyledNotificationWidget = styled.div`
       color: white;
     }
   }
-`;
+`
 
 export function NotificationWidget({ notificationButtonSrc }) {
   return (
     <StyledNotificationWidget className="nav-notification-widget">
       <Widget src={notificationButtonSrc} />
     </StyledNotificationWidget>
-  );
+  )
 }
