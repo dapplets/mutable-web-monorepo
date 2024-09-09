@@ -71,7 +71,9 @@ const Notch = styled.div<{ $isAnimated?: boolean }>`
   z-index: 5000;
   border-radius: 0 0 6px 6px;
   background: #384bff;
-  box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
+  box-shadow:
+    0 4px 5px rgb(45 52 60 / 10%),
+    0 4px 20px rgb(11 87 111 / 15%);
   opacity: 0;
   transform: translateY(-100%);
   transition: ${(props) =>
@@ -217,8 +219,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
                 isPin
                   ? 'visible-pin'
                   : isNotchDisplayed || isDropdownVisible || isDragging
-                  ? 'visible-default'
-                  : 'visible-notch'
+                    ? 'visible-default'
+                    : 'visible-notch'
               }
               $isAnimated={!isDragging}
               ref={notchRef}

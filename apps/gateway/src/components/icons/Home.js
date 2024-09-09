@@ -1,14 +1,8 @@
-import React from "react";
+import React from 'react'
 
 export function Home() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M6.75024 19.2502H17.2502C18.3548 19.2502 19.2502 18.3548 19.2502 17.2502V9.75025L12.0002 4.75024L4.75024 9.75025V17.2502C4.75024 18.3548 5.64568 19.2502 6.75024 19.2502Z"
         stroke="#9BA1A6"
@@ -24,5 +18,5 @@ export function Home() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }

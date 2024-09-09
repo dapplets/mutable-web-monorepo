@@ -1,14 +1,8 @@
-import React from "react";
+import React from 'react'
 
 export function Pretend() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="none"
-      viewBox="0 0 16 16"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 16 16">
       <path
         strokeWidth="0.3px"
         fill="#697177"
@@ -20,5 +14,5 @@ export function Pretend() {
         d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
       />
     </svg>
-  );
+  )
 }
