@@ -215,6 +215,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
               data-testid="notch"
               data-mweb-context-type="notch"
               data-mweb-context-parsed={JSON.stringify({ id: 'notch' })}
+              data-mweb-context-level="system"
               className={
                 isPin
                   ? 'visible-pin'

@@ -302,6 +302,7 @@ export function MutationDropdown({ imageSrc, listPosition = 'right' }) {
       <MutationWrapper
         data-mweb-context-type="mweb-gateway"
         data-mweb-context-parsed={JSON.stringify({ id: 'mutation-wrapper' })}
+        data-mweb-context-level="system"
       >
         <div data-mweb-insertion-point="mutation-wrapper" style={{ display: 'none' }}></div>
         <ActiveMutation>
@@ -315,6 +316,7 @@ export function MutationDropdown({ imageSrc, listPosition = 'right' }) {
     <MutationWrapper
       data-mweb-context-type="mweb-gateway"
       data-mweb-context-parsed={JSON.stringify({ id: 'mutation-wrapper' })}
+      data-mweb-context-level="system"
     >
       <div data-mweb-insertion-point="mutation-wrapper" style={{ display: 'none' }}></div>
       {selectedMutation ? (
@@ -349,6 +351,7 @@ export function MutationDropdown({ imageSrc, listPosition = 'right' }) {
           }}
           data-mweb-context-type="mweb-gateway"
           data-mweb-context-parsed={JSON.stringify({ id: 'mutations-list' })}
+          data-mweb-context-level="system"
         >
           <div data-mweb-insertion-point="mutations-list" style={{ display: 'none' }}></div>
           {selectedMutation ? (
