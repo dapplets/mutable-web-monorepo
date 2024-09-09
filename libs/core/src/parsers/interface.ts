@@ -7,7 +7,6 @@ export type InsertionPoint = {
 }
 
 export interface IParser {
-
   shouldParseShadowDom?: boolean
 
   parseContext(element: HTMLElement, contextName: string): any
@@ -17,7 +16,11 @@ export interface IParser {
     contextName: string
   ): { element: HTMLElement; contextName: string }[]
 
-  findInsertionPoint(element: HTMLElement, contextName: string, insertionPoint: string): HTMLElement | null
+  findInsertionPoint(
+    element: HTMLElement,
+    contextName: string,
+    insertionPoint: string
+  ): HTMLElement | null
 
   getInsertionPoints(element: HTMLElement, contextName: string): InsertionPoint[]
 }

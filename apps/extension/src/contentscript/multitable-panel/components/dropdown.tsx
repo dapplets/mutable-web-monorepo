@@ -163,6 +163,7 @@ export const Dropdown: FC<DropdownProps> = ({
                 data-testid="mutate-button"
                 data-mweb-context-type="notch"
                 data-mweb-context-parsed={JSON.stringify({ id: 'mutate-button' })}
+                data-mweb-context-level="system"
               >
                 Mutate {<Mutate />}
                 <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
@@ -175,6 +176,7 @@ export const Dropdown: FC<DropdownProps> = ({
                 data-testid="recently-used-mutations"
                 data-mweb-context-type="notch"
                 data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
+                data-mweb-context-level="system"
               >
                 {recentlyUsedMutations.map((mut) => (
                   <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
@@ -229,6 +231,7 @@ export const Dropdown: FC<DropdownProps> = ({
                   onClick={handleAccordeonClick}
                   data-mweb-context-type="notch"
                   data-mweb-context-parsed={JSON.stringify({ id: 'unused-mutations-title' })}
+                  data-mweb-context-level="system"
                 >
                   <AvalibleLable>available</AvalibleLable>
                   {/* todo: mock */}

@@ -7,7 +7,7 @@
   "author": "Dapplets Team <contact@dapplets.org>",
   "license": "MIT",
   "private": true,
-  "packageManager": "pnpm@8.15.5",
+  "packageManager": "pnpm@9.9.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
@@ -17,7 +17,8 @@
     "clean": "turbo run clean",
     "autoclave": "rimraf libs/**/dist && rimraf libs/**/lib && rimraf libs/**/node_modules && rimraf libs/**/coverage && rimraf libs/**/.turbo && rimraf apps/**/dist && rimraf apps/**/lib && rimraf apps/**/node_modules && rimraf apps/**/coverage && rimraf apps/**/build && rimraf apps/**/.turbo && rm -rf node_modules",
     "test": "turbo run test",
-    "release": "turbo run release --filter=@mweb/extension"
+    "release": "turbo run release --filter=@mweb/extension",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@babel/preset-env": "^7.24.4",

@@ -4,7 +4,6 @@ import { OverlayTrigger as RbOverlayTrigger } from 'react-bootstrap'
 import { StyleSheetManager } from 'styled-components'
 import { useViewport } from '../app/contexts/viewport-context'
 
-
 const Overlay: React.FC<{ overlay: React.ReactElement }> = forwardRef(
   ({ overlay, ...otherProps }, ref) => {
     const stylesRef = useRef<HTMLDivElement | null>(null)

@@ -21,34 +21,34 @@ yarn start
 Profile view
 
 ```jsx
-let accountId = props.accountId || "eugenethedream";
-let profile = socialGetr(`${accountId}/profile`);
+let accountId = props.accountId || 'eugenethedream'
+let profile = socialGetr(`${accountId}/profile`)
 
-<div>
+;<div>
   <img src={profile.image.url} />
   <span>{profile.name}</span> <span>(@{accountId})</span>
-</div>;
+</div>
 ```
 
 Profile editor
 
 ```jsx
-let accountId = context.accountId;
+let accountId = context.accountId
 
 if (!accountId) {
-  return "Please sign in with NEAR wallet";
+  return 'Please sign in with NEAR wallet'
 }
 
-const profile = socialGetr(`${accountId}/profile`);
+const profile = socialGetr(`${accountId}/profile`)
 
 if (profile === null) {
-  return "Loading";
+  return 'Loading'
 }
 
 initState({
   name: profile.name,
   url: profile.image.url,
-});
+})
 
 const data = {
   profile: {
@@ -57,7 +57,7 @@ const data = {
       url: state.url,
     },
   },
-};
+}
 
 return (
   <div>
@@ -78,5 +78,5 @@ return (
       <CommitButton data={data}>Save profile</CommitButton>
     </div>
   </div>
-);
+)
 ```

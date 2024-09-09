@@ -1,12 +1,12 @@
-import { socialKeys } from "../../common";
+import { socialKeys } from '../../common'
 
-const MinBlockHeight = 75942518;
-const LIMIT = 50000;
+const MinBlockHeight = 75942518
+const LIMIT = 50000
 
 export const generateSitemapSources = async (env, offset) => {
-  const data = await socialKeys("*/widget/*", null, {
-    return_type: "History",
-  });
+  const data = await socialKeys('*/widget/*', null, {
+    return_type: 'History',
+  })
   const urls = Object.entries(data)
     .map(([accountId, widget]) =>
       Object.entries(widget.widget)
@@ -23,18 +23,18 @@ export const generateSitemapSources = async (env, offset) => {
         )
         .flat()
     )
-    .flat();
-  console.log("urls count", urls.length);
-  return urls.slice(offset, offset + LIMIT).join("\n");
-};
+    .flat()
+  console.log('urls count', urls.length)
+  return urls.slice(offset, offset + LIMIT).join('\n')
+}
 
 export async function onRequest({ env, request, next }) {
-  const url = new URL(request.url);
-  const parts = url.pathname.split("/");
+  const url = new URL(request.url)
+  const parts = url.pathname.split('/')
   if (parts.length !== 4) {
-    return next();
+    return next()
   }
-  const offset = parseInt(parts[3]);
+  const offset = parseInt(parts[3])
 
   return new Response(
     `<?xml version="1.0" encoding="UTF-8"?>
@@ -43,8 +43,8 @@ ${await generateSitemapSources(env, offset)}
 </urlset>`,
     {
       headers: {
-        "content-type": "application/xml;charset=UTF-8",
+        'content-type': 'application/xml;charset=UTF-8',
       },
     }
-  );
+  )
 }

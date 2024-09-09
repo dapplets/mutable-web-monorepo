@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import { MutableWebContext } from './mutable-web-context'
 
-export function useMutationApp(appId: string) {
+export function useMutationApp(appInstanceId: string) {
   const { engine, setMutationApps, selectedMutation } = useContext(MutableWebContext)
 
   const [isLoading, setIsLoading] = useState(false)
@@ -15,11 +15,16 @@ export function useMutationApp(appId: string) {
     try {
       setIsLoading(true)
 
-      await engine.applicationService.enableAppInMutation(selectedMutation.id, appId)
+      await engine.applicationService.enableAppInstanceInMutation(
+        selectedMutation.id,
+        appInstanceId
+      )
 
       setMutationApps((apps) =>
         apps.map((app) =>
-          app.id === appId ? { ...app, settings: { ...app.settings, isEnabled: true } } : app
+          app.instanceId === appInstanceId
+            ? { ...app, settings: { ...app.settings, isEnabled: true } }
+            : app
         )
       )
     } catch (err) {
@@ -41,11 +46,16 @@ export function useMutationApp(appId: string) {
     try {
       setIsLoading(true)
 
-      await engine.applicationService.disableAppInMutation(selectedMutation.id, appId)
+      await engine.applicationService.disableAppInstanceInMutation(
+        selectedMutation.id,
+        appInstanceId
+      )
 
       setMutationApps((apps) =>
         apps.map((app) =>
-          app.id === appId ? { ...app, settings: { ...app.settings, isEnabled: false } } : app
+          app.instanceId === appInstanceId
+            ? { ...app, settings: { ...app.settings, isEnabled: false } }
+            : app
         )
       )
     } catch (err) {

@@ -10,7 +10,7 @@ export type PickerTask = {
   LatchComponent?: React.FC<{
     context: IContextNode
     variant: TLatchVariant
-    contextDimensions: { width: number; height: number }
+    contextDimensions: { width: number; height: number; top: number; left: number }
   }>
 }
 

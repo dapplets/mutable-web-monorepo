@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "styled-components";
-import { NavLink } from "react-router-dom";
+import React from 'react'
+import styled from 'styled-components'
+import { NavLink } from 'react-router-dom'
 
 const StyledNavigationButton = styled.div`
   a {
@@ -24,16 +24,16 @@ const StyledNavigationButton = styled.div`
   &.disabled {
     opacity: 0.5;
   }
-`;
+`
 
 export function NavigationButton(props) {
   return (
-    <StyledNavigationButton className={props.disabled ? "disabled" : ""}>
+    <StyledNavigationButton className={props.disabled ? 'disabled' : ''}>
       {props.route ? (
         <NavLink
           onClick={(e) => {
             if (props.disabled) {
-              e.preventDefault();
+              e.preventDefault()
             }
           }}
           to={props.route}
@@ -47,5 +47,5 @@ export function NavigationButton(props) {
         </a>
       )}
     </StyledNavigationButton>
-  );
+  )
 }

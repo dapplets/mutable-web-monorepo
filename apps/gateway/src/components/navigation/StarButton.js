@@ -1,6 +1,6 @@
-import React from "react";
-import { Widget } from "near-social-vm";
-import styled from "styled-components";
+import React from 'react'
+import { Widget } from 'near-social-vm'
+import styled from 'styled-components'
 
 const Wrapper = styled.div`
   color: var(--slate-dark-11);
@@ -18,10 +18,10 @@ const Wrapper = styled.div`
   &:after {
     display: none;
   }
-`;
+`
 
 export function StarButton(props) {
-  const widgetSrc = props.widgetSrc?.edit;
+  const widgetSrc = props.widgetSrc?.edit
   if (widgetSrc && props.widgets.starButton) {
     return (
       <Wrapper>
@@ -29,18 +29,18 @@ export function StarButton(props) {
           src={props.widgets.starButton}
           props={{
             item: {
-              type: "social",
+              type: 'social',
               path: widgetSrc,
             },
-            notifyAccountId: widgetSrc.split("/")[0],
+            notifyAccountId: widgetSrc.split('/')[0],
             tooltip: false,
             titleStar: `Bookmark this app`,
             titleUnstar: `Remove from bookmarks`,
           }}
         />
       </Wrapper>
-    );
+    )
   } else {
-    return null;
+    return null
   }
 }

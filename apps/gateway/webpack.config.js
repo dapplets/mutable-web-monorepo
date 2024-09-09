@@ -1,24 +1,24 @@
-const webpack = require("webpack");
-const paths = require("./config/paths");
-const path = require("path");
-const ManifestPlugin = require("webpack-manifest-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const HTMLWebpackPlugin = require("html-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const { merge } = require("webpack-merge");
-const loadPreset = require("./config/presets/loadPreset");
-const loadConfig = (mode) => require(`./config/webpack.${mode}.js`)(mode);
+const webpack = require('webpack')
+const paths = require('./config/paths')
+const path = require('path')
+const ManifestPlugin = require('webpack-manifest-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HTMLWebpackPlugin = require('html-webpack-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const { merge } = require('webpack-merge')
+const loadPreset = require('./config/presets/loadPreset')
+const loadConfig = (mode) => require(`./config/webpack.${mode}.js`)(mode)
 
 module.exports = function (env) {
-  const { mode = "production" } = env || {};
+  const { mode = 'production' } = env || {}
   return merge(
     {
       mode,
       entry: `${paths.srcPath}/index.js`,
       output: {
         path: paths.distPath,
-        filename: "[name].bundle.js",
-        publicPath: "/",
+        filename: '[name].bundle.js',
+        publicPath: '/',
       },
       module: {
         rules: [
@@ -30,46 +30,46 @@ module.exports = function (env) {
           },
           {
             test: /\.js$/,
-            use: ["babel-loader"],
-            exclude: path.resolve(__dirname, "node_modules"),
+            use: ['babel-loader'],
+            exclude: path.resolve(__dirname, 'node_modules'),
           },
           // Images: Copy image files to build folder
-          { test: /\.(?:ico|gif|png|jpg|jpeg)$/i, type: "asset/resource" },
+          { test: /\.(?:ico|gif|png|jpg|jpeg)$/i, type: 'asset/resource' },
 
           // Fonts and SVGs: Inline files
-          { test: /\.(woff(2)?|eot|ttf|otf|svg|)$/, type: "asset/inline" },
+          { test: /\.(woff(2)?|eot|ttf|otf|svg|)$/, type: 'asset/inline' },
         ],
       },
       resolve: {
-        modules: [paths.srcPath, "node_modules"],
-        extensions: [".js", ".jsx", ".json"],
+        modules: [paths.srcPath, 'node_modules'],
+        extensions: ['.js', '.jsx', '.json'],
         fallback: {
-          crypto: require.resolve("crypto-browserify"),
-          vm: require.resolve("vm-browserify"),
-          stream: require.resolve("stream-browserify"),
-          http: require.resolve("stream-http"),
-          https: require.resolve("https-browserify"),
+          crypto: require.resolve('crypto-browserify'),
+          vm: require.resolve('vm-browserify'),
+          stream: require.resolve('stream-browserify'),
+          http: require.resolve('stream-http'),
+          https: require.resolve('https-browserify'),
           fs: false,
-          path: require.resolve("path-browserify"),
-          zlib: require.resolve("browserify-zlib"),
-          events: require.resolve("events"),
+          path: require.resolve('path-browserify'),
+          zlib: require.resolve('browserify-zlib'),
+          events: require.resolve('events'),
           'process/browser': false,
         },
         // Fix for using `yarn link "near-social-vm"`
         alias: {
-          react: path.resolve(__dirname, "./node_modules/react"),
-          "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
-          "near-api-js": path.resolve(__dirname, "./node_modules/near-api-js"),
-          "near-social-vm": path.resolve(__dirname, "./node_modules/near-social-vm"),
-          'styled-components': path.resolve(__dirname, "./node_modules/styled-components"),
-          'bn.js': path.resolve(__dirname, "./node_modules/bn.js"),
-          'events': path.resolve(__dirname, "./node_modules/events"),
+          react: path.resolve(__dirname, './node_modules/react'),
+          'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+          'near-api-js': path.resolve(__dirname, './node_modules/near-api-js'),
+          'near-social-vm': path.resolve(__dirname, './node_modules/near-social-vm'),
+          'styled-components': path.resolve(__dirname, './node_modules/styled-components'),
+          'bn.js': path.resolve(__dirname, './node_modules/bn.js'),
+          events: path.resolve(__dirname, './node_modules/events'),
         },
       },
       plugins: [
         new webpack.EnvironmentPlugin({
           // Configure environment variables here.
-          ENVIRONMENT: "browser",
+          ENVIRONMENT: 'browser',
         }),
         new CleanWebpackPlugin(),
         // Copies files from target to destination folder
@@ -77,9 +77,9 @@ module.exports = function (env) {
           patterns: [
             {
               from: paths.publicPath,
-              to: "./",
+              to: './',
               globOptions: {
-                ignore: ["**/*.DS_Store", "**/index.html", "**/favicon.png"],
+                ignore: ['**/*.DS_Store', '**/index.html', '**/favicon.png'],
               },
               noErrorOnMissing: true,
             },
@@ -92,17 +92,17 @@ module.exports = function (env) {
         new HTMLWebpackPlugin({
           template: `${paths.publicPath}/index.html`,
           favicon: `${paths.publicPath}/favicon.png`,
-          publicPath: "/",
+          publicPath: '/',
         }),
         new webpack.ProgressPlugin(),
         new webpack.ProvidePlugin({
-          process: "process/browser",
-          Buffer: [require.resolve("buffer/"), "Buffer"],
+          process: 'process/browser',
+          Buffer: [require.resolve('buffer/'), 'Buffer'],
         }),
         // new ManifestPlugin.WebpackManifestPlugin(),
       ],
     },
     loadConfig(mode),
     loadPreset(env)
-  );
-};
+  )
+}

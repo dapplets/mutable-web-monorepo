@@ -12,6 +12,7 @@ export const mutationSwitched = ({
   subject: 'Mutation Switched',
   body: `The mutation has been switched from ${fromMutationId} to ${toMutationId}`,
   type: NotificationType.Info,
+  duration: 0,
   actions: [
     { label: 'Ok, got it', type: 'primary' },
     {
@@ -26,6 +27,7 @@ export const mutationDisabled = ({ onBack }: { onBack: () => void }): ModalProps
   subject: 'Mutation Disabled',
   body: `You disabled all mutations`,
   type: NotificationType.Warning,
+  duration: 0,
   actions: [
     { label: 'Ok, got it', type: 'primary' },
     {

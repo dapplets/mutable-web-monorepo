@@ -1,10 +1,21 @@
 import { IContextNode } from '@mweb/core'
-import { AppId, AppMetadata, AppMetadataTarget } from '../application/application.entity'
+import {
+  AppId,
+  AppInstanceWithSettings,
+  AppMetadata,
+  AppMetadataTarget,
+} from '../application/application.entity'
 import { ApplicationService } from '../application/application.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { ScalarType, TargetCondition } from '../target/target.entity'
 import { TargetService } from '../target/target.service'
-import { BosUserLink, ControllerLink, LinkIndexObject, UserLinkId } from './user-link.entity'
+import {
+  BosUserLink,
+  BosUserLinkWithInstance,
+  ControllerLink,
+  LinkIndexObject,
+  UserLinkId,
+} from './user-link.entity'
 import { UserLinkRepository } from './user-link.repository'
 
 export class UserLinkSerivce {
@@ -15,11 +26,11 @@ export class UserLinkSerivce {
 
   // ToDo: replace with getAppsAndLinksForContext
   async getLinksForContext(
-    appsToCheck: AppMetadata[],
+    appsToCheck: AppInstanceWithSettings[],
     mutationId: MutationId,
     context: IContextNode
-  ): Promise<BosUserLink[]> {
-    const promises: Promise<BosUserLink[]>[] = []
+  ): Promise<BosUserLinkWithInstance[]> {
+    const promises: Promise<BosUserLinkWithInstance[]>[] = []
 
     for (const app of appsToCheck) {
       const suitableTargets = app.targets.filter((target) =>
@@ -28,7 +39,11 @@ export class UserLinkSerivce {
 
       // ToDo: batch requests
       suitableTargets.forEach((target) => {
-        promises.push(this._getUserLinksForTarget(mutationId, app.id, target, context))
+        promises.push(
+          this._getUserLinksForTarget(mutationId, app.id, target, context).then((links) => {
+            return links.map((link) => ({ ...link, appInstanceId: app.instanceId }))
+          })
+        )
       })
     }
 
@@ -37,7 +52,10 @@ export class UserLinkSerivce {
     return appLinksNested.flat(2)
   }
 
-  getStaticLinksForApps(appsToCheck: AppMetadata[], context: IContextNode): BosUserLink[] {
+  getStaticLinksForApps(
+    appsToCheck: AppInstanceWithSettings[],
+    context: IContextNode
+  ): BosUserLinkWithInstance[] {
     return appsToCheck.flatMap((app) =>
       app.targets
         .filter((target) => target.static)
@@ -50,19 +68,24 @@ export class UserLinkSerivce {
           bosWidgetId: target.componentId,
           authorId: app.authorId,
           static: true,
+          appInstanceId: app.instanceId,
         }))
     )
   }
 
-  getControllersForApps(appsToCheck: AppMetadata[], context: IContextNode): ControllerLink[] {
+  getControllersForApps(
+    appsToCheck: AppInstanceWithSettings[],
+    context: IContextNode
+  ): ControllerLink[] {
     return appsToCheck
       .filter((app) => app.controller)
       .flatMap((app) =>
         app.targets
           .filter((target) => TargetService.isTargetMet(target, context))
           .map((_, i) => ({
-            id: `${app.id}/${i}`, // ToDo: id
+            id: `${app.id}/${app.instanceId}/${i}`, // ToDo: id
             appId: app.id,
+            appInstanceId: app.instanceId,
             bosWidgetId: app.controller!, // ! - because it's filtered above
           }))
       )

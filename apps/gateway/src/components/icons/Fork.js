@@ -1,14 +1,8 @@
-import React from "react";
+import React from 'react'
 
 export function Fork() {
   return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M9.25 7C9.25 8.24264 8.24264 9.25 7 9.25C5.75736 9.25 4.75 8.24264 4.75 7C4.75 5.75736 5.75736 4.75 7 4.75C8.24264 4.75 9.25 5.75736 9.25 7Z"
         stroke="#9BA1A6"
@@ -38,5 +32,5 @@ export function Fork() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }

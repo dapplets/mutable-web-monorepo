@@ -1,6 +1,6 @@
 import { LocalDbService } from '../local-db/local-db.service'
-import { SocialDbService } from '../social-db/social-db.service'
-import { Mutation, MutationId } from './mutation.entity'
+import { SocialDbService, Value } from '../social-db/social-db.service'
+import { AppInMutation, Mutation, MutationId } from './mutation.entity'
 
 // ToDo: move to repository?
 const ProjectIdKey = 'dapplets.near'
@@ -32,10 +32,16 @@ export class MutationRepository {
 
     if (!mutation) return null
 
+    const normalizedApps: AppInMutation[] = mutation.apps
+      ? JSON.parse(mutation.apps).map((app: any) =>
+          typeof app === 'string' ? { appId: app, documentId: null } : app
+        )
+      : []
+
     return {
       id: globalMutationId,
       metadata: mutation.metadata,
-      apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+      apps: normalizedApps,
       targets: mutation.targets ? JSON.parse(mutation.targets) : [],
     }
   }
@@ -59,10 +65,16 @@ export class MutationRepository {
       const [accountId, , , , localMutationId] = key.split(KeyDelimiter)
       const mutationId = [accountId, MutationKey, localMutationId].join(KeyDelimiter)
 
+      const normalizedApps: AppInMutation[] = mutation.apps
+        ? JSON.parse(mutation.apps).map((app: any) =>
+            typeof app === 'string' ? { appId: app, documentId: null } : app
+          )
+        : []
+
       return {
         id: mutationId,
         metadata: mutation.metadata,
-        apps: mutation.apps ? JSON.parse(mutation.apps) : [],
+        apps: normalizedApps,
         targets: mutation.targets ? JSON.parse(mutation.targets) : [],
       }
     })
@@ -71,19 +83,27 @@ export class MutationRepository {
   }
 
   async saveMutation(mutation: Mutation): Promise<Mutation> {
+    const preparedMutation = await this.prepareSaveMutation(mutation)
+
+    await this.socialDb.set(preparedMutation)
+
+    return mutation
+  }
+
+  async prepareSaveMutation(mutation: Mutation): Promise<Value> {
     const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter)
 
     const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId]
 
+    const denormalizedApps = mutation.apps.map((app) => (app.documentId ? app : app.appId))
+
     const storedAppMetadata = {
       metadata: mutation.metadata,
       targets: mutation.targets ? JSON.stringify(mutation.targets) : null,
-      apps: mutation.apps ? JSON.stringify(mutation.apps) : null,
+      apps: mutation.apps ? JSON.stringify(denormalizedApps) : null,
     }
 
-    await this.socialDb.set(SocialDbService.buildNestedData(keys, storedAppMetadata))
-
-    return mutation
+    return SocialDbService.buildNestedData(keys, storedAppMetadata)
   }
 
   async getFavoriteMutation(): Promise<string | null | undefined> {

@@ -1,7 +1,8 @@
-import { IContextNode, PureContextNode } from '@mweb/core'
+import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
 import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
 import { MutationRepository } from './mutation.repository'
+import { Value } from '../social-db/social-db.service'
 
 export class MutationService {
   constructor(
@@ -103,5 +104,9 @@ export class MutationService {
         lastUsage,
       },
     }
+  }
+
+  async prepareSaveMutation(mutation: Mutation): Promise<Value> {
+    return this.mutationRepository.prepareSaveMutation(mutation)
   }
 }

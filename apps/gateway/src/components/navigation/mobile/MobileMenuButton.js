@@ -1,5 +1,5 @@
-import React from "react";
-import styled from "styled-components";
+import React from 'react'
+import styled from 'styled-components'
 
 const StyledMobileMenuButton = styled.button`
   background-color: transparent;
@@ -25,7 +25,7 @@ const StyledMobileMenuButton = styled.button`
       border-radius: 30px;
     }
   }
-`;
+`
 
 export function MobileMenuButton(props) {
   return (
@@ -37,5 +37,5 @@ export function MobileMenuButton(props) {
       </div>
       {props.currentPage}
     </StyledMobileMenuButton>
-  );
+  )
 }

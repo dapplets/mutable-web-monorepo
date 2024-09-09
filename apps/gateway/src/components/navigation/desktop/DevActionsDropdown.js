@@ -1,10 +1,10 @@
-import React from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { Fork } from "../../icons/Fork";
-import { Code } from "../../icons/Code";
-import { useAccount } from "near-social-vm";
-import { Diff } from "../../icons/Diff";
+import React from 'react'
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import { Fork } from '../../icons/Fork'
+import { Code } from '../../icons/Code'
+import { useAccount } from 'near-social-vm'
+import { Diff } from '../../icons/Diff'
 
 const StyledDropdown = styled.div`
   .dropdown-toggle {
@@ -83,10 +83,10 @@ const StyledDropdown = styled.div`
       }
     }
   }
-`;
+`
 
 export function DevActionsDropdown(props) {
-  const account = useAccount();
+  const account = useAccount()
 
   if (props.widgetSrc?.edit || props.widgetSrc?.view) {
     return (
@@ -110,16 +110,14 @@ export function DevActionsDropdown(props) {
               <Link to={`/edit/${props.widgetSrc?.edit}`}>
                 <Fork />
                 {props.widgetSrc.edit.startsWith(`${account.accountId}/widget/`)
-                  ? "Edit widget"
-                  : "Fork widget"}
+                  ? 'Edit widget'
+                  : 'Fork widget'}
               </Link>
             </li>
           )}
           {props.widgetSrc?.view && (
             <li>
-              <Link
-                to={`/${props.widgets.viewSource}?src=${props.widgetSrc?.view}`}
-              >
+              <Link to={`/${props.widgets.viewSource}?src=${props.widgetSrc?.view}`}>
                 <Code />
                 View source
               </Link>
@@ -127,9 +125,7 @@ export function DevActionsDropdown(props) {
           )}
           {props.widgets.viewHistory && props.widgetSrc?.view && (
             <li>
-              <Link
-                to={`/${props.widgets.viewHistory}?widgetPath=${props.widgetSrc?.view}`}
-              >
+              <Link to={`/${props.widgets.viewHistory}?widgetPath=${props.widgetSrc?.view}`}>
                 <Diff />
                 View history
               </Link>
@@ -137,8 +133,8 @@ export function DevActionsDropdown(props) {
           )}
         </ul>
       </StyledDropdown>
-    );
+    )
   } else {
-    return null;
+    return null
   }
 }

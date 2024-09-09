@@ -1,15 +1,19 @@
-import { AppMetadata } from '@mweb/engine'
+import { AppMetadata, Document, useAppDocuments } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
+import { DocumentCard } from './document-card'
+import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { Spin } from 'antd'
 
-const Card = styled.div`
+const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;
   width: 100%;
   border-radius: 10px;
-  background: #fff;
+  background: ${(p) => p.$backgroundColor};
   border: 1px solid #eceef0;
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   &:hover {
     background: rgba(24, 121, 206, 0.1);
   }
@@ -36,12 +40,20 @@ const CardContent = styled.div`
   width: 100%;
 `
 
-const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
+type TTextLink = {
+  bold?: boolean
+  small?: boolean
+  ellipsis?: boolean
+  $color?: string
+}
+
+const TextLink = styled.div<TTextLink>`
   display: block;
   margin: 0;
   font-size: 14px;
   line-height: 18px;
-  color: ${(p) => (p.bold ? '#11181C !important' : '#687076 !important')};
+  color: ${(p) =>
+    p.$color ? `${p.$color} !important` : p.bold ? '#11181C !important' : '#687076 !important'};
   font-weight: ${(p) => (p.bold ? '600' : '400')};
   font-size: ${(p) => (p.small ? '12px' : '14px')};
   overflow: ${(p) => (p.ellipsis ? 'hidden' : 'visible')};
@@ -50,29 +62,13 @@ const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolea
   outline: none;
 `
 
-// const Text = styled.p<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
-//   margin: 0;
-//   font-size: 14px;
-//   line-height: 20px;
-//   color: ${(p) => (p.bold ? '#11181C' : '#687076')};
-//   font-weight: ${(p) => (p.bold ? '600' : '400')};
-//   font-size: ${(p) => (p.small ? '12px' : '14px')};
-//   overflow: ${(p) => (p.ellipsis ? 'hidden' : '')};
-//   text-overflow: ${(p) => (p.ellipsis ? 'ellipsis' : '')};
-//   white-space: nowrap;
-
-//   i {
-//     margin-right: 3px;
-//   }
-// `
-
-const Thumbnail = styled.div`
+const Thumbnail = styled.div<{ $shape: 'circle' | 'default' }>`
   display: block;
   width: 60px;
   height: 60px;
   flex-shrink: 0;
   border: 1px solid #eceef0;
-  border-radius: 8px;
+  border-radius: ${(props) => (props.$shape === 'circle' ? '99em' : '8px')};
   overflow: hidden;
   outline: none;
   transition: border-color 200ms;
@@ -107,6 +103,45 @@ const ButtonLink = styled.button`
     cursor: default;
   }
 `
+
+const DocumentsWrapper = styled.div`
+  display: flex;
+  padding-bottom: 10px;
+`
+
+const SideLine = styled.div`
+  border: 1px solid #c1c6ce;
+  margin: 0 10px;
+`
+
+const DocumentCardList = styled.div`
+  width: 100%;
+  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`
+
+const MoreIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path
+      d="M10 8L14 12L10 16"
+      stroke="#7A818B"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <rect
+      x="3.75"
+      y="3.75"
+      width="16.5"
+      height="16.5"
+      rx="3.25"
+      stroke="#7A818B"
+      strokeWidth="1.5"
+    />
+  </svg>
+)
 
 const UncheckedIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -145,27 +180,54 @@ const CheckedIcon = () => (
   </svg>
 )
 
-export interface Props {
+export interface ISimpleApplicationCardProps {
   src: string
   metadata: AppMetadata['metadata']
+  disabled: boolean
   isChecked: boolean
   onChange: (isChecked: boolean) => void
-  disabled: boolean
+  iconShape?: 'circle'
+  textColor?: string
+  backgroundColor?: string
 }
 
-export const ApplicationCard: React.FC<Props> = ({
+export interface IApplicationCardWithDocsProps {
+  src: string
+  metadata: AppMetadata['metadata']
+  disabled: boolean
+  docsIds: AppInMutation['documentId'][]
+  onDocCheckboxChange: (docId: string | null, isChecked: boolean) => void
+  onOpenDocumentsModal: (docs: Document[]) => void
+}
+
+interface IApplicationCard
+  extends ISimpleApplicationCardProps,
+    Omit<IApplicationCardWithDocsProps, 'docsIds'> {
+  hasDocuments: boolean
+  usingDocs: (Document | null)[]
+  allDocs: Document[]
+}
+
+const ApplicationCard: React.FC<IApplicationCard> = ({
   src,
   metadata,
-  isChecked,
-  onChange,
   disabled,
+  hasDocuments,
+  iconShape,
+  textColor,
+  backgroundColor,
+  isChecked,
+  usingDocs,
+  allDocs,
+  onChange,
+  onDocCheckboxChange,
+  onOpenDocumentsModal,
 }) => {
-  const [accountId, , widgetName] = src.split('/')
-
+  const [accountId, , appId] = src.split('/')
   return (
-    <Card className={disabled ? 'disabled' : ''}>
+    <Card $backgroundColor={backgroundColor ?? 'white'} className={disabled ? 'disabled' : ''}>
       <CardBody>
-        <Thumbnail>
+        <Thumbnail $shape={iconShape ?? 'default'}>
           <Image
             image={metadata.image}
             fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
@@ -174,22 +236,76 @@ export const ApplicationCard: React.FC<Props> = ({
         </Thumbnail>
 
         <CardContent>
-          <TextLink bold ellipsis>
-            {metadata.name || widgetName}
+          <TextLink $color={textColor} bold ellipsis>
+            {metadata.name || appId}
           </TextLink>
 
           <TextLink small ellipsis>
             @{accountId}
           </TextLink>
         </CardContent>
+
         <ButtonLink
           className={disabled ? 'disabled' : ''}
           disabled={disabled}
-          onClick={() => onChange(!isChecked)}
+          onClick={hasDocuments ? () => onOpenDocumentsModal(allDocs) : () => onChange(!isChecked)}
         >
-          {isChecked ? <CheckedIcon /> : <UncheckedIcon />}
+          {hasDocuments ? <MoreIcon /> : isChecked ? <CheckedIcon /> : <UncheckedIcon />}
         </ButtonLink>
       </CardBody>
+
+      {hasDocuments && usingDocs.length ? (
+        <DocumentsWrapper>
+          <SideLine />
+          <DocumentCardList>
+            {usingDocs.map((doc) => (
+              <DocumentCard
+                key={doc?.id || 'empty'}
+                src={doc?.id ?? null}
+                metadata={doc?.metadata ?? null}
+                onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}
+                disabled={disabled}
+                appMetadata={metadata}
+              />
+            ))}
+          </DocumentCardList>
+        </DocumentsWrapper>
+      ) : null}
     </Card>
+  )
+}
+
+export const SimpleApplicationCard: React.FC<ISimpleApplicationCardProps> = (props) => (
+  <ApplicationCard
+    {...props}
+    hasDocuments={false}
+    onOpenDocumentsModal={() => null}
+    onDocCheckboxChange={() => null}
+    usingDocs={[]}
+    allDocs={[]}
+  />
+)
+
+export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = (props) => {
+  const { src, docsIds } = props
+  const { documents, isLoading } = useAppDocuments(src)
+  const usingDocs: (Document | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
+  if (docsIds.includes(null)) usingDocs.unshift(null)
+
+  return isLoading ? (
+    <Card>
+      <CardBody>
+        <Spin style={{ width: '100%' }} />
+      </CardBody>
+    </Card>
+  ) : (
+    <ApplicationCard
+      {...props}
+      hasDocuments={true}
+      isChecked={false}
+      onChange={() => null}
+      usingDocs={usingDocs}
+      allDocs={documents}
+    />
   )
 }
