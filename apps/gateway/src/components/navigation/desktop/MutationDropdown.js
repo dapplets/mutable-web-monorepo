@@ -114,8 +114,11 @@ const MutationList = styled.div`
   animation-duration: 0.2s;
   animation-timing-function: ease;
   animation-fill-mode: forwards;
-  box-shadow: 0px 13px 28px 0px rgba(0, 0, 0, 0.1), 0px 51px 51px 0px rgba(0, 0, 0, 0.09),
-    0px 115px 69px 0px rgba(0, 0, 0, 0.05), 0px 204px 81px 0px rgba(0, 0, 0, 0.01),
+  box-shadow:
+    0px 13px 28px 0px rgba(0, 0, 0, 0.1),
+    0px 51px 51px 0px rgba(0, 0, 0, 0.09),
+    0px 115px 69px 0px rgba(0, 0, 0, 0.05),
+    0px 204px 81px 0px rgba(0, 0, 0, 0.01),
     0px 318px 89px 0px rgba(0, 0, 0, 0);
 
   padding: 10px 4px 0px 10px;
@@ -199,7 +202,9 @@ const Scroll = styled.div`
 
     background: #3d7fff;
     border-radius: 2px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 
