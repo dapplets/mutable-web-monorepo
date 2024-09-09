@@ -33,7 +33,7 @@ const ModalProvider: FC<Props> = ({ children, onModalApiReady }) => {
         description: modalProps.body,
         placement: 'bottomRight',
         duration: modalProps.duration,
-        showProgress: true,
+        showProgress: modalProps.showProgress ?? false,
         pauseOnHover: false,
         btn:
           modalProps.actions && modalProps.actions.length
