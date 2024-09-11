@@ -1,16 +1,12 @@
 import { AppWithSettings, Mutation } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef, useCallback } from 'react'
+import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/Image'
 import Profile, { IWalletConnect } from './Profile'
-import { Space, Button, notification } from 'antd'
-import { GenericNotification } from '../notifications/types'
-import { notifications } from '../notifications/test-data-notification'
-import { createSingleNotification } from '../notifications/utils/createSingleNotification'
-
-const Context = React.createContext({ name: 'Default' })
+import { Button } from 'antd'
+import OverlayWrapper from './OverlayWrapper'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: fixed;
@@ -120,12 +116,13 @@ const MutationIconWrapper = styled.button<{ $isStopped?: boolean; $isButton: boo
 
 const ButtonWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   box-sizing: content-box !important;
   overflow: hidden;
   justify-content: center;
   align-items: center;
   width: 46px;
-  margin-top: -7px;
+  margin-top: 7px;
   padding: 0 5px 5px;
 `
 
@@ -353,28 +350,18 @@ const StopCenterIcon = () => (
   </svg>
 )
 
-const IconNotificationMessage = () => (
+const IconBell = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
     <path
-      d="M1.5 3.5C1.5 3.23478 1.60536 2.98043 1.79289 2.79289C1.98043 2.60536 2.23478 2.5 2.5 2.5H9.5C9.76522 2.5 10.0196 2.60536 10.2071 2.79289C10.3946 2.98043 10.5 3.23478 10.5 3.5V8.5C10.5 8.76522 10.3946 9.01957 10.2071 9.20711C10.0196 9.39464 9.76522 9.5 9.5 9.5H2.5C2.23478 9.5 1.98043 9.39464 1.79289 9.20711C1.60536 9.01957 1.5 8.76522 1.5 8.5V3.5Z"
-      stroke="#7A818B"
+      d="M9.4375 3.81817C9.4375 2.95019 9.08982 2.11776 8.47095 1.504C7.85208 0.890245 7.01271 0.545441 6.1375 0.545441C5.26229 0.545441 4.42292 0.890245 3.80405 1.504C3.18518 2.11776 2.8375 2.95019 2.8375 3.81817C2.8375 7.63635 1.1875 8.72726 1.1875 8.72726H11.0875C11.0875 8.72726 9.4375 7.63635 9.4375 3.81817Z"
+      fill="white"
+      stroke="white"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
     <path
-      d="M1.5 3.5L6 6.5L10.5 3.5"
-      stroke="#7A818B"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
-const IconNotificationClose = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
-    <path
-      d="M8 1.5L1 8.5M1 1.5L8 8.5"
-      stroke="#7A818B"
-      stroke-width="1.16667"
+      d="M7.08855 10.9091C6.99185 11.0744 6.85306 11.2116 6.68607 11.307C6.51908 11.4024 6.32976 11.4526 6.13705 11.4526C5.94434 11.4526 5.75501 11.4024 5.58802 11.307C5.42103 11.2116 5.28224 11.0744 5.18555 10.9091"
+      stroke="white"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
@@ -432,11 +419,6 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp,
   </>
 )
 
-const getRandomNotification = (): GenericNotification => {
-  const randomIndex = Math.floor(Math.random() * notifications.length)
-  return notifications[randomIndex]
-}
-
 export const MiniOverlay: FC<IMiniOverlayProps> = ({
   baseMutation,
   mutationApps,
@@ -446,57 +428,15 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   children,
   trackingRefs = new Set(),
 }) => {
-  // todo: only for test
-  const [currentNotification, setCurrentNotification] = useState<GenericNotification | null>(null)
+  const [open, setOpen] = useState(false)
 
-  const [api, contextHolder] = notification.useNotification({
-    getContainer: () => {
-      if (!rootRef.current) throw new Error('Viewport is not initialized')
-      return rootRef.current
-    },
-  })
+  const showDrawer = () => {
+    setOpen(true)
+  }
 
-  const openNotify = useCallback(
-    (notificationProps: GenericNotification, id: string) => {
-      api[notificationProps.apiType]({
-        key: id + notificationProps.id,
-        duration: 0,
-        message: createSingleNotification(notificationProps, id),
-        btn:
-          notificationProps.actions && notificationProps.actions.length ? (
-            <Space key={notificationProps.id} direction="horizontal">
-              {notificationProps.actions.map((action, i) => (
-                <Button
-                  key={i}
-                  type={action.type ?? 'default'}
-                  size="middle"
-                  onClick={() => {
-                    action.onClick?.()
-                    api.destroy(id)
-                  }}
-                >
-                  {action.icon}
-                  {action.label}
-                </Button>
-              ))}
-            </Space>
-          ) : null,
-
-        placement: 'bottomRight',
-        className: 'notifySingle',
-        icon: <></>,
-        onClose: () => {
-          // todo: need logic closed or readind
-        },
-        closeIcon: notificationProps.isRead ? (
-          <IconNotificationMessage />
-        ) : (
-          <IconNotificationClose />
-        ),
-      })
-    },
-    [api, currentNotification]
-  )
+  const onClose = () => {
+    setOpen(false)
+  }
 
   const [isOpen, setIsOpen] = useState(false)
   const [isProfileOpen, setProfileOpen] = useState(false)
@@ -507,80 +447,85 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   trackingRefs.add(rootRef)
 
   const handleMutationIconClick = () => {
-    const randomNotification = getRandomNotification()
-    setCurrentNotification(randomNotification)
-    openNotify(randomNotification, `${Date.now()}`)
     setProfileOpen((val) => !val)
   }
-  console.log(currentNotification)
+
   const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
   return (
-    <SidePanelWrapper
-      ref={rootRef}
-      $isApps={mutationApps.length > 0}
-      data-mweb-context-type="mweb-overlay"
-      data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
-      data-mweb-context-level="system"
-    >
-      <Context.Provider value={{ name: 'Default' }}>{contextHolder}</Context.Provider>
-      <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
-        <MutationIconWrapper
-          $isButton={isMutationIconButton}
-          title={baseMutation?.metadata.name}
-          onClick={handleMutationIconClick}
-          ref={openCloseWalletPopupRef}
-          data-mweb-context-type="mweb-overlay"
-          data-mweb-context-parsed={JSON.stringify({
-            id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
-          })}
-          data-mweb-context-level="system"
-        >
-          {baseMutation?.metadata.image ? (
-            <Image image={baseMutation?.metadata.image} />
-          ) : (
-            <MutationFallbackIcon />
-          )}
-          <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
-        </MutationIconWrapper>
-      </TopBlock>
-      {isOpen || !mutationApps.length ? null : (
-        <ButtonWrapper
-          data-mweb-insertion-point="mweb-actions-panel"
-          data-mweb-layout-manager="vertical"
-        />
-      )}
-      {isOpen ? <AppsWrapper>{children}</AppsWrapper> : null}
-      {mutationApps.length > 0 ? (
-        <ButtonOpenWrapper
-          $open={isOpen || mutationApps.length > 0}
-          data-mweb-context-type="mweb-overlay"
-          data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
-          data-mweb-context-level="system"
-        >
-          <ButtonOpen
-            $open={isOpen}
-            className={isOpen ? 'svgTransform' : ''}
-            onClick={() => setIsOpen(!isOpen)}
+    <>
+      <SidePanelWrapper
+        ref={rootRef}
+        $isApps={mutationApps.length > 0}
+        data-mweb-context-type="mweb-overlay"
+        data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
+        data-mweb-context-level="system"
+      >
+        <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
+          <MutationIconWrapper
+            $isButton={isMutationIconButton}
+            title={baseMutation?.metadata.name}
+            onClick={handleMutationIconClick}
+            ref={openCloseWalletPopupRef}
+            data-mweb-context-type="mweb-overlay"
+            data-mweb-context-parsed={JSON.stringify({
+              id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
+            })}
+            data-mweb-context-level="system"
           >
-            <ArrowSvg />
-          </ButtonOpen>
-          <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
-        </ButtonOpenWrapper>
-      ) : null}
-      {isProfileOpen && isMutationIconButton ? (
-        <Profile
-          accountId={loggedInAccountId}
-          closeProfile={() => {
-            setProfileOpen(false)
-          }}
-          connectWallet={connectWallet}
-          disconnectWallet={disconnectWallet}
-          nearNetwork={nearNetwork}
-          trackingRefs={trackingRefs}
-          openCloseWalletPopupRef={openCloseWalletPopupRef}
-        />
-      ) : null}
-      <div data-mweb-insertion-point="mweb-overlay" style={{ display: 'none' }} />
-    </SidePanelWrapper>
+            {baseMutation?.metadata.image ? (
+              <Image image={baseMutation?.metadata.image} />
+            ) : (
+              <MutationFallbackIcon />
+            )}
+            <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
+          </MutationIconWrapper>
+        </TopBlock>
+        {isOpen || !mutationApps.length ? null : (
+          <ButtonWrapper
+            data-mweb-insertion-point="mweb-actions-panel"
+            data-mweb-layout-manager="vertical"
+          >
+            <Button block type="primary" onClick={showDrawer}>
+              <IconBell />
+            </Button>
+          </ButtonWrapper>
+        )}
+        {isOpen ? <AppsWrapper>{children}</AppsWrapper> : null}
+        {mutationApps.length > 0 ? (
+          <ButtonOpenWrapper
+            $open={isOpen || mutationApps.length > 0}
+            data-mweb-context-type="mweb-overlay"
+            data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
+            data-mweb-context-level="system"
+          >
+            <ButtonOpen
+              $open={isOpen}
+              className={isOpen ? 'svgTransform' : ''}
+              onClick={() => {
+                onClose()
+                setIsOpen(!isOpen)
+              }}
+            >
+              <ArrowSvg />
+            </ButtonOpen>
+            <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
+          </ButtonOpenWrapper>
+        ) : null}
+        {isProfileOpen && isMutationIconButton ? (
+          <Profile
+            accountId={loggedInAccountId}
+            closeProfile={() => {
+              setProfileOpen(false)
+            }}
+            connectWallet={connectWallet}
+            disconnectWallet={disconnectWallet}
+            nearNetwork={nearNetwork}
+            trackingRefs={trackingRefs}
+            openCloseWalletPopupRef={openCloseWalletPopupRef}
+          />
+        ) : null}
+      </SidePanelWrapper>
+      <OverlayWrapper apps={mutationApps.length > 0} onClose={onClose} open={open} />
+    </>
   )
 }
