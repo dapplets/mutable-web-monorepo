@@ -1,14 +1,9 @@
+import { EntityMetadata } from '../../common/entity-metadata'
 import { AppId } from '../application/application.entity'
 
 export type DocumentId = string
 
-export type DocumentMetadata = {
-  name?: string
-  description?: string
-  image?: {
-    ipfs_cid?: string
-  }
-}
+export type DocumentMetadata = EntityMetadata<DocumentId>
 
 export type Document = {
   id: DocumentId

@@ -1,6 +1,7 @@
 import { AppId } from '../application/application.entity'
 import { DocumentId } from '../document/document.entity'
 import { Target } from '../target/target.entity'
+import { EntityMetadata } from '../../common/entity-metadata'
 
 export type MutationId = string
 
@@ -11,13 +12,7 @@ export type AppInMutation = {
 
 export type Mutation = {
   id: MutationId
-  metadata: {
-    name?: string
-    description?: string
-    image?: {
-      ipfs_cid?: string
-    }
-  }
+  metadata: EntityMetadata<MutationId>
   apps: AppInMutation[]
   targets: Target[]
 }
