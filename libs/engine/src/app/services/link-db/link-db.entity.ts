@@ -15,9 +15,9 @@ export type IndexedContext = {
 }
 
 export type IndexObject = {
-  appId: string
+  appId?: string
   documentId?: string
-  mutationId: string
+  mutationId?: string
   context: IndexedContext
 }
 

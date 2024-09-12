@@ -122,17 +122,19 @@ export class LinkDbService {
     indexRules: LinkIndexRules,
     context: TransferableContext
   ): IndexObject {
-    // MutationId is a part of the index.
-    // It means that a data of the same application is different in different mutations
-
     const index: IndexObject = {
-      mutationId,
-      appId,
       context: LinkDbService._buildIndexedContextValues(indexRules, context),
     }
 
+    // ToDo: non-obvious indexing. Documents are mutation-independent
     if (documentId) {
+      // Document can be reused in different mutations and apps
       index.documentId = documentId
+    } else {
+      // MutationId is a part of the index.
+      // It means that a data of the same application is different in different mutations
+      index.mutationId = mutationId
+      index.appId = appId
     }
 
     return index
