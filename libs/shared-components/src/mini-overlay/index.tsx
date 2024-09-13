@@ -10,7 +10,7 @@ import OverlayWrapper from './OverlayWrapper'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: fixed;
-  z-index: 5000;
+  z-index: 6000;
   display: flex;
   width: 58px;
   top: 55px;

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Space, Typography, Card, Tag, Collapse, CollapseProps } from 'antd'
+import { Space, Typography, Card, Tag, Collapse } from 'antd'
 import { GenericNotification, NotificationType } from '../types'
 
 const CollapseIcon = () => (

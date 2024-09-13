@@ -34,18 +34,34 @@ export enum NotificationApiType {
   Info = 'info',
 }
 
-export type GenericNotification = {
-  apiType: NotificationApiType
-  id: string
-  type: NotificationType
-  payload: NotificationPayloadMap[NotificationType.PullRequest | NotificationType.PullRequest]
-  isRead: boolean
-  createdAt: string
-  createdBy: string
-  actions?: {
-    label: string
-    type?: 'primary' | 'default'
-    onClick?: () => void
-    icon?: React.JSX.Element
-  }[]
-}
+export type GenericNotification =
+  | {
+      apiType: NotificationApiType
+      id: string
+      type: NotificationType.Regular
+      payload: RegularPayload
+      isRead: boolean
+      createdAt: string
+      createdBy: string
+      actions?: {
+        label: string
+        type?: 'primary' | 'default'
+        onClick?: () => void
+        icon?: React.JSX.Element
+      }[]
+    }
+  | {
+      apiType: NotificationApiType
+      id: string
+      type: NotificationType.PullRequest
+      payload: PullRequestPayload
+      isRead: boolean
+      createdAt: string
+      createdBy: string
+      actions?: {
+        label: string
+        type?: 'primary' | 'default'
+        onClick?: () => void
+        icon?: React.JSX.Element
+      }[]
+    }
