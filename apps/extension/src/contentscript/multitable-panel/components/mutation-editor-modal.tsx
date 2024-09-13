@@ -26,6 +26,7 @@ import { DropdownButton } from './dropdown-button'
 import { Input } from './input'
 import { InputImage } from './upload-image'
 import { DocumentsModal } from './documents-modal'
+import { ModalConfirm } from './modals-confirm'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -106,9 +107,7 @@ const AppsList = styled.div`
     height: 2px;
     background: #384bff;
     border-radius: 2px;
-    box-shadow:
-      0 2px 6px rgb(0 0 0 / 9%),
-      0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 
@@ -234,7 +233,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   // Too much mutations: baseMutation, preOriginalMutation, originalMutation, editingMutation
   const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
   const [editingMutation, setEditingMutation] = useState(originalMutation)
-
+  const [openConfirm, setOpenConfirm] = useState(false)
   const [mutationAuthorId] = preOriginalMutation.id.split('/')
   const isOwn = mutationAuthorId === loggedInAccountId
 
@@ -242,8 +241,8 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     !baseMutation
       ? MutationModalMode.Creating
       : isOwn
-        ? MutationModalMode.Editing
-        : MutationModalMode.Forking
+      ? MutationModalMode.Editing
+      : MutationModalMode.Forking
   )
 
   useEffect(() => {
@@ -376,9 +375,11 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     }
 
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
-      createMutation(editingMutation).then(() => onClose())
+      // createMutation(editingMutation).then(() => onClose())
+      setOpenConfirm(true)
     } else if (mode === MutationModalMode.Editing) {
-      editMutation(editingMutation).then(() => onClose())
+      // editMutation(editingMutation).then(() => onClose())
+      setOpenConfirm(true)
     }
   }
 
@@ -494,6 +495,23 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           />
         </>
       ) : null}
+      {openConfirm && (
+        <ModalConfirm
+          mode={mode}
+          onClose={() => {
+            setOpenConfirm(false)
+            onClose
+          }}
+          editingMutation={editingMutation}
+          handleRevertClick={handleRevertClick}
+          isFormDisabled={isFormDisabled}
+          handleSaveClick={() => {
+            mode === MutationModalMode.Creating || mode === MutationModalMode.Forking
+              ? createMutation(editingMutation).then(() => onClose())
+              : editMutation(editingMutation).then(() => onClose())
+          }}
+        />
+      )}
     </SelectedMutationEditorWrapper>
   )
 }
