@@ -5,10 +5,10 @@ import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/Image'
 import Profile, { IWalletConnect } from './Profile'
-import { Button, Space, notification, Typography, Card } from 'antd'
-import { version } from 'os'
-import { log } from 'console'
-const { Text } = Typography
+import { Space, Button, notification } from 'antd'
+import { GenericNotification } from '../notifications/types'
+import { notifications } from '../notifications/test-data-notification'
+import { createSingleNotification } from '../notifications/utils/createSingleNotification'
 
 const Context = React.createContext({ name: 'Default' })
 
@@ -27,6 +27,24 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
+
+  .notifySingle {
+    .ant-notification-notice-icon {
+      display: none;
+    }
+
+    .ant-notification-notice-message {
+      margin-inline-start: 0 !important;
+    }
+
+    .ant-notification-notice-description {
+      margin-inline-start: 0 !important;
+    }
+
+    .ant-notification-notice-btn {
+      float: none !important;
+    }
+  }
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
@@ -335,31 +353,6 @@ const StopCenterIcon = () => (
   </svg>
 )
 
-const IconBranch = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="15" viewBox="0 0 14 15" fill="none">
-    <g clip-path="url(#clip0_273_2428)">
-      <path
-        d="M0 7.5C0 5.64348 0.737498 3.86301 2.05025 2.55025C3.36301 1.2375 5.14348 0.5 7 0.5C8.85652 0.5 10.637 1.2375 11.9497 2.55025C13.2625 3.86301 14 5.64348 14 7.5C14 9.35652 13.2625 11.137 11.9497 12.4497C10.637 13.7625 8.85652 14.5 7 14.5C5.14348 14.5 3.36301 13.7625 2.05025 12.4497C0.737498 11.137 0 9.35652 0 7.5ZM5.90625 9.6875C5.90625 8.99362 5.44513 8.40825 4.8125 8.21925V6.562C5.16329 6.45519 5.46417 6.22618 5.66056 5.91652C5.85695 5.60686 5.93584 5.23706 5.88292 4.87421C5.83 4.51137 5.64876 4.17951 5.3721 3.93885C5.09544 3.69818 4.74168 3.56466 4.375 3.5625C4.0067 3.56183 3.65049 3.69392 3.37168 3.93457C3.09287 4.17522 2.91014 4.5083 2.85698 4.87274C2.80382 5.23719 2.8838 5.60858 3.08226 5.91885C3.28071 6.22911 3.58435 6.45744 3.9375 6.562V8.21925C3.58671 8.32606 3.28583 8.55507 3.08944 8.86473C2.89305 9.17439 2.81416 9.54419 2.86708 9.90703C2.92 10.2699 3.10124 10.6017 3.3779 10.8424C3.65456 11.0831 4.00832 11.2166 4.375 11.2188C4.78111 11.2188 5.17059 11.0574 5.45776 10.7703C5.74492 10.4831 5.90625 10.0936 5.90625 9.6875ZM8.75 5.3125H8.96875C9.08478 5.3125 9.19606 5.35859 9.27811 5.44064C9.36016 5.52269 9.40625 5.63397 9.40625 5.75V8.21925C9.05546 8.32606 8.75458 8.55507 8.55819 8.86473C8.3618 9.17439 8.28291 9.54419 8.33583 9.90703C8.38875 10.2699 8.56999 10.6017 8.84665 10.8424C9.12331 11.0831 9.47707 11.2166 9.84375 11.2188C10.2121 11.2194 10.5683 11.0873 10.8471 10.8467C11.1259 10.606 11.3086 10.273 11.3618 9.90851C11.4149 9.54406 11.3349 9.17267 11.1365 8.8624C10.938 8.55214 10.6344 8.3238 10.2812 8.21925V5.75C10.2812 5.4019 10.143 5.06806 9.89683 4.82192C9.65069 4.57578 9.31685 4.4375 8.96875 4.4375H8.75V3.23787C8.75008 3.19455 8.73729 3.15218 8.71326 3.11614C8.68923 3.08009 8.65504 3.052 8.61502 3.03541C8.575 3.01882 8.53095 3.01449 8.48847 3.02296C8.44598 3.03143 8.40697 3.05233 8.37638 3.083L6.73925 4.72013C6.71888 4.74045 6.70272 4.76458 6.69169 4.79116C6.68066 4.81774 6.67498 4.84623 6.67498 4.875C6.67498 4.90377 6.68066 4.93226 6.69169 4.95884C6.70272 4.98542 6.71888 5.00955 6.73925 5.02987L8.37638 6.667C8.40697 6.69767 8.44598 6.71857 8.48847 6.72704C8.53095 6.73551 8.575 6.73118 8.61502 6.71459C8.65504 6.698 8.68923 6.66991 8.71326 6.63386C8.73729 6.59782 8.75008 6.55545 8.75 6.51213V5.3125Z"
-        fill="#384BFF"
-      />
-    </g>
-    <defs>
-      <clipPath id="clip0_273_2428">
-        <rect width="14" height="14" fill="white" transform="translate(0 0.5)" />
-      </clipPath>
-    </defs>
-  </svg>
-)
-
-const IconBranchButton = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="14" viewBox="0 0 12 14" fill="none">
-    <path
-      d="M2.50066 11.4294C2.08738 11.43 1.68722 11.2844 1.37105 11.0182C1.05488 10.7521 0.843108 10.3826 0.77324 9.97528C0.703372 9.56794 0.779917 9.14903 0.989319 8.79273C1.19872 8.43643 1.52746 8.16573 1.91732 8.02859V4.33026C1.52795 4.19264 1.19977 3.92181 0.990781 3.56562C0.781793 3.20943 0.705457 2.79083 0.775268 2.3838C0.845078 1.97677 1.05654 1.60752 1.37227 1.34133C1.68801 1.07514 2.08768 0.929138 2.50066 0.929138C2.91363 0.929138 3.31331 1.07514 3.62904 1.34133C3.94478 1.60752 4.15624 1.97677 4.22605 2.3838C4.29586 2.79083 4.21952 3.20943 4.01053 3.56562C3.80155 3.92181 3.47336 4.19264 3.08399 4.33026V4.42942C3.08399 4.73884 3.20691 5.03559 3.4257 5.25438C3.64449 5.47317 3.94124 5.59609 4.25066 5.59609H7.75066C8.3695 5.59609 8.96299 5.84192 9.40057 6.27951C9.83816 6.71709 10.084 7.31058 10.084 7.92942V8.02859C10.4734 8.1662 10.8015 8.43704 11.0105 8.79323C11.2195 9.14942 11.2959 9.56802 11.226 9.97505C11.1562 10.3821 10.9448 10.7513 10.629 11.0175C10.3133 11.2837 9.91363 11.4297 9.50066 11.4297C9.08768 11.4297 8.68801 11.2837 8.37227 11.0175C8.05654 10.7513 7.84508 10.3821 7.77527 9.97505C7.70546 9.56802 7.78179 9.14942 7.99078 8.79323C8.19977 8.43704 8.52795 8.1662 8.91732 8.02859V7.92942C8.91732 7.62 8.79441 7.32326 8.57561 7.10447C8.35682 6.88567 8.06008 6.76276 7.75066 6.76276H4.25066C3.84112 6.76292 3.43875 6.65528 3.08399 6.45067V8.02917C3.47275 8.16722 3.80027 8.43812 4.00876 8.79409C4.21726 9.15007 4.29334 9.56824 4.22359 9.97484C4.15384 10.3814 3.94273 10.7503 3.6275 11.0165C3.31228 11.2826 2.9132 11.4288 2.50066 11.4294Z"
-      fill="white"
-    />
-  </svg>
-)
-
 const IconNotificationMessage = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" fill="none">
     <path
@@ -379,8 +372,9 @@ const IconNotificationMessage = () => (
 const IconNotificationClose = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
     <path
-      d="M1.5 3.5L6 6.5L10.5 3.5"
+      d="M8 1.5L1 8.5M1 1.5L8 8.5"
       stroke="#7A818B"
+      stroke-width="1.16667"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
@@ -438,40 +432,9 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp,
   </>
 )
 
-export enum NotificationType {
-  Error = 'error',
-  Warning = 'warning',
-  Info = 'info',
-}
-
-export interface NotificationData {
-  author?: string
-  number?: string
-  date?: string
-  time?: string
-  name?: string
-  applicationCommitData?: {
-    name: string
-    version: string
-  }
-  targetApplication?: string
-  near?: string
-}
-
-export interface NotificationActions {
-  label: string
-  type?: 'primary' | 'default'
-  onClick?: () => void
-  icon?: React.ReactNode
-}
-
-export type NotificationProps = {
-  subject: NotificationData
-  body: NotificationData
-  type: NotificationType
-
-  actions: NotificationActions[]
-  duration: number
+const getRandomNotification = (): GenericNotification => {
+  const randomIndex = Math.floor(Math.random() * notifications.length)
+  return notifications[randomIndex]
 }
 
 export const MiniOverlay: FC<IMiniOverlayProps> = ({
@@ -483,6 +446,9 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   children,
   trackingRefs = new Set(),
 }) => {
+  // todo: only for test
+  const [currentNotification, setCurrentNotification] = useState<GenericNotification | null>(null)
+
   const [api, contextHolder] = notification.useNotification({
     getContainer: () => {
       if (!rootRef.current) throw new Error('Viewport is not initialized')
@@ -491,25 +457,45 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   })
 
   const openNotify = useCallback(
-    (notificationProps: NotificationProps, id: string) => {
-      api[notificationProps.type]({
-        key: id,
+    (notificationProps: GenericNotification, id: string) => {
+      api[notificationProps.apiType]({
+        key: id + notificationProps.id,
         duration: 0,
-        message: createSingleNotification('message', id, notificationProps.subject),
-        description: createSingleNotification('description', id, notificationProps.body),
-        btn: createSingleNotification(
-          'btn',
-          id,
-          notificationProps.body,
-          notificationProps.actions,
-          () => api.destroy(id)
-        ),
+        message: createSingleNotification(notificationProps, id),
+        btn:
+          notificationProps.actions && notificationProps.actions.length ? (
+            <Space key={notificationProps.id} direction="horizontal">
+              {notificationProps.actions.map((action, i) => (
+                <Button
+                  key={i}
+                  type={action.type ?? 'default'}
+                  size="middle"
+                  onClick={() => {
+                    action.onClick?.()
+                    api.destroy(id)
+                  }}
+                >
+                  {action.icon}
+                  {action.label}
+                </Button>
+              ))}
+            </Space>
+          ) : null,
+
         placement: 'bottomRight',
-        icon: <IconBranch />,
-        closeIcon: <IconNotificationMessage />,
+        className: 'notifySingle',
+        icon: <></>,
+        onClose: () => {
+          // todo: need logic closed or readind
+        },
+        closeIcon: notificationProps.isRead ? (
+          <IconNotificationMessage />
+        ) : (
+          <IconNotificationClose />
+        ),
       })
     },
-    [api]
+    [api, currentNotification]
   )
 
   const [isOpen, setIsOpen] = useState(false)
@@ -521,57 +507,13 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   trackingRefs.add(rootRef)
 
   const handleMutationIconClick = () => {
-    openNotify(
-      {
-        subject: {
-          author: 'author',
-          number: 'number',
-          date: 'date',
-          time: 'time',
-          name: 'name',
-        },
-        body: {
-          author: 'author',
-          number: undefined,
-          date: undefined,
-          time: undefined,
-          name: undefined,
-          applicationCommitData: {
-            name: 'applicationCommitData name',
-            version: 'applicationCommitData version',
-          },
-          targetApplication: 'targetApplication',
-          near: 'near',
-        },
-        type: NotificationType.Info,
-        actions: [
-          {
-            label: 'Decline',
-
-            onClick: () => console.log('Decline'),
-            icon: <IconNotificationClose />,
-          },
-          {
-            label: 'Review',
-
-            onClick: () => console.log('Review'),
-          },
-          {
-            label: 'Accept',
-            type: 'primary',
-            onClick: () => console.log('Accept'),
-            icon: <IconBranchButton />,
-          },
-        ],
-        duration: 0,
-      },
-      `${Date.now()}`
-    )
+    const randomNotification = getRandomNotification()
+    setCurrentNotification(randomNotification)
+    openNotify(randomNotification, `${Date.now()}`)
     setProfileOpen((val) => !val)
   }
-
+  console.log(currentNotification)
   const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
-
   return (
     <SidePanelWrapper
       ref={rootRef}
@@ -640,71 +582,5 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
       ) : null}
       <div data-mweb-insertion-point="mweb-overlay" style={{ display: 'none' }} />
     </SidePanelWrapper>
-  )
-}
-
-export const createSingleNotification = (
-  type: 'description' | 'message' | 'btn',
-  id: string,
-
-  data: NotificationData,
-  actions?: NotificationActions[],
-  destroy?: any
-) => {
-  return type === 'message' ? (
-    <Space direction="vertical">
-      <Space size="large" direction="horizontal">
-        <Text type="secondary">
-          #{data.number}
-          &ensp; {data.name}&ensp; {data.author}&ensp; on&ensp;{data.date} &ensp; at&ensp;{' '}
-          {data.time}
-        </Text>
-      </Space>
-
-      <Space direction="horizontal">
-        <Text strong underline>
-          {data.name}
-        </Text>
-      </Space>
-    </Space>
-  ) : type === 'description' ? (
-    <Space direction="vertical">
-      <Card
-        style={{
-          borderRadius: '10px',
-          padding: '10px',
-          background: '#F8F9FF',
-          width: '100%',
-          display: 'inline-flex',
-        }}
-      >
-        <Text type="secondary">
-          <Text underline>{data.author}&ensp;</Text> asks you to accept changes from&ensp;
-          <Text underline> {data.applicationCommitData?.name} </Text>&ensp;
-          <Text underline> {data.applicationCommitData?.version} </Text>&ensp;
-          {data.applicationCommitData?.version} &ensp;({data.near})&ensp; into your&ensp;
-          <Text underline> {data.targetApplication} </Text>.
-        </Text>
-      </Card>
-    </Space>
-  ) : (
-    <Space direction="horizontal">
-      {actions && actions.length
-        ? actions.map((action, i) => (
-            <Button
-              key={i}
-              type={action.type ?? 'primary'}
-              size="middle"
-              onClick={() => {
-                action.onClick?.()
-                destroy(id)
-              }}
-            >
-              {action.icon}
-              {action.label}
-            </Button>
-          ))
-        : null}
-    </Space>
   )
 }
