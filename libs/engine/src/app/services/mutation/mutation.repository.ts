@@ -16,7 +16,7 @@ const MUTATION_LAST_USAGE = 'mutation-last-usage'
 
 export class MutationRepository {
   constructor(
-    private socialDb: SocialDbService,
+    public socialDb: SocialDbService,
     private localDb: LocalDbService
   ) {}
 

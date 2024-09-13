@@ -54,7 +54,7 @@ export class Engine {
     const documentRepository = new DocumentRepository(socialDb)
 
     this.linkDbService = new LinkDbService(socialDb)
-    this.mutationService = new MutationService(mutationRepository, nearConfig)
+    this.mutationService = new MutationService(mutationRepository, socialDb, nearConfig)
     this.applicationService = new ApplicationService(applicationRepository)
     this.userLinkService = new UserLinkSerivce(userLinkRepository, this.applicationService)
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
