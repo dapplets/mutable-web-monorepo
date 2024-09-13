@@ -1,17 +1,17 @@
-import React, { useCallback } from "react";
-import styled from "styled-components";
-import { Close } from "../../icons/Close";
-import { Home } from "../../icons/Home";
-import { Book } from "../../icons/Book";
-import { Code } from "../../icons/Code";
-import { LogOut } from "../../icons/LogOut";
-import { Fork } from "../../icons/Fork";
-import { UserCircle } from "../../icons/UserCircle";
-import { Widget, useNear } from "near-social-vm";
-import { NavigationButton } from "../NavigationButton";
-import { SignInButton } from "../SignInButton";
-import { Link } from "react-router-dom";
-import { Withdraw } from "../../icons/Withdraw";
+import React, { useCallback } from 'react'
+import styled from 'styled-components'
+import { Close } from '../../icons/Close'
+import { Home } from '../../icons/Home'
+import { Book } from '../../icons/Book'
+import { Code } from '../../icons/Code'
+import { LogOut } from '../../icons/LogOut'
+import { Fork } from '../../icons/Fork'
+import { UserCircle } from '../../icons/UserCircle'
+import { Widget, useNear } from 'near-social-vm'
+import { NavigationButton } from '../NavigationButton'
+import { SignInButton } from '../SignInButton'
+import { Link } from 'react-router-dom'
+import { Withdraw } from '../../icons/Withdraw'
 
 const StyledMenu = styled.div`
   position: fixed;
@@ -152,16 +152,16 @@ const StyledMenu = styled.div`
     opacity: 0.8;
     background-color: var(--slate-dark-1);
   }
-`;
+`
 
 export function Menu(props) {
-  const near = useNear();
+  const near = useNear()
   const withdrawStorage = useCallback(async () => {
-    await near.contract.storage_withdraw({}, undefined, "1");
-  }, [near]);
+    await near.contract.storage_withdraw({}, undefined, '1')
+  }, [near])
 
   return (
-    <StyledMenu className={props.showMenu ? "show" : ""}>
+    <StyledMenu className={props.showMenu ? 'show' : ''}>
       <div className="left-side">
         {props.signedIn ? (
           <Link
@@ -172,8 +172,8 @@ export function Menu(props) {
               src={props.widgets.profileImage}
               props={{
                 accountId: props.signedAccountId,
-                className: "d-inline-block",
-                style: { width: "56px", height: "56px" },
+                className: 'd-inline-block',
+                style: { width: '56px', height: '56px' },
               }}
             />
             {props.widgets.profileName && (
@@ -186,8 +186,8 @@ export function Menu(props) {
         ) : (
           <SignInButton
             onSignIn={() => {
-              props.onCloseMenu();
-              props.requestSignIn();
+              props.onCloseMenu()
+              props.requestSignIn()
             }}
           />
         )}
@@ -225,19 +225,15 @@ export function Menu(props) {
             <li>
               <Link to={`/edit/${props.widgetSrc?.edit}`}>
                 <Fork />
-                {props.widgetSrc.edit.startsWith(
-                  `${props.signedAccountId}/widget/`
-                )
-                  ? "Edit widget"
-                  : "Fork widget"}
+                {props.widgetSrc.edit.startsWith(`${props.signedAccountId}/widget/`)
+                  ? 'Edit widget'
+                  : 'Fork widget'}
               </Link>
             </li>
           )}
           {props.widgetSrc?.view && (
             <li>
-              <Link
-                to={`/${props.widgets.viewSource}?src=${props.widgetSrc?.view}`}
-              >
+              <Link to={`/${props.widgets.viewSource}?src=${props.widgetSrc?.view}`}>
                 <Code />
                 View source
               </Link>
@@ -246,19 +242,13 @@ export function Menu(props) {
           {props.signedIn && (
             <>
               <li>
-                <button
-                  className="log-out-button"
-                  onClick={() => withdrawStorage()}
-                >
+                <button className="log-out-button" onClick={() => withdrawStorage()}>
                   <Withdraw />
                   Withdraw {props.availableStorage.div(1000).toFixed(2)}kb
                 </button>
               </li>
               <li>
-                <button
-                  onClick={() => props.logOut()}
-                  className="log-out-button"
-                >
+                <button onClick={() => props.logOut()} className="log-out-button">
                   <LogOut />
                   Sign Out
                 </button>
@@ -272,5 +262,5 @@ export function Menu(props) {
       </div>
       <div className="right-side" onClick={props.onCloseMenu} />
     </StyledMenu>
-  );
+  )
 }

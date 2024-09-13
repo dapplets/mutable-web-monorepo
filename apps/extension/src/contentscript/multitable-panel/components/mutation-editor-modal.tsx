@@ -1,5 +1,6 @@
 import {
   AppMetadata,
+  Document,
   Mutation,
   useCreateMutation,
   useEditMutation,
@@ -19,11 +20,12 @@ import {
 } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
-import { ApplicationCard } from './application-card'
+import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { DropdownButton } from './dropdown-button'
 import { Input } from './input'
 import { InputImage } from './upload-image'
+import { DocumentsModal } from './documents-modal'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -40,6 +42,8 @@ const SelectedMutationEditorWrapper = styled.div`
   background: #f8f9ff;
   width: 400px;
   max-height: 70vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 `
 
 const Close = styled.span`
@@ -80,6 +84,8 @@ const AppsList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  overscroll-behavior: contain;
+
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
@@ -108,6 +114,18 @@ const ButtonsBlock = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`
+
+const BlurredBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(255 255 255 / 75%);
+  backdrop-filter: blur(5px);
+  border-radius: 9px;
+  z-index: 3;
 `
 
 const CloseIcon = () => (
@@ -199,6 +217,8 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   const { editMutation, isLoading: isEditing } = useEditMutation()
   const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
+  const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
+  const [docsForModal, setDocsForModal] = useState<Document[] | null>(null)
 
   // Close modal with escape key
   useEscape(onClose)
@@ -229,7 +249,14 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     if (mode === MutationModalMode.Forking && loggedInAccountId) {
       const [, , mutLocalId] = preOriginalMutation.id.split('/')
       const newId = `${loggedInAccountId}/mutation/${mutLocalId}`
-      setOriginalMutation(mergeDeep(cloneDeep(preOriginalMutation), { id: newId }))
+      setOriginalMutation(
+        mergeDeep(cloneDeep(preOriginalMutation), {
+          id: newId,
+          metadata: {
+            fork_of: preOriginalMutation.id,
+          },
+        })
+      )
     } else {
       setOriginalMutation(preOriginalMutation)
     }
@@ -289,7 +316,38 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
-      const apps = checked ? [...mut.apps, appId] : mut.apps.filter((app) => app !== appId)
+      const apps = checked
+        ? [...mut.apps, { appId, documentId: null }]
+        : mut.apps.filter((app) => app.appId !== appId)
+      return mergeDeep(cloneDeep(mut), { apps })
+    })
+  }
+
+  const handleDocCheckboxChange = (docId: string | null, appId: string, checked: boolean) => {
+    setEditingMutation((mut) => {
+      const apps = checked
+        ? [...mut.apps, { appId, documentId: docId }]
+        : mut.apps.filter((app) => app.appId !== appId || app.documentId !== docId)
+      return mergeDeep(cloneDeep(mut), { apps })
+    })
+  }
+
+  const handleDocCheckboxBanchChange = (docIds: (string | null)[], appId: string) => {
+    setEditingMutation((mut) => {
+      const docIdsToAdd = new Set<string | null>(docIds)
+      const apps = mut.apps.filter((_app) => {
+        if (_app.appId === appId) {
+          if (docIdsToAdd.has(_app.documentId)) {
+            docIdsToAdd.delete(_app.documentId)
+          } else {
+            return false
+          }
+        }
+        return true
+      })
+      docIdsToAdd.forEach((docId) => {
+        apps.push({ appId, documentId: docId })
+      })
       return mergeDeep(cloneDeep(mut), { apps })
     })
   }
@@ -333,6 +391,11 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     setMode(itemId as MutationModalMode)
   }
 
+  const handleOpenDocumentsModal = (appId: string, docs: Document[]) => {
+    setAppIdToOpenDocsModal(appId)
+    setDocsForModal(docs)
+  }
+
   return (
     <SelectedMutationEditorWrapper>
       <HeaderEditor>
@@ -368,16 +431,32 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       />
 
       <AppsList>
-        {apps.map((app) => (
-          <ApplicationCard
-            key={app.id}
-            src={app.id}
-            metadata={app.metadata}
-            isChecked={editingMutation.apps.includes(app.id)}
-            onChange={(val) => handleAppCheckboxChange(app.id, val)}
-            disabled={isFormDisabled}
-          />
-        ))}
+        {apps.map((app) =>
+          app.permissions.documents ? (
+            <ApplicationCardWithDocs
+              key={app.id}
+              src={app.id}
+              metadata={app.metadata}
+              disabled={isFormDisabled}
+              docsIds={editingMutation.apps
+                .filter((_app) => _app.appId === app.id)
+                .map((_app) => _app.documentId)}
+              onOpenDocumentsModal={(docs: Document[]) => handleOpenDocumentsModal(app.id, docs)}
+              onDocCheckboxChange={(docId: string | null, isChecked: boolean) =>
+                handleDocCheckboxChange(docId, app.id, isChecked)
+              }
+            />
+          ) : (
+            <SimpleApplicationCard
+              key={app.id}
+              src={app.id}
+              metadata={app.metadata}
+              disabled={isFormDisabled}
+              isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
+              onChange={(val) => handleAppCheckboxChange(app.id, val)}
+            />
+          )
+        )}
       </AppsList>
 
       <ButtonsBlock>
@@ -404,6 +483,22 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           </BsButton>
         )}
       </ButtonsBlock>
+
+      {appIdToOpenDocsModal ? (
+        <>
+          <BlurredBackground />
+          <DocumentsModal
+            docs={docsForModal}
+            onClose={() => setAppIdToOpenDocsModal(null)}
+            chosenDocumentsIds={editingMutation.apps
+              .filter((_app) => _app.appId === appIdToOpenDocsModal)
+              .map((_app) => _app.documentId)}
+            setDocumentsIds={(val: (string | null)[]) =>
+              handleDocCheckboxBanchChange(val, appIdToOpenDocsModal)
+            }
+          />
+        </>
+      ) : null}
     </SelectedMutationEditorWrapper>
   )
 }

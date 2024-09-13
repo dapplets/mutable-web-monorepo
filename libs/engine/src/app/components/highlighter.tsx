@@ -25,6 +25,7 @@ export const Highlighter = ({
 }) => {
   const bodyOffset = document.documentElement.getBoundingClientRect()
   const targetOffset = el.getBoundingClientRect()
+  const bodyOffsetTop = styles.position === 'absolute' ? bodyOffset.top : 0
 
   const backgroundColor = isFilled
     ? styles.backgroundColor ?? DEFAULT_BACKGROUND_COLOR
@@ -48,30 +49,30 @@ export const Highlighter = ({
 
     const topStyle: React.CSSProperties = {
       left: targetOffset.left - bodyOffset.left + borderWidth * 2,
-      top: targetOffset.top - 1 - bodyOffset.top,
+      top: targetOffset.top - 1 - bodyOffsetTop,
       width: targetOffset.width - borderRadius - borderWidth,
       height: borderWidth,
-      position: 'absolute',
+      position: styles.position,
       zIndex,
       borderTop: border,
     }
 
     const bottomStyle: React.CSSProperties = {
       left: targetOffset.left - bodyOffset.left + borderWidth * 2,
-      top: targetOffset.top + targetOffset.height - 1 - bodyOffset.top,
+      top: targetOffset.top + targetOffset.height - 1 - bodyOffsetTop,
       width: targetOffset.width - borderRadius - borderWidth,
       height: borderWidth,
-      position: 'absolute',
+      position: styles.position,
       zIndex,
       borderBottom: border,
     }
 
     const leftStyle: React.CSSProperties = {
       left: targetOffset.left - bodyOffset.left - borderWidth,
-      top: targetOffset.top - 1 - bodyOffset.top,
+      top: targetOffset.top - 1 - bodyOffsetTop,
       height: targetOffset.height + borderWidth,
       width: borderRadius,
-      position: 'absolute',
+      position: styles.position,
       zIndex,
       borderLeft: border,
       borderTop: border,
@@ -81,10 +82,10 @@ export const Highlighter = ({
 
     const rightStyle: React.CSSProperties = {
       left: targetOffset.left + targetOffset.width - bodyOffset.left - borderWidth * 2,
-      top: targetOffset.top - 1 - bodyOffset.top,
+      top: targetOffset.top - 1 - bodyOffsetTop,
       height: targetOffset.height + borderWidth,
       width: borderRadius,
-      position: 'absolute',
+      position: styles.position,
       zIndex,
       borderRight: border,
       borderTop: border,
@@ -103,11 +104,11 @@ export const Highlighter = ({
   }
 
   const wrapperStyle: React.CSSProperties = {
-    position: 'absolute',
+    position: styles.position,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    top: targetOffset.top - bodyOffset.top,
+    top: targetOffset.top - bodyOffsetTop,
     left: targetOffset.left - bodyOffset.left,
     width: targetOffset.width,
     height: targetOffset.height,

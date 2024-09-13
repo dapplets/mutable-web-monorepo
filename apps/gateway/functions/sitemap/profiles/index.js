@@ -1,8 +1,8 @@
-import { socialKeys } from "../../common";
+import { socialKeys } from '../../common'
 
 export const generateSitemapProfiles = async (env) => {
-  const data = await socialKeys("*/profile");
-  const accountIds = Object.keys(data);
+  const data = await socialKeys('*/profile')
+  const accountIds = Object.keys(data)
   return accountIds
     .map(
       (accountId) =>
@@ -11,8 +11,8 @@ export const generateSitemapProfiles = async (env) => {
     <changefreq>monthly</changefreq>
   </url>`
     )
-    .join("\n");
-};
+    .join('\n')
+}
 
 export async function onRequest({ env }) {
   return new Response(
@@ -22,8 +22,8 @@ ${await generateSitemapProfiles(env)}
 </urlset>`,
     {
       headers: {
-        "content-type": "application/xml;charset=UTF-8",
+        'content-type': 'application/xml;charset=UTF-8',
       },
     }
-  );
+  )
 }

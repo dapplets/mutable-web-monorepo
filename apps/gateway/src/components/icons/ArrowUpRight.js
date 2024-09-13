@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export function ArrowUpRight() {
   return (
@@ -25,5 +25,5 @@ export function ArrowUpRight() {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }

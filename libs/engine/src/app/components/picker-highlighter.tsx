@@ -5,7 +5,6 @@ import { Highlighter } from './highlighter'
 
 const DEFAULT_INACTIVE_BORDER_COLOR = '#384BFF4D' // light blue
 const DEFAULT_CHILDREN_BORDER_STYLE = 'dashed'
-const PRIVILEGED_NAMESPACE = 'mweb' // ToDo: hardcode. Needs to be fixed.
 
 const getElementDepth = (el: Element | ShadowRoot | null | undefined) => {
   let depth = 0
@@ -30,7 +29,7 @@ interface IPickerHighlighter {
   LatchComponent?: React.FC<{
     context: IContextNode
     variant: 'current' | 'parent' | 'child'
-    contextDimensions: { width: number; height: number }
+    contextDimensions: { width: number; height: number; top: number; left: number }
   }>
   children?: ReactElement | ReactElement[]
 }
@@ -62,6 +61,8 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
               contextDimensions={{
                 width: targetOffset?.width || 0,
                 height: targetOffset?.height || 0,
+                top: targetOffset?.top || 0,
+                left: targetOffset?.left || 0,
               }}
             />
           ).trim()
@@ -109,7 +110,22 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
   const borderColor =
     styles?.borderColor ?? variant !== 'current' ? DEFAULT_INACTIVE_BORDER_COLOR : undefined
 
-  const zIndex = 1000 * (context.namespace === PRIVILEGED_NAMESPACE ? 10 : 1) + (contextDepth ?? 0)
+  const calloutLevel =
+    context.contextLevel === 'callout' &&
+    context.element?.attributes?.getNamedItem('data-context-level')?.value
+
+  if (calloutLevel === 'callout') return
+
+  const zIndex =
+    1000 *
+      (context.contextLevel === 'system'
+        ? 6
+        : calloutLevel === 'default'
+          ? 3
+          : calloutLevel === 'system'
+            ? 8
+            : 1) +
+    (contextDepth ?? 0)
 
   const doShowLatch = LatchComponent && (variant === 'current' || variant === 'parent')
 
@@ -130,6 +146,8 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
             contextDimensions={{
               width: targetOffset.width,
               height: targetOffset.height,
+              top: targetOffset.top,
+              left: targetOffset.left,
             }}
           />
         </div>
@@ -144,6 +162,8 @@ export const PickerHighlighter: FC<IPickerHighlighter> = ({
           borderColor,
           zIndex,
           opacity,
+          position:
+            context.contextLevel === 'default' || calloutLevel === 'default' ? 'absolute' : 'fixed',
         }}
         isFilled={!hasLatch}
         children={children}

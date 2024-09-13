@@ -1,7 +1,7 @@
-import { socialKeys } from "../../common";
+import { socialKeys } from '../../common'
 
 export const generateSitemapWidgets = async (env) => {
-  const data = await socialKeys("*/widget/*/metadata");
+  const data = await socialKeys('*/widget/*/metadata')
   return Object.entries(data)
     .map(([accountId, widget]) =>
       Object.keys(widget.widget).map(
@@ -13,8 +13,8 @@ export const generateSitemapWidgets = async (env) => {
       )
     )
     .flat()
-    .join("\n");
-};
+    .join('\n')
+}
 
 export async function onRequest({ env }) {
   return new Response(
@@ -24,8 +24,8 @@ ${await generateSitemapWidgets(env)}
 </urlset>`,
     {
       headers: {
-        "content-type": "application/xml;charset=UTF-8",
+        'content-type': 'application/xml;charset=UTF-8',
       },
     }
-  );
+  )
 }

@@ -578,6 +578,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
       $isApps={mutationApps.length > 0}
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
+      data-mweb-context-level="system"
     >
       <Context.Provider value={{ name: 'Default' }}>{contextHolder}</Context.Provider>
       <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
@@ -590,6 +591,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           data-mweb-context-parsed={JSON.stringify({
             id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
           })}
+          data-mweb-context-level="system"
         >
           {baseMutation?.metadata.image ? (
             <Image image={baseMutation?.metadata.image} />
@@ -611,6 +613,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           $open={isOpen || mutationApps.length > 0}
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
+          data-mweb-context-level="system"
         >
           <ButtonOpen
             $open={isOpen}

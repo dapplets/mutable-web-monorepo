@@ -1,11 +1,12 @@
 import serializeToDeterministicJson from 'json-stringify-deterministic'
 
-import { SocialDbService } from '../social-db/social-db.service'
+import { SocialDbService, Value } from '../social-db/social-db.service'
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
 import { UserLinkRepository } from '../user-link/user-link.repository'
 import { LinkIndexRules, IndexObject, LinkedDataByAccount } from './link-db.entity'
+import { DocumentId } from '../document/document.entity'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -27,40 +28,32 @@ export class LinkDbService {
   async set(
     mutationId: MutationId,
     appId: AppId,
+    docId: DocumentId | null,
     context: TransferableContext, // ToDo: replace with IContextNode?
     dataByAccount: LinkedDataByAccount,
     indexRules: LinkIndexRules = DefaultIndexRules
   ): Promise<void> {
-    const accounts = Object.keys(dataByAccount)
+    const preparedValue = await this.prepareSet(
+      mutationId,
+      appId,
+      docId,
+      context,
+      dataByAccount,
+      indexRules
+    )
 
-    // ToDo: implement multiple accounts
-    if (accounts.length !== 1) {
-      throw new Error('Only one account can be written at a time')
-    }
-
-    const [accountId] = accounts
-
-    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, indexRules, context)
-    const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
-
-    const keys = [accountId, SettingsKey, ProjectIdKey, ContextLinkKey, index]
-
-    const dataToStore = {
-      [DataKey]: serializeToDeterministicJson(dataByAccount[accountId]),
-      [IndexKey]: indexObject,
-    }
-
-    await this._socialDb.set(SocialDbService.buildNestedData(keys, dataToStore))
+    await this._socialDb.set(preparedValue)
   }
 
   async get(
     mutationId: MutationId,
     appId: AppId,
+    docId: DocumentId | null,
     context: TransferableContext,
     accountIds: string[] | string = [WildcardKey], // from any user by default
     indexRules: LinkIndexRules = DefaultIndexRules // use context id as index by default
   ): Promise<LinkedDataByAccount> {
-    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, indexRules, context)
+    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
     const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
 
     accountIds = Array.isArray(accountIds) ? accountIds : [accountIds]
@@ -92,20 +85,59 @@ export class LinkDbService {
     return dataByAuthor
   }
 
+  async prepareSet(
+    mutationId: MutationId,
+    appId: AppId,
+    docId: DocumentId | null,
+    context: TransferableContext, // ToDo: replace with IContextNode?
+    dataByAccount: LinkedDataByAccount,
+    indexRules: LinkIndexRules = DefaultIndexRules
+  ): Promise<Value> {
+    const accounts = Object.keys(dataByAccount)
+
+    // ToDo: implement multiple accounts
+    if (accounts.length !== 1) {
+      throw new Error('Only one account can be written at a time')
+    }
+
+    const [accountId] = accounts
+
+    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
+    const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
+
+    const keys = [accountId, SettingsKey, ProjectIdKey, ContextLinkKey, index]
+
+    const dataToStore = {
+      [DataKey]: serializeToDeterministicJson(dataByAccount[accountId]),
+      [IndexKey]: indexObject,
+    }
+
+    return SocialDbService.buildNestedData(keys, dataToStore)
+  }
+
   static _buildLinkIndex(
     mutationId: MutationId,
     appId: AppId,
+    documentId: DocumentId | null,
     indexRules: LinkIndexRules,
     context: TransferableContext
   ): IndexObject {
-    // MutationId is a part of the index.
-    // It means that a data of the same application is different in different mutations
-
-    return {
-      mutationId,
-      appId,
+    const index: IndexObject = {
       context: LinkDbService._buildIndexedContextValues(indexRules, context),
     }
+
+    // ToDo: non-obvious indexing. Documents are mutation-independent
+    if (documentId) {
+      // Document can be reused in different mutations and apps
+      index.documentId = documentId
+    } else {
+      // MutationId is a part of the index.
+      // It means that a data of the same application is different in different mutations
+      index.mutationId = mutationId
+      index.appId = appId
+    }
+
+    return index
   }
 
   static _buildIndexedContextValues(indexes: any, values: any): any {

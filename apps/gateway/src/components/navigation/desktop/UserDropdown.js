@@ -1,15 +1,15 @@
-import React, { useCallback } from "react";
-import { Widget, useNear, useAccount } from "near-social-vm";
-import styled from "styled-components";
-import { User } from "../../icons/User";
-import { LogOut } from "../../icons/LogOut";
-import { Withdraw } from "../../icons/Withdraw";
-import { NavLink } from "react-router-dom";
-import PretendModal from "../PretendModal";
-import { Pretend } from "../../icons/Pretend";
-import { StopPretending } from "../../icons/StopPretending";
-import { QR } from "../../icons/QR";
-import MobileQRModal from "../MobileQRModal";
+import React, { useCallback } from 'react'
+import { Widget, useNear, useAccount } from 'near-social-vm'
+import styled from 'styled-components'
+import { User } from '../../icons/User'
+import { LogOut } from '../../icons/LogOut'
+import { Withdraw } from '../../icons/Withdraw'
+import { NavLink } from 'react-router-dom'
+import PretendModal from '../PretendModal'
+import { Pretend } from '../../icons/Pretend'
+import { StopPretending } from '../../icons/StopPretending'
+import { QR } from '../../icons/QR'
+import MobileQRModal from '../MobileQRModal'
 
 const StyledDropdown = styled.div`
   button,
@@ -92,18 +92,18 @@ const StyledDropdown = styled.div`
       }
     }
   }
-`;
+`
 
 export function UserDropdown(props) {
-  const near = useNear();
-  const account = useAccount();
+  const near = useNear()
+  const account = useAccount()
 
   const withdrawStorage = useCallback(async () => {
-    await near.contract.storage_withdraw({}, undefined, "1");
-  }, [near]);
+    await near.contract.storage_withdraw({}, undefined, '1')
+  }, [near])
 
-  const [showPretendModal, setShowPretendModal] = React.useState(false);
-  const [showMobileQR, setShowMobileQR] = React.useState(false);
+  const [showPretendModal, setShowPretendModal] = React.useState(false)
+  const [showMobileQR, setShowMobileQR] = React.useState(false)
 
   return (
     <>
@@ -119,8 +119,8 @@ export function UserDropdown(props) {
             src={props.widgets.profileImage}
             props={{
               accountId: account.accountId,
-              className: "d-inline-block",
-              style: { width: "40px", height: "40px" },
+              className: 'd-inline-block',
+              style: { width: '40px', height: '40px' },
             }}
           />
           <div className="profile-info">
@@ -135,7 +135,7 @@ export function UserDropdown(props) {
         <ul
           className="dropdown-menu"
           aria-labelledby="dropdownMenu2222"
-          style={{ minWidth: "fit-content" }}
+          style={{ minWidth: 'fit-content' }}
         >
           <li>
             <NavLink
@@ -148,11 +148,7 @@ export function UserDropdown(props) {
             </NavLink>
           </li>
           <li>
-            <button
-              className="dropdown-item"
-              type="button"
-              onClick={() => withdrawStorage()}
-            >
+            <button className="dropdown-item" type="button" onClick={() => withdrawStorage()}>
               <Withdraw />
               Withdraw {props.availableStorage.div(1000).toFixed(2)}kb
             </button>
@@ -194,11 +190,7 @@ export function UserDropdown(props) {
             </>
           )}
           <li>
-            <button
-              className="dropdown-item"
-              type="button"
-              onClick={() => props.logOut()}
-            >
+            <button className="dropdown-item" type="button" onClick={() => props.logOut()}>
               <LogOut />
               Sign Out
             </button>
@@ -221,5 +213,5 @@ export function UserDropdown(props) {
         />
       )}
     </>
-  );
+  )
 }

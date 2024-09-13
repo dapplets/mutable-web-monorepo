@@ -20,8 +20,8 @@ export async function onRequest({ request, next, env }) {
 </sitemapindex>`,
     {
       headers: {
-        "content-type": "application/xml;charset=UTF-8",
+        'content-type': 'application/xml;charset=UTF-8',
       },
     }
-  );
+  )
 }
