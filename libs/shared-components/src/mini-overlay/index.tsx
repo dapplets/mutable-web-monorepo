@@ -488,12 +488,11 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
         }}
         open
         style={{ boxShadow: 'none', background: 'none' }}
-        background={'none'}
         mask={false}
         rootStyle={{ boxShadow: 'none', background: 'none' }}
         getContainer={() => {
           if (!overlayRef.current) return
-          return overlayRef.current
+          return overlayRef.current as any
         }}
       >
         <SidePanelWrapper
