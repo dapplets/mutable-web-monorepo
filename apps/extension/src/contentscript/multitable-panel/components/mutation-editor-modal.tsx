@@ -507,7 +507,6 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           mode={mode}
           onClose={() => {
             setOpenConfirm(false)
-            onClose
           }}
           editingMutation={editingMutation}
           handleRevertClick={handleRevertClick}

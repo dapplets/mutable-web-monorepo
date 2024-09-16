@@ -1,5 +1,4 @@
 import { Mutation, useMutableWeb } from '@mweb/engine'
-
 import React, { FC, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
@@ -8,8 +7,6 @@ import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
-
-import { Input } from './input'
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
@@ -22,21 +19,18 @@ const ModalConfirmWrapper = styled.div`
   gap: 10px;
   border-radius: 10px;
   font-family: sans-serif;
-  border: 1px solid #02193a;
-  background: #f8f9ff;
-  width: 400px;
+  background: #fff;
+  width: 300px;
   max-height: 70vh;
+  z-index: 5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-`
+  box-shadow: 0px 5px 11px 0px rgba(2, 25, 58, 0.1), 0px 19px 19px 0px rgba(2, 25, 58, 0.09),
+    0px 43px 26px 0px rgba(2, 25, 58, 0.05), 0px 77px 31px 0px rgba(2, 25, 58, 0.01),
+    0px 120px 34px 0px rgba(2, 25, 58, 0);
 
-const Close = styled.span`
-  cursor: pointer;
-  svg {
-    margin: 0;
-  }
-  &:hover {
-    opacity: 0.5;
+  input[type='checkbox'] {
+    accent-color: #384bff;
   }
 `
 
@@ -59,74 +53,169 @@ const HeaderEditor = styled.div`
 
 const HeaderTitle = styled.div`
   color: #02193a;
-`
-
-const AppsList = styled.div`
-  overflow: hidden;
-  overflow-y: auto;
-  max-height: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  overscroll-behavior: contain;
-
-  &::-webkit-scrollbar {
-    cursor: pointer;
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgb(244 244 244);
-    background: linear-gradient(
-      90deg,
-      rgb(244 244 244 / 0%) 10%,
-      rgb(227 227 227 / 100%) 50%,
-      rgb(244 244 244 / 0%) 90%
-    );
-  }
-
-  &::-webkit-scrollbar-thumb {
-    width: 4px;
-    height: 2px;
-    background: #384bff;
-    border-radius: 2px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
-  }
+  width: 100%;
+  text-align: center;
 `
 
 const ButtonsBlock = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  button {
+    width: 125px;
+  }
 `
 
-const BlurredBackground = styled.div`
+const ImgWrapper = styled.div`
+  width: 42px;
+  height: 42px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`
+
+const CardWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+`
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 184px;
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #02193a;
+    margin: 0;
+  }
+  span {
+    font-size: 10px;
+    color: #7a818b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`
+
+const Label = styled.div`
+  color: #7a818b;
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+`
+
+const FloatingLabelContainerArea = styled.div`
+  background: #f8f9ff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  border-radius: 10px;
+`
+const StyledLabel = styled.label`
+  font-size: 10px;
+  color: #bbccd0;
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgb(255 255 255 / 75%);
-  backdrop-filter: blur(5px);
-  border-radius: 9px;
-  z-index: 3;
 `
 
-const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
+const StyledTextarea = styled.textarea`
+  padding: 25px 10px 10px;
+  background: inherit;
+  color: #02193a;
+  line-height: 100%;
+  font-size: 13px;
+  border-radius: 10px;
+  width: 100%;
+  outline: none;
+  height: 110px;
+  position: relative;
+  border: none;
+
+  &::-webkit-resizer {
+    display: none;
+  }
+
+  &:focus + label,
+  &:not(:placeholder-shown) + label {
+    height: 25px;
+    width: 99%;
+    background: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    top: 0;
+    left: 10px;
+    font-size: 12px;
+  }
+`
+
+const CheckboxBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  span {
+    font-size: 12px;
+    color: #02193a;
+  }
+`
+
+const CheckboxInput = styled.input`
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  border: 1px solid #384bff;
+`
+
+const FloatingLabelContainer = styled.div`
+  background: #f8f9ff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  width: 184px;
+`
+const StyledInput = styled.input`
+  padding: 20px 10px 10px 10px;
+  background: inherit;
+  color: #02193a;
+  line-height: 100%;
+  font-size: 12px;
+  border-radius: 10px;
+  width: 100%;
+  outline: none;
+  border: none;
+
+  &:focus + label,
+  &:not(:placeholder-shown) + label {
+    top: 0.5rem;
+    font-size: 10px;
+    color: #bbccd0;
+    left: 10px;
+  }
+`
+
+const PopupIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
     <path
-      d="M21 9L9 21"
-      stroke="#02193A"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M9.33301 10.5L12.833 7L9.33301 3.5"
+      stroke="#7A818B"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
     <path
-      d="M9 9L21 21"
-      stroke="#02193A"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M4.66699 3.5L1.16699 7L4.66699 10.5"
+      stroke="#7A818B"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
   </svg>
 )
@@ -198,6 +287,8 @@ export const ModalConfirm: FC<Props> = ({
   const [alert, setAlert] = useState<IAlert | null>(null)
   const { engine } = useMutableWeb()
 
+  console.log(editingMutation)
+
   return (
     <ModalConfirmWrapper data-testid="popup-confirm">
       <HeaderEditor>
@@ -206,44 +297,181 @@ export const ModalConfirm: FC<Props> = ({
           {mode === MutationModalMode.Editing ? 'Publish your item' : null}
           {mode === MutationModalMode.Forking ? 'Publish as a fork' : null}
         </HeaderTitle>
-        <Close onClick={onClose}>
-          <CloseIcon />
-        </Close>
       </HeaderEditor>
-
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
-      <Image
-        image={editingMutation.metadata.image}
-        fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-        alt={editingMutation.metadata.name}
-      />
-      <Input
-        label="Mutation ID"
-        value={editingMutation.id}
-        placeholder="dapplets.near/mutation/web"
-        readonly
-      />
+      {mode === MutationModalMode.Creating ? (
+        <>
+          <Label>my Item</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={editingMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={editingMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{editingMutation.metadata.name}</p>
+              <span>{editingMutation.id}</span>
+            </TextWrapper>
+            <div>
+              <PopupIcon />
+            </div>
+          </CardWrapper>
 
-      <Input
-        label="Mutation Name"
-        value={editingMutation.metadata.name ?? ''}
-        placeholder="My Mutation"
-        readonly
-      />
+          <FloatingLabelContainerArea>
+            <StyledTextarea
+              id={'description'}
+              value={''}
+              onChange={() => {
+                // todo: onChange
+              }}
+            />
+            <StyledLabel htmlFor={'description'}>Description</StyledLabel>
+          </FloatingLabelContainerArea>
+        </>
+      ) : null}
+
+      {mode === MutationModalMode.Forking ? (
+        <>
+          <Label>from</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={editingMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={editingMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{editingMutation.metadata.name}</p>
+              <span>{editingMutation.id}</span>
+            </TextWrapper>
+            <div>
+              <PopupIcon />
+            </div>
+          </CardWrapper>
+
+          <CheckboxBlock>
+            <span>Ask Origin to apply changes</span>
+            <CheckboxInput
+              type="checkbox"
+              checked={true}
+              onChange={
+                () => {}
+                // todo: need onChange
+              }
+            />
+          </CheckboxBlock>
+          <Label>As your item</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={editingMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={editingMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <FloatingLabelContainer>
+              <StyledInput
+                id={'title'}
+                type={'text'}
+                value={''}
+                onChange={(e) => {
+                  // todo: need onChange
+                }}
+              />
+              <StyledLabel htmlFor={'title'}>Name</StyledLabel>
+            </FloatingLabelContainer>
+            <div>
+              <PopupIcon />
+            </div>
+          </CardWrapper>
+
+          <FloatingLabelContainerArea>
+            <StyledTextarea
+              id={'description'}
+              value={''}
+              onChange={() => {
+                // todo: onChange
+              }}
+            />
+            <StyledLabel htmlFor={'description'}>Description</StyledLabel>
+          </FloatingLabelContainerArea>
+        </>
+      ) : null}
+
+      {mode === MutationModalMode.Editing ? (
+        <>
+          <Label>my Item</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={editingMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={editingMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{editingMutation.metadata.name}</p>
+              <span>{editingMutation.id}</span>
+            </TextWrapper>
+            <div>
+              <PopupIcon />
+            </div>
+          </CardWrapper>
+
+          <Label>Originally Forked from</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              {/* todo: Originally Forked from Data */}
+              <Image
+                image={editingMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={editingMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{editingMutation.metadata.name}</p>
+              <span>{editingMutation.id}</span>
+            </TextWrapper>
+            <div>
+              <PopupIcon />
+            </div>
+          </CardWrapper>
+
+          <CheckboxBlock>
+            <span>Ask Origin to apply changes</span>
+            <CheckboxInput
+              type="checkbox"
+              checked={true}
+              onChange={
+                () => {}
+                // todo: need onChange
+              }
+            />
+          </CheckboxBlock>
+          <FloatingLabelContainerArea>
+            <StyledTextarea
+              id={'description'}
+              value={''}
+              onChange={() => {
+                // todo: onChange
+              }}
+            />
+            <StyledLabel htmlFor={'description'}>Description</StyledLabel>
+          </FloatingLabelContainerArea>
+        </>
+      ) : null}
 
       <ButtonsBlock>
         <Button onClick={handleRevertClick}>Cancel</Button>
         {!isFormDisabled ? (
-          <BsButton
-            onClick={handleSaveClick}
-            style={{ width: 175, height: 42, borderRadius: 10 }}
-            variant="primary"
-            disabled
-          >
-            Do it!
+          <BsButton onClick={handleSaveClick} variant="primary" disabled>
+            {mode === MutationModalMode.Forking ? 'Fork it!' : 'Do it!'}
           </BsButton>
         ) : (
-          <BsButton style={{ width: 175, height: 42, borderRadius: 10 }} variant="primary" disabled>
+          <BsButton variant="primary" disabled>
             <BsSpinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />{' '}
             Sending...
           </BsButton>
