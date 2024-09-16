@@ -5,16 +5,42 @@ import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/Image'
 import Profile, { IWalletConnect } from './Profile'
-import { Button } from 'antd'
+import { Button, Drawer } from 'antd'
 import OverlayWrapper from './OverlayWrapper'
 
+const WrapperDriver = styled.div<{ $isOpen: boolean }>`
+  display: block;
+  position: relative;
+
+  .sideWrapper {
+    z-index: 6000;
+    box-shadow: none;
+    width: min-content !important;
+    top: 10px;
+    transition: all 0.2s;
+    transform: ${(props) => (props.$isOpen ? 'translateX(-340px)' : 'translateX(0)')};
+  }
+
+  .sideContent {
+    position: relative;
+    overflow: visible;
+    padding: 0;
+    width: 58px;
+
+    .ant-drawer-body {
+      overflow: visible;
+      padding: 0;
+      width: 58px;
+    }
+  }
+`
+
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
-  position: fixed;
+  position: absolute;
   z-index: 6000;
   display: flex;
   width: 58px;
   top: 55px;
-  right: 0;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -428,7 +454,16 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   children,
   trackingRefs = new Set(),
 }) => {
+  const loggedInAccountId = useAccountId()
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
   const [open, setOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [isProfileOpen, setProfileOpen] = useState(false)
+
+  trackingRefs.add(rootRef)
+  trackingRefs.add(overlayRef)
 
   const showDrawer = () => {
     setOpen(true)
@@ -438,94 +473,103 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
     setOpen(false)
   }
 
-  const [isOpen, setIsOpen] = useState(false)
-  const [isProfileOpen, setProfileOpen] = useState(false)
-  const loggedInAccountId = useAccountId()
-
-  const rootRef = useRef<HTMLDivElement>(null)
-  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
-  trackingRefs.add(rootRef)
-
   const handleMutationIconClick = () => {
     setProfileOpen((val) => !val)
   }
 
   const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
+
   return (
-    <>
-      <SidePanelWrapper
-        ref={rootRef}
-        $isApps={mutationApps.length > 0}
-        data-mweb-context-type="mweb-overlay"
-        data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
-        data-mweb-context-level="system"
+    <WrapperDriver $isOpen={open} ref={overlayRef}>
+      <Drawer
+        classNames={{
+          wrapper: 'sideWrapper',
+          content: 'sideContent',
+        }}
+        open
+        style={{ boxShadow: 'none', background: 'none' }}
+        background={'none'}
+        mask={false}
+        rootStyle={{ boxShadow: 'none', background: 'none' }}
+        getContainer={() => {
+          if (!overlayRef.current) return
+          return overlayRef.current
+        }}
       >
-        <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
-          <MutationIconWrapper
-            $isButton={isMutationIconButton}
-            title={baseMutation?.metadata.name}
-            onClick={handleMutationIconClick}
-            ref={openCloseWalletPopupRef}
-            data-mweb-context-type="mweb-overlay"
-            data-mweb-context-parsed={JSON.stringify({
-              id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
-            })}
-            data-mweb-context-level="system"
-          >
-            {baseMutation?.metadata.image ? (
-              <Image image={baseMutation?.metadata.image} />
-            ) : (
-              <MutationFallbackIcon />
-            )}
-            <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
-          </MutationIconWrapper>
-        </TopBlock>
-        {isOpen || !mutationApps.length ? null : (
-          <ButtonWrapper
-            data-mweb-insertion-point="mweb-actions-panel"
-            data-mweb-layout-manager="vertical"
-          >
-            <Button block type="primary" onClick={showDrawer}>
-              <IconBell />
-            </Button>
-          </ButtonWrapper>
-        )}
-        {isOpen ? <AppsWrapper>{children}</AppsWrapper> : null}
-        {mutationApps.length > 0 ? (
-          <ButtonOpenWrapper
-            $open={isOpen || mutationApps.length > 0}
-            data-mweb-context-type="mweb-overlay"
-            data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
-            data-mweb-context-level="system"
-          >
-            <ButtonOpen
-              $open={isOpen}
-              className={isOpen ? 'svgTransform' : ''}
-              onClick={() => {
-                onClose()
-                setIsOpen(!isOpen)
-              }}
+        <SidePanelWrapper
+          ref={rootRef}
+          $isApps={mutationApps.length > 0}
+          data-mweb-context-type="mweb-overlay"
+          data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
+          data-mweb-context-level="system"
+        >
+          <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
+            <MutationIconWrapper
+              $isButton={isMutationIconButton}
+              title={baseMutation?.metadata.name}
+              onClick={handleMutationIconClick}
+              ref={openCloseWalletPopupRef}
+              data-mweb-context-type="mweb-overlay"
+              data-mweb-context-parsed={JSON.stringify({
+                id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
+              })}
+              data-mweb-context-level="system"
             >
-              <ArrowSvg />
-            </ButtonOpen>
-            <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
-          </ButtonOpenWrapper>
-        ) : null}
-        {isProfileOpen && isMutationIconButton ? (
-          <Profile
-            accountId={loggedInAccountId}
-            closeProfile={() => {
-              setProfileOpen(false)
-            }}
-            connectWallet={connectWallet}
-            disconnectWallet={disconnectWallet}
-            nearNetwork={nearNetwork}
-            trackingRefs={trackingRefs}
-            openCloseWalletPopupRef={openCloseWalletPopupRef}
-          />
-        ) : null}
-      </SidePanelWrapper>
-      <OverlayWrapper apps={mutationApps.length > 0} onClose={onClose} open={open} />
-    </>
+              {baseMutation?.metadata.image ? (
+                <Image image={baseMutation?.metadata.image} />
+              ) : (
+                <MutationFallbackIcon />
+              )}
+              <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
+            </MutationIconWrapper>
+          </TopBlock>
+          {isOpen || !mutationApps.length ? null : (
+            <ButtonWrapper
+              data-mweb-insertion-point="mweb-actions-panel"
+              data-mweb-layout-manager="vertical"
+            >
+              <Button block type="primary" onClick={showDrawer}>
+                <IconBell />
+              </Button>
+            </ButtonWrapper>
+          )}
+          {isOpen ? <AppsWrapper>{children}</AppsWrapper> : null}
+          {mutationApps.length > 0 ? (
+            <ButtonOpenWrapper
+              $open={isOpen || mutationApps.length > 0}
+              data-mweb-context-type="mweb-overlay"
+              data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
+              data-mweb-context-level="system"
+            >
+              <ButtonOpen
+                $open={isOpen}
+                className={isOpen ? 'svgTransform' : ''}
+                onClick={() => {
+                  onClose()
+                  setIsOpen(!isOpen)
+                }}
+              >
+                <ArrowSvg />
+              </ButtonOpen>
+              <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
+            </ButtonOpenWrapper>
+          ) : null}
+          {isProfileOpen && isMutationIconButton ? (
+            <Profile
+              accountId={loggedInAccountId}
+              closeProfile={() => {
+                setProfileOpen(false)
+              }}
+              connectWallet={connectWallet}
+              disconnectWallet={disconnectWallet}
+              nearNetwork={nearNetwork}
+              trackingRefs={trackingRefs}
+              openCloseWalletPopupRef={openCloseWalletPopupRef}
+            />
+          ) : null}
+        </SidePanelWrapper>
+      </Drawer>
+      <OverlayWrapper apps={mutationApps.length > 0} onClose={onClose} open={open}></OverlayWrapper>
+    </WrapperDriver>
   )
 }

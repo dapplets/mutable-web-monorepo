@@ -38,7 +38,7 @@ const IconNotificationClose = () => (
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   position: fixed;
-  z-index: 5000;
+  z-index: 6000;
   display: flex;
   width: 0;
   bottom: 0;
@@ -88,9 +88,10 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     }
   }
 `
-const OverlayContent = styled.div`
+const OverlayContent = styled.div<{ $isOpen: boolean }>`
   position: relative;
-  height: calc(100vh - 240px);
+  display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+  height: 100vh;
   width: 340px;
   right: 0;
   bottom: 0;
@@ -105,10 +106,13 @@ const OverlayContent = styled.div`
     0px 25px 15px 0px rgba(71, 65, 252, 0.03),
     0px 44px 17px 0px rgba(71, 65, 252, 0.01),
     0px 68px 19px 0px rgba(71, 65, 252, 0);
-  border-radius: 10px;
 
   .driwingContent {
     background: #f8f9ff;
+
+    .ant-drawer-close {
+      display: none;
+    }
 
     .ant-drawer-header {
       border-bottom: none;
@@ -141,6 +145,7 @@ export interface IOverlayWrapperProps {
   apps: boolean
   onClose: () => void
   open: boolean
+  // children: any
 }
 
 const getRandomNotification = (): GenericNotification => {
@@ -219,7 +224,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open }) => {
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
-      <OverlayContent data-mweb-insertion-point="mweb-overlay">
+      <OverlayContent $isOpen={open} data-mweb-insertion-point="mweb-overlay">
         <Drawer
           title={
             <Space direction="vertical">
@@ -246,7 +251,6 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open }) => {
             </Space>
           }
           placement="right"
-          closable={false}
           onClose={onClose}
           open={open}
           getContainer={false}
@@ -261,6 +265,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open }) => {
         >
           {/* todo: I don’t know how to separate the old ones from the new ones  */}
         </Drawer>
+        {/* {children} */}
       </OverlayContent>
     </OverlayWrapperBlock>
   )
