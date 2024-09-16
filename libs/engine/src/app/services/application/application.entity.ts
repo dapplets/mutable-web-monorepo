@@ -1,3 +1,4 @@
+import { EntityMetadata } from '../../common/entity-metadata'
 import { DocumentId } from '../document/document.entity'
 import { ParserConfigId } from '../parser-config/parser-config.entity'
 import { Target } from '../target/target.entity'
@@ -21,13 +22,7 @@ export type AppMetadata = {
   targets: AppMetadataTarget[]
   parsers?: typeof AnyParserValue | ParserConfigId[]
   controller?: string // BOS Widget ID
-  metadata: {
-    name?: string
-    description?: string
-    image?: {
-      ipfs_cid?: string
-    }
-  }
+  metadata: EntityMetadata<AppId>
   permissions: {
     documents: boolean
   }

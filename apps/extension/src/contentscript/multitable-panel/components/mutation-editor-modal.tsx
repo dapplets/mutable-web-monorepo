@@ -250,7 +250,14 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     if (mode === MutationModalMode.Forking && loggedInAccountId) {
       const [, , mutLocalId] = preOriginalMutation.id.split('/')
       const newId = `${loggedInAccountId}/mutation/${mutLocalId}`
-      setOriginalMutation(mergeDeep(cloneDeep(preOriginalMutation), { id: newId }))
+      setOriginalMutation(
+        mergeDeep(cloneDeep(preOriginalMutation), {
+          id: newId,
+          metadata: {
+            fork_of: preOriginalMutation.id,
+          },
+        })
+      )
     } else {
       setOriginalMutation(preOriginalMutation)
     }

@@ -6,14 +6,12 @@ import { Highlighter } from './highlighter'
 const DEFAULT_INACTIVE_BORDER_COLOR = '#384BFF4D' // light blue
 const DEFAULT_CHILDREN_BORDER_STYLE = 'dashed'
 
-const getElementDepth = (el: Element | ShadowRoot | null | undefined) => {
+const getElementDepth = (el: Element | Node | ShadowRoot | null | undefined) => {
   let depth = 0
-
   while (el) {
     depth++
-    el = el instanceof ShadowRoot ? el.host : el.parentElement
+    el = el instanceof ShadowRoot ? el.host : el.parentNode
   }
-
   return depth
 }
 
