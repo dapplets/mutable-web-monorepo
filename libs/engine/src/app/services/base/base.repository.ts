@@ -190,8 +190,6 @@ export class BaseRepository<T extends Base> {
   private _makeItemFromSocialDb(id: EntityId, raw: Value): T {
     const entity = new this.EntityType()
 
-    console.log('convert', { id, raw, entity })
-
     entity.id = id
 
     // for each property in the entity type get column metadata
