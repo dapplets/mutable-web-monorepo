@@ -120,7 +120,8 @@ export class UserLinkSerivce {
 
     // ToDo: this limitation on the frontend side only
     if (target.injectOnce) {
-      const existingLinks = await this.userLinkRepository.getLinksByIndex(indexObject)
+      const index = UserLinkRepository._hashObject(indexObject)
+      const existingLinks = await this.userLinkRepository.getItemsByIndex({ indexes: [index] })
       if (existingLinks.length > 0) {
         throw new Error(
           `The widget is injected already. The "injectOnce" parameter limits multiple insertion of widgets`
@@ -156,7 +157,8 @@ export class UserLinkSerivce {
     context: IContextNode
   ): Promise<BosUserLink[]> {
     const indexObject = UserLinkSerivce._buildLinkIndex(appId, mutationId, target, context)
-    const indexedLinks = await this.userLinkRepository.getLinksByIndex(indexObject)
+    const index = UserLinkRepository._hashObject(indexObject)
+    const indexedLinks = await this.userLinkRepository.getItemsByIndex({ indexes: [index] })
 
     return indexedLinks.map((link) => ({
       id: link.id,

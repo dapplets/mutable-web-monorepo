@@ -36,6 +36,7 @@ export const useUserLinks = (context: IContextNode) => {
       )
       setUserLinks(links)
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err)
       } else {

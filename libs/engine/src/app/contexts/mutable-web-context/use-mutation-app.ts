@@ -28,6 +28,7 @@ export function useMutationApp(appInstanceId: string) {
         )
       )
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {
@@ -59,6 +60,7 @@ export function useMutationApp(appInstanceId: string) {
         )
       )
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

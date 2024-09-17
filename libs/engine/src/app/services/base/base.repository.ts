@@ -12,6 +12,7 @@ const WildcardKey = '*'
 const RecursiveWildcardKey = '**'
 const KeyDelimiter = '/'
 const EmptyValue = ''
+const SelfKey = ''
 
 // ToDo:
 type EntityId = string
@@ -152,6 +153,8 @@ export class BaseRepository<T extends Base> {
   private _makeItemFromSocialDb(id: EntityId, raw: Value): T {
     const entity = new this.EntityType()
 
+    console.log('convert', { id, raw, entity })
+
     entity.id = id
 
     // for each property in the entity type get column metadata
@@ -169,10 +172,12 @@ export class BaseRepository<T extends Base> {
       if (type === ColumnType.AsIs) {
         entity[entityKey] = transformer?.from ? transformer.from(raw[rawKey]) : raw[rawKey]
       } else if (type === ColumnType.Json) {
-        entity[entityKey] = raw[rawKey]
+        const json = typeof raw[rawKey] === 'object' ? raw[rawKey][SelfKey] : raw[rawKey]
+
+        entity[entityKey] = json
           ? transformer?.from
-            ? transformer.from(JSON.parse(raw[rawKey]))
-            : JSON.parse(raw[rawKey])
+            ? transformer.from(JSON.parse(json))
+            : JSON.parse(json)
           : entity[entityKey]
       } else if (type === ColumnType.Set) {
         entity[entityKey] = transformer?.from
@@ -180,8 +185,6 @@ export class BaseRepository<T extends Base> {
           : BaseRepository._makeSetFromSocialDb(raw[rawKey])
       }
     }
-
-    console.log('convert', { id, raw, entity })
 
     return entity
   }

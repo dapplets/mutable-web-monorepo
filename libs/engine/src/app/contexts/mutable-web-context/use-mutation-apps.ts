@@ -21,6 +21,7 @@ export const useMutationApps = (engine: Engine, mutation?: Mutation | null) => {
 
       setMutationApps(apps)
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

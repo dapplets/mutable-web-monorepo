@@ -4,42 +4,25 @@ import { IndexedLink, LinkIndexObject, UserLinkId } from './user-link.entity'
 import serializeToDeterministicJson from 'json-stringify-deterministic'
 import { sha256 } from 'js-sha256'
 import { NearSigner } from '../near-signer/near-signer.service'
+import { BaseRepository } from '../base/base.repository'
 
 const ProjectIdKey = 'dapplets.near'
 const SettingsKey = 'settings'
 const LinkKey = 'link'
-const WildcardKey = '*'
 const RecursiveWildcardKey = '**'
-const IndexesKey = 'indexes'
 const KeyDelimiter = '/'
 
-export class UserLinkRepository {
+export class UserLinkRepository extends BaseRepository<IndexedLink> {
   constructor(
-    private _socialDb: SocialDbService,
+    socialDb: SocialDbService,
     private _signer: NearSigner // ToDo: is it necessary dependency injection?
-  ) {}
+  ) {
+    super(IndexedLink, socialDb)
+  }
 
   @Cacheable({ ttl: 60000 })
-  async getLinksByIndex(indexObject: LinkIndexObject): Promise<IndexedLink[]> {
-    const index = UserLinkRepository._hashObject(indexObject)
-
-    const key = [
-      WildcardKey, // from any user
-      SettingsKey,
-      ProjectIdKey,
-      LinkKey,
-      WildcardKey, // any user link id
-      IndexesKey,
-      index,
-    ].join(KeyDelimiter)
-
-    // ToDo: batch requests
-    const resp = await this._socialDb.keys([key])
-
-    return resp.map((key) => {
-      const [authorId, , , , id] = key.split(KeyDelimiter)
-      return { id, authorId }
-    })
+  async getItemsByIndex(entity: Partial<IndexedLink>): Promise<IndexedLink[]> {
+    return super.getItemsByIndex(entity)
   }
 
   async createLink(indexObject: LinkIndexObject): Promise<IndexedLink> {
@@ -59,12 +42,14 @@ export class UserLinkRepository {
       },
     }
 
-    await this._socialDb.set(SocialDbService.buildNestedData(keys, storedAppLink))
+    await this.socialDb.set(SocialDbService.buildNestedData(keys, storedAppLink))
 
-    return {
-      id: linkId,
+    return IndexedLink.create({
+      id: `${accountId}/link/${linkId}`,
       authorId: accountId,
-    }
+      localId: linkId,
+      indexes: [index],
+    })
   }
 
   async deleteUserLink(linkId: UserLinkId): Promise<void> {
@@ -76,7 +61,7 @@ export class UserLinkRepository {
 
     const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId, RecursiveWildcardKey]
 
-    await this._socialDb.delete([keys.join(KeyDelimiter)])
+    await this.socialDb.delete([keys.join(KeyDelimiter)])
   }
 
   /**
