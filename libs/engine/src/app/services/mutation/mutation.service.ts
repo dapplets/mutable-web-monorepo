@@ -111,12 +111,7 @@ export class MutationService {
       window.location.hostname
     )
 
-    return {
-      ...mutation,
-      settings: {
-        lastUsage,
-      },
-    }
+    return (mutation as MutationWithSettings).copy({ settings: { lastUsage } })
   }
 
   async prepareSaveMutation(mutation: Mutation): Promise<Value> {

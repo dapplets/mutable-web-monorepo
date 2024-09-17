@@ -28,8 +28,8 @@ export class ParserConfigRepository {
     const parsersByKey = SocialDbService.splitObjectByDepth(queryResult, keys.length)
 
     const parsers = Object.entries(parsersByKey).map(([key, parser]: [string, any]) => {
-      const [authorId, , , , appLocalId] = key.split(KeyDelimiter)
-      const globalParserId = [authorId, ParserKey, appLocalId].join(KeyDelimiter)
+      const [authorId, , , , localId] = key.split(KeyDelimiter)
+      const globalParserId = [authorId, ParserKey, localId].join(KeyDelimiter)
 
       const config = JSON.parse(parser[SelfKey])
 

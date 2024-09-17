@@ -41,7 +41,7 @@ export class DocumentRepository {
   }
 
   async getDocumentsByAppId(globalAppId: AppId): Promise<Document[]> {
-    const [appAuthorId, , appLocalId] = globalAppId.split(KeyDelimiter)
+    const [appAuthorId, , localId] = globalAppId.split(KeyDelimiter)
 
     const keys = [
       WildcardKey, // any author id
@@ -52,7 +52,7 @@ export class DocumentRepository {
       OpenWithKey,
       appAuthorId,
       AppKey,
-      appLocalId,
+      localId,
     ]
 
     const foundKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])

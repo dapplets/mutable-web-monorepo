@@ -182,7 +182,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
         // Update last usage for selected mutation
         setMutations((prev) =>
           prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage } } : mut
+            mut.id === mutationId ? mut.copy({ settings: { ...mut.settings, lastUsage } }) : mut
           )
         )
       }
@@ -219,7 +219,9 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
         setMutations((prev) =>
           prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage: null } } : mut
+            mut.id === mutationId
+              ? mut.copy({ settings: { ...mut.settings, lastUsage: null } })
+              : mut
           )
         )
       } catch (err) {
