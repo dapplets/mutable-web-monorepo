@@ -21,27 +21,6 @@ export class ApplicationRepository extends BaseRepository<AppMetadata> {
     super(AppMetadata, socialDb)
   }
 
-  async saveApplication(
-    appMetadata: Omit<AppMetadata, 'authorId' | 'localId'>
-  ): Promise<AppMetadata> {
-    const [authorId, , localId] = appMetadata.id.split(KeyDelimiter)
-
-    const keys = [authorId, SettingsKey, ProjectIdKey, AppKey, localId]
-
-    const storedAppMetadata = {
-      [SelfKey]: JSON.stringify({
-        targets: appMetadata.targets,
-        parsers: appMetadata.parsers,
-        permissions: appMetadata.permissions,
-      }),
-      metadata: appMetadata.metadata,
-    }
-
-    await this.socialDb.set(SocialDbService.buildNestedData(keys, storedAppMetadata))
-
-    return AppMetadata.create(appMetadata)
-  }
-
   async getAppEnabledStatus(mutationId: string, appInstanceId: AppInstanceId): Promise<boolean> {
     const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appInstanceId)
     return (await this.localDb.getItem(key)) ?? true // app is active by default

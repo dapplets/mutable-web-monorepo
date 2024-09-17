@@ -1,13 +1,7 @@
 import { LocalDbService } from '../local-db/local-db.service'
-import { SocialDbService, Value } from '../social-db/social-db.service'
+import { SocialDbService } from '../social-db/social-db.service'
 import { Mutation } from './mutation.entity'
 import { BaseRepository } from '../base/base.repository'
-
-// ToDo: move to repository?
-const ProjectIdKey = 'dapplets.near'
-const SettingsKey = 'settings'
-const MutationKey = 'mutation'
-const KeyDelimiter = '/'
 
 // Local DB
 const FAVORITE_MUTATION = 'favorite-mutation'
@@ -19,30 +13,6 @@ export class MutationRepository extends BaseRepository<Mutation> {
     private localDb: LocalDbService
   ) {
     super(Mutation, socialDb)
-  }
-
-  async saveMutation(mutation: Mutation): Promise<Mutation> {
-    const preparedMutation = await this.prepareSaveMutation(mutation)
-
-    await this.socialDb.set(preparedMutation)
-
-    return mutation
-  }
-
-  async prepareSaveMutation(mutation: Mutation): Promise<Value> {
-    const [authorId, , mutationLocalId] = mutation.id.split(KeyDelimiter)
-
-    const keys = [authorId, SettingsKey, ProjectIdKey, MutationKey, mutationLocalId]
-
-    const denormalizedApps = mutation.apps.map((app) => (app.documentId ? app : app.appId))
-
-    const storedAppMetadata = {
-      metadata: mutation.metadata,
-      targets: mutation.targets ? JSON.stringify(mutation.targets) : null,
-      apps: mutation.apps ? JSON.stringify(denormalizedApps) : null,
-    }
-
-    return SocialDbService.buildNestedData(keys, storedAppMetadata)
   }
 
   async getFavoriteMutation(): Promise<string | null | undefined> {

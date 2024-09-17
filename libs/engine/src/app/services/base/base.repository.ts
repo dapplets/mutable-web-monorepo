@@ -3,6 +3,7 @@ import { SocialDbService, Value } from '../social-db/social-db.service'
 import { getEntity } from './decorators/entity'
 import { ColumnType, getColumn } from './decorators/column'
 import { mergeDeep } from '../../common/merge-deep'
+import { Transaction } from '../unit-of-work/transaction'
 
 // ToDo: parametrize?
 const ProjectIdKey = 'dapplets.near'
@@ -124,22 +125,41 @@ export class BaseRepository<T extends Base> {
     return documents
   }
 
-  async createItem(item: T): Promise<T> {
+  async createItem(item: T, tx?: Transaction): Promise<T> {
     if (await this.getItem(item.id)) {
       throw new Error('Item with that ID already exists')
     }
 
-    return this._saveItem(item)
+    await this.saveItem(item, tx)
+
+    return item
   }
 
-  async editItem(item: T): Promise<T> {
+  async editItem(item: T, tx?: Transaction): Promise<T> {
     if (!(await this.getItem(item.id))) {
       throw new Error('Item with that ID does not exist')
     }
 
-    return this._saveItem(item)
+    await this.saveItem(item, tx)
+
+    return item
   }
-  async deleteItem(id: EntityId): Promise<void> {
+
+  public async saveItem(item: T, tx?: Transaction): Promise<T> {
+    const [authorId, , localId] = item.id.split(KeyDelimiter)
+
+    const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
+
+    const convertedItem = this._makeItemToSocialDb(item)
+
+    const dataToSave = SocialDbService.buildNestedData(keys, convertedItem)
+
+    await this._commitOrQueue(dataToSave, tx)
+
+    return item
+  }
+
+  async deleteItem(id: EntityId, tx?: Transaction): Promise<void> {
     const { authorId, localId } = this._parseGlobalId(id)
 
     const keys = [
@@ -149,19 +169,21 @@ export class BaseRepository<T extends Base> {
       this._entityKey,
       localId,
       RecursiveWildcardKey, // delete all children
-    ]
+    ].join(KeyDelimiter)
 
-    await this.socialDb.delete([keys.join(KeyDelimiter)])
+    const data = await this.socialDb.get([keys])
+
+    const nullData = SocialDbService._nullifyData(data)
+
+    await this._commitOrQueue(nullData, tx)
   }
 
-  private async _saveItem(item: T): Promise<T> {
-    const [authorId, , localId] = item.id.split(KeyDelimiter)
-
-    const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
-
-    const convertedItem = this._makeItemToSocialDb(item)
-
-    return SocialDbService.buildNestedData(keys, convertedItem)
+  private async _commitOrQueue(dataToSave: Value, tx?: Transaction) {
+    if (tx) {
+      tx.queue(dataToSave)
+    } else {
+      await this.socialDb.set(dataToSave)
+    }
   }
 
   private _makeItemFromSocialDb(id: EntityId, raw: Value): T {

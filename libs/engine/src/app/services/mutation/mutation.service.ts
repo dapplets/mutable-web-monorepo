@@ -2,7 +2,8 @@ import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
 import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
 import { MutationRepository } from './mutation.repository'
-import { SocialDbService, Value } from '../social-db/social-db.service'
+import { Transaction } from '../unit-of-work/transaction'
+import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
@@ -11,7 +12,7 @@ export type SaveMutationOptions = {
 export class MutationService {
   constructor(
     private mutationRepository: MutationRepository,
-    private socialDbService: SocialDbService,
+    private unitOfWorkService: UnitOfWorkService,
     private nearConfig: { defaultMutationId: string }
   ) {}
 
@@ -79,19 +80,40 @@ export class MutationService {
       throw new Error('Mutation with that ID already exists')
     }
 
-    return this._saveMutation(mutation, options)
+    await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this.mutationRepository.createItem(mutation, tx),
+        options?.applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+      ])
+    )
+
+    return this.populateMutationWithSettings(mutation)
   }
 
   async editMutation(
     mutation: Mutation,
-    options?: SaveMutationOptions
+    options?: SaveMutationOptions,
+    tx?: Transaction
   ): Promise<MutationWithSettings> {
     // ToDo: move to provider?
     if (!(await this.mutationRepository.getItem(mutation.id))) {
       throw new Error('Mutation with that ID does not exist')
     }
 
-    return this._saveMutation(mutation, options)
+    const performTx = (tx: Transaction) =>
+      Promise.all([
+        this.mutationRepository.editItem(mutation, tx),
+        options?.applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+      ])
+
+    // reuse transaction
+    if (tx) {
+      await performTx(tx)
+    } else {
+      await this.unitOfWorkService.runInTransaction(performTx)
+    }
+
+    return this.populateMutationWithSettings(mutation)
   }
 
   async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
@@ -114,28 +136,7 @@ export class MutationService {
     return (mutation as MutationWithSettings).copy({ settings: { lastUsage } })
   }
 
-  async prepareSaveMutation(mutation: Mutation): Promise<Value> {
-    return this.mutationRepository.prepareSaveMutation(mutation)
-  }
-
-  private async _saveMutation(
-    mutation: Mutation,
-    options?: SaveMutationOptions
-  ): Promise<MutationWithSettings> {
-    const changePromises = [this.mutationRepository.prepareSaveMutation(mutation)]
-
-    if (options?.applyChangesToOrigin) {
-      changePromises.push(this._prepareApplyChangesToOrigin(mutation))
-    }
-
-    const changes = await Promise.all(changePromises)
-
-    await this.socialDbService.setMultiple(changes)
-
-    return this.populateMutationWithSettings(mutation)
-  }
-
-  private async _prepareApplyChangesToOrigin(forkedMutation: Mutation) {
+  private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {
     const originalMutationId = forkedMutation.metadata.fork_of
 
     if (!originalMutationId) {
@@ -161,10 +162,9 @@ export class MutationService {
     originalMutation.metadata.description = forkedMutation.metadata.description
     originalMutation.targets = forkedMutation.targets
 
-    const preparedOriginalMutation =
-      await this.mutationRepository.prepareSaveMutation(originalMutation)
+    await this.mutationRepository.editItem(originalMutation, tx)
 
-    return preparedOriginalMutation
+    return originalMutation
   }
 
   private static _parseMutationId(mutationId: string): { authorId: string; localId: string } {

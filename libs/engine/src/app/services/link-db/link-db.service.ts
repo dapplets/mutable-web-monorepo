@@ -1,13 +1,12 @@
 import serializeToDeterministicJson from 'json-stringify-deterministic'
-
-import { SocialDbService, Value } from '../social-db/social-db.service'
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
-import { UserLinkRepository } from '../user-link/user-link.repository'
-import { LinkIndexRules, IndexObject, LinkedDataByAccount } from './link-db.entity'
+import { LinkIndexRules, IndexObject, LinkedDataByAccount, CtxLink } from './link-db.entity'
 import { DocumentId } from '../document/document.entity'
 import { LinkDbRepository } from './link-db.repository'
+import { Transaction } from '../unit-of-work/transaction'
+import { UserLinkService } from '../user-link/user-link.service'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -15,19 +14,12 @@ const DefaultIndexRules: LinkIndexRules = {
   parsed: { id: true },
 }
 
-const ProjectIdKey = 'dapplets.near'
-const SettingsKey = 'settings'
 const ContextLinkKey = 'ctxlink'
 const WildcardKey = '*'
 const KeyDelimiter = '/'
-const DataKey = 'data'
-const IndexKey = 'index'
 
 export class LinkDbService {
-  constructor(
-    private _socialDb: SocialDbService,
-    private _linkDbRepository: LinkDbRepository
-  ) {}
+  constructor(private _linkDbRepository: LinkDbRepository) {}
 
   async set(
     mutationId: MutationId,
@@ -35,18 +27,30 @@ export class LinkDbService {
     docId: DocumentId | null,
     context: TransferableContext, // ToDo: replace with IContextNode?
     dataByAccount: LinkedDataByAccount,
-    indexRules: LinkIndexRules = DefaultIndexRules
+    indexRules: LinkIndexRules = DefaultIndexRules,
+    tx?: Transaction
   ): Promise<void> {
-    const preparedValue = await this.prepareSet(
-      mutationId,
-      appId,
-      docId,
-      context,
-      dataByAccount,
-      indexRules
-    )
+    const accounts = Object.keys(dataByAccount)
 
-    await this._socialDb.set(preparedValue)
+    // ToDo: implement multiple accounts
+    if (accounts.length !== 1) {
+      throw new Error('Only one account can be written at a time')
+    }
+
+    const [accountId] = accounts
+
+    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
+    const index = UserLinkService._hashObject(indexObject) // ToDo: the dependency is not injected
+
+    const globalId = [accountId, ContextLinkKey, index].join(KeyDelimiter)
+
+    const ctxLink = CtxLink.create({
+      id: globalId,
+      index: indexObject,
+      data: serializeToDeterministicJson(dataByAccount[accountId]),
+    })
+
+    await this._linkDbRepository.saveItem(ctxLink, tx)
   }
 
   async get(
@@ -58,7 +62,7 @@ export class LinkDbService {
     indexRules: LinkIndexRules = DefaultIndexRules // use context id as index by default
   ): Promise<LinkedDataByAccount> {
     const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
-    const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
+    const index = UserLinkService._hashObject(indexObject) // ToDo: the dependency is not injected
 
     accountIds = Array.isArray(accountIds) ? accountIds : [accountIds]
 
@@ -74,36 +78,6 @@ export class LinkDbService {
     )
 
     return dataByAuthor
-  }
-
-  async prepareSet(
-    mutationId: MutationId,
-    appId: AppId,
-    docId: DocumentId | null,
-    context: TransferableContext, // ToDo: replace with IContextNode?
-    dataByAccount: LinkedDataByAccount,
-    indexRules: LinkIndexRules = DefaultIndexRules
-  ): Promise<Value> {
-    const accounts = Object.keys(dataByAccount)
-
-    // ToDo: implement multiple accounts
-    if (accounts.length !== 1) {
-      throw new Error('Only one account can be written at a time')
-    }
-
-    const [accountId] = accounts
-
-    const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
-    const index = UserLinkRepository._hashObject(indexObject) // ToDo: the dependency is not injected
-
-    const keys = [accountId, SettingsKey, ProjectIdKey, ContextLinkKey, index]
-
-    const dataToStore = {
-      [DataKey]: serializeToDeterministicJson(dataByAccount[accountId]),
-      [IndexKey]: indexObject,
-    }
-
-    return SocialDbService.buildNestedData(keys, dataToStore)
   }
 
   static _buildLinkIndex(

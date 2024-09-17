@@ -1,19 +1,20 @@
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
+import { Transaction } from '../unit-of-work/transaction'
 import { LinkedDataByAccount } from '../link-db/link-db.entity'
 import { LinkDbService } from '../link-db/link-db.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { MutationService } from '../mutation/mutation.service'
-import { SocialDbService, Value } from '../social-db/social-db.service'
 import { Document, DocumentId } from './document.entity'
 import { DocumentRepository } from './document.repository'
+import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 
 export class DocumentSerivce {
   constructor(
     private documentRepository: DocumentRepository,
     private linkDbService: LinkDbService,
     private mutationService: MutationService,
-    private socialDbService: SocialDbService
+    private unitOfWorkService: UnitOfWorkService
   ) {}
 
   async getDocument(globalDocumentId: DocumentId): Promise<Document | null> {
@@ -24,22 +25,18 @@ export class DocumentSerivce {
     return this.documentRepository.getItemsByIndex({ openWith: [globalAppId] })
   }
 
-  async createDocument(document: Omit<Document, 'authorId' | 'localId'>): Promise<Document> {
-    if (await this.documentRepository.getItem(document.id)) {
-      throw new Error('Document with that ID already exists')
-    }
-
-    return this.documentRepository.saveDocument(document)
+  async createDocument(document: Document, tx?: Transaction): Promise<Document> {
+    return this.documentRepository.createItem(document, tx)
   }
 
-  async editMutation(document: Omit<Document, 'authorId' | 'localId'>): Promise<Document> {
-    return this.documentRepository.saveDocument(document)
+  async editMutation(document: Document): Promise<Document> {
+    return this.documentRepository.editItem(document)
   }
 
   async createDocumentWithData(
     mutationId: MutationId,
     appId: AppId,
-    document: Omit<Document, 'authorId' | 'localId'>,
+    document: Document,
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) {
@@ -64,13 +61,13 @@ export class DocumentSerivce {
 
     app.documentId = document.id
 
-    const dataToCommit = await Promise.all([
-      this.documentRepository.prepareSaveDocument(document),
-      this.mutationService.prepareSaveMutation(mutation),
-      this.linkDbService.prepareSet(mutationId, appId, document.id, ctx, dataByAccount),
-    ])
-
-    await this.socialDbService.setMultiple(dataToCommit)
+    await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this.createDocument(document, tx),
+        this.mutationService.editMutation(mutation, undefined, tx), // ToDo: undefined
+        this.linkDbService.set(mutationId, appId, document.id, ctx, dataByAccount, undefined, tx),
+      ])
+    )
 
     return { mutation }
   }
