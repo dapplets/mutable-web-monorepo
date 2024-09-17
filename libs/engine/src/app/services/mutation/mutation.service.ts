@@ -16,11 +16,12 @@ export class MutationService {
   ) {}
 
   async getMutation(mutationId: string): Promise<Mutation | null> {
-    return this.mutationRepository.getMutation(mutationId)
+    const mutation = await this.mutationRepository.getItem(mutationId)
+    return mutation
   }
 
   async getMutationsForContext(context: IContextNode): Promise<Mutation[]> {
-    const mutations = await this.mutationRepository.getMutations()
+    const mutations = await this.mutationRepository.getItems()
     return mutations.filter((mutation) =>
       mutation.targets.some((target) => TargetService.isTargetMet(target, context))
     )
@@ -74,7 +75,7 @@ export class MutationService {
     options?: SaveMutationOptions
   ): Promise<MutationWithSettings> {
     // ToDo: move to provider?
-    if (await this.mutationRepository.getMutation(mutation.id)) {
+    if (await this.mutationRepository.getItem(mutation.id)) {
       throw new Error('Mutation with that ID already exists')
     }
 
@@ -86,7 +87,7 @@ export class MutationService {
     options?: SaveMutationOptions
   ): Promise<MutationWithSettings> {
     // ToDo: move to provider?
-    if (!(await this.mutationRepository.getMutation(mutation.id))) {
+    if (!(await this.mutationRepository.getItem(mutation.id))) {
       throw new Error('Mutation with that ID does not exist')
     }
 
@@ -154,7 +155,7 @@ export class MutationService {
       throw new Error('You cannot apply changes to the origin that is not your own')
     }
 
-    const originalMutation = await this.mutationRepository.getMutation(originalMutationId)
+    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
 
     if (!originalMutation) {
       throw new Error('The origin mutation does not exist')
