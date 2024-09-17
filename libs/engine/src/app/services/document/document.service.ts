@@ -17,35 +17,33 @@ export class DocumentSerivce {
   ) {}
 
   async getDocument(globalDocumentId: DocumentId): Promise<Document | null> {
-    return this.documentRepository.getDocument(globalDocumentId)
+    return this.documentRepository.getItem(globalDocumentId)
   }
 
   async getDocumentsByAppId(globalAppId: AppId): Promise<Document[]> {
-    return this.documentRepository.getDocumentsByAppId(globalAppId)
+    return this.documentRepository.getItemsByIndex({ openWith: [globalAppId] })
   }
 
-  async createDocument(
-    document: Omit<Document, 'authorId' | 'documentLocalId'>
-  ): Promise<Document> {
-    if (await this.documentRepository.getDocument(document.id)) {
+  async createDocument(document: Omit<Document, 'authorId' | 'localId'>): Promise<Document> {
+    if (await this.documentRepository.getItem(document.id)) {
       throw new Error('Document with that ID already exists')
     }
 
     return this.documentRepository.saveDocument(document)
   }
 
-  async editMutation(document: Omit<Document, 'authorId' | 'documentLocalId'>): Promise<Document> {
+  async editMutation(document: Omit<Document, 'authorId' | 'localId'>): Promise<Document> {
     return this.documentRepository.saveDocument(document)
   }
 
   async createDocumentWithData(
     mutationId: MutationId,
     appId: AppId,
-    document: Omit<Document, 'authorId' | 'documentLocalId'>,
+    document: Omit<Document, 'authorId' | 'localId'>,
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccount
   ) {
-    if (await this.documentRepository.getDocument(document.id)) {
+    if (await this.documentRepository.getItem(document.id)) {
       throw new Error('Document with that ID already exists')
     }
 

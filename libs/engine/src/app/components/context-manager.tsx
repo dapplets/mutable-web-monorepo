@@ -250,11 +250,11 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
           if (!appInstance) throw new Error('The app is not active')
 
-          const document = {
+          const document = Document.create({
             id: appDocId,
             metadata: appDocMeta,
             openWith: [appInstance.appId],
-          }
+          })
 
           const { mutation } = await engine.documentService.createDocumentWithData(
             selectedMutation.id,

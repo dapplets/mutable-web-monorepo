@@ -2,6 +2,7 @@ import { Base } from './base.entity'
 import { SocialDbService, Value } from '../social-db/social-db.service'
 import { getEntity } from './decorators/entity'
 import { ColumnType, getColumn } from './decorators/column'
+import { mergeDeep } from '../../common/merge-deep'
 
 // ToDo: parametrize?
 const ProjectIdKey = 'dapplets.near'
@@ -10,6 +11,7 @@ const SettingsKey = 'settings'
 const WildcardKey = '*'
 const RecursiveWildcardKey = '**'
 const KeyDelimiter = '/'
+const EmptyValue = ''
 
 // ToDo:
 type EntityId = string
@@ -64,6 +66,63 @@ export class BaseRepository<T extends Base> {
     return items
   }
 
+  async getItemsByIndex(entity: Partial<T>): Promise<T[]> {
+    if (Object.keys(entity).length !== 1) {
+      throw new Error('Only one index is supported')
+    }
+
+    const [propName, propValue] = Object.entries(entity)[0]
+
+    const column = getColumn(this.EntityType.prototype, propName)
+
+    if (!column) {
+      throw new Error('Column not found')
+    }
+
+    const { name, type, transformer } = column
+
+    if (type !== ColumnType.Set) {
+      throw new Error('Only Set columns can be indexed')
+    }
+
+    const rawKey = name ?? propName // open_with
+
+    if (propValue.length !== 1) {
+      throw new Error('Only one value in Set is supported')
+    }
+
+    if (transformer) {
+      throw new Error('Transformer is not implemented')
+    }
+
+    const [firstValue] = propValue
+
+    const keys = [
+      WildcardKey, // any author id
+      SettingsKey,
+      ProjectIdKey,
+      this._entityKey,
+      WildcardKey, // any document local id
+      rawKey,
+    ]
+
+    // Set-specific logic:
+    keys.push(...firstValue.split(KeyDelimiter))
+
+    const foundKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])
+
+    const documentIds = foundKeys.map((key: string) => {
+      const [authorId, , , , localId] = key.split(KeyDelimiter)
+      return [authorId, this._entityKey, localId].join(KeyDelimiter)
+    })
+
+    const documents = await Promise.all(documentIds.map((id) => this.getItem(id))).then(
+      (documents) => documents.filter((x) => x !== null)
+    )
+
+    return documents
+  }
+
   async createItem(item: T): Promise<T> {
     if (await this.getItem(item.id)) {
       throw new Error('Item with that ID already exists')
@@ -97,22 +156,28 @@ export class BaseRepository<T extends Base> {
 
     // for each property in the entity type get column metadata
 
-    for (const key in entity) {
+    for (const entityKey in entity) {
       // ToDo: why prototype?
-      const column = getColumn(this.EntityType.prototype, key)
+      const column = getColumn(this.EntityType.prototype, entityKey)
 
       if (!column) continue
 
-      const { type, transformer } = column
+      const { type, transformer, name } = column
+
+      const rawKey = name ?? entityKey
 
       if (type === ColumnType.AsIs) {
-        entity[key] = raw[key]
+        entity[entityKey] = transformer?.from ? transformer.from(raw[rawKey]) : raw[rawKey]
       } else if (type === ColumnType.Json) {
-        entity[key] = raw[key] ? JSON.parse(raw[key]) : entity[key]
-      }
-
-      if (transformer?.from) {
-        entity[key] = transformer.from(entity[key])
+        entity[entityKey] = raw[rawKey]
+          ? transformer?.from
+            ? transformer.from(JSON.parse(raw[rawKey]))
+            : JSON.parse(raw[rawKey])
+          : entity[entityKey]
+      } else if (type === ColumnType.Set) {
+        entity[entityKey] = transformer?.from
+          ? transformer.from(BaseRepository._makeSetFromSocialDb(raw[rawKey]))
+          : BaseRepository._makeSetFromSocialDb(raw[rawKey])
       }
     }
 
@@ -121,29 +186,33 @@ export class BaseRepository<T extends Base> {
     return entity
   }
 
-  private _makeItemToSocialDb(item: T): Value {
-    const out: Value = {}
+  private _makeItemToSocialDb(entity: T): Value {
+    const raw: Value = {}
 
-    for (const key in item) {
+    for (const entityKey in entity) {
       // ToDo: why prototype?
-      const column = getColumn(this.EntityType.prototype, key)
+      const column = getColumn(this.EntityType.prototype, entityKey)
 
       if (!column) continue
 
-      const { type, transformer } = column
+      const { type, transformer, name } = column
+
+      const rawKey = name ?? entityKey
+
+      const transformedValue = transformer?.to
+        ? transformer.to(entity[entityKey])
+        : entity[entityKey]
 
       if (type === ColumnType.AsIs) {
-        out[key] = item[key]
+        raw[rawKey] = transformedValue
       } else if (type === ColumnType.Json) {
-        out[key] = JSON.stringify(item[key])
-      }
-
-      if (transformer?.to) {
-        out[key] = transformer.to(out[key])
+        raw[rawKey] = JSON.stringify(transformedValue)
+      } else if (type === ColumnType.Set) {
+        raw[rawKey] = BaseRepository._makeSetToSocialDb(transformedValue)
       }
     }
 
-    return out
+    return raw
   }
 
   private _parseGlobalId(globalId: EntityId): { authorId: string; localId: string } {
@@ -155,5 +224,23 @@ export class BaseRepository<T extends Base> {
     }
 
     return { authorId, localId }
+  }
+
+  private static _makeSetFromSocialDb(raw: any): any {
+    const depth = BaseRepository._objectDepth(raw)
+    return Object.keys(SocialDbService.splitObjectByDepth(raw, depth))
+  }
+
+  private static _makeSetToSocialDb(arr: any[]): any {
+    return mergeDeep(
+      {},
+      ...arr.map((el) => SocialDbService.buildNestedData(el.split(KeyDelimiter), EmptyValue))
+    )
+  }
+
+  private static _objectDepth<T extends { [s: string]: T }>(o: { [s: string]: T }): number {
+    return Object(o) === o
+      ? 1 + Math.max(-1, ...Object.values(o).map((v) => BaseRepository._objectDepth(v)))
+      : 0
   }
 }
