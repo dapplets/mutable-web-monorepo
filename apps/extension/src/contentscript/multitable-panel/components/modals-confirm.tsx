@@ -285,9 +285,6 @@ export const ModalConfirm: FC<Props> = ({
   // Close modal with escape key
   useEscape(onClose)
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { engine } = useMutableWeb()
-
-  console.log(editingMutation)
 
   return (
     <ModalConfirmWrapper data-testid="popup-confirm">
@@ -465,7 +462,7 @@ export const ModalConfirm: FC<Props> = ({
       ) : null}
 
       <ButtonsBlock>
-        <Button onClick={handleRevertClick}>Cancel</Button>
+        <Button onClick={onClose}>Cancel</Button>
         {!isFormDisabled ? (
           <BsButton onClick={handleSaveClick} variant="primary" disabled>
             {mode === MutationModalMode.Forking ? 'Fork it!' : 'Do it!'}
