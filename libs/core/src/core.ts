@@ -1,11 +1,11 @@
 import { PureTreeBuilder } from './tree/pure-tree/pure-tree-builder'
 import { IAdapter } from './adapters/interface'
 import { DynamicHtmlAdapter } from './adapters/dynamic-html-adapter'
-import { JsonParser } from './parsers/json-parser'
-import { BosParser } from './parsers/bos-parser'
+import { JsonParser, JsonParserConfig } from './parsers/json-parser'
+import { BosParser, BosParserConfig } from './parsers/bos-parser'
 import { MutableWebParser } from './parsers/mweb-parser'
 import { LinkParser } from './parsers/link-parser'
-import { AdapterType, ParserConfig } from './types'
+import { ParserType, ParserConfig } from './types'
 
 export class Core {
   private _treeBuilder: PureTreeBuilder
@@ -70,23 +70,23 @@ export class Core {
     }
 
     switch (config.parserType) {
-      case AdapterType.Json:
+      case ParserType.Json:
         return new DynamicHtmlAdapter(
           document.documentElement,
           this._treeBuilder,
           config.id,
-          new JsonParser(config) // ToDo: add try catch because config can be invalid
+          new JsonParser(config.contexts as JsonParserConfig) // ToDo: add try catch because config can be invalid
         )
 
-      case AdapterType.Bos:
+      case ParserType.Bos:
         return new DynamicHtmlAdapter(
           document.documentElement,
           this._treeBuilder,
           config.id,
-          new BosParser(config)
+          new BosParser(config.contexts as BosParserConfig)
         )
 
-      case AdapterType.MWeb:
+      case ParserType.MWeb:
         return new DynamicHtmlAdapter(
           document.body,
           this._treeBuilder,
@@ -94,7 +94,7 @@ export class Core {
           new MutableWebParser()
         )
 
-      case AdapterType.Link:
+      case ParserType.Link:
         return new DynamicHtmlAdapter(document.body, this._treeBuilder, config.id, new LinkParser())
 
       default:

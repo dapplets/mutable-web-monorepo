@@ -48,6 +48,7 @@ export class BaseRepository<T extends Base> {
       WildcardKey, // any item local id
     ]
 
+    // ToDo: out of gas
     const queryResult = await this.socialDb.get([
       [...keys, RecursiveWildcardKey].join(KeyDelimiter),
     ])
