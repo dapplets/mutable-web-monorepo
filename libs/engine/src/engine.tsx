@@ -16,6 +16,7 @@ import { UserLinkSerivce } from './app/services/user-link/user-link.service'
 import { ParserConfigService } from './app/services/parser-config/parser-config.service'
 import { LinkDbService } from './app/services/link-db/link-db.service'
 import { DocumentSerivce } from './app/services/document/document.service'
+import { LinkDbRepository } from './app/services/link-db/link-db.repository'
 
 export type EngineConfig = {
   networkId: string
@@ -52,8 +53,9 @@ export class Engine {
     const userLinkRepository = new UserLinkRepository(socialDb, nearSigner)
     const parserConfigRepository = new ParserConfigRepository(socialDb)
     const documentRepository = new DocumentRepository(socialDb)
+    const linkDbRepository = new LinkDbRepository(socialDb)
 
-    this.linkDbService = new LinkDbService(socialDb)
+    this.linkDbService = new LinkDbService(socialDb, linkDbRepository)
     this.mutationService = new MutationService(mutationRepository, socialDb, nearConfig)
     this.applicationService = new ApplicationService(applicationRepository)
     this.userLinkService = new UserLinkSerivce(userLinkRepository, this.applicationService)

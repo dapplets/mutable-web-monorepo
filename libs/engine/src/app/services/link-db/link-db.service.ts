@@ -7,6 +7,7 @@ import { MutationId } from '../mutation/mutation.entity'
 import { UserLinkRepository } from '../user-link/user-link.repository'
 import { LinkIndexRules, IndexObject, LinkedDataByAccount } from './link-db.entity'
 import { DocumentId } from '../document/document.entity'
+import { LinkDbRepository } from './link-db.repository'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -23,7 +24,10 @@ const DataKey = 'data'
 const IndexKey = 'index'
 
 export class LinkDbService {
-  constructor(private _socialDb: SocialDbService) {}
+  constructor(
+    private _socialDb: SocialDbService,
+    private _linkDbRepository: LinkDbRepository
+  ) {}
 
   async set(
     mutationId: MutationId,
@@ -58,28 +62,15 @@ export class LinkDbService {
 
     accountIds = Array.isArray(accountIds) ? accountIds : [accountIds]
 
-    const keysArr = accountIds.map((accountId) => [
-      accountId,
-      SettingsKey,
-      ProjectIdKey,
-      ContextLinkKey,
-      index,
-      DataKey,
-    ])
+    const ctxLinkIds = accountIds.map((accountId) =>
+      [accountId, ContextLinkKey, index].join(KeyDelimiter)
+    )
 
     // ToDo: too much data will be retrieved here, becuase it created by users
-
-    // ToDo: batch requests
-    const resp = await this._socialDb.get(keysArr.map((keys) => keys.join(KeyDelimiter)))
-
-    const links = SocialDbService.splitObjectByDepth(resp, 6) // 6 is a number of keys in keysArr
+    const ctxLinks = await Promise.all(ctxLinkIds.map((id) => this._linkDbRepository.getItem(id)))
 
     const dataByAuthor = Object.fromEntries(
-      Object.entries(links).map(([key, json]) => {
-        const [authorId] = key.split(KeyDelimiter)
-        const data = json ? JSON.parse(json as string) : undefined
-        return [authorId, data]
-      })
+      ctxLinks.filter((x) => x !== null).map((ctxLink) => [ctxLink.authorId, ctxLink.data])
     )
 
     return dataByAuthor
