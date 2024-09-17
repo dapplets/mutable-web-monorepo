@@ -43,7 +43,7 @@ export const createSingleNotification = (payload: GenericNotification, id: strin
       <Space size="large" direction="horizontal">
         <Text type="secondary">
           #{payload.id}&ensp;{payload.createdBy}&ensp; on&ensp;
-          {payload.createdAt}
+          {formatDate(payload.createdAt)}
         </Text>
       </Space>
       {payload.isRead ? (

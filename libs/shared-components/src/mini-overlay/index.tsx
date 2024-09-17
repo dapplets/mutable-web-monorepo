@@ -19,6 +19,10 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
     top: 10px;
     transition: all 0.2s;
     transform: ${(props) => (props.$isOpen ? 'translateX(-340px)' : 'translateX(0)')};
+
+    .ant-drawer-header-close-only {
+      display: none;
+    }
   }
 
   .sideContent {
