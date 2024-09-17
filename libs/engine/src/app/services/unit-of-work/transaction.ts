@@ -11,6 +11,6 @@ export class Transaction {
   }
 
   public async commit(): Promise<void> {
-    this._socialDb.set(this._state)
+    await this._socialDb.set(this._state)
   }
 }
