@@ -143,7 +143,7 @@ export class UserLinkSerivce {
   }
 
   async deleteUserLink(userLinkId: UserLinkId): Promise<void> {
-    return this.userLinkRepository.deleteUserLink(userLinkId)
+    return this.userLinkRepository.deleteItem(userLinkId)
   }
 
   // #endregion

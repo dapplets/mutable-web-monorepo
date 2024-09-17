@@ -1,6 +1,6 @@
 import { Cacheable } from 'caching-decorator'
 import { SocialDbService } from '../social-db/social-db.service'
-import { IndexedLink, LinkIndexObject, UserLinkId } from './user-link.entity'
+import { IndexedLink, LinkIndexObject } from './user-link.entity'
 import serializeToDeterministicJson from 'json-stringify-deterministic'
 import { sha256 } from 'js-sha256'
 import { NearSigner } from '../near-signer/near-signer.service'
@@ -9,8 +9,6 @@ import { BaseRepository } from '../base/base.repository'
 const ProjectIdKey = 'dapplets.near'
 const SettingsKey = 'settings'
 const LinkKey = 'link'
-const RecursiveWildcardKey = '**'
-const KeyDelimiter = '/'
 
 export class UserLinkRepository extends BaseRepository<IndexedLink> {
   constructor(
@@ -46,22 +44,8 @@ export class UserLinkRepository extends BaseRepository<IndexedLink> {
 
     return IndexedLink.create({
       id: `${accountId}/link/${linkId}`,
-      authorId: accountId,
-      localId: linkId,
       indexes: [index],
     })
-  }
-
-  async deleteUserLink(linkId: UserLinkId): Promise<void> {
-    const accountId = await this._signer.getAccountId()
-
-    if (!accountId) throw new Error('User is not logged in')
-
-    // ToDo: check link ownership?
-
-    const keys = [accountId, SettingsKey, ProjectIdKey, LinkKey, linkId, RecursiveWildcardKey]
-
-    await this.socialDb.delete([keys.join(KeyDelimiter)])
   }
 
   /**

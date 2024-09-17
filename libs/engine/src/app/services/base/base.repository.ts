@@ -139,6 +139,20 @@ export class BaseRepository<T extends Base> {
 
     return this._saveItem(item)
   }
+  async deleteItem(id: EntityId): Promise<void> {
+    const { authorId, localId } = this._parseGlobalId(id)
+
+    const keys = [
+      authorId,
+      SettingsKey,
+      ProjectIdKey,
+      this._entityKey,
+      localId,
+      RecursiveWildcardKey, // delete all children
+    ]
+
+    await this.socialDb.delete([keys.join(KeyDelimiter)])
+  }
 
   private async _saveItem(item: T): Promise<T> {
     const [authorId, , localId] = item.id.split(KeyDelimiter)
