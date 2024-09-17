@@ -29,10 +29,6 @@ export class DocumentSerivce {
     return this.documentRepository.createItem(document, tx)
   }
 
-  async editMutation(document: Document): Promise<Document> {
-    return this.documentRepository.editItem(document)
-  }
-
   async createDocumentWithData(
     mutationId: MutationId,
     appId: AppId,
