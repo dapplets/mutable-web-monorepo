@@ -1,3 +1,4 @@
+import serializeToDeterministicJson from 'json-stringify-deterministic'
 import { Base } from './base.entity'
 import { SocialDbService, Value } from '../social-db/social-db.service'
 import { getEntity } from './decorators/entity'
@@ -245,7 +246,7 @@ export class BaseRepository<T extends Base> {
       if (type === ColumnType.AsIs) {
         raw[rawKey] = transformedValue
       } else if (type === ColumnType.Json) {
-        raw[rawKey] = JSON.stringify(transformedValue)
+        raw[rawKey] = serializeToDeterministicJson(transformedValue)
       } else if (type === ColumnType.Set) {
         raw[rawKey] = BaseRepository._makeSetToSocialDb(transformedValue)
       }

@@ -1,4 +1,3 @@
-import serializeToDeterministicJson from 'json-stringify-deterministic'
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
@@ -47,7 +46,7 @@ export class LinkDbService {
     const ctxLink = CtxLink.create({
       id: globalId,
       index: indexObject,
-      data: serializeToDeterministicJson(dataByAccount[accountId]),
+      data: dataByAccount[accountId],
     })
 
     await this._linkDbRepository.saveItem(ctxLink, tx)
