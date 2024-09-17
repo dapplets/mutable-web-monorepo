@@ -133,7 +133,8 @@ export class MutationService {
       window.location.hostname
     )
 
-    return (mutation as MutationWithSettings).copy({ settings: { lastUsage } })
+    // ToDo: do not mix MutationWithSettings and Mutation
+    return (Mutation.create(mutation) as MutationWithSettings).copy({ settings: { lastUsage } })
   }
 
   private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {
