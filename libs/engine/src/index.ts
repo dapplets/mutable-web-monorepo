@@ -28,3 +28,5 @@ export {
   useViewNotification,
   useHideNotification,
 } from './app/contexts/notification-context'
+export { NotificationType } from './app/services/notification/notification.entity'
+export { NotificationDto } from './app/services/notification/dtos/notification.dto'
