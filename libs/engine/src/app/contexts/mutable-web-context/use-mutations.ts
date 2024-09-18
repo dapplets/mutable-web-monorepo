@@ -1,42 +1,15 @@
-import { useCallback, useEffect, useState } from 'react'
 import { useCore } from '@mweb/react'
 import { MutationWithSettings } from '../../services/mutation/mutation.entity'
 import { Engine } from '../../../engine'
+import { useQueryArray } from '../../hooks/use-query-array'
 
 export const useMutations = (engine: Engine) => {
   const { core } = useCore()
-  const [mutations, setMutations] = useState<MutationWithSettings[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
-  const loadMutations = useCallback(async () => {
-    if (!engine) return
+  const { data, setData, isLoading, error } = useQueryArray<MutationWithSettings>({
+    query: () => engine.mutationService.getMutationsWithSettings(core.tree),
+    deps: [engine, core],
+  })
 
-    try {
-      setIsLoading(true)
-
-      const mutations = await engine.mutationService.getMutationsWithSettings(core.tree)
-      setMutations(mutations)
-    } catch (err) {
-      console.log(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('Unknown error')
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [engine, core])
-
-  useEffect(() => {
-    loadMutations()
-  }, [loadMutations])
-
-  return {
-    mutations,
-    setMutations,
-    isLoading,
-    error,
-  }
+  return { mutations: data, setMutations: setData, isLoading, error }
 }

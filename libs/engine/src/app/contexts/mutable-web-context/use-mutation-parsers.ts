@@ -1,39 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
 import { AppMetadata } from '../../services/application/application.entity'
 import { ParserConfig } from '../../services/parser-config/parser-config.entity'
 import { Engine } from '../../../engine'
+import { useQueryArray } from '../../hooks/use-query-array'
 
 export const useMutationParsers = (engine: Engine, apps: AppMetadata[]) => {
-  const [parserConfigs, setParserConfigs] = useState<ParserConfig[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { data, isLoading, error } = useQueryArray<ParserConfig>({
+    query: () => engine.parserConfigService.getParserConfigsForApps(apps),
+    deps: [engine, apps],
+  })
 
-  const loadMutationParsers = useCallback(async () => {
-    try {
-      setIsLoading(true)
-
-      const parserConfigs = await engine.parserConfigService.getParserConfigsForApps(apps)
-
-      setParserConfigs(parserConfigs)
-    } catch (err) {
-      console.error(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('Unknown error')
-      }
-    } finally {
-      setIsLoading(false)
-    }
-  }, [engine, apps])
-
-  useEffect(() => {
-    loadMutationParsers()
-  }, [loadMutationParsers])
-
-  return {
-    parserConfigs,
-    isLoading,
-    error,
-  }
+  return { parserConfigs: data, isLoading, error }
 }

@@ -10,6 +10,7 @@ import { ApplicationRepository } from './app/services/application/application.re
 import { UserLinkRepository } from './app/services/user-link/user-link.repository'
 import { ParserConfigRepository } from './app/services/parser-config/parser-config.repository'
 import { DocumentRepository } from './app/services/document/document.repository'
+import { NotificationRepository } from './app/services/notification/notification.repository'
 import { MutationService } from './app/services/mutation/mutation.service'
 import { ApplicationService } from './app/services/application/application.service'
 import { UserLinkService } from './app/services/user-link/user-link.service'
@@ -18,6 +19,8 @@ import { LinkDbService } from './app/services/link-db/link-db.service'
 import { DocumentSerivce } from './app/services/document/document.service'
 import { LinkDbRepository } from './app/services/link-db/link-db.repository'
 import { UnitOfWorkService } from './app/services/unit-of-work/unit-of-work.service'
+import { NotificationService } from './app/services/notification/notification.service'
+import { ResolutionRepository } from './app/services/notification/resolution.repository'
 
 export type EngineConfig = {
   networkId: string
@@ -36,6 +39,7 @@ export class Engine {
   applicationService: ApplicationService
   userLinkService: UserLinkService
   parserConfigService: ParserConfigService
+  notificationService: NotificationService
   documentService: DocumentSerivce
 
   constructor(public readonly config: EngineConfig) {
@@ -56,9 +60,21 @@ export class Engine {
     const parserConfigRepository = new ParserConfigRepository(socialDb)
     const documentRepository = new DocumentRepository(socialDb)
     const linkDbRepository = new LinkDbRepository(socialDb)
+    const notificationRepository = new NotificationRepository(socialDb)
+    const resolutionRepository = new ResolutionRepository(socialDb)
 
     this.linkDbService = new LinkDbService(linkDbRepository)
-    this.mutationService = new MutationService(mutationRepository, unitOfWorkService, nearConfig)
+    this.notificationService = new NotificationService(
+      notificationRepository,
+      resolutionRepository,
+      nearSigner
+    )
+    this.mutationService = new MutationService(
+      mutationRepository,
+      this.notificationService,
+      unitOfWorkService,
+      nearConfig
+    )
     this.applicationService = new ApplicationService(applicationRepository)
     this.userLinkService = new UserLinkService(
       userLinkRepository,
