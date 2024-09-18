@@ -1,3 +1,5 @@
+import { ReactElement } from 'react'
+
 export enum NotificationType {
   Regular = 'regular',
   PullRequest = 'pull-request',
@@ -43,6 +45,7 @@ export type GenericNotification =
       isRead: boolean
       createdAt: string
       createdBy: string
+      icon?: ReactElement
       actions?: {
         label: string
         type?: 'primary' | 'default'
@@ -58,6 +61,7 @@ export type GenericNotification =
       isRead: boolean
       createdAt: string
       createdBy: string
+      icon?: ReactElement
       actions?: {
         label: string
         type?: 'primary' | 'default'

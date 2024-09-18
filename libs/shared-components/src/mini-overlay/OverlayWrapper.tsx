@@ -72,6 +72,12 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     }
     .useNotification-notice-message {
       margin-inline-start: 0 !important;
+
+      .ant-collapse-header {
+        .ant-space {
+          justify-content: space-between;
+        }
+      }
     }
 
     .useNotification-notice-description {
@@ -86,13 +92,18 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
       inset-inline-end: 10px;
       top: 10px;
     }
+
+    .ant-space {
+      width: 100%;
+      user-select: none;
+    }
   }
 `
 const OverlayContent = styled.div<{ $isOpen: boolean }>`
   position: relative;
   display: ${(props) => (props.$isOpen ? 'block' : 'none')};
   height: 100vh;
-  width: 340px;
+  width: 360px;
   right: 0;
   bottom: 0;
   overflow: hidden;
@@ -109,6 +120,7 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
 
   .driwingContent {
     background: #f8f9ff;
+    overflow: hidden;
 
     .ant-drawer-close {
       display: none;
@@ -259,7 +271,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open }) => {
             wrapper: 'driwingWrapper',
             content: 'driwingContent',
           }}
-          width={340}
+          width={360}
           data-testid="overlay-notify"
           children={<Body ref={overlayRef}>{contextHolder}</Body>}
         >

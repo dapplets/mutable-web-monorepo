@@ -18,7 +18,7 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
     width: min-content !important;
     top: 10px;
     transition: all 0.2s;
-    transform: ${(props) => (props.$isOpen ? 'translateX(-340px)' : 'translateX(0)')};
+    transform: ${(props) => (props.$isOpen ? 'translateX(-360px)' : 'translateX(0)')};
 
     .ant-drawer-header-close-only {
       display: none;
@@ -45,6 +45,7 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   display: flex;
   width: 58px;
   top: 55px;
+  user-select: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
