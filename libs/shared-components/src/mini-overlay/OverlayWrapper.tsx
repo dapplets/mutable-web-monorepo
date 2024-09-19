@@ -1,11 +1,12 @@
 import React, { FC, useCallback, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, notification, Space, Button } from 'antd'
-import { createSingleNotification } from '../notifications/utils/createSingleNotification'
 import { GenericNotification } from '../notifications/types'
 import { notifications } from '../notifications/test-data-notification'
 import { Typography } from 'antd'
-
+import { NotificationProvider } from '@mweb/engine'
+// import { useAccountId } from 'near-social-vm'
+import { NotificationFeed } from '../notifications/feed'
 const { Title, Text } = Typography
 
 const IconNotificationMessage = () => (
@@ -13,14 +14,14 @@ const IconNotificationMessage = () => (
     <path
       d="M1.5 3.5C1.5 3.23478 1.60536 2.98043 1.79289 2.79289C1.98043 2.60536 2.23478 2.5 2.5 2.5H9.5C9.76522 2.5 10.0196 2.60536 10.2071 2.79289C10.3946 2.98043 10.5 3.23478 10.5 3.5V8.5C10.5 8.76522 10.3946 9.01957 10.2071 9.20711C10.0196 9.39464 9.76522 9.5 9.5 9.5H2.5C2.23478 9.5 1.98043 9.39464 1.79289 9.20711C1.60536 9.01957 1.5 8.76522 1.5 8.5V3.5Z"
       stroke="#7A818B"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M1.5 3.5L6 6.5L10.5 3.5"
       stroke="#7A818B"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )
@@ -29,9 +30,9 @@ const IconNotificationClose = () => (
     <path
       d="M8 1.5L1 8.5M1 1.5L8 8.5"
       stroke="#7A818B"
-      stroke-width="1.16667"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.16667"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )
@@ -157,81 +158,83 @@ export interface IOverlayWrapperProps {
   apps: boolean
   onClose: () => void
   open: boolean
+  loggedInAccountId: string
   // children: any
 }
 
-const getRandomNotification = (): GenericNotification => {
-  const randomIndex = Math.floor(Math.random() * notifications.length)
-  return notifications[randomIndex]
-}
-
-const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open }) => {
+// const getRandomNotification = (): GenericNotification => {
+//   const randomIndex = Math.floor(Math.random() * notifications.length)
+//   return notifications[randomIndex]
+// }
+// const loggedInAccountId = useAccountId()
+const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedInAccountId }) => {
   const [waiting, setWaiting] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
-  const [api, contextHolder] = notification.useNotification({
-    prefixCls: 'useNotification',
-    getContainer: () => {
-      if (!overlayRef.current) throw new Error('Viewport is not initialized')
-      return overlayRef.current
-    },
-    stack: false,
-  })
+  // const [api, contextHolder] = notification.useNotification({
+  //   prefixCls: 'useNotification',
+  //   getContainer: () => {
+  //     if (!overlayRef.current) throw new Error('Viewport is not initialized')
+  //     return overlayRef.current
+  //   },
+  //   stack: false,
+  // })
 
-  const openNotify = useCallback(
-    (notificationProps: GenericNotification, id: string) => {
-      api[notificationProps.apiType]({
-        key: id + notificationProps.id,
-        duration: 0,
-        message: createSingleNotification(notificationProps, id),
-        btn:
-          notificationProps.actions && notificationProps.actions.length ? (
-            <Space key={notificationProps.id} direction="horizontal">
-              {notificationProps.actions.map((action, i) => (
-                <Button
-                  key={i}
-                  type={action.type ?? 'default'}
-                  size="middle"
-                  onClick={() => {
-                    action.onClick?.()
-                    api.destroy(id)
-                  }}
-                >
-                  {action.icon}
-                  {action.label}
-                </Button>
-              ))}
-            </Space>
-          ) : null,
+  // const openNotify = useCallback(
+  //   (notificationProps: GenericNotification, id: string) => {
+  //     api[notificationProps.apiType]({
+  //       key: id + notificationProps.id,
+  //       duration: 0,
+  //       message: createSingleNotification(notificationProps, id),
+  //       btn:
+  //         notificationProps.actions && notificationProps.actions.length ? (
+  //           <Space key={notificationProps.id} direction="horizontal">
+  //             {notificationProps.actions.map((action, i) => (
+  //               <Button
+  //                 key={i}
+  //                 type={action.type ?? 'default'}
+  //                 size="middle"
+  //                 onClick={() => {
+  //                   action.onClick?.()
+  //                   api.destroy(id)
+  //                 }}
+  //               >
+  //                 {action.icon}
+  //                 {action.label}
+  //               </Button>
+  //             ))}
+  //           </Space>
+  //         ) : null,
 
-        className: 'notifySingle',
-        icon: <></>,
-        props: { 'data-testid': 'overlay-notify' },
-        style: {
-          padding: 5,
-          borderWidth: 1,
-          borderStyle: 'solid',
-          borderColor: '#e2e2e5',
-          borderRadius: 5,
-          width: '100%',
-        },
+  //       className: 'notifySingle',
+  //       icon: <></>,
+  //       props: { 'data-testid': 'overlay-notify' },
+  //       style: {
+  //         padding: 5,
+  //         borderWidth: 1,
+  //         borderStyle: 'solid',
+  //         borderColor: '#e2e2e5',
+  //         borderRadius: 5,
+  //         width: '100%',
+  //       },
 
-        onClose: () => {
-          // todo: need logic closed or readind
-        },
-        closeIcon: notificationProps.isRead ? (
-          <IconNotificationMessage />
-        ) : (
-          <IconNotificationClose />
-        ),
-      })
-    },
-    [notification]
-  )
+  //       onClose: () => {
+  //         // todo: need logic closed or readind
+  //       },
+  //       closeIcon: notificationProps.isRead ? (
+  //         <IconNotificationMessage />
+  //       ) : (
+  //         <IconNotificationClose />
+  //       ),
+  //     })
+  //   },
+  //   [notification]
+  // )
 
   const handleTestClick = () => {
-    const randomNotification = getRandomNotification()
+    // const randomNotification = getRandomNotification()
 
-    openNotify(randomNotification, `${Date.now()}`)
+    // openNotify(randomNotification, `${Date.now()}`)
+    console.log('1')
   }
 
   return (
@@ -273,11 +276,15 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open }) => {
           }}
           width={360}
           data-testid="overlay-notify"
-          children={<Body ref={overlayRef}>{contextHolder}</Body>}
-        >
-          {/* todo: I don’t know how to separate the old ones from the new ones  */}
-        </Drawer>
-        {/* {children} */}
+          children={
+            <Body ref={overlayRef}>
+              {' '}
+              <NotificationProvider recipientId={loggedInAccountId}>
+                <NotificationFeed />
+              </NotificationProvider>
+            </Body>
+          }
+        ></Drawer>
       </OverlayContent>
     </OverlayWrapperBlock>
   )

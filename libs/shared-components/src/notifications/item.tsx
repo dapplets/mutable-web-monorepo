@@ -1,7 +1,20 @@
 import React, { FC } from 'react'
 import { GenericNotification } from './types'
-import { createSingleNotification } from './utils/createSingleNotification'
+import { CreateSingleNotification } from './utils/createSingleNotification'
+import {
+  NotificationType,
+  NotificationProvider,
+  useNotifications,
+  NotificationDto,
+} from '@mweb/engine'
 
-export const Item: FC<{ notification: GenericNotification }> = ({ notification }) => {
-  return createSingleNotification(notification, `${Date.now()}`)
+export const Item: FC<{ notification: NotificationDto }> = ({ notification }) => {
+  switch (notification.type) {
+    case NotificationType.Regular:
+      return <CreateSingleNotification notification={notification} />
+    case NotificationType.PullRequest:
+      return <CreateSingleNotification notification={notification} />
+    default:
+      return null
+  }
 }

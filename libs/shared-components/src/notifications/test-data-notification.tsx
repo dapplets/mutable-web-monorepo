@@ -11,9 +11,9 @@ const IconNotificationClose = () => (
     <path
       d="M8 1.5L1 8.5M1 1.5L8 8.5"
       stroke="#7A818B"
-      stroke-width="1.16667"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.16667"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )
@@ -23,9 +23,9 @@ const IconRewiew = () => (
     <path
       d="M4.16667 1.08331L1.25 3.99998L4.16667 6.91665M7.83333 6.91665L10.75 3.99998L7.83333 1.08331"
       stroke="#7A818B"
-      stroke-width="1.16667"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.16667"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 )
