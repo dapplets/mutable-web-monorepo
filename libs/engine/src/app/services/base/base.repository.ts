@@ -32,6 +32,10 @@ export class BaseRepository<T extends Base> {
   async getItem(id: EntityId): Promise<T | null> {
     const { authorId, localId } = this._parseGlobalId(id)
 
+    if (authorId === WildcardKey || localId === WildcardKey) {
+      throw new Error('Wildcard is not supported')
+    }
+
     const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
     const queryResult = await this.socialDb.get([
       [...keys, RecursiveWildcardKey].join(KeyDelimiter),
@@ -44,14 +48,11 @@ export class BaseRepository<T extends Base> {
     return this._makeItemFromSocialDb(id, item)
   }
 
-  async getItems(): Promise<T[]> {
-    const keys = [
-      WildcardKey, // any author id
-      SettingsKey,
-      ProjectIdKey,
-      this._entityKey,
-      WildcardKey, // any item local id
-    ]
+  async getItems(options?: { authorId?: EntityId; localId?: EntityId }): Promise<T[]> {
+    const authorId = options?.authorId ?? WildcardKey
+    const localId = options?.localId ?? WildcardKey
+
+    const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
 
     // ToDo: out of gas
     const queryResult = await this.socialDb.get([

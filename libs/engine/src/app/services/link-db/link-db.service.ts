@@ -1,7 +1,7 @@
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
-import { LinkIndexRules, IndexObject, LinkedDataByAccount, CtxLink } from './link-db.entity'
+import { LinkIndexRules, IndexObject, LinkedDataByAccountDto, CtxLink } from './link-db.entity'
 import { DocumentId } from '../document/document.entity'
 import { LinkDbRepository } from './link-db.repository'
 import { Transaction } from '../unit-of-work/transaction'
@@ -14,7 +14,6 @@ const DefaultIndexRules: LinkIndexRules = {
 }
 
 const ContextLinkKey = 'ctxlink'
-const WildcardKey = '*'
 const KeyDelimiter = '/'
 
 export class LinkDbService {
@@ -25,7 +24,7 @@ export class LinkDbService {
     appId: AppId,
     docId: DocumentId | null,
     context: TransferableContext, // ToDo: replace with IContextNode?
-    dataByAccount: LinkedDataByAccount,
+    dataByAccount: LinkedDataByAccountDto,
     indexRules: LinkIndexRules = DefaultIndexRules,
     tx?: Transaction
   ): Promise<void> {
@@ -57,23 +56,32 @@ export class LinkDbService {
     appId: AppId,
     docId: DocumentId | null,
     context: TransferableContext,
-    accountIds: string[] | string = [WildcardKey], // from any user by default
+    accountIds?: string[] | string, // from any user by default
     indexRules: LinkIndexRules = DefaultIndexRules // use context id as index by default
-  ): Promise<LinkedDataByAccount> {
+  ): Promise<LinkedDataByAccountDto> {
     const indexObject = LinkDbService._buildLinkIndex(mutationId, appId, docId, indexRules, context)
     const index = UserLinkService._hashObject(indexObject) // ToDo: the dependency is not injected
 
-    accountIds = Array.isArray(accountIds) ? accountIds : [accountIds]
+    let ctxLinks: CtxLink[]
 
-    const ctxLinkIds = accountIds.map((accountId) =>
-      [accountId, ContextLinkKey, index].join(KeyDelimiter)
-    )
+    if (!accountIds) {
+      ctxLinks = await this._linkDbRepository.getItems({ localId: index })
+    } else {
+      accountIds = Array.isArray(accountIds) ? accountIds : [accountIds]
 
-    // ToDo: too much data will be retrieved here, becuase it created by users
-    const ctxLinks = await Promise.all(ctxLinkIds.map((id) => this._linkDbRepository.getItem(id)))
+      const ctxLinkIds = accountIds.map((accountId) =>
+        [accountId, ContextLinkKey, index].join(KeyDelimiter)
+      )
+
+      // ToDo: too much data will be retrieved here, becuase it created by users
+      const ctxLinksNullPossible = await Promise.all(
+        ctxLinkIds.map((id) => this._linkDbRepository.getItem(id))
+      )
+      ctxLinks = ctxLinksNullPossible.filter((x) => x !== null)
+    }
 
     const dataByAuthor = Object.fromEntries(
-      ctxLinks.filter((x) => x !== null).map((ctxLink) => [ctxLink.authorId, ctxLink.data])
+      ctxLinks.map((ctxLink) => [ctxLink.authorId, ctxLink.data])
     )
 
     return dataByAuthor

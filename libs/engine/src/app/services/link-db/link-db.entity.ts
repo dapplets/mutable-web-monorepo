@@ -24,7 +24,7 @@ export type IndexObject = {
   context?: IndexedContext
 }
 
-export type LinkedDataByAccount = { [accountId: string]: any }
+export type LinkedDataByAccountDto = { [accountId: string]: any }
 
 @Entity({ name: 'ctxlink' })
 export class CtxLink extends Base {
