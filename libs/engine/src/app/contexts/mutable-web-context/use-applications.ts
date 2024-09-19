@@ -14,6 +14,7 @@ export const useApplications = (engine: Engine) => {
       const applications = await engine.applicationService.getApplications()
       setApplications(applications)
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

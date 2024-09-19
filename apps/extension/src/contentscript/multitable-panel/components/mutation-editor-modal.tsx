@@ -147,20 +147,21 @@ const CloseIcon = () => (
   </svg>
 )
 
-const createEmptyMutation = (accountId: string): Mutation => ({
-  id: `${accountId}/mutation/Untitled-${generateRandomHex(6)}`,
-  apps: [],
-  metadata: {
-    name: '',
-  },
-  targets: [
-    {
-      namespace: 'engine',
-      contextType: 'website',
-      if: { id: { in: [window.location.hostname] } },
+const createEmptyMutation = (accountId: string): Mutation =>
+  Mutation.create({
+    id: `${accountId}/mutation/Untitled-${generateRandomHex(6)}`,
+    apps: [],
+    metadata: {
+      name: '',
     },
-  ],
-})
+    targets: [
+      {
+        namespace: 'engine',
+        contextType: 'website',
+        if: { id: { in: [window.location.hostname] } },
+      },
+    ],
+  })
 
 export interface Props {
   apps: AppMetadata[]

@@ -16,6 +16,7 @@ export const useAppDocuments = (appId: AppId) => {
       const documents = await engine.documentService.getDocumentsByAppId(appId)
       setDocuments(documents)
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

@@ -16,6 +16,7 @@ export const useMutationParsers = (engine: Engine, apps: AppMetadata[]) => {
 
       setParserConfigs(parserConfigs)
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

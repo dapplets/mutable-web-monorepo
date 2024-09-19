@@ -16,11 +16,11 @@ export class ApplicationService {
 
   public getApplications(): Promise<AppMetadata[]> {
     // ToDo: out of gas
-    return this.applicationRepository.getApplications()
+    return this.applicationRepository.getItems()
   }
 
   public getApplication(appId: AppId): Promise<AppMetadata | null> {
-    return this.applicationRepository.getApplication(appId)
+    return this.applicationRepository.getItem(appId)
   }
 
   public async getAppsFromMutation(mutation: Mutation): Promise<AppInstanceWithSettings[]> {
@@ -38,7 +38,9 @@ export class ApplicationService {
       )
 
       if (suitableTargets.length > 0) {
-        suitableApps.push({ ...app, targets: suitableTargets })
+        // ToDo: this modifies the original array
+        app.targets = suitableTargets
+        suitableApps.push(app)
       }
     }
 
@@ -68,13 +70,14 @@ export class ApplicationService {
 
     if (!app) return null
 
-    const appWithSettings: AppWithSettings = { ...app, settings }
+    const appWithSettings: any = app
 
-    return {
-      ...appWithSettings,
-      instanceId,
-      documentId: appInstance.documentId,
-    }
+    // ToDo: this modifies the original object
+    appWithSettings.settings = settings
+    appWithSettings.instanceId = instanceId
+    appWithSettings.documentId = appInstance.documentId
+
+    return app as AppWithSettings
   }
 
   private async _getAppInstanceSettings(

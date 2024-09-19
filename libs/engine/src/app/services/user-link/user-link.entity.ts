@@ -1,14 +1,18 @@
 import { AppId } from '../application/application.entity'
+import { Base, EntityId } from '../base/base.entity'
+import { Column, ColumnType } from '../base/decorators/column'
+import { Entity } from '../base/decorators/entity'
 import { MutationId } from '../mutation/mutation.entity'
 import { ScalarType } from '../target/target.entity'
 
-export type UserLinkId = string
+export type UserLinkId = EntityId
 
 export type LinkIndex = string
 
-export type IndexedLink = {
-  id: UserLinkId
-  authorId: string
+@Entity({ name: 'link' })
+export class IndexedLink extends Base {
+  @Column({ type: ColumnType.Set })
+  indexes: string[] = []
 }
 
 export type LinkIndexObject = {

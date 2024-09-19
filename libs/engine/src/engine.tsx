@@ -12,10 +12,12 @@ import { ParserConfigRepository } from './app/services/parser-config/parser-conf
 import { DocumentRepository } from './app/services/document/document.repository'
 import { MutationService } from './app/services/mutation/mutation.service'
 import { ApplicationService } from './app/services/application/application.service'
-import { UserLinkSerivce } from './app/services/user-link/user-link.service'
+import { UserLinkService } from './app/services/user-link/user-link.service'
 import { ParserConfigService } from './app/services/parser-config/parser-config.service'
 import { LinkDbService } from './app/services/link-db/link-db.service'
 import { DocumentSerivce } from './app/services/document/document.service'
+import { LinkDbRepository } from './app/services/link-db/link-db.repository'
+import { UnitOfWorkService } from './app/services/unit-of-work/unit-of-work.service'
 
 export type EngineConfig = {
   networkId: string
@@ -32,7 +34,7 @@ export class Engine {
   linkDbService: LinkDbService
   mutationService: MutationService
   applicationService: ApplicationService
-  userLinkService: UserLinkSerivce
+  userLinkService: UserLinkService
   parserConfigService: ParserConfigService
   documentService: DocumentSerivce
 
@@ -47,22 +49,28 @@ export class Engine {
     const localDb = new LocalDbService(this.config.storage)
     const nearSigner = new NearSigner(this.#selector, localDb, nearConfig)
     const socialDb = new SocialDbService(nearSigner, nearConfig.contractName)
+    const unitOfWorkService = new UnitOfWorkService(socialDb)
     const mutationRepository = new MutationRepository(socialDb, localDb)
     const applicationRepository = new ApplicationRepository(socialDb, localDb)
-    const userLinkRepository = new UserLinkRepository(socialDb, nearSigner)
+    const userLinkRepository = new UserLinkRepository(socialDb)
     const parserConfigRepository = new ParserConfigRepository(socialDb)
     const documentRepository = new DocumentRepository(socialDb)
+    const linkDbRepository = new LinkDbRepository(socialDb)
 
-    this.linkDbService = new LinkDbService(socialDb)
-    this.mutationService = new MutationService(mutationRepository, socialDb, nearConfig)
+    this.linkDbService = new LinkDbService(linkDbRepository)
+    this.mutationService = new MutationService(mutationRepository, unitOfWorkService, nearConfig)
     this.applicationService = new ApplicationService(applicationRepository)
-    this.userLinkService = new UserLinkSerivce(userLinkRepository, this.applicationService)
+    this.userLinkService = new UserLinkService(
+      userLinkRepository,
+      this.applicationService,
+      nearSigner
+    )
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
     this.documentService = new DocumentSerivce(
       documentRepository,
       this.linkDbService,
       this.mutationService,
-      socialDb
+      unitOfWorkService
     )
   }
 }

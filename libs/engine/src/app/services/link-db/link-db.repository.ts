@@ -1,9 +1,9 @@
 import { SocialDbService } from '../social-db/social-db.service'
-import { Document } from './document.entity'
 import { BaseRepository } from '../base/base.repository'
+import { CtxLink } from './link-db.entity'
 
-export class DocumentRepository extends BaseRepository<Document> {
+export class LinkDbRepository extends BaseRepository<CtxLink> {
   constructor(socialDb: SocialDbService) {
-    super(Document, socialDb)
+    super(CtxLink, socialDb)
   }
 }
