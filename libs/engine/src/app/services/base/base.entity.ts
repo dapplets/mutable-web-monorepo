@@ -1,3 +1,5 @@
+import { getEntity } from './decorators/entity'
+
 const KeyDelimiter = '/'
 
 export type EntityId = string
@@ -9,9 +11,23 @@ export class Base {
     return this.id.split(KeyDelimiter)[0]
   }
 
+  set authorId(authorId: string) {
+    this.id = [authorId, this.entityType, this.localId].join(KeyDelimiter)
+  }
+
   get localId(): string {
     return this.id.split(KeyDelimiter)[2]
   }
+
+  set localId(localId: string) {
+    this.id = [this.authorId, this.entityType, localId].join(KeyDelimiter)
+  }
+
+  get entityType(): string {
+    return getEntity(this.constructor).name
+  }
+
+  // ToDo: add block number
 
   static create<T extends Base>(this: new () => T, data: Partial<T>): T {
     const instance = new this()

@@ -20,6 +20,7 @@ import {
 } from './user-link.entity'
 import { UserLinkRepository } from './user-link.repository'
 import { NearSigner } from '../near-signer/near-signer.service'
+import { generateGuid } from '../../common/generate-guid'
 
 // ToDo: is in the entity
 const LinkKey = 'link'
@@ -141,7 +142,7 @@ export class UserLinkService {
       }
     }
 
-    const linkId = UserLinkService._generateGuid()
+    const linkId = generateGuid()
 
     const indexedLink = IndexedLink.create({
       id: [accountId, LinkKey, linkId].join(KeyDelimiter),
@@ -229,7 +230,14 @@ export class UserLinkService {
    */
   static _hashObject(obj: any): string {
     const json = serializeToDeterministicJson(obj)
-    const hashBytes = sha256.create().update(json).arrayBuffer()
+    return this._hashString(json)
+  }
+
+  /**
+   * Hashes string using SHA-256 and base64url encoding
+   */
+  static _hashString(str: string): string {
+    const hashBytes = sha256.create().update(str).arrayBuffer()
     return this._base64EncodeURL(hashBytes)
   }
 
@@ -247,12 +255,6 @@ export class UserLinkService {
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/\=/g, '')
-  }
-
-  static _generateGuid() {
-    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
   }
 
   // #endregion

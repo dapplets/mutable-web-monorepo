@@ -29,6 +29,7 @@ import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
 import { Document, DocumentId, DocumentMetadata } from '../services/document/document.entity'
 import { ApplicationService } from '../services/application/application.service'
+import { DocumentDto } from '../services/document/dtos/document.dto'
 
 interface WidgetProps {
   context: TransferableContext
@@ -56,7 +57,7 @@ interface WidgetProps {
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
-  getDocument: () => Promise<Document | null>
+  getDocument: () => Promise<DocumentDto | null>
 }
 
 interface LayoutManagerProps {
@@ -387,7 +388,7 @@ const InsPointHandler: FC<{
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
-  onGetDocumentCurry: (appInstanceId: string) => () => Promise<Document | null>
+  onGetDocumentCurry: (appInstanceId: string) => () => Promise<DocumentDto | null>
 }> = ({
   insPointName,
   element,
@@ -560,7 +561,7 @@ const ControllerHandler: FC<{
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
-  onGetDocumentCurry: (appInstanceId: string) => () => Promise<Document | null>
+  onGetDocumentCurry: (appInstanceId: string) => () => Promise<DocumentDto | null>
 }> = ({
   transferableContext,
   controller,

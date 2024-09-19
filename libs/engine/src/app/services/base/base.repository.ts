@@ -259,7 +259,7 @@ export class BaseRepository<T extends Base> {
 
     if (entityType !== this._entityKey) {
       // ToDo: or null?
-      throw new Error('Wrong entity type')
+      throw new Error(`Wrong entity type. Expected: ${this._entityKey}, received: ${entityType}`)
     }
 
     return { authorId, localId }

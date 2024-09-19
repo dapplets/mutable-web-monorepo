@@ -20,3 +20,13 @@ export { EngineConfig } from './engine'
 export { App as MutableWebProvider } from './app/app'
 export { useAppDocuments } from './app/contexts/mutable-web-context/use-app-documents'
 export { Document } from './app/services/document/document.entity'
+export {
+  NotificationProvider,
+  useNotifications,
+  useAcceptPullRequest,
+  useRejectPullRequest,
+  useViewNotification,
+  useHideNotification,
+} from './app/contexts/notification-context'
+export { NotificationType } from './app/services/notification/notification.entity'
+export { NotificationDto } from './app/services/notification/dtos/notification.dto'
