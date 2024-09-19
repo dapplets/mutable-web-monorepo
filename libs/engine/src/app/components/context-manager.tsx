@@ -20,7 +20,7 @@ import { useModal } from '../contexts/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
 import { BuiltInLayoutManagers } from '../../constants'
 import { TargetService } from '../services/target/target.service'
-import { LinkedDataByAccount, LinkIndexRules } from '../services/link-db/link-db.entity'
+import { LinkedDataByAccountDto, LinkIndexRules } from '../services/link-db/link-db.entity'
 import { memoize } from '../common/memoize'
 import { createPortal } from 'react-dom'
 import { ModalProps } from '../contexts/modal-context/modal-context'
@@ -43,10 +43,10 @@ interface WidgetProps {
       ctx: TransferableContext,
       accountIds?: string[] | string,
       indexRules?: LinkIndexRules
-    ) => Promise<LinkedDataByAccount>
+    ) => Promise<LinkedDataByAccountDto>
     set: (
       ctx: TransferableContext,
-      dataByAccount: LinkedDataByAccount,
+      dataByAccount: LinkedDataByAccountDto,
       indexRules: LinkIndexRules
     ) => Promise<void>
   }
@@ -54,7 +54,7 @@ interface WidgetProps {
     appDocId: DocumentId,
     appDocMeta: DocumentMetadata,
     ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccount
+    dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
   getDocument: () => Promise<Document | null>
 }
@@ -196,7 +196,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
       (appInstanceId: string) =>
         (
           ctx: TransferableContext,
-          dataByAccount: LinkedDataByAccount,
+          dataByAccount: LinkedDataByAccountDto,
           indexRules: LinkIndexRules
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
@@ -242,7 +242,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           appDocId: DocumentId,
           appDocMeta: DocumentMetadata,
           ctx: TransferableContext,
-          dataByAccount: LinkedDataByAccount
+          dataByAccount: LinkedDataByAccountDto
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
           const appInstance = selectedMutation.apps.find(
@@ -371,12 +371,12 @@ const InsPointHandler: FC<{
     ctx: TransferableContext,
     accountIds?: string[] | string,
     indexRules?: LinkIndexRules
-  ) => Promise<LinkedDataByAccount>
+  ) => Promise<LinkedDataByAccountDto>
   onSetLinkDataCurry: (
     appInstanceId: string
   ) => (
     ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccount,
+    dataByAccount: LinkedDataByAccountDto,
     indexRules: LinkIndexRules
   ) => Promise<void>
   onCommitDocumentCurry: (
@@ -385,7 +385,7 @@ const InsPointHandler: FC<{
     appDocId: DocumentId,
     appDocMetadata: DocumentMetadata,
     ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccount
+    dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
   onGetDocumentCurry: (appInstanceId: string) => () => Promise<Document | null>
 }> = ({
@@ -544,12 +544,12 @@ const ControllerHandler: FC<{
     ctx: TransferableContext,
     accountIds?: string[] | string,
     indexRules?: LinkIndexRules
-  ) => Promise<LinkedDataByAccount>
+  ) => Promise<LinkedDataByAccountDto>
   onSetLinkDataCurry: (
     appInstanceId: string
   ) => (
     ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccount,
+    dataByAccount: LinkedDataByAccountDto,
     indexRules: LinkIndexRules
   ) => Promise<void>
   onCommitDocumentCurry: (
@@ -558,7 +558,7 @@ const ControllerHandler: FC<{
     appDocId: DocumentId,
     appDocMetadata: DocumentMetadata,
     ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccount
+    dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
   onGetDocumentCurry: (appInstanceId: string) => () => Promise<Document | null>
 }> = ({

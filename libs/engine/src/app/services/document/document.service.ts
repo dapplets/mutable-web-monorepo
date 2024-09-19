@@ -1,13 +1,14 @@
 import { TransferableContext } from '../../common/transferable-context'
 import { AppId } from '../application/application.entity'
 import { Transaction } from '../unit-of-work/transaction'
-import { LinkedDataByAccount } from '../link-db/link-db.entity'
+import { LinkedDataByAccountDto } from '../link-db/link-db.entity'
 import { LinkDbService } from '../link-db/link-db.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { MutationService } from '../mutation/mutation.service'
 import { Document, DocumentId } from './document.entity'
 import { DocumentRepository } from './document.repository'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
+import { DocumentDto } from './dtos/document.dto'
 
 export class DocumentSerivce {
   constructor(
@@ -17,8 +18,9 @@ export class DocumentSerivce {
     private unitOfWorkService: UnitOfWorkService
   ) {}
 
-  async getDocument(globalDocumentId: DocumentId): Promise<Document | null> {
-    return this.documentRepository.getItem(globalDocumentId)
+  async getDocument(globalDocumentId: DocumentId): Promise<DocumentDto | null> {
+    const document = await this.documentRepository.getItem(globalDocumentId)
+    return document ? this._toDto(document) : null
   }
 
   async getDocumentsByAppId(globalAppId: AppId): Promise<Document[]> {
@@ -34,7 +36,7 @@ export class DocumentSerivce {
     appId: AppId,
     document: Document,
     ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccount
+    dataByAccount: LinkedDataByAccountDto
   ) {
     if (await this.documentRepository.getItem(document.id)) {
       throw new Error('Document with that ID already exists')
@@ -66,5 +68,15 @@ export class DocumentSerivce {
     )
 
     return { mutation }
+  }
+
+  private _toDto(document: Document): DocumentDto {
+    return {
+      id: document.id,
+      localId: document.localId,
+      authorId: document.authorId,
+      metadata: document.metadata,
+      openWith: document.openWith,
+    }
   }
 }
