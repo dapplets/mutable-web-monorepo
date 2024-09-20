@@ -1,9 +1,3 @@
-import {
-  GenericNotification,
-  NotificationApiType,
-  NotificationType,
-  PullRequestStatus,
-} from './types'
 import React from 'react'
 
 const IconNotificationClose = () => (
@@ -39,54 +33,23 @@ const IconBranchButton = () => (
   </svg>
 )
 
-export const notifications: GenericNotification[] = [
+export const actions = [
   {
-    apiType: NotificationApiType.Info,
-    id: '1',
-    type: NotificationType.Regular,
-    payload: {
-      subject: 'Welcome to the platform!',
-      body: 'We are glad to have you with us.',
-    },
-    isRead: false,
-    createdAt: '2024-01-02T00:00:00.000Z',
-    createdBy: 'nikter.near',
+    label: 'Decline',
+    type: 'default',
+    onClick: () => console.log('Decline'),
+    icon: <IconNotificationClose />,
   },
   {
-    apiType: NotificationApiType.Info,
-    id: '2',
-    type: NotificationType.PullRequest,
-    payload: {
-      commitMessage: 'Fixed the issue with authentication',
-      committer: 'nikter.near',
-      commitName: 'fix',
-      sourceMutationId: 'nikter.near/mutation/Sandbox',
-      targetMutationId: 'dapplets.near/mutation/Sandbox',
-      status: PullRequestStatus.Accepted,
-    },
-    isRead: true,
-    createdAt: '2024-01-02T00:00:00.000Z',
-    createdBy: 'dapplets.near',
-
-    actions: [
-      {
-        label: 'Decline',
-
-        onClick: () => console.log('Decline'),
-        icon: <IconNotificationClose />,
-      },
-      {
-        label: 'Review',
-
-        onClick: () => console.log('Review'),
-        icon: <IconRewiew />,
-      },
-      {
-        label: 'Accept',
-        type: 'primary',
-        onClick: () => console.log('Accept'),
-        icon: <IconBranchButton />,
-      },
-    ],
+    label: 'Review',
+    type: 'default',
+    onClick: () => console.log('Review'),
+    icon: <IconRewiew />,
+  },
+  {
+    label: 'Accept',
+    type: 'primary',
+    onClick: () => console.log('Accept'),
+    icon: <IconBranchButton />,
   },
 ]

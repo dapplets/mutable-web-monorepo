@@ -1,9 +1,6 @@
 import React, { FC } from 'react'
 import { Space, Typography, Card, Tag, Collapse } from 'antd'
-import { GenericNotification, PullRequestStatus } from '../types'
 import {
-  NotificationProvider,
-  useNotifications,
   NotificationType,
   useAcceptPullRequest,
   useRejectPullRequest,

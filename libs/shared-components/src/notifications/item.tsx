@@ -1,12 +1,6 @@
 import React, { FC } from 'react'
-import { GenericNotification } from './types'
 import { CreateSingleNotification } from './utils/createSingleNotification'
-import {
-  NotificationType,
-  NotificationProvider,
-  useNotifications,
-  NotificationDto,
-} from '@mweb/engine'
+import { NotificationType, NotificationDto } from '@mweb/engine'
 
 export const Item: FC<{ notification: NotificationDto }> = ({ notification }) => {
   switch (notification.type) {
