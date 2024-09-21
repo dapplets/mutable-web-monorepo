@@ -37,19 +37,16 @@ export const actions = [
   {
     label: 'Decline',
     type: 'default',
-    onClick: () => console.log('Decline'),
     icon: <IconNotificationClose />,
   },
   {
     label: 'Review',
     type: 'default',
-    onClick: () => console.log('Review'),
     icon: <IconRewiew />,
   },
   {
     label: 'Accept',
     type: 'primary',
-    onClick: () => console.log('Accept'),
     icon: <IconBranchButton />,
   },
 ]

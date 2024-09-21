@@ -40,6 +40,10 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     bottom: 0 !important;
     top: 0 !important;
     left: 0;
+
+    .useNotification-notice-wrapper {
+      box-shadow: none;
+    }
   }
 
   .notifySingle {
@@ -49,9 +53,6 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
       display: none;
     }
 
-    .useNotification-notice-wrapper {
-      box-shadow: none;
-    }
     .useNotification-notice-message {
       margin-inline-start: 0 !important;
 
@@ -153,7 +154,9 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
           title={
             <Space direction="vertical">
               <Space direction="horizontal">
-                <Title level={3}>Notifications</Title>
+                <Title style={{ userSelect: 'none' }} level={3}>
+                  Notifications
+                </Title>
 
                 <Button type="text" onClick={onClose}>
                   <IconNotificationClose />

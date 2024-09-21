@@ -89,26 +89,7 @@ const { Text } = Typography
 export const CreateSingleNotification: FC<{ notification: NotificationDto }> = ({
   notification,
 }) => {
-  const {
-    viewNotification,
-    isLoading: isLoadingView,
-    error: errorView,
-  } = useViewNotification(notification.id)
-  const {
-    hideNotification,
-    isLoading: isLoadingHide,
-    error: errorHide,
-  } = useHideNotification(notification.id)
-  const {
-    acceptPullRequest,
-    isLoading: isLoadingAccept,
-    error: errorAccept,
-  } = useAcceptPullRequest(notification.id)
-  const {
-    rejectPullRequest,
-    isLoading: isLoadingReject,
-    error: errorReject,
-  } = useRejectPullRequest(notification.id)
+  console.log(notification)
 
   return notification.type === NotificationType.Regular ? (
     <Space direction="vertical">
