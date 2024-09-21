@@ -1,13 +1,8 @@
 import React, { FC } from 'react'
 import { Space, Typography, Card, Tag, Collapse } from 'antd'
-import {
-  NotificationType,
-  useAcceptPullRequest,
-  useRejectPullRequest,
-  useViewNotification,
-  useHideNotification,
-  NotificationDto,
-} from '@mweb/engine'
+import { NotificationDto } from '@mweb/engine'
+import { RegularPayload } from '@mweb/engine/lib/app/services/notification/types/regular'
+import { PullRequestPayload } from '@mweb/engine/lib/app/services/notification/types/pull-request'
 
 const CollapseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="9" height="3" viewBox="0 0 9 3" fill="none">
@@ -89,32 +84,47 @@ const { Text } = Typography
 export const CreateSingleNotification: FC<{ notification: NotificationDto }> = ({
   notification,
 }) => {
-  console.log(notification)
+  // todo: need Date
+  const isRegularPayload = (
+    payload: RegularPayload | PullRequestPayload | null
+  ): payload is RegularPayload => {
+    if (payload === null) return false
+    return payload && 'subject' in payload
+  }
 
-  return notification.type === NotificationType.Regular ? (
+  return isRegularPayload(notification.payload) ? (
     <Space direction="vertical">
       <Space size="large" direction="horizontal">
-        {/* <Text type="secondary" style={{ fontSize: '12px' }}>
-          #{payload.id}&ensp;{payload.createdBy}&ensp; on&ensp;
-          {formatDate(payload.createdAt)}
-        </Text> */}
+        <Text type="secondary" style={{ fontSize: '12px' }}>
+          #{notification.localId}&ensp;{notification.authorId}&ensp; on&ensp;
+          {formatDate(Date.now().toString())}
+        </Text>
       </Space>
-      {/* {payload.isRead ? (
+
+      {notification.status === 'viewed' ? (
         <Collapse
           expandIcon={() => <CollapseIcon />}
           expandIconPosition={'end'}
           ghost
           items={[
             {
-              key: id,
-              label: (
-                <Space direction="horizontal">
-                  <IconBlue />
-                  <Text strong underline>
-                    {payload.payload.subject as string}
-                  </Text>
-                </Space>
-              ),
+              key: notification.id,
+              label:
+                notification.payload.subject !== null ? (
+                  <Space direction="horizontal">
+                    <IconBlue />
+                    <Text strong underline>
+                      {notification.payload.subject as string}
+                    </Text>
+                  </Space>
+                ) : (
+                  <Space direction="horizontal">
+                    <IconBlue />
+                    <Text strong underline>
+                      {notification.type as string}
+                    </Text>
+                  </Space>
+                ),
               children: (
                 <Card
                   style={{
@@ -126,7 +136,7 @@ export const CreateSingleNotification: FC<{ notification: NotificationDto }> = (
                   }}
                 >
                   <Text underline type="secondary">
-                    {payload.payload.body}
+                    {notification.payload.body as string}
                   </Text>
                 </Card>
               ),
@@ -138,7 +148,7 @@ export const CreateSingleNotification: FC<{ notification: NotificationDto }> = (
           <Space direction="horizontal">
             <IconBlue />
             <Text strong underline>
-              {payload.payload.subject as string}
+              {notification.payload.subject as string}
             </Text>
           </Space>
           <Card
@@ -151,50 +161,55 @@ export const CreateSingleNotification: FC<{ notification: NotificationDto }> = (
             }}
           >
             <Text underline type="secondary">
-              {payload.payload.body}
+              {notification.payload.body}
             </Text>
           </Card>
         </>
-      )} */}
-      {notification.authorId}
+      )}
     </Space>
   ) : (
     <Space direction="vertical">
       <Space size="large" direction="horizontal">
-        {/* <Text type="secondary" style={{ fontSize: '12px' }}>
-          #{payload.id}&ensp;{payload.payload.committer}&ensp;committed &ensp;on&ensp;
-          {formatDate(payload.createdAt)}
-        </Text> */}
+        <Text type="secondary" style={{ fontSize: '12px' }}>
+          #{notification.localId}&ensp;{notification.authorId}&ensp;committed &ensp;on&ensp;
+          {formatDate(Date.now().toString())}
+        </Text>
         {notification.status}
       </Space>
 
-      {/* {payload.isRead ? (
+      {notification.status === 'viewed' ? (
         <Collapse
           expandIcon={() => <CollapseIcon />}
           expandIconPosition={'end'}
           ghost
           items={[
             {
-              key: id,
+              key: notification.id,
               label: (
                 <Space direction="horizontal">
                   <Space direction="horizontal">
-                    {' '}
-                    {payload.payload.status === PullRequestStatus.Accepted ? (
+                    {notification.result && notification.result.status === 'accepted' ? (
                       <IconGreen />
-                    ) : payload.payload.status === PullRequestStatus.Rejected ? (
+                    ) : notification.result && notification.result.status === 'rejected' ? (
                       <IconRed />
                     ) : (
                       <IconBlue />
                     )}
                     <Text strong underline>
-                      {payload.payload.commitName}
+                      {/* todo: need name? */}
+                      {notification.type}
                     </Text>
                   </Space>
 
-                  {payload.payload.status !== 'open' ? (
-                    <Tag color={payload.payload.status === 'rejected' ? ' #DB504A' : '#384BFF'}>
-                      {payload.payload.status}
+                  {notification.result && notification.result.status !== 'open' ? (
+                    <Tag
+                      color={
+                        notification.result && notification.result.status === 'rejected'
+                          ? ' #DB504A'
+                          : '#384BFF'
+                      }
+                    >
+                      {notification.result.status}
                     </Tag>
                   ) : null}
                 </Space>
@@ -211,9 +226,9 @@ export const CreateSingleNotification: FC<{ notification: NotificationDto }> = (
                     }}
                   >
                     <Text underline type="secondary">
-                      {payload.payload.committer} asks you to accept changes from{' '}
-                      {payload.payload.sourceMutationId} ({payload.payload.committer}){' '}
-                      {payload.payload.targetMutationId}
+                      {notification.authorId} asks you to accept changes from{' '}
+                      {notification.payload!.sourceMutationId} &ensp; (&ensp;
+                      {notification.recipients[0]}) {notification.payload!.targetMutationId}
                     </Text>
                   </Card>
                 </Space>
@@ -225,22 +240,28 @@ export const CreateSingleNotification: FC<{ notification: NotificationDto }> = (
         <>
           <Space direction="horizontal">
             <Space direction="horizontal">
-              {' '}
-              {payload.payload.status === PullRequestStatus.Accepted ? (
+              {notification.result && notification.result.status === 'accepted' ? (
                 <IconGreen />
-              ) : payload.payload.status === PullRequestStatus.Rejected ? (
+              ) : notification.result && notification.result.status === 'rejected' ? (
                 <IconRed />
               ) : (
                 <IconBlue />
               )}
               <Text strong underline>
-                {payload.payload.commitName}
+                {/* todo: need name? */}
+                {notification.type}
               </Text>
             </Space>
 
-            {payload.payload.status !== 'open' ? (
-              <Tag color={payload.payload.status === 'rejected' ? ' #DB504A' : '#384BFF'}>
-                {payload.payload.status}
+            {notification.result && notification.result.status !== 'open' ? (
+              <Tag
+                color={
+                  notification.result && notification.result.status === 'rejected'
+                    ? ' #DB504A'
+                    : '#384BFF'
+                }
+              >
+                {notification.result.status}
               </Tag>
             ) : null}
           </Space>
@@ -255,13 +276,14 @@ export const CreateSingleNotification: FC<{ notification: NotificationDto }> = (
               }}
             >
               <Text underline type="secondary">
-                {`${payload.payload.committer} asks you to accept changes
-            from ${payload.payload.sourceMutationId}  (${payload.payload.committer}) ${payload.payload.targetMutationId}`}
+                {notification.authorId} asks you to accept changes from{' '}
+                {notification.payload!.sourceMutationId!} &ensp; (&ensp;
+                {notification.recipients[0]}) {notification.payload!.targetMutationId}
               </Text>
             </Card>
           </Space>
         </>
-      )} */}
+      )}
     </Space>
   )
 }
