@@ -5,21 +5,19 @@ const CompAttr = 'data-component'
 const PropsAttr = 'data-props'
 
 export type BosParserConfig = {
-  contexts: {
-    [name: string]: {
-      component?: string
-      props?: {
-        [prop: string]: string
-      }
-      insertionPoints?: {
-        [insPointName: string]: {
-          component?: string
-          bosLayoutManager?: string
-          insertionType?: InsertionType
-        }
-      }
-      children?: string[]
+  [name: string]: {
+    component?: string
+    props?: {
+      [prop: string]: string
     }
+    insertionPoints?: {
+      [insPointName: string]: {
+        component?: string
+        bosLayoutManager?: string
+        insertionType?: InsertionType
+      }
+    }
+    children?: string[]
   }
 }
 
@@ -30,18 +28,18 @@ export class BosParser implements IParser {
     // ToDo: validate config
     this.config = config
 
-    if (!this.config.contexts['root']) {
-      this.config.contexts['root'] = {
+    if (!this.config['root']) {
+      this.config['root'] = {
         props: {
           id: 'root',
         },
-        children: Object.keys(this.config.contexts), // ToDo:
+        children: Object.keys(this.config), // ToDo:
       }
     }
   }
 
   parseContext(element: HTMLElement, contextName: string) {
-    const contextProperties = this.config.contexts[contextName].props
+    const contextProperties = this.config[contextName].props
     if (!contextProperties) return {}
 
     const parsed: any = {}
@@ -56,14 +54,14 @@ export class BosParser implements IParser {
   }
 
   findChildElements(element: HTMLElement, contextName: string) {
-    const contextConfig = this.config.contexts[contextName]
+    const contextConfig = this.config[contextName]
     if (!contextConfig.children?.length) return []
 
     const result: { element: HTMLElement; contextName: string }[] = []
 
     // ToDo: maybe querySelectorAll('.foo:not(.foo .foo)') is faster?
     for (const childContextName of contextConfig.children ?? []) {
-      const childConfig = this.config.contexts[childContextName]
+      const childConfig = this.config[childContextName]
       if (!childConfig.component) continue
 
       const childElements = Array.from(
@@ -83,7 +81,7 @@ export class BosParser implements IParser {
     contextName: string,
     insertionPoint: string
   ): HTMLElement | null {
-    const contextConfig = this.config.contexts[contextName]
+    const contextConfig = this.config[contextName]
     const insPointConfig = contextConfig.insertionPoints?.[insertionPoint]
 
     if (insPointConfig?.component) {
@@ -97,7 +95,7 @@ export class BosParser implements IParser {
   }
 
   getInsertionPoints(_: HTMLElement, contextName: string): InsertionPoint[] {
-    const contextConfig = this.config.contexts[contextName]
+    const contextConfig = this.config[contextName]
     if (!contextConfig.insertionPoints) return []
 
     return Object.entries(contextConfig.insertionPoints).map(([name, selectorOrObject]) => ({

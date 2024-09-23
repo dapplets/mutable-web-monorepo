@@ -1,13 +1,4 @@
-import React, {
-  FC,
-  ReactElement,
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
 import { Engine, EngineConfig } from '../../../engine'
 import { useMutationApps } from './use-mutation-apps'
@@ -16,11 +7,11 @@ import { useCore } from '@mweb/react'
 import { useMutations } from './use-mutations'
 import { useApplications } from './use-applications'
 import { TargetService } from '../../services/target/target.service'
-import { AdapterType, ParserConfig } from '../../services/parser-config/parser-config.entity'
 import { mutationDisabled, mutationSwitched } from './notifications'
 import { getNearConfig } from '../../../constants'
 import { ModalContextState } from '../modal-context/modal-context'
 import { Mutation } from '../../services/mutation/mutation.entity'
+import { ParserType, ParserConfig } from '@mweb/core'
 
 type Props = {
   config: EngineConfig
@@ -30,27 +21,13 @@ type Props = {
 }
 
 const MWebParserConfig: ParserConfig = {
-  parserType: AdapterType.MWeb,
+  parserType: ParserType.MWeb,
   id: 'mweb',
-  targets: [
-    {
-      namespace: 'engine',
-      contextType: 'website',
-      if: { id: { not: null } },
-    },
-  ],
 }
 
 const LinkParserConfig: ParserConfig = {
-  parserType: AdapterType.Link,
+  parserType: ParserType.Link,
   id: 'engine', // ToDo: id used as namespace
-  targets: [
-    {
-      namespace: 'engine',
-      contextType: 'website',
-      if: { id: { not: null } },
-    },
-  ],
 }
 
 const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, children }) => {
@@ -182,7 +159,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
         // Update last usage for selected mutation
         setMutations((prev) =>
           prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage } } : mut
+            mut.id === mutationId ? mut.copy({ settings: { ...mut.settings, lastUsage } }) : mut
           )
         )
       }
@@ -219,7 +196,9 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
         setMutations((prev) =>
           prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage: null } } : mut
+            mut.id === mutationId
+              ? mut.copy({ settings: { ...mut.settings, lastUsage: null } })
+              : mut
           )
         )
       } catch (err) {

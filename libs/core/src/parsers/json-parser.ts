@@ -2,23 +2,21 @@ import { InsertionType } from '../adapters/interface'
 import { IParser, InsertionPoint } from './interface'
 
 export type JsonParserConfig = {
-  contexts: {
-    [name: string]: {
-      selector?: string
-      props?: {
-        [prop: string]: string
-      }
-      insertionPoints?: {
-        [insPointName: string]:
-          | string
-          | {
-              selector?: string
-              bosLayoutManager?: string
-              insertionType?: InsertionType
-            }
-      }
-      children?: string[]
+  [name: string]: {
+    selector?: string
+    props?: {
+      [prop: string]: string
     }
+    insertionPoints?: {
+      [insPointName: string]:
+        | string
+        | {
+            selector?: string
+            bosLayoutManager?: string
+            insertionType?: InsertionType
+          }
+    }
+    children?: string[]
   }
 }
 
@@ -58,7 +56,7 @@ export class JsonParser implements IParser {
   }
 
   parseContext(element: HTMLElement, contextName: string) {
-    const contextProperties = this.config.contexts[contextName].props
+    const contextProperties = this.config[contextName].props
     if (!contextProperties) return {}
 
     const parsed: any = {}
@@ -75,13 +73,13 @@ export class JsonParser implements IParser {
     element: HTMLElement,
     contextName: string
   ): { element: HTMLElement; contextName: string }[] {
-    const contextConfig = this.config.contexts[contextName]
+    const contextConfig = this.config[contextName]
     if (!contextConfig.children?.length) return []
 
     const result: { element: HTMLElement; contextName: string }[] = []
 
     for (const childContextName of contextConfig.children ?? []) {
-      const childConfig = this.config.contexts[childContextName]
+      const childConfig = this.config[childContextName]
       if (!childConfig.selector) continue
 
       const childElements = Array.from(element.querySelectorAll<HTMLElement>(childConfig.selector))
@@ -99,7 +97,7 @@ export class JsonParser implements IParser {
     contextName: string,
     insertionPoint: string
   ): HTMLElement | null {
-    const contextConfig = this.config.contexts[contextName]
+    const contextConfig = this.config[contextName]
     const selectorOrObject = contextConfig.insertionPoints?.[insertionPoint]
 
     if (typeof selectorOrObject === 'string') {
@@ -114,7 +112,7 @@ export class JsonParser implements IParser {
   }
 
   getInsertionPoints(_: HTMLElement, contextName: string): InsertionPoint[] {
-    const contextConfig = this.config.contexts[contextName]
+    const contextConfig = this.config[contextName]
     if (!contextConfig.insertionPoints) return []
 
     return Object.entries(contextConfig.insertionPoints).map(([name, selectorOrObject]) => ({

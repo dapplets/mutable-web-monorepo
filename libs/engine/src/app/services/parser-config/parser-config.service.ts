@@ -6,12 +6,12 @@ export class ParserConfigService {
   constructor(private parserConfigRepository: ParserConfigRepository) {}
 
   public async getParserConfig(parserId: ParserConfigId): Promise<ParserConfig | null> {
-    return this.parserConfigRepository.getParserConfig(parserId)
+    if (parserId === 'mweb') return null
+    return this.parserConfigRepository.getItem(parserId)
   }
 
   public async getAllParserConfigs(): Promise<ParserConfig[]> {
-    // ToDo: out of gas
-    return this.parserConfigRepository.getAllParserConfigs()
+    return this.parserConfigRepository.getItems()
   }
 
   public async getParserConfigsForApps(apps: AppMetadata[]): Promise<ParserConfig[]> {

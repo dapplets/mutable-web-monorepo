@@ -2,25 +2,35 @@ import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
 import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
 import { MutationRepository } from './mutation.repository'
-import { SocialDbService, Value } from '../social-db/social-db.service'
+import { Transaction } from '../unit-of-work/transaction'
+import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
+import { NotificationService } from '../notification/notification.service'
+import { NotificationType } from '../notification/notification.entity'
+import { PullRequestPayload } from '../notification/types/pull-request'
+import { generateGuid } from '../../common/generate-guid'
+import { EntityId } from '../base/base.entity'
+import { NotificationDto } from '../notification/dtos/notification.dto'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
+  askOriginToApplyChanges?: boolean
 }
 
 export class MutationService {
   constructor(
     private mutationRepository: MutationRepository,
-    private socialDbService: SocialDbService,
+    private notificationService: NotificationService,
+    private unitOfWorkService: UnitOfWorkService,
     private nearConfig: { defaultMutationId: string }
   ) {}
 
   async getMutation(mutationId: string): Promise<Mutation | null> {
-    return this.mutationRepository.getMutation(mutationId)
+    const mutation = await this.mutationRepository.getItem(mutationId)
+    return mutation
   }
 
   async getMutationsForContext(context: IContextNode): Promise<Mutation[]> {
-    const mutations = await this.mutationRepository.getMutations()
+    const mutations = await this.mutationRepository.getItems()
     return mutations.filter((mutation) =>
       mutation.targets.some((target) => TargetService.isTargetMet(target, context))
     )
@@ -71,26 +81,96 @@ export class MutationService {
 
   async createMutation(
     mutation: Mutation,
-    options?: SaveMutationOptions
+    options: SaveMutationOptions = {
+      applyChangesToOrigin: false,
+      askOriginToApplyChanges: false,
+    }
   ): Promise<MutationWithSettings> {
+    const { applyChangesToOrigin, askOriginToApplyChanges } = options
+
     // ToDo: move to provider?
-    if (await this.mutationRepository.getMutation(mutation.id)) {
+    if (await this.mutationRepository.getItem(mutation.id)) {
       throw new Error('Mutation with that ID already exists')
     }
 
-    return this._saveMutation(mutation, options)
+    await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this.mutationRepository.createItem(mutation, tx),
+        applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+        askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
+      ])
+    )
+
+    return this.populateMutationWithSettings(mutation)
   }
 
   async editMutation(
     mutation: Mutation,
-    options?: SaveMutationOptions
+    options: SaveMutationOptions = {
+      applyChangesToOrigin: false,
+      askOriginToApplyChanges: false,
+    },
+    tx?: Transaction
   ): Promise<MutationWithSettings> {
+    const { applyChangesToOrigin, askOriginToApplyChanges } = options
+
     // ToDo: move to provider?
-    if (!(await this.mutationRepository.getMutation(mutation.id))) {
+    if (!(await this.mutationRepository.getItem(mutation.id))) {
       throw new Error('Mutation with that ID does not exist')
     }
 
-    return this._saveMutation(mutation, options)
+    const performTx = (tx: Transaction) =>
+      Promise.all([
+        this.mutationRepository.editItem(mutation, tx),
+        applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+        askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
+      ])
+
+    // reuse transaction
+    if (tx) {
+      await performTx(tx)
+    } else {
+      await this.unitOfWorkService.runInTransaction(performTx)
+    }
+
+    return this.populateMutationWithSettings(mutation)
+  }
+
+  async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
+    const notification = await this.notificationService.getNotification(notificationId)
+
+    if (!notification) {
+      throw new Error('Notification not found')
+    }
+
+    if (notification.type !== NotificationType.PullRequest) {
+      throw new Error('Notification is not a pull request')
+    }
+
+    const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
+
+    const sourceMutation = await this.mutationRepository.getItem(sourceMutationId)
+
+    if (!sourceMutation) {
+      throw new Error('Source mutation not found')
+    }
+
+    if (sourceMutation.metadata.fork_of !== targetMutationId) {
+      throw new Error('Source mutation is not fork of target mutation')
+    }
+
+    const [, freshNotification] = await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this._applyChangesToOrigin(sourceMutation, tx),
+        this.notificationService.acceptNotification(notificationId, tx),
+      ])
+    )
+
+    return freshNotification
+  }
+
+  async rejectPullRequest(notificationId: EntityId): Promise<NotificationDto> {
+    return this.notificationService.rejectNotification(notificationId)
   }
 
   async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
@@ -110,51 +190,18 @@ export class MutationService {
       window.location.hostname
     )
 
-    return {
-      ...mutation,
-      settings: {
-        lastUsage,
-      },
-    }
+    // ToDo: do not mix MutationWithSettings and Mutation
+    return (Mutation.create(mutation) as MutationWithSettings).copy({ settings: { lastUsage } })
   }
 
-  async prepareSaveMutation(mutation: Mutation): Promise<Value> {
-    return this.mutationRepository.prepareSaveMutation(mutation)
-  }
-
-  private async _saveMutation(
-    mutation: Mutation,
-    options?: SaveMutationOptions
-  ): Promise<MutationWithSettings> {
-    const changePromises = [this.mutationRepository.prepareSaveMutation(mutation)]
-
-    if (options?.applyChangesToOrigin) {
-      changePromises.push(this._prepareApplyChangesToOrigin(mutation))
-    }
-
-    const changes = await Promise.all(changePromises)
-
-    await this.socialDbService.setMultiple(changes)
-
-    return this.populateMutationWithSettings(mutation)
-  }
-
-  private async _prepareApplyChangesToOrigin(forkedMutation: Mutation) {
+  private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {
     const originalMutationId = forkedMutation.metadata.fork_of
 
     if (!originalMutationId) {
       throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
     }
 
-    const { authorId: forkAuthorId } = MutationService._parseMutationId(forkedMutation.id)
-    const { authorId: originAuthorId } = MutationService._parseMutationId(originalMutationId)
-
-    // ToDo: check logged in user id?
-    if (forkAuthorId !== originAuthorId) {
-      throw new Error('You cannot apply changes to the origin that is not your own')
-    }
-
-    const originalMutation = await this.mutationRepository.getMutation(originalMutationId)
+    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
 
     if (!originalMutation) {
       throw new Error('The origin mutation does not exist')
@@ -165,14 +212,43 @@ export class MutationService {
     originalMutation.metadata.description = forkedMutation.metadata.description
     originalMutation.targets = forkedMutation.targets
 
-    const preparedOriginalMutation =
-      await this.mutationRepository.prepareSaveMutation(originalMutation)
+    await this.mutationRepository.editItem(originalMutation, tx)
 
-    return preparedOriginalMutation
+    return originalMutation
   }
 
-  private static _parseMutationId(mutationId: string): { authorId: string; localId: string } {
-    const [authorId, , localId] = mutationId.split('/')
-    return { authorId, localId }
+  private async _askOriginToApplyChanges(forkedMutation: Mutation, tx?: Transaction) {
+    const originalMutationId = forkedMutation.metadata.fork_of
+
+    if (!originalMutationId) {
+      throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
+    }
+
+    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+
+    if (!originalMutation) {
+      throw new Error('The origin mutation does not exist')
+    }
+
+    const { authorId: forkAuthorId } = forkedMutation
+    const { authorId: originAuthorId } = originalMutation
+
+    // ToDo: check logged in user id?
+    if (forkAuthorId === originAuthorId) {
+      throw new Error('You cannot ask yourself to apply changes')
+    }
+
+    const notification = {
+      authorId: forkAuthorId,
+      localId: generateGuid(),
+      type: NotificationType.PullRequest,
+      recipients: [originAuthorId],
+      payload: {
+        sourceMutationId: forkedMutation.id,
+        targetMutationId: originalMutation.id,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
   }
 }
