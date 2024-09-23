@@ -1,8 +1,9 @@
+import serializeToDeterministicJson from 'json-stringify-deterministic'
+import { sha256 } from 'js-sha256'
 import { IContextNode } from '@mweb/core'
 import {
   AppId,
   AppInstanceWithSettings,
-  AppMetadata,
   AppMetadataTarget,
 } from '../application/application.entity'
 import { ApplicationService } from '../application/application.service'
@@ -13,15 +14,23 @@ import {
   BosUserLink,
   BosUserLinkWithInstance,
   ControllerLink,
+  IndexedLink,
   LinkIndexObject,
   UserLinkId,
 } from './user-link.entity'
 import { UserLinkRepository } from './user-link.repository'
+import { NearSigner } from '../near-signer/near-signer.service'
+import { generateGuid } from '../../common/generate-guid'
 
-export class UserLinkSerivce {
+// ToDo: is in the entity
+const LinkKey = 'link'
+const KeyDelimiter = '/'
+
+export class UserLinkService {
   constructor(
     private userLinkRepository: UserLinkRepository,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private _signer: NearSigner // ToDo: is it necessary dependency injection?
   ) {}
 
   // ToDo: replace with getAppsAndLinksForContext
@@ -96,6 +105,10 @@ export class UserLinkSerivce {
     appGlobalId: AppId,
     context: IContextNode
   ): Promise<BosUserLink> {
+    const accountId = await this._signer.getAccountId()
+
+    if (!accountId) throw new Error('User is not logged in')
+
     const app = await this.applicationService.getApplication(appGlobalId)
 
     if (!app) {
@@ -116,11 +129,12 @@ export class UserLinkSerivce {
 
     const [target] = suitableTargets
 
-    const indexObject = UserLinkSerivce._buildLinkIndex(app.id, mutationId, target, context)
+    const indexObject = UserLinkService._buildLinkIndex(app.id, mutationId, target, context)
+    const index = UserLinkService._hashObject(indexObject)
 
     // ToDo: this limitation on the frontend side only
     if (target.injectOnce) {
-      const existingLinks = await this.userLinkRepository.getLinksByIndex(indexObject)
+      const existingLinks = await this.userLinkRepository.getItemsByIndex({ indexes: [index] })
       if (existingLinks.length > 0) {
         throw new Error(
           `The widget is injected already. The "injectOnce" parameter limits multiple insertion of widgets`
@@ -128,7 +142,14 @@ export class UserLinkSerivce {
       }
     }
 
-    const indexedLink = await this.userLinkRepository.createLink(indexObject)
+    const linkId = generateGuid()
+
+    const indexedLink = IndexedLink.create({
+      id: [accountId, LinkKey, linkId].join(KeyDelimiter),
+      indexes: [index],
+    })
+
+    await this.userLinkRepository.createItem(indexedLink)
 
     return {
       id: indexedLink.id,
@@ -142,7 +163,7 @@ export class UserLinkSerivce {
   }
 
   async deleteUserLink(userLinkId: UserLinkId): Promise<void> {
-    return this.userLinkRepository.deleteUserLink(userLinkId)
+    return this.userLinkRepository.deleteItem(userLinkId)
   }
 
   // #endregion
@@ -155,8 +176,9 @@ export class UserLinkSerivce {
     target: AppMetadataTarget,
     context: IContextNode
   ): Promise<BosUserLink[]> {
-    const indexObject = UserLinkSerivce._buildLinkIndex(appId, mutationId, target, context)
-    const indexedLinks = await this.userLinkRepository.getLinksByIndex(indexObject)
+    const indexObject = UserLinkService._buildLinkIndex(appId, mutationId, target, context)
+    const index = UserLinkService._hashObject(indexObject)
+    const indexedLinks = await this.userLinkRepository.getItemsByIndex({ indexes: [index] })
 
     return indexedLinks.map((link) => ({
       id: link.id,
@@ -201,6 +223,38 @@ export class UserLinkSerivce {
     }
 
     return object
+  }
+
+  /**
+   * Hashes object using deterministic serializator, SHA-256 and base64url encoding
+   */
+  static _hashObject(obj: any): string {
+    const json = serializeToDeterministicJson(obj)
+    return this._hashString(json)
+  }
+
+  /**
+   * Hashes string using SHA-256 and base64url encoding
+   */
+  static _hashString(str: string): string {
+    const hashBytes = sha256.create().update(str).arrayBuffer()
+    return this._base64EncodeURL(hashBytes)
+  }
+
+  /**
+   * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
+   */
+  static _base64EncodeURL(byteArray: ArrayLike<number> | ArrayBufferLike): string {
+    return btoa(
+      Array.from(new Uint8Array(byteArray))
+        .map((val) => {
+          return String.fromCharCode(val)
+        })
+        .join('')
+    )
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/\=/g, '')
   }
 
   // #endregion

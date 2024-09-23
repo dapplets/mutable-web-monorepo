@@ -23,11 +23,12 @@ export function useMutationApp(appInstanceId: string) {
       setMutationApps((apps) =>
         apps.map((app) =>
           app.instanceId === appInstanceId
-            ? { ...app, settings: { ...app.settings, isEnabled: true } }
+            ? app.copy({ settings: { ...app.settings, isEnabled: true } })
             : app
         )
       )
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {
@@ -54,11 +55,12 @@ export function useMutationApp(appInstanceId: string) {
       setMutationApps((apps) =>
         apps.map((app) =>
           app.instanceId === appInstanceId
-            ? { ...app, settings: { ...app.settings, isEnabled: false } }
+            ? app.copy({ settings: { ...app.settings, isEnabled: false } })
             : app
         )
       )
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {

@@ -353,7 +353,7 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp,
       </Loading>
     ) : (
       <MutationIconWrapper
-        title={app.appLocalId}
+        title={app.localId}
         $isStopped={!app.settings.isEnabled}
         $isButton={true}
       >

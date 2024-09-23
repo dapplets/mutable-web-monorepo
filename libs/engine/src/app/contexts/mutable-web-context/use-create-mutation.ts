@@ -17,6 +17,7 @@ export function useCreateMutation() {
 
       setMutations((mutations) => [...mutations, createdMutation])
     } catch (err) {
+      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {
