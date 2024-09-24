@@ -4,6 +4,12 @@ export type BuiltInLayoutManagers = {
   ear: string
 }
 
+export type TimeReference = {
+  timestamp: number
+  height: number
+  avgBlockTime: number
+}
+
 export type NearConfig = {
   networkId: string
   nodeUrl: string
@@ -11,6 +17,7 @@ export type NearConfig = {
   walletUrl: string
   defaultMutationId: string
   layoutManagers: BuiltInLayoutManagers
+  timeReference: TimeReference
 }
 
 export const NearConfigs: { [networkId: string]: NearConfig } = {
@@ -25,6 +32,11 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
       horizontal: 'bos.dapplets.near/widget/DefaultLayoutManager',
       ear: 'bos.dapplets.near/widget/ContextActionsGroup',
     },
+    timeReference: {
+      timestamp: 1727135249210,
+      height: 128753799,
+      avgBlockTime: 1250, // https://nearblocks.io/
+    },
   },
   testnet: {
     networkId: 'testnet',
@@ -36,6 +48,11 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
       vertical: 'bos.dapplets.testnet/widget/VerticalLayoutManager',
       horizontal: 'bos.dapplets.testnet/widget/DefaultLayoutManager',
       ear: 'bos.dapplets.testnet/widget/ContextActionsGroup',
+    },
+    timeReference: {
+      timestamp: 1727135126349,
+      height: 175046986,
+      avgBlockTime: 1000, // https://testnet.nearblocks.io/
     },
   },
 }
