@@ -75,6 +75,8 @@ export class DocumentSerivce {
       id: document.id,
       localId: document.localId,
       authorId: document.authorId,
+      blockNumber: document.blockNumber,
+      timestamp: document.timestamp,
       metadata: document.metadata,
       openWith: document.openWith,
     }

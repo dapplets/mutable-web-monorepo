@@ -180,6 +180,8 @@ export class NotificationService {
       id: notification.id,
       localId: notification.localId,
       authorId: notification.authorId,
+      blockNumber: notification.blockNumber,
+      timestamp: notification.timestamp,
       type: notification.type,
       payload: notification.payload,
       recipients: notification.recipients,

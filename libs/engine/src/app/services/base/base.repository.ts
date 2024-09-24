@@ -137,6 +137,8 @@ export class BaseRepository<T extends Base> {
 
     await this.saveItem(item, tx)
 
+    // ToDo: update timestamp and blockNumber
+
     return item
   }
 
@@ -146,6 +148,8 @@ export class BaseRepository<T extends Base> {
     }
 
     await this.saveItem(item, tx)
+
+    // ToDo: update timestamp and blockNumber
 
     return item
   }
