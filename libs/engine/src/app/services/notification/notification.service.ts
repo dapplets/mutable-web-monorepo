@@ -50,6 +50,10 @@ export class NotificationService {
     return this._resolveNotification(
       notificationId,
       (resolution) => {
+        if (resolution.status === NotificationStatus.Viewed) {
+          throw new Error('Notification is already viewed')
+        }
+
         resolution.status = NotificationStatus.Viewed
       },
       tx
@@ -60,6 +64,10 @@ export class NotificationService {
     return this._resolveNotification(
       notificationId,
       (resolution) => {
+        if (resolution.status === NotificationStatus.Hidden) {
+          throw new Error('Notification is already hidden')
+        }
+
         resolution.status = NotificationStatus.Hidden
       },
       tx
@@ -76,6 +84,13 @@ export class NotificationService {
 
         if (resolution.status === NotificationStatus.Hidden) {
           throw new Error('Notification is hidden')
+        }
+
+        if (
+          resolution.result?.status === PullRequestStatus.Accepted ||
+          resolution.result?.status === PullRequestStatus.Rejected
+        ) {
+          throw new Error('Notification has already been resolved')
         }
 
         // ToDo: check resolution.result
@@ -99,7 +114,12 @@ export class NotificationService {
           throw new Error('Notification is hidden')
         }
 
-        // ToDo: check resolution.result
+        if (
+          resolution.result?.status === PullRequestStatus.Accepted ||
+          resolution.result?.status === PullRequestStatus.Rejected
+        ) {
+          throw new Error('Notification has already been resolved')
+        }
 
         resolution.status = NotificationStatus.Viewed
         resolution.result = { status: PullRequestStatus.Rejected }
