@@ -44,6 +44,10 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     .useNotification-notice-wrapper {
       box-shadow: none;
     }
+
+    .ant-card-body {
+      padding: 0;
+    }
   }
 
   .notifySingle {
