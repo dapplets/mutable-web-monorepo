@@ -12,6 +12,7 @@ export type StorageView = {
 export type Value = any
 
 const KeyDelimiter = '/'
+const BlockNumberKey = ':block'
 
 const EstimatedKeyValueSize = 40 * 3 + 8 + 12
 const EstimatedNodeSize = 40 * 2 + 8 + 10
@@ -109,8 +110,13 @@ export class SocialDbService {
     private _contractName: string
   ) {}
 
-  async get(keys: string[]): Promise<Value> {
-    return await this._signer.view(this._contractName, 'get', { keys })
+  async get(keys: string[], options: { withBlockHeight?: boolean } = {}): Promise<Value> {
+    return await this._signer.view(this._contractName, 'get', {
+      keys,
+      options: {
+        with_block_height: options.withBlockHeight,
+      },
+    })
   }
 
   async keys(keys: string[]): Promise<string[]> {
@@ -178,14 +184,18 @@ export class SocialDbService {
     )
   }
 
-  async setMultiple(data: Value[]): Promise<void> {
-    return this.set(mergeDeep({}, ...data))
-  }
-
   async delete(keys: string[]): Promise<void> {
     const data = await this.get(keys)
     const nullData = SocialDbService._nullifyData(data)
     await this.set(nullData)
+  }
+
+  // ToDo: move to repository?
+  // ToDo: approximate timestamp
+  getTimestampByBlockHeight(blockHeight: number): number {
+    // ToDo: time reference was private, fix it
+    const { avgBlockTime, height, timestamp } = this._signer.nearConfig.timeReference
+    return (blockHeight - height) * avgBlockTime + timestamp
   }
 
   private async _getAccountStorage(accountId: string): Promise<StorageView | null> {
@@ -239,6 +249,9 @@ export class SocialDbService {
 
     const result: any = {}
     for (const key in obj) {
+      // ToDo: should be it here?
+      if (key === BlockNumberKey) continue
+
       const newPath = [...path, key]
       const nestedResult = this.splitObjectByDepth(obj[key], depth - 1, newPath)
       for (const nestedKey in nestedResult) {

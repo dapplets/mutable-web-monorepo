@@ -6,6 +6,8 @@ export type EntityId = string
 
 export class Base {
   id: EntityId = ''
+  blockNumber: number = 0 // ToDo: fake block number
+  timestamp: number = 0 // ToDo: fake timestamp
 
   get authorId(): string {
     return this.id.split(KeyDelimiter)[0]
@@ -26,8 +28,6 @@ export class Base {
   get entityType(): string {
     return getEntity(this.constructor).name
   }
-
-  // ToDo: add block number
 
   static create<T extends Base>(this: new () => T, data: Partial<T>): T {
     const instance = new this()
