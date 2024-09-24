@@ -9,11 +9,13 @@ import { ResolutionRepository } from './resolution.repository'
 import { NotificationDto } from './dtos/notification.dto'
 import { NotificationCreateDto } from './dtos/notification-create.dto'
 import { PullRequestStatus } from './types/pull-request'
+import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 
 export class NotificationService {
   constructor(
     private notificationRepository: NotificationRepository,
     private resolutionRepository: ResolutionRepository,
+    private unitOfWorkService: UnitOfWorkService,
     private nearSigner: NearSigner
   ) {}
 
@@ -47,7 +49,7 @@ export class NotificationService {
   }
 
   async viewNotification(notificationId: EntityId, tx?: Transaction): Promise<NotificationDto> {
-    return this._resolveNotification(
+    return this._resolveNotificationById(
       notificationId,
       (resolution) => {
         if (resolution.status === NotificationStatus.Viewed) {
@@ -60,8 +62,28 @@ export class NotificationService {
     )
   }
 
+  async viewAllNotifcations(recipientId: string): Promise<NotificationDto[]> {
+    const notifications = await this.getNotificationsByRecipient(recipientId)
+
+    const notificationsToBeViewed = notifications.filter(
+      (notification) => notification.status === NotificationStatus.New
+    )
+
+    const markNotificationAsViewed = (resolution: Resolution) => {
+      resolution.status = NotificationStatus.Viewed
+    }
+
+    return this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all(
+        notificationsToBeViewed.map((notification) =>
+          this._resolveNotificationById(notification.id, markNotificationAsViewed, tx)
+        )
+      )
+    )
+  }
+
   async hideNotification(notificationId: EntityId, tx?: Transaction): Promise<NotificationDto> {
-    return this._resolveNotification(
+    return this._resolveNotificationById(
       notificationId,
       (resolution) => {
         if (resolution.status === NotificationStatus.Hidden) {
@@ -75,7 +97,7 @@ export class NotificationService {
   }
 
   async acceptNotification(notificationId: EntityId, tx?: Transaction): Promise<NotificationDto> {
-    return this._resolveNotification(
+    return this._resolveNotificationById(
       notificationId,
       (resolution, notification) => {
         if (notification.type !== NotificationType.PullRequest) {
@@ -103,7 +125,7 @@ export class NotificationService {
   }
 
   async rejectNotification(notificationId: EntityId, tx?: Transaction): Promise<NotificationDto> {
-    return this._resolveNotification(
+    return this._resolveNotificationById(
       notificationId,
       (resolution, notification) => {
         if (notification.type !== NotificationType.PullRequest) {
@@ -128,7 +150,7 @@ export class NotificationService {
     )
   }
 
-  private async _resolveNotification(
+  private async _resolveNotificationById(
     notificationId: EntityId,
     callback: (resolution: Resolution, notification: Notification) => void,
     tx?: Transaction
@@ -139,6 +161,14 @@ export class NotificationService {
       throw new Error('Notification not found')
     }
 
+    return this._resolveNotification(notification, callback, tx)
+  }
+
+  private async _resolveNotification(
+    notification: Notification,
+    callback: (resolution: Resolution, notification: Notification) => void,
+    tx?: Transaction
+  ) {
     const accountId = await this.nearSigner.getAccountId()
 
     if (!accountId) {
@@ -150,7 +180,7 @@ export class NotificationService {
     }
 
     const resolution = await this._getResolutionForNotification(
-      notificationId,
+      notification.id,
       notification.type,
       accountId
     )
