@@ -6,6 +6,8 @@ export type EntityId = string
 
 export class Base {
   id: EntityId = ''
+  blockNumber: number = 0
+  timestamp: number = 0
 
   get authorId(): string {
     return this.id.split(KeyDelimiter)[0]

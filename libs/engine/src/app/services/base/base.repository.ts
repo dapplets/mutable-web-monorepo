@@ -15,6 +15,7 @@ const RecursiveWildcardKey = '**'
 const KeyDelimiter = '/'
 const EmptyValue = ''
 const SelfKey = ''
+const BlockNumberKey = ':block'
 
 // ToDo:
 type EntityId = string
@@ -37,15 +38,16 @@ export class BaseRepository<T extends Base> {
     }
 
     const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
-    const queryResult = await this.socialDb.get([
-      [...keys, RecursiveWildcardKey].join(KeyDelimiter),
-    ])
+    const queryResult = await this.socialDb.get(
+      [[...keys, RecursiveWildcardKey].join(KeyDelimiter)],
+      { withBlockHeight: true }
+    )
 
-    const item = SocialDbService.getValueByKey(keys, queryResult)
+    const itemWithMeta = SocialDbService.getValueByKey(keys, queryResult)
 
-    if (!item) return null
+    if (!itemWithMeta) return null
 
-    return this._makeItemFromSocialDb(id, item)
+    return this._makeItemFromSocialDb(id, itemWithMeta)
   }
 
   async getItems(options?: { authorId?: EntityId; localId?: EntityId }): Promise<T[]> {
@@ -55,16 +57,17 @@ export class BaseRepository<T extends Base> {
     const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
 
     // ToDo: out of gas
-    const queryResult = await this.socialDb.get([
-      [...keys, RecursiveWildcardKey].join(KeyDelimiter),
-    ])
+    const queryResult = await this.socialDb.get(
+      [[...keys, RecursiveWildcardKey].join(KeyDelimiter)],
+      { withBlockHeight: true }
+    )
 
     const mutationsByKey = SocialDbService.splitObjectByDepth(queryResult, keys.length)
 
-    const items = Object.entries(mutationsByKey).map(([key, item]: [string, any]) => {
+    const items = Object.entries(mutationsByKey).map(([key, itemWithMeta]: [string, any]) => {
       const [accountId, , , , localMutationId] = key.split(KeyDelimiter)
       const itemId = [accountId, this._entityKey, localMutationId].join(KeyDelimiter)
-      return this._makeItemFromSocialDb(itemId, item)
+      return this._makeItemFromSocialDb(itemId, itemWithMeta)
     })
 
     return items
@@ -188,10 +191,14 @@ export class BaseRepository<T extends Base> {
     }
   }
 
-  private _makeItemFromSocialDb(id: EntityId, raw: Value): T {
+  private _makeItemFromSocialDb(id: EntityId, rawWithMeta: Value): T {
+    const raw = BaseRepository._clearObjectFromMeta(rawWithMeta)
     const entity = new this.EntityType()
 
     entity.id = id
+    entity.blockNumber = rawWithMeta[BlockNumberKey]
+    // ToDo: calculate it like localId and authorId?
+    entity.timestamp = this.socialDb.getTimestampByBlockHeight(entity.blockNumber)
 
     // for each property in the entity type get column metadata
 
@@ -281,5 +288,27 @@ export class BaseRepository<T extends Base> {
     return Object(o) === o
       ? 1 + Math.max(-1, ...Object.values(o).map((v) => BaseRepository._objectDepth(v)))
       : 0
+  }
+
+  private static _removeBlockKeys(obj: Value): Value {
+    return typeof obj === 'object'
+      ? Object.fromEntries(
+          Object.entries(obj)
+            .filter(([key]) => key !== BlockNumberKey)
+            .map(([key, value]) => [key, this._removeBlockKeys(value)])
+        )
+      : obj
+  }
+
+  private static _replaceEmptyKeyWithValue(obj: Value): Value {
+    if (!obj || typeof obj !== 'object') return obj
+    if (Object.keys(obj).length === 1 && SelfKey in obj) return obj[SelfKey]
+    return Object.fromEntries(
+      Object.entries(obj).map(([key, value]) => [key, this._replaceEmptyKeyWithValue(value)])
+    )
+  }
+
+  private static _clearObjectFromMeta(obj: Value): Value {
+    return this._replaceEmptyKeyWithValue(this._removeBlockKeys(obj))
   }
 }
