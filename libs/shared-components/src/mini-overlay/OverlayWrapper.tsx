@@ -2,9 +2,9 @@ import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
-import { NotificationProvider, useViewAllNotifications } from '@mweb/engine'
+import { NotificationProvider, useNotifications, useViewAllNotifications } from '@mweb/engine'
 import { NotificationFeed } from '../notifications/feed'
-const { Title } = Typography
+const { Title, Text } = Typography
 
 const IconNotificationClose = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
@@ -31,6 +31,9 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   background: transparent;
   font-family: sans-serif;
   box-sizing: border-box;
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 
   .notifySingle {
     width: 100%;
@@ -40,6 +43,7 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     background: #fff;
     border: 1px solid #e2e2e5;
     padding: 10px;
+    border-radius: 10px;
 
     .notifySingle-item {
       column-gap: 8px;
@@ -56,6 +60,18 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     .ant-collapse-header {
       padding: 0 16px;
     }
+  }
+  .notifyWrapper-item:first-of-type {
+    .ant-space {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
+  .notifyWrapper-item:nth-of-type(2),
+  :last-of-type {
+    height: 50%;
+    overflow: hidden;
   }
 `
 const OverlayContent = styled.div<{ $isOpen: boolean }>`
@@ -77,9 +93,16 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
     0px 44px 17px 0px rgba(71, 65, 252, 0.01),
     0px 68px 19px 0px rgba(71, 65, 252, 0);
 
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
   .driwingContent {
     background: #f8f9ff;
     overflow: hidden;
+    &::-webkit-scrollbar {
+      width: 0;
+    }
 
     .ant-drawer-close {
       display: none;
@@ -88,6 +111,7 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
     .ant-drawer-header {
       border-bottom: none;
       padding: 10px;
+      padding-bottom: 0;
 
       h3 {
         margin-bottom: 0;
@@ -109,7 +133,10 @@ const Body = styled.div`
   height: 100%;
   position: relative;
   overflow: hidden;
-  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 `
 
 export interface IOverlayWrapperProps {
@@ -122,11 +149,6 @@ export interface IOverlayWrapperProps {
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedInAccountId }) => {
   const [waiting, setWaiting] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
-  const {
-    viewAllNotifcations,
-    isLoading: isLoadingView,
-    error: errorView,
-  } = useViewAllNotifications(loggedInAccountId)
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
@@ -143,15 +165,6 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
                   <IconNotificationClose />
                 </Button>
               </Space>
-              <Button
-                style={{ float: 'right' }}
-                onClick={() => {
-                  viewAllNotifcations()
-                }}
-                type="link"
-              >
-                Mark all as read
-              </Button>
             </Space>
           }
           placement="right"
@@ -168,7 +181,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
           children={
             <Body ref={overlayRef}>
               <NotificationProvider recipientId={loggedInAccountId}>
-                <NotificationFeed />
+                <NotificationFeed loggedInAccountId={loggedInAccountId} />
               </NotificationProvider>
             </Body>
           }
