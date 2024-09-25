@@ -1,10 +1,11 @@
 export * as customElements from './custom-elements'
-export { Mutation, MutationWithSettings } from './app/services/mutation/mutation.entity'
+export { MutationWithSettings } from './app/services/mutation/mutation.entity'
+export { MutationDto } from './app/services/mutation/dtos/mutation.dto'
 export {
-  AppMetadata,
   AppWithSettings,
   AppInstanceWithSettings,
 } from './app/services/application/application.entity'
+export { ApplicationDto } from './app/services/application/dtos/application.dto'
 export { LocalStorage } from './app/services/local-db/local-storage'
 export { IStorage } from './app/services/local-db/local-storage'
 export { App } from './app/app'
@@ -19,7 +20,7 @@ export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper'
 export { EngineConfig } from './engine'
 export { App as MutableWebProvider } from './app/app'
 export { useAppDocuments } from './app/contexts/mutable-web-context/use-app-documents'
-export { Document } from './app/services/document/document.entity'
+export { DocumentDto } from './app/services/document/dtos/document.dto'
 export {
   NotificationProvider,
   useNotifications,

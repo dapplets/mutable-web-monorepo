@@ -5,6 +5,7 @@ import { Entity } from '../base/decorators/entity'
 import { DocumentId } from '../document/document.entity'
 import { ParserConfigId } from '../parser-config/parser-config.entity'
 import { Target } from '../target/target.entity'
+import { ApplicationDto } from './dtos/application.dto'
 
 export type AppId = EntityId
 export type AppInstanceId = string
@@ -38,13 +39,24 @@ export class AppMetadata extends Base {
   } = {
     documents: false,
   }
+
+  toDto(): ApplicationDto {
+    return {
+      ...super.toDto(),
+      metadata: this.metadata,
+      targets: this.targets,
+      parsers: this.parsers,
+      controller: this.controller,
+      permissions: this.permissions,
+    }
+  }
 }
 
 export type AppInstanceSettings = {
   isEnabled: boolean
 }
 
-export type AppWithSettings = AppMetadata & {
+export type AppWithSettings = ApplicationDto & {
   settings: AppInstanceSettings
 }
 

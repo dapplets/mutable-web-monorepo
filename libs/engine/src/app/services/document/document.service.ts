@@ -34,10 +34,12 @@ export class DocumentSerivce {
   async createDocumentWithData(
     mutationId: MutationId,
     appId: AppId,
-    document: Document,
+    dto: DocumentDto,
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) {
+    const document = Document.create(dto)
+
     if (await this.documentRepository.getItem(document.id)) {
       throw new Error('Document with that ID already exists')
     }

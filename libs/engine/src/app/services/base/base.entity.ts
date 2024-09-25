@@ -1,3 +1,4 @@
+import { BaseDto } from './base.dto'
 import { getEntity } from './decorators/entity'
 
 const KeyDelimiter = '/'
@@ -39,5 +40,15 @@ export class Base {
     const copyInstance = new (this.constructor as { new (): T })()
     Object.assign(copyInstance, this, data)
     return copyInstance
+  }
+
+  toDto(): BaseDto {
+    return {
+      id: this.id,
+      localId: this.localId,
+      authorId: this.authorId,
+      blockNumber: this.blockNumber,
+      timestamp: this.timestamp,
+    }
   }
 }

@@ -8,9 +8,9 @@ import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
 import { ContextTree } from '@mweb/react'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
 import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
-import { AppId, AppMetadata } from '../services/application/application.entity'
+import { AppId } from '../services/application/application.entity'
+import { ApplicationDto } from '../services/application/dtos/application.dto'
 import {
-  BosUserLink,
   BosUserLinkWithInstance,
   ControllerLink,
   UserLinkId,
@@ -27,7 +27,7 @@ import { ModalProps } from '../contexts/modal-context/modal-context'
 import { Portal } from '../contexts/engine-context/engine-context'
 import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
-import { Document, DocumentId, DocumentMetadata } from '../services/document/document.entity'
+import { DocumentId, DocumentMetadata } from '../services/document/document.entity'
 import { ApplicationService } from '../services/application/application.service'
 import { DocumentDto } from '../services/document/dtos/document.dto'
 
@@ -251,11 +251,16 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
           if (!appInstance) throw new Error('The app is not active')
 
-          const document = Document.create({
+          // ToDo: replace with DocumentCreateDto
+          const document: DocumentDto = {
             id: appDocId,
+            authorId: appDocId.split('/')[0],
+            localId: appDocId.split('/')[2],
+            blockNumber: 0,
+            timestamp: 0,
             metadata: appDocMeta,
             openWith: [appInstance.appId],
-          })
+          }
 
           const { mutation } = await engine.documentService.createDocumentWithData(
             selectedMutation.id,
@@ -358,7 +363,7 @@ const InsPointHandler: FC<{
   transferableContext: TransferableContext
   allUserLinks: BosUserLinkWithInstance[]
   components: Portal[]
-  apps: AppMetadata[]
+  apps: ApplicationDto[]
   isEditMode: boolean
   onContextQuery: (target: Target) => TransferableContext | null
   onCreateUserLink: (appId: AppId) => Promise<void>

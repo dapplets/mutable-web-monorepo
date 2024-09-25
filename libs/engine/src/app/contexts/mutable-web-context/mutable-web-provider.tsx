@@ -10,7 +10,7 @@ import { TargetService } from '../../services/target/target.service'
 import { mutationDisabled, mutationSwitched } from './notifications'
 import { getNearConfig } from '../../../constants'
 import { ModalContextState } from '../modal-context/modal-context'
-import { Mutation } from '../../services/mutation/mutation.entity'
+import { MutationDto } from '../../services/mutation/dtos/mutation.dto'
 import { ParserType, ParserConfig } from '@mweb/core'
 
 type Props = {
@@ -159,7 +159,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
         // Update last usage for selected mutation
         setMutations((prev) =>
           prev.map((mut) =>
-            mut.id === mutationId ? mut.copy({ settings: { ...mut.settings, lastUsage } }) : mut
+            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage } } : mut
           )
         )
       }
@@ -169,7 +169,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     [selectedMutationId]
   )
 
-  const refreshMutation = useCallback(async (mutation: Mutation) => {
+  const refreshMutation = useCallback(async (mutation: MutationDto) => {
     const mutationWithSettings = await engine.mutationService.populateMutationWithSettings(mutation)
 
     setMutations((prev) => prev.map((mut) => (mut.id === mutation.id ? mutationWithSettings : mut)))
@@ -196,9 +196,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
         setMutations((prev) =>
           prev.map((mut) =>
-            mut.id === mutationId
-              ? mut.copy({ settings: { ...mut.settings, lastUsage: null } })
-              : mut
+            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage: null } } : mut
           )
         )
       } catch (err) {

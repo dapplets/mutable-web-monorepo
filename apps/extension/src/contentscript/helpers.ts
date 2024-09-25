@@ -1,4 +1,4 @@
-import { Mutation } from '@mweb/engine'
+import { MutationDto } from '@mweb/engine'
 
 /**
  * Simple object check.
@@ -27,7 +27,7 @@ export const compareDeep = (a: unknown, b: unknown) => JSON.stringify(a) === JSO
  * @param m1
  * @param m2
  */
-export const compareMutations = (m1: Mutation, m2: Mutation): boolean =>
+export const compareMutations = (m1: MutationDto, m2: MutationDto): boolean =>
   !(
     m1.id !== m2.id ||
     !compareDeep(m1.targets, m2.targets) ||
