@@ -147,6 +147,7 @@ const CloseIcon = () => (
   </svg>
 )
 
+// ToDo: use MutationCreateDto
 const createEmptyMutation = (accountId: string): MutationDto => {
   const localId = `Untitled-${generateRandomHex(6)}`
   return {

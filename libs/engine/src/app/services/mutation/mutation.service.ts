@@ -11,6 +11,7 @@ import { generateGuid } from '../../common/generate-guid'
 import { EntityId } from '../base/base.entity'
 import { NotificationDto } from '../notification/dtos/notification.dto'
 import { MutationDto } from './dtos/mutation.dto'
+import { MutationCreateDto } from './dtos/mutation-create.dto'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
@@ -83,7 +84,7 @@ export class MutationService {
   }
 
   async createMutation(
-    dto: MutationDto,
+    dto: MutationCreateDto,
     options: SaveMutationOptions = {
       applyChangesToOrigin: false,
       askOriginToApplyChanges: false,

@@ -9,6 +9,7 @@ import { Document, DocumentId } from './document.entity'
 import { DocumentRepository } from './document.repository'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { DocumentDto } from './dtos/document.dto'
+import { DocumentCreateDto } from './dtos/document-create.dto'
 
 export class DocumentSerivce {
   constructor(
@@ -20,21 +21,22 @@ export class DocumentSerivce {
 
   async getDocument(globalDocumentId: DocumentId): Promise<DocumentDto | null> {
     const document = await this.documentRepository.getItem(globalDocumentId)
-    return document ? this._toDto(document) : null
+    return document?.toDto() ?? null
   }
 
-  async getDocumentsByAppId(globalAppId: AppId): Promise<Document[]> {
+  async getDocumentsByAppId(globalAppId: AppId): Promise<DocumentDto[]> {
     return this.documentRepository.getItemsByIndex({ openWith: [globalAppId] })
   }
 
-  async createDocument(document: Document, tx?: Transaction): Promise<Document> {
+  async createDocument(dto: DocumentCreateDto, tx?: Transaction): Promise<Document> {
+    const document = Document.create(dto)
     return this.documentRepository.createItem(document, tx)
   }
 
   async createDocumentWithData(
     mutationId: MutationId,
     appId: AppId,
-    dto: DocumentDto,
+    dto: DocumentCreateDto,
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) {
@@ -70,17 +72,5 @@ export class DocumentSerivce {
     )
 
     return { mutation }
-  }
-
-  private _toDto(document: Document): DocumentDto {
-    return {
-      id: document.id,
-      localId: document.localId,
-      authorId: document.authorId,
-      blockNumber: document.blockNumber,
-      timestamp: document.timestamp,
-      metadata: document.metadata,
-      openWith: document.openWith,
-    }
   }
 }
