@@ -611,6 +611,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
         onClose={onClose}
         open={open}
         loggedInAccountId={loggedInAccountId}
+        modalContainerRef={overlayRef}
       />
     </WrapperDriver>
   )

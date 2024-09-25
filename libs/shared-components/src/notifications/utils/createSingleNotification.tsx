@@ -1,5 +1,5 @@
-import React, { FC } from 'react'
-import { Space, Typography, Card, Tag, Collapse, Button, ButtonProps } from 'antd'
+import React, { FC, useState } from 'react'
+import { Space, Typography, Card, Tag, Collapse, Button, ButtonProps, Modal } from 'antd'
 import {
   NotificationDto,
   useAcceptPullRequest,
@@ -124,7 +124,8 @@ const IconNotificationClose = () => (
 
 export const CreateSingleNotification: FC<{
   notification: NotificationDto
-}> = ({ notification }) => {
+  onReview: (notification: NotificationDto) => void
+}> = ({ notification, onReview }) => {
   const {
     viewNotification,
     isLoading: isLoadingView,
@@ -396,6 +397,7 @@ export const CreateSingleNotification: FC<{
               onClick={() => {
                 if (action.label === 'Accept') acceptPullRequest && acceptPullRequest()
                 if (action.label === 'Decline') rejectPullRequest && rejectPullRequest()
+                if (action.label === 'Review') onReview(notification)
               }}
             >
               {action.icon}
