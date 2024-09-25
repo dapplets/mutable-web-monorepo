@@ -2,7 +2,7 @@ import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
-import { NotificationProvider } from '@mweb/engine'
+import { NotificationProvider, useViewAllNotifications } from '@mweb/engine'
 import { NotificationFeed } from '../notifications/feed'
 const { Title } = Typography
 
@@ -32,57 +32,29 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   font-family: sans-serif;
   box-sizing: border-box;
 
-  .useNotification {
-    position: absolute;
-    height: 100%;
+  .notifySingle {
     width: 100%;
-    margin: 0;
-    bottom: 0 !important;
-    top: 0 !important;
-    left: 0;
+    user-select: none;
+    column-gap: 8px;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid #e2e2e5;
+    padding: 10px;
 
-    .useNotification-notice-wrapper {
-      box-shadow: none;
+    .notifySingle-item {
+      column-gap: 8px;
+    }
+
+    .ant-typography {
+      line-height: 1;
     }
 
     .ant-card-body {
       padding: 0;
     }
-  }
 
-  .notifySingle {
-    width: 100%;
-
-    .useNotification-notice-icon {
-      display: none;
-    }
-
-    .useNotification-notice-message {
-      margin-inline-start: 0 !important;
-
-      .ant-collapse-header {
-        .ant-space {
-          justify-content: space-between;
-        }
-      }
-    }
-
-    .useNotification-notice-description {
-      margin-inline-start: 0 !important;
-    }
-
-    .useNotification-notice-btn {
-      float: none !important;
-    }
-
-    .useNotification-notice-close {
-      inset-inline-end: 10px;
-      top: 10px;
-    }
-
-    .ant-space {
-      width: 100%;
-      user-select: none;
+    .ant-collapse-header {
+      padding: 0 16px;
     }
   }
 `
@@ -150,6 +122,11 @@ export interface IOverlayWrapperProps {
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedInAccountId }) => {
   const [waiting, setWaiting] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
+  const {
+    viewAllNotifcations,
+    isLoading: isLoadingView,
+    error: errorView,
+  } = useViewAllNotifications(loggedInAccountId)
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
@@ -169,7 +146,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
               <Button
                 style={{ float: 'right' }}
                 onClick={() => {
-                  // todo need function mark all read
+                  viewAllNotifcations()
                 }}
                 type="link"
               >
