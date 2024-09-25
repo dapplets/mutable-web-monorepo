@@ -30,7 +30,10 @@ export class Base {
     return getEntity(this.constructor).name
   }
 
-  static create<T extends Base>(this: new () => T, data: Partial<T>): T {
+  static create<T extends Base>(
+    this: new () => T,
+    data: Partial<T> & (Pick<Base, 'authorId' | 'localId'> | Pick<Base, 'id'>)
+  ): T {
     const instance = new this()
     Object.assign(instance, data)
     return instance

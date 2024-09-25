@@ -10,6 +10,7 @@ import { NotificationDto } from './dtos/notification.dto'
 import { NotificationCreateDto } from './dtos/notification-create.dto'
 import { PullRequestStatus } from './types/pull-request'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
+import { generateGuid } from '../../common/generate-guid'
 
 export class NotificationService {
   constructor(
@@ -25,7 +26,14 @@ export class NotificationService {
   }
 
   async createNotification(dto: NotificationCreateDto, tx?: Transaction): Promise<void> {
-    const notification = Notification.create(dto)
+    const authorId = await this.nearSigner.getAccountId()
+    if (!authorId) {
+      throw new Error('Near account is not signed in')
+    }
+
+    const localId = generateGuid()
+
+    const notification = Notification.create({ ...dto, authorId, localId })
     await this.notificationRepository.createItem(notification, tx)
   }
 

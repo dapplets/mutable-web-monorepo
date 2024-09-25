@@ -106,12 +106,12 @@ const removeDuplicates = (data: any, prevData: any) => {
  */
 export class SocialDbService {
   constructor(
-    private _signer: NearSigner,
+    public signer: NearSigner,
     private _contractName: string
   ) {}
 
   async get(keys: string[], options: { withBlockHeight?: boolean } = {}): Promise<Value> {
-    return await this._signer.view(this._contractName, 'get', {
+    return await this.signer.view(this._contractName, 'get', {
       keys,
       options: {
         with_block_height: options.withBlockHeight,
@@ -120,7 +120,7 @@ export class SocialDbService {
   }
 
   async keys(keys: string[]): Promise<string[]> {
-    const response = await this._signer.view(this._contractName, 'keys', {
+    const response = await this.signer.view(this._contractName, 'keys', {
       keys,
     })
 
@@ -139,7 +139,7 @@ export class SocialDbService {
     }
 
     const [accountId] = accountIds
-    const signedAccountId = await this._signer.getAccountId()
+    const signedAccountId = await this.signer.getAccountId()
 
     if (!signedAccountId) {
       throw new Error('User is not logged in')
@@ -175,7 +175,7 @@ export class SocialDbService {
       deposit = deposit.add(ExtraStorageForSession)
     }
 
-    await this._signer.call(
+    await this.signer.call(
       this._contractName,
       'set',
       { data },
@@ -194,12 +194,12 @@ export class SocialDbService {
   // ToDo: approximate timestamp
   getTimestampByBlockHeight(blockHeight: number): number {
     // ToDo: time reference was private, fix it
-    const { avgBlockTime, height, timestamp } = this._signer.nearConfig.timeReference
+    const { avgBlockTime, height, timestamp } = this.signer.nearConfig.timeReference
     return (blockHeight - height) * avgBlockTime + timestamp
   }
 
   private async _getAccountStorage(accountId: string): Promise<StorageView | null> {
-    const resp = await this._signer.view(this._contractName, 'get_account_storage', {
+    const resp = await this.signer.view(this._contractName, 'get_account_storage', {
       account_id: accountId,
     })
 
@@ -211,7 +211,7 @@ export class SocialDbService {
 
   private async _fetchCurrentData(data: any) {
     const keys = extractKeys(data)
-    return await this._signer.view(this._contractName, 'get', { keys })
+    return await this.signer.view(this._contractName, 'get', { keys })
   }
 
   // Utils

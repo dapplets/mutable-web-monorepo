@@ -11,6 +11,8 @@ import {
 import { ApplicationRepository } from './application.repository'
 import { ApplicationDto } from './dtos/application.dto'
 import { MutationDto } from '../mutation/dtos/mutation.dto'
+import { ApplicationCreateDto } from './dtos/application-create.dto'
+import { Transaction } from '../unit-of-work/transaction'
 
 export class ApplicationService {
   constructor(private applicationRepository: ApplicationRepository) {}
@@ -30,6 +32,11 @@ export class ApplicationService {
     return Promise.all(
       mutation.apps.map((appInstance) => this._getAppInstanceWithSettings(mutation.id, appInstance))
     ).then((apps) => apps.filter((app) => app !== null) as AppInstanceWithSettings[])
+  }
+
+  async createApplication(dto: ApplicationCreateDto, tx?: Transaction): Promise<ApplicationDto> {
+    const app = await this.applicationRepository.constructItem(dto)
+    return this.applicationRepository.createItem(app, tx)
   }
 
   public filterSuitableApps(

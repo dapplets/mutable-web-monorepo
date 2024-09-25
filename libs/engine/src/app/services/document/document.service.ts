@@ -29,7 +29,7 @@ export class DocumentSerivce {
   }
 
   async createDocument(dto: DocumentCreateDto, tx?: Transaction): Promise<Document> {
-    const document = Document.create(dto)
+    const document = await this.documentRepository.constructItem(dto)
     return this.documentRepository.createItem(document, tx)
   }
 
@@ -40,7 +40,7 @@ export class DocumentSerivce {
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) {
-    const document = Document.create(dto)
+    const document = await this.documentRepository.constructItem(dto)
 
     if (await this.documentRepository.getItem(document.id)) {
       throw new Error('Document with that ID already exists')

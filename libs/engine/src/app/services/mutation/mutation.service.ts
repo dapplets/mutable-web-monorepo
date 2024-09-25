@@ -12,6 +12,7 @@ import { EntityId } from '../base/base.entity'
 import { NotificationDto } from '../notification/dtos/notification.dto'
 import { MutationDto } from './dtos/mutation.dto'
 import { MutationCreateDto } from './dtos/mutation-create.dto'
+import { NotificationCreateDto } from '../notification/dtos/notification-create.dto'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
@@ -90,8 +91,9 @@ export class MutationService {
       askOriginToApplyChanges: false,
     }
   ): Promise<MutationWithSettings> {
-    const mutation = Mutation.create(dto)
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
+
+    const mutation = await this.mutationRepository.constructItem(dto)
 
     // ToDo: move to provider?
     if (await this.mutationRepository.getItem(mutation.id)) {
@@ -245,9 +247,7 @@ export class MutationService {
       throw new Error('You cannot ask yourself to apply changes')
     }
 
-    const notification = {
-      authorId: forkAuthorId,
-      localId: generateGuid(),
+    const notification: NotificationCreateDto = {
       type: NotificationType.PullRequest,
       recipients: [originAuthorId],
       payload: {
