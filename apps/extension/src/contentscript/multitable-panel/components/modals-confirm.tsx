@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
-import { MutationCreateDto, useCreateMutation, useEditMutation } from '@mweb/engine'
+import { MutationCreateDto, MutationDto, useCreateMutation, useEditMutation } from '@mweb/engine'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
@@ -72,7 +72,7 @@ const ImgWrapper = styled.div`
 const TextWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: calc(100% - 52px);
+  width: calc(100% - 52px);
 
   p {
     font-size: 14px;
@@ -181,6 +181,7 @@ export interface Props {
   isOwn: boolean
   onClose: () => void
   editingMutation: MutationCreateDto
+  baseMutation: MutationDto | null
   mutationAuthorId: string
   loggedInAccountId: string
 }
@@ -228,6 +229,7 @@ export const ModalConfirm: FC<Props> = ({
   isOwn,
   onClose,
   editingMutation,
+  baseMutation,
   mutationAuthorId,
   loggedInAccountId,
 }) => {
@@ -362,29 +364,31 @@ export const ModalConfirm: FC<Props> = ({
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={newImage}
+                image={baseMutation?.metadata.image}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={fork_of}
+                alt={baseMutation?.metadata.name}
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{fork_of}</p>
-              <span>{fork_of}</span>
+              <p>{baseMutation?.metadata.name}</p>
+              <span>by {isOwn ? `me (${loggedInAccountId})` : baseMutation?.authorId}</span>
             </TextWrapper>
           </CardWrapper>
 
-          <CheckboxBlock>
-            <span>Ask Origin to apply changes</span>
-            <CheckboxInput
-              type="checkbox"
-              checked={true}
-              disabled={isFormDisabled}
-              onChange={
-                () => {}
-                // todo: need onChange
-              }
-            />
-          </CheckboxBlock>
+          {isOwn ? null : (
+            <CheckboxBlock>
+              <span>Ask Origin to apply changes</span>
+              <CheckboxInput
+                type="checkbox"
+                checked={true}
+                disabled={isFormDisabled}
+                onChange={
+                  () => {}
+                  // todo: need onChange
+                }
+              />
+            </CheckboxBlock>
+          )}
           <Label>As my item ({loggedInAccountId})</Label>
           <CardWrapper>
             <InputImage

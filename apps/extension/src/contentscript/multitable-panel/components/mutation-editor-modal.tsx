@@ -213,16 +213,14 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   // Close modal with escape key
   useEscape(onClose)
 
-  const preOriginalMutation = useMemo(
-    () => baseMutation ?? createEmptyMutation(),
-    [baseMutation, loggedInAccountId]
-  )
+  // const preOriginalMutation = useMemo(
+  //   () => baseMutation ?? createEmptyMutation(),
+  //   [baseMutation, loggedInAccountId]
+  // )
 
   // ToDo: refactor it.
   // Too much mutations: baseMutation, preOriginalMutation, originalMutation, editingMutation
-  const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
-  const [editingMutation, setEditingMutation] = useState(originalMutation)
-  const [openConfirm, setOpenConfirm] = useState(false)
+  // const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
   const mutationAuthorId = loggedInAccountId ?? 'dapplets.near' // ToDo ????????????????????
   const isOwn = mutationAuthorId === loggedInAccountId
 
@@ -233,25 +231,44 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       ? MutationModalMode.Editing
       : MutationModalMode.Forking
   )
-
-  useEffect(() => {
-    // Replace ID when forking
-    if (mode === MutationModalMode.Forking && loggedInAccountId && baseMutation) {
-      setOriginalMutation(
-        mergeDeep(cloneDeep(preOriginalMutation), {
+  const chooseEditingMutation = (): MutationCreateDto | MutationDto =>
+    mode === MutationModalMode.Forking && baseMutation
+      ? {
           metadata: {
-            fork_of: baseMutation.id,
+            name: '',
           },
-        })
-      )
-    } else {
-      setOriginalMutation(preOriginalMutation)
-    }
-  }, [preOriginalMutation, mode, loggedInAccountId])
+          apps: cloneDeep(baseMutation.apps),
+          targets: cloneDeep(baseMutation.targets),
+        }
+      : mode === MutationModalMode.Editing && baseMutation
+      ? cloneDeep(baseMutation)
+      : createEmptyMutation()
 
-  useEffect(() => setEditingMutation(originalMutation), [originalMutation])
+  const [editingMutation, setEditingMutation] = useState<MutationCreateDto | MutationDto>(
+    chooseEditingMutation()
+  )
+  const [openConfirm, setOpenConfirm] = useState(false)
+
+  // useEffect(() => {
+  //   // Replace ID when forking
+  //   if (mode === MutationModalMode.Forking && loggedInAccountId && baseMutation) {
+  //     setOriginalMutation(
+  //       mergeDeep(cloneDeep(preOriginalMutation), {
+  //         metadata: {
+  //           fork_of: baseMutation.id,
+  //         },
+  //       })
+  //     )
+  //   } else {
+  //     setOriginalMutation(preOriginalMutation)
+  //   }
+  // }, [preOriginalMutation, mode, loggedInAccountId])
+
+  // useEffect(() => setEditingMutation(originalMutation), [originalMutation])
 
   const [alert, setAlert] = useState<IAlert | null>(null)
+
+  useEffect(() => setEditingMutation(chooseEditingMutation()), [mode])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
@@ -326,7 +343,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   }
 
   const handleRevertClick = () => {
-    setEditingMutation(cloneDeep(originalMutation))
+    setEditingMutation(chooseEditingMutation())
   }
 
   const handleSaveDropdownChange = (itemId: string) => {
@@ -425,6 +442,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             isOwn={isOwn}
             onClose={() => setOpenConfirm(false)}
             editingMutation={editingMutation}
+            baseMutation={baseMutation}
             mutationAuthorId={mutationAuthorId}
             loggedInAccountId={loggedInAccountId}
           />
