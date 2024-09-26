@@ -1,104 +1,45 @@
-import { Mutation, useMutableWeb } from '@mweb/engine'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
+import { Mutation, useCreateMutation, useEditMutation } from '@mweb/engine'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
+import { MutationModalMode } from './types'
+import { InputImage } from './upload-image'
+import { cloneDeep } from '../../helpers'
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
+  width: 300px;
+  max-height: calc(100% - 40px);
   padding: 20px;
   gap: 10px;
   border-radius: 10px;
-  font-family: sans-serif;
-  background: #fff;
-  width: 300px;
-  max-height: 70vh;
   z-index: 5;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background: #fff;
   box-shadow: 0px 5px 11px 0px rgba(2, 25, 58, 0.1), 0px 19px 19px 0px rgba(2, 25, 58, 0.09),
     0px 43px 26px 0px rgba(2, 25, 58, 0.05), 0px 77px 31px 0px rgba(2, 25, 58, 0.01),
     0px 120px 34px 0px rgba(2, 25, 58, 0);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
   input[type='checkbox'] {
     accent-color: #384bff;
   }
 `
 
-const HeaderEditor = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: rgba(2, 25, 58, 1);
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 21.09px;
-  text-align: left;
-  gap: 20px;
-
-  .edit {
-    margin-right: auto;
-    margin-bottom: 2px;
-  }
-`
-
-const HeaderTitle = styled.div`
-  color: #02193a;
-  width: 100%;
+const HeaderTitle = styled.h1`
+  margin: 0;
   text-align: center;
-`
-
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  button {
-    width: 125px;
-  }
-`
-
-const ImgWrapper = styled.div`
-  width: 42px;
-  height: 42px;
-  img {
-    width: 100%;
-    height: 100%;
-  }
-`
-
-const CardWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 5px;
-`
-
-const TextWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 184px;
-  p {
-    font-size: 14px;
-    font-weight: 600;
-    color: #02193a;
-    margin: 0;
-  }
-  span {
-    font-size: 10px;
-    color: #7a818b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  color: #02193a;
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 150%;
 `
 
 const Label = styled.div`
@@ -106,6 +47,80 @@ const Label = styled.div`
   font-size: 8px;
   text-transform: uppercase;
   font-weight: 700;
+`
+
+const CardWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+`
+
+const ImgWrapper = styled.div`
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100% - 52px);
+
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #02193a;
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  span {
+    font-size: 10px;
+    color: #7a818b;
+    overflow-wrap: break-word;
+  }
+`
+
+const FloatingLabelContainer = styled.div`
+  background: #f8f9ff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+`
+
+const StyledInput = styled.input`
+  padding: 20px 10px 9px 10px;
+  background: inherit;
+  color: #02193a;
+  line-height: 100%;
+  font-size: 12px;
+  border-radius: 10px;
+  width: 100%;
+  outline: none;
+  border: none;
+`
+
+const StyledLabel = styled.label`
+  top: 0.5rem;
+  left: 10px;
+  font-size: 10px;
+  color: #7a818b;
+  position: absolute;
+  user-select: none;
+
+  span {
+    color: #db504a;
+  }
 `
 
 const FloatingLabelContainerArea = styled.div`
@@ -118,11 +133,6 @@ const FloatingLabelContainerArea = styled.div`
   display: flex;
   border-radius: 10px;
 `
-const StyledLabel = styled.label`
-  font-size: 10px;
-  color: #bbccd0;
-  position: absolute;
-`
 
 const StyledTextarea = styled.textarea`
   padding: 25px 10px 10px;
@@ -133,26 +143,9 @@ const StyledTextarea = styled.textarea`
   border-radius: 10px;
   width: 100%;
   outline: none;
-  height: 110px;
+  min-height: 77px;
   position: relative;
   border: none;
-
-  &::-webkit-resizer {
-    display: none;
-  }
-
-  &:focus + label,
-  &:not(:placeholder-shown) + label {
-    height: 25px;
-    width: 99%;
-    background: inherit;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    top: 0;
-    left: 10px;
-    font-size: 12px;
-  }
 `
 
 const CheckboxBlock = styled.div`
@@ -173,67 +166,23 @@ const CheckboxInput = styled.input`
   border: 1px solid #384bff;
 `
 
-const FloatingLabelContainer = styled.div`
-  background: #f8f9ff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-sizing: border-box;
-  position: relative;
-  width: 184px;
-`
-const StyledInput = styled.input`
-  padding: 20px 10px 10px 10px;
-  background: inherit;
-  color: #02193a;
-  line-height: 100%;
-  font-size: 12px;
-  border-radius: 10px;
-  width: 100%;
-  outline: none;
-  border: none;
-
-  &:focus + label,
-  &:not(:placeholder-shown) + label {
-    top: 0.5rem;
-    font-size: 10px;
-    color: #bbccd0;
-    left: 10px;
+const ButtonsBlock = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  button {
+    width: 125px;
   }
 `
 
-const PopupIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path
-      d="M9.33301 10.5L12.833 7L9.33301 3.5"
-      stroke="#7A818B"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M4.66699 3.5L1.16699 7L4.66699 10.5"
-      stroke="#7A818B"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
-
 export interface Props {
+  itemType: 'mutation' | 'document'
   mode: any
+  isOwn: boolean
   onClose: () => void
-  imgCid?: string
   editingMutation: Mutation
-  handleRevertClick: any
-  isFormDisabled: boolean
-  handleSaveClick: any
-}
-
-export enum MutationModalMode {
-  Editing = 'editing',
-  Creating = 'creating',
-  Forking = 'forking',
+  mutationAuthorId: string
+  loggedInAccountId: string
 }
 
 interface IAlert extends AlertProps {
@@ -261,95 +210,160 @@ const alerts: { [name: string]: IAlert } = {
     text: 'This mutation ID already exists.',
     severity: 'warning',
   },
-  noId: {
-    id: 'noId',
-    text: 'ID must be specified.',
-    severity: 'error',
-  },
   noName: {
     id: 'noName',
     text: 'Name must be specified.',
     severity: 'error',
   },
+  noImage: {
+    id: 'noImage',
+    text: 'Image must be specified.',
+    severity: 'error',
+  },
 }
 
 export const ModalConfirm: FC<Props> = ({
+  itemType,
   mode,
+  isOwn,
   onClose,
-  imgCid,
   editingMutation,
-  handleRevertClick,
-  isFormDisabled,
-  handleSaveClick,
+  mutationAuthorId,
+  loggedInAccountId,
 }) => {
+  const { name, image, fork_of } = editingMutation.metadata
   // Close modal with escape key
-  useEscape(onClose)
+  useEscape(onClose) // ToDo -- does not work
+  const [title, setTitle] = useState<string>(name ?? '')
+  const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
+  const [description, setDescription] = useState<string>('')
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { engine } = useMutableWeb()
 
-  console.log(editingMutation)
+  // const checkForSubmit = (): boolean =>
+  //   mode === MutationModalMode.Creating || mode === MutationModalMode.Forking
+  //     ? !!title && !!newImage
+  //     : true
+
+  // const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(!checkForSubmit())
+  const { createMutation, isLoading: isCreating } = useCreateMutation()
+  const { editMutation, isLoading: isEditing } = useEditMutation()
+  // const { engine } = useMutableWeb()
+
+  const isFormDisabled = isCreating || isEditing
+
+  // useEffect(() => setIsSubmitDisabled(!checkForSubmit()), [title, newImage])
+
+  useEffect(() => setAlert(null), [title, newImage])
+
+  const doChecksForAlerts = (): IAlert | null => {
+    if (!title) return alerts.noName
+    if (!newImage || !newImage?.ipfs_cid) return alerts.noImage
+    return null
+  }
+
+  // const checkIfModified = useCallback(
+  //   () => !(baseMutation ? compareMutations(baseMutation, editingMutation) : false),
+  //   [baseMutation, editingMutation]
+  // )
+
+  const handleSaveClick = () => {
+    const newAlert = doChecksForAlerts()
+    if (newAlert) {
+      setAlert(newAlert)
+      return
+    }
+    console.log('editingMutation', editingMutation)
+
+    const mutationToPublish = cloneDeep(editingMutation)
+
+    // validate Name
+    if (title.trim() === '') {
+      setTitle('')
+      return
+    }
+
+    mutationToPublish.metadata.name = title.trim()
+    mutationToPublish.metadata.image = newImage
+    mutationToPublish.metadata.description = description.trim()
+
+    // validate changes -- ToDo ????
+    // const hasChanges = checkIfModified()
+    // if (!hasChanges) {
+    //   setIsModified(false)
+    //   return
+    // }
+
+    if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
+      createMutation(mutationToPublish).then(() => onClose())
+    } else if (mode === MutationModalMode.Editing) {
+      editMutation(mutationToPublish).then(() => onClose())
+    }
+  }
 
   return (
     <ModalConfirmWrapper data-testid="popup-confirm">
-      <HeaderEditor>
-        <HeaderTitle>
-          {mode === MutationModalMode.Creating ? 'Create your item' : null}
-          {mode === MutationModalMode.Editing ? 'Publish your item' : null}
-          {mode === MutationModalMode.Forking ? 'Publish as a fork' : null}
-        </HeaderTitle>
-      </HeaderEditor>
+      <HeaderTitle>
+        {mode === MutationModalMode.Creating
+          ? `Create your ${itemType}`
+          : mode === MutationModalMode.Editing
+          ? `Publish your ${itemType}`
+          : mode === MutationModalMode.Forking
+          ? 'Publish as a fork'
+          : null}
+      </HeaderTitle>
+
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
+
       {mode === MutationModalMode.Creating ? (
         <>
-          <Label>my Item</Label>
+          <Label>My item ({loggedInAccountId})</Label>
           <CardWrapper>
-            <ImgWrapper>
-              <Image
-                image={editingMutation.metadata.image}
-                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
+            <InputImage
+              ipfsCid={newImage?.ipfs_cid}
+              onImageChange={async (ipfs_cid: string) => setImage({ ipfs_cid })}
+              isDisabled={isFormDisabled}
+            />
+            <FloatingLabelContainer>
+              <StyledInput
+                id={'title'}
+                type={'text'}
+                value={title}
+                placeholder={`Enter your ${itemType} name`}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={isFormDisabled}
               />
-            </ImgWrapper>
-            <TextWrapper>
-              <p>{editingMutation.metadata.name}</p>
-              <span>{editingMutation.id}</span>
-            </TextWrapper>
-            <div>
-              <PopupIcon />
-            </div>
+              <StyledLabel htmlFor={'title'}>
+                Name<span>*</span>
+              </StyledLabel>
+            </FloatingLabelContainer>
           </CardWrapper>
 
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
-              value={''}
-              onChange={() => {
-                // todo: onChange
-              }}
+              value={description}
+              placeholder={`Describe your ${itemType} here`}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={isFormDisabled}
             />
             <StyledLabel htmlFor={'description'}>Description</StyledLabel>
           </FloatingLabelContainerArea>
         </>
-      ) : null}
-
-      {mode === MutationModalMode.Forking ? (
+      ) : mode === MutationModalMode.Forking ? (
         <>
           <Label>from</Label>
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={editingMutation.metadata.image}
+                image={newImage}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
+                alt={fork_of}
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{editingMutation.metadata.name}</p>
-              <span>{editingMutation.id}</span>
+              <p>{fork_of}</p>
+              <span>{fork_of}</span>
             </TextWrapper>
-            <div>
-              <PopupIcon />
-            </div>
           </CardWrapper>
 
           <CheckboxBlock>
@@ -357,107 +371,103 @@ export const ModalConfirm: FC<Props> = ({
             <CheckboxInput
               type="checkbox"
               checked={true}
+              disabled={isFormDisabled}
               onChange={
                 () => {}
                 // todo: need onChange
               }
             />
           </CheckboxBlock>
-          <Label>As your item</Label>
+          <Label>As my item ({loggedInAccountId})</Label>
           <CardWrapper>
-            <ImgWrapper>
-              <Image
-                image={editingMutation.metadata.image}
-                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
-              />
-            </ImgWrapper>
+            <InputImage
+              ipfsCid={newImage?.ipfs_cid}
+              onImageChange={async (ipfs_cid: string) => setImage({ ipfs_cid })}
+              isDisabled={isFormDisabled}
+            />
             <FloatingLabelContainer>
               <StyledInput
                 id={'title'}
                 type={'text'}
-                value={''}
-                onChange={(e) => {
-                  // todo: need onChange
-                }}
+                value={title}
+                placeholder={`Enter your ${itemType} name`}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={isFormDisabled}
               />
-              <StyledLabel htmlFor={'title'}>Name</StyledLabel>
+              <StyledLabel htmlFor={'title'}>
+                Name<span>*</span>
+              </StyledLabel>
             </FloatingLabelContainer>
-            <div>
-              <PopupIcon />
-            </div>
           </CardWrapper>
 
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
-              value={''}
-              onChange={() => {
-                // todo: onChange
-              }}
+              value={description}
+              placeholder={`Describe your ${itemType} here`}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={isFormDisabled}
             />
             <StyledLabel htmlFor={'description'}>Description</StyledLabel>
           </FloatingLabelContainerArea>
         </>
-      ) : null}
-
-      {mode === MutationModalMode.Editing ? (
+      ) : mode === MutationModalMode.Editing ? (
         <>
-          <Label>my Item</Label>
+          <Label>My item</Label>
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={editingMutation.metadata.image}
+                image={newImage}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
+                alt={title} // ToDo: why?
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{editingMutation.metadata.name}</p>
-              <span>{editingMutation.id}</span>
+              <p>{title}</p>
+              <span>{title}</span>
             </TextWrapper>
-            <div>
-              <PopupIcon />
-            </div>
           </CardWrapper>
 
-          <Label>Originally Forked from</Label>
-          <CardWrapper>
-            <ImgWrapper>
-              {/* todo: Originally Forked from Data */}
-              <Image
-                image={editingMutation.metadata.image}
-                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
-              />
-            </ImgWrapper>
-            <TextWrapper>
-              <p>{editingMutation.metadata.name}</p>
-              <span>{editingMutation.id}</span>
-            </TextWrapper>
-            <div>
-              <PopupIcon />
-            </div>
-          </CardWrapper>
+          {isOwn ? null : (
+            <>
+              <Label>Originally Forked from</Label>
+              <CardWrapper>
+                <ImgWrapper>
+                  {/* todo: Originally Forked from Data */}
+                  <Image
+                    image={newImage}
+                    fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                    alt={fork_of}
+                  />
+                </ImgWrapper>
+                <TextWrapper>
+                  <p>{fork_of}</p>
+                  <span>{fork_of}</span>
+                </TextWrapper>
+              </CardWrapper>
 
-          <CheckboxBlock>
-            <span>Ask Origin to apply changes</span>
-            <CheckboxInput
-              type="checkbox"
-              checked={true}
-              onChange={
-                () => {}
-                // todo: need onChange
-              }
-            />
-          </CheckboxBlock>
+              <CheckboxBlock>
+                <span>Ask Origin to apply changes</span>
+                <CheckboxInput
+                  type="checkbox"
+                  checked={true}
+                  disabled={isFormDisabled}
+                  onChange={
+                    () => {}
+                    // todo: need onChange
+                  }
+                />
+              </CheckboxBlock>
+            </>
+          )}
+
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
-              value={''}
-              onChange={() => {
-                // todo: onChange
-              }}
+              value={description}
+              placeholder={`Describe your ${itemType} here`}
+              onChange={(e) => setDescription(e.target.value)}
+              disabled={isFormDisabled}
             />
             <StyledLabel htmlFor={'description'}>Description</StyledLabel>
           </FloatingLabelContainerArea>
@@ -465,9 +475,9 @@ export const ModalConfirm: FC<Props> = ({
       ) : null}
 
       <ButtonsBlock>
-        <Button onClick={handleRevertClick}>Cancel</Button>
+        <Button onClick={onClose}>Cancel</Button>
         {!isFormDisabled ? (
-          <BsButton onClick={handleSaveClick} variant="primary" disabled>
+          <BsButton onClick={handleSaveClick} variant="primary">
             {mode === MutationModalMode.Forking ? 'Fork it!' : 'Do it!'}
           </BsButton>
         ) : (
