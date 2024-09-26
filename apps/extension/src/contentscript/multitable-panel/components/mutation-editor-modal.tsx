@@ -1,12 +1,8 @@
 import {
-  AppMetadata,
-  Document,
-  Mutation,
   ApplicationDto,
   DocumentDto,
+  MutationCreateDto,
   MutationDto,
-  useCreateMutation,
-  useEditMutation,
   useMutableWeb,
 } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
@@ -155,28 +151,19 @@ const CloseIcon = () => (
   </svg>
 )
 
-// ToDo: use MutationCreateDto
-const createEmptyMutation = (accountId: string): MutationDto => {
-  const localId = `Untitled-${generateRandomHex(6)}`
-  return {
-    id: `${accountId}/mutation/${localId}`,
-    authorId: accountId,
-    blockNumber: 0,
-    timestamp: 0,
-    localId: localId,
-    apps: [],
-    metadata: {
-      name: '',
+const createEmptyMutation = (): MutationCreateDto => ({
+  apps: [],
+  metadata: {
+    name: '',
+  },
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: { id: { in: [window.location.hostname] } },
     },
-    targets: [
-      {
-        namespace: 'engine',
-        contextType: 'website',
-        if: { id: { in: [window.location.hostname] } },
-      },
-    ],
-  }
-}
+  ],
+})
 
 export interface Props {
   apps: ApplicationDto[]
@@ -227,7 +214,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   useEscape(onClose)
 
   const preOriginalMutation = useMemo(
-    () => baseMutation ?? createEmptyMutation(loggedInAccountId ?? 'dapplets.near'),
+    () => baseMutation ?? createEmptyMutation(),
     [baseMutation, loggedInAccountId]
   )
 
@@ -236,7 +223,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
   const [editingMutation, setEditingMutation] = useState(originalMutation)
   const [openConfirm, setOpenConfirm] = useState(false)
-  const [mutationAuthorId] = preOriginalMutation.id.split('/')
+  const mutationAuthorId = loggedInAccountId ?? 'dapplets.near' // ToDo ????????????????????
   const isOwn = mutationAuthorId === loggedInAccountId
 
   const [mode, setMode] = useState(
@@ -249,14 +236,11 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
   useEffect(() => {
     // Replace ID when forking
-    if (mode === MutationModalMode.Forking && loggedInAccountId) {
-      const [, , mutLocalId] = preOriginalMutation.id.split('/')
-      const newId = `${loggedInAccountId}/mutation/${mutLocalId}`
+    if (mode === MutationModalMode.Forking && loggedInAccountId && baseMutation) {
       setOriginalMutation(
         mergeDeep(cloneDeep(preOriginalMutation), {
-          id: newId,
           metadata: {
-            fork_of: preOriginalMutation.id,
+            fork_of: baseMutation.id,
           },
         })
       )

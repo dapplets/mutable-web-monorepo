@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
-import { Mutation, useCreateMutation, useEditMutation } from '@mweb/engine'
+import { MutationCreateDto, useCreateMutation, useEditMutation } from '@mweb/engine'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
@@ -180,7 +180,7 @@ export interface Props {
   mode: any
   isOwn: boolean
   onClose: () => void
-  editingMutation: Mutation
+  editingMutation: MutationCreateDto
   mutationAuthorId: string
   loggedInAccountId: string
 }
@@ -247,7 +247,6 @@ export const ModalConfirm: FC<Props> = ({
   // const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(!checkForSubmit())
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
-  // const { engine } = useMutableWeb()
 
   const isFormDisabled = isCreating || isEditing
 
@@ -266,7 +265,7 @@ export const ModalConfirm: FC<Props> = ({
   //   [baseMutation, editingMutation]
   // )
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     const newAlert = doChecksForAlerts()
     if (newAlert) {
       setAlert(newAlert)
@@ -294,9 +293,17 @@ export const ModalConfirm: FC<Props> = ({
     // }
 
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
-      createMutation(mutationToPublish).then(() => onClose())
+      try {
+        await createMutation(mutationToPublish)
+        onClose()
+      } catch (error: any) {
+        if (error?.message === 'Mutation with that ID already exists') {
+          setAlert(alerts.idIsNotUnique)
+        }
+      }
     } else if (mode === MutationModalMode.Editing) {
-      editMutation(mutationToPublish).then(() => onClose())
+      // editMutation(mutationToPublish).then(() => onClose()) - ToDo
+      console.log('mutation to save', mutationToPublish)
     }
   }
 

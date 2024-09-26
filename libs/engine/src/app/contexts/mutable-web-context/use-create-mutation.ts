@@ -26,6 +26,7 @@ export function useCreateMutation() {
       } else {
         setError('Unknown error')
       }
+      throw err
     } finally {
       setIsLoading(false)
     }
