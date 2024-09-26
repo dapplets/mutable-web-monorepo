@@ -18,7 +18,7 @@ export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAc
       prefixCls="notifyWrapper"
       direction="vertical"
       ref={overlayRef}
-      style={{ overflow: 'hidden', height: '100%' }}
+      style={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}
     >
       <Space direction="horizontal">
         <Text type="secondary" style={{ textTransform: 'uppercase' }}>
@@ -34,7 +34,7 @@ export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAc
           Mark all as read
         </Button>
       </Space>
-      <Space direction="vertical" style={{ overflow: 'scroll', height: '100%' }}>
+      <Space direction="vertical">
         {notifications
           .filter((notify) => notify.status === 'new')
           .map((notification) => (
@@ -44,7 +44,7 @@ export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAc
       <Text type="secondary" style={{ textTransform: 'uppercase' }}>
         Old ({notifications.filter((not) => not.status === 'viewed').length})
       </Text>
-      <Space direction="vertical" style={{ overflow: 'scroll', height: '100%' }}>
+      <Space direction="vertical">
         {notifications
           .filter((notify) => notify.status === 'viewed')
           .map((notification) => (

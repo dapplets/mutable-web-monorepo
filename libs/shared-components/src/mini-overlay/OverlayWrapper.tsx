@@ -31,6 +31,7 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   background: transparent;
   font-family: sans-serif;
   box-sizing: border-box;
+
   &::-webkit-scrollbar {
     width: 0;
   }
@@ -67,12 +68,6 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
       justify-content: space-between;
     }
   }
-
-  .notifyWrapper-item:nth-of-type(2),
-  :last-of-type {
-    height: 50%;
-    overflow: hidden;
-  }
 `
 const OverlayContent = styled.div<{ $isOpen: boolean }>`
   position: relative;
@@ -95,6 +90,10 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
 
   &::-webkit-scrollbar {
     width: 0;
+  }
+
+  .driwingWrapper {
+    overflow: hidden;
   }
 
   .driwingContent {
