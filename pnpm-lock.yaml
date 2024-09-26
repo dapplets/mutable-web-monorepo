@@ -603,6 +603,9 @@ importers:
 
   libs/shared-components:
     dependencies:
+      '@codemirror/state':
+        specifier: ^6.4.1
+        version: 6.4.1
       '@mweb/engine':
         specifier: workspace:*
         version: link:../engine
@@ -615,12 +618,18 @@ importers:
       antd:
         specifier: ^5.18.3
         version: 5.19.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      codemirror:
+        specifier: ^6.0.1
+        version: 6.0.1(@lezer/common@1.2.1)
       ethereum-blockies-base64:
         specifier: ^1.0.2
         version: 1.0.2
       json-stringify-deterministic:
         specifier: ^1.0.12
         version: 1.0.12
+      react-codemirror-merge:
+        specifier: ^4.23.3
+        version: 4.23.3(@babel/runtime@7.24.7)(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.0)(@lezer/common@1.2.1))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.34.0)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-diff-viewer:
         specifier: ^3.1.1
         version: 3.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1470,6 +1479,9 @@ packages:
 
   '@codemirror/lint@6.8.2':
     resolution: {integrity: sha512-PDFG5DjHxSEjOXk9TQYYVjZDqlZTFaDBfhQixHnQOEVDDNHUbEh/hstAjcQJaA6FQdZTD1hquXTK0rVBLADR1g==}
+
+  '@codemirror/merge@6.7.1':
+    resolution: {integrity: sha512-avOGhrNK4l7R1BBicoITQ/Lt4YaBq1dgjf5PqMWaCSovbPIwNCmyPMwUQDZQIFbXA2urAnzywrBO6HUCu33RZw==}
 
   '@codemirror/search@6.5.6':
     resolution: {integrity: sha512-rpMgcsh7o0GuCDUXKPvww+muLA1pDJaFrpq/CCHtpQJYz8xopu4D1hPcKRoDD0YlF8gZaqTNIRa4VRBWyhyy7Q==}
@@ -8563,6 +8575,17 @@ packages:
       '@types/react':
         optional: true
 
+  react-codemirror-merge@4.23.3:
+    resolution: {integrity: sha512-8Sx9b9wVwYdW4sy0Fe70W5yFs5a/7n6AVaYcsZi0briuiNbdy+HhbQwVSKITHieUfSzeooQhkEiGICpmJ+mAng==}
+    peerDependencies:
+      '@babel/runtime': '>=7.11.0'
+      '@codemirror/state': '>=6.0.0'
+      '@codemirror/theme-one-dark': '>=6.0.0'
+      '@codemirror/view': '>=6.0.0'
+      codemirror: '>=6.0.0'
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+
   react-diff-viewer@3.1.1:
     resolution: {integrity: sha512-rmvwNdcClp6ZWdS11m1m01UnBA4OwYaLG/li0dB781e/bQEzsGyj+qewVd6W5ztBwseQ72pO7nwaCcq5jnlzcw==}
     engines: {node: '>= 8'}
@@ -11602,6 +11625,14 @@ snapshots:
       '@codemirror/state': 6.4.1
       '@codemirror/view': 6.34.0
       crelt: 1.0.6
+
+  '@codemirror/merge@6.7.1':
+    dependencies:
+      '@codemirror/language': 6.10.3
+      '@codemirror/state': 6.4.1
+      '@codemirror/view': 6.34.0
+      '@lezer/highlight': 1.2.1
+      style-mod: 4.1.2
 
   '@codemirror/search@6.5.6':
     dependencies:
@@ -21222,6 +21253,23 @@ snapshots:
       warning: 4.0.3
     optionalDependencies:
       '@types/react': 18.3.3
+
+  react-codemirror-merge@4.23.3(@babel/runtime@7.24.7)(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.0)(@lezer/common@1.2.1))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.34.0)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.24.7
+      '@codemirror/merge': 6.7.1
+      '@codemirror/state': 6.4.1
+      '@codemirror/theme-one-dark': 6.1.2
+      '@codemirror/view': 6.34.0
+      '@uiw/react-codemirror': 4.23.3(@babel/runtime@7.24.7)(@codemirror/autocomplete@6.18.1(@codemirror/language@6.10.3)(@codemirror/state@6.4.1)(@codemirror/view@6.34.0)(@lezer/common@1.2.1))(@codemirror/language@6.10.3)(@codemirror/lint@6.8.2)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.34.0)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      codemirror: 6.0.1(@lezer/common@1.2.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    transitivePeerDependencies:
+      - '@codemirror/autocomplete'
+      - '@codemirror/language'
+      - '@codemirror/lint'
+      - '@codemirror/search'
 
   react-diff-viewer@3.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:

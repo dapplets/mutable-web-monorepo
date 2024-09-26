@@ -26,20 +26,20 @@ export const NotificationFeed = ({
     setReviewingNotification(null)
   }
 
-  
-
   return (
     <>
-      <Modal
-        title="Review Changes" 
-        open={!!reviewingNotification}
-        getContainer={modalContainerRef.current ?? false}
-        zIndex={10000}
-        onClose={handleModalClose}
-        width={800}
-      >
-        <PrReviewer reviewingObject={reviewingNotification}/>
-      </Modal>
+      {reviewingNotification ? (
+        <Modal
+          title="Review Changes"
+          open={true}
+          getContainer={modalContainerRef.current ?? false}
+          zIndex={10000}
+          onClose={handleModalClose}
+          width={1000}
+        >
+          <PrReviewer notification={reviewingNotification} />
+        </Modal>
+      ) : null}
       <Space direction="vertical" ref={overlayRef}>
         {notifications
           .filter((notify) => notify.status === 'new')
