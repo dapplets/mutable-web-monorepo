@@ -26,15 +26,19 @@ export const NotificationFeed = ({
     setReviewingNotification(null)
   }
 
+  
+
   return (
     <>
       <Modal
+        title="Review Changes" 
         open={!!reviewingNotification}
         getContainer={modalContainerRef.current ?? false}
         zIndex={10000}
         onClose={handleModalClose}
+        width={800}
       >
-        <PrReviewer />
+        <PrReviewer reviewingObject={reviewingNotification}/>
       </Modal>
       <Space direction="vertical" ref={overlayRef}>
         {notifications

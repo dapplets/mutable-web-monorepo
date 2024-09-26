@@ -1,18 +1,22 @@
 import React from 'react'
 import { FC } from 'react'
-import ReactDiffViewer from 'react-diff-viewer'
+import serializeToDeterministicJson from 'json-stringify-deterministic'
+import CodeMirror from '@uiw/react-codemirror'
+import { langs } from '@uiw/codemirror-extensions-langs'
 
-export const PrReviewer: FC = () => {
-  const oldCode = `
-    import React from 'react'
-    import { FC } from 'react'
-    import ReactDiffViewer from 'react-diff-viewer';
-    `
+export interface Props {
+  reviewingObject: any
+}
 
-  const newCode = `
-    import React from 'react'
-    import { ReactDiffViewer } from 'react-diff-viewer';
-    const test;
-    `
-  return <ReactDiffViewer oldValue={oldCode} newValue={newCode} splitView={true} />
+export const PrReviewer: FC<Props> = ({ reviewingObject }) => {
+  const oldCode = serializeToDeterministicJson(reviewingObject, { space: '  ' })
+  return (
+    <CodeMirror
+      value={oldCode}
+      height="600px"
+      width="472px"
+      extensions={[langs.json()]}
+      // onChange={onChange}
+    />
+  )
 }

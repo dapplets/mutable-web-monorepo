@@ -28,8 +28,11 @@
   },
   "dependencies": {
     "@mweb/engine": "workspace:*",
+    "@uiw/codemirror-extensions-langs": "^4.23.3",
+    "@uiw/react-codemirror": "^4.23.3",
     "antd": "^5.18.3",
     "ethereum-blockies-base64": "^1.0.2",
+    "json-stringify-deterministic": "^1.0.12",
     "react-diff-viewer": "^3.1.1"
   }
 }
