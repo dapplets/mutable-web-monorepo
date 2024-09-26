@@ -1,3 +1,4 @@
+import { BaseDto } from './base.dto'
 import { getEntity } from './decorators/entity'
 
 const KeyDelimiter = '/'
@@ -6,6 +7,8 @@ export type EntityId = string
 
 export class Base {
   id: EntityId = ''
+  blockNumber: number = 0 // ToDo: fake block number
+  timestamp: number = 0 // ToDo: fake timestamp
 
   get authorId(): string {
     return this.id.split(KeyDelimiter)[0]
@@ -27,9 +30,10 @@ export class Base {
     return getEntity(this.constructor).name
   }
 
-  // ToDo: add block number
-
-  static create<T extends Base>(this: new () => T, data: Partial<T>): T {
+  static create<T extends Base>(
+    this: new () => T,
+    data: Partial<T> & (Pick<Base, 'authorId' | 'localId'> | Pick<Base, 'id'>)
+  ): T {
     const instance = new this()
     Object.assign(instance, data)
     return instance
@@ -39,5 +43,15 @@ export class Base {
     const copyInstance = new (this.constructor as { new (): T })()
     Object.assign(copyInstance, this, data)
     return copyInstance
+  }
+
+  toDto(): BaseDto {
+    return {
+      id: this.id,
+      localId: this.localId,
+      authorId: this.authorId,
+      blockNumber: this.blockNumber,
+      timestamp: this.timestamp,
+    }
   }
 }

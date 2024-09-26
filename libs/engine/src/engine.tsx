@@ -67,6 +67,7 @@ export class Engine {
     this.notificationService = new NotificationService(
       notificationRepository,
       resolutionRepository,
+      unitOfWorkService,
       nearSigner
     )
     this.mutationService = new MutationService(

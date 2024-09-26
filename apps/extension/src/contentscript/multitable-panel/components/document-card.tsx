@@ -1,4 +1,4 @@
-import { AppMetadata } from '@mweb/engine'
+import { ApplicationDto } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
@@ -140,7 +140,7 @@ export interface Props {
   metadata: DocumentMetadata | null
   onChange: () => void
   disabled: boolean
-  appMetadata: AppMetadata['metadata']
+  appMetadata: ApplicationDto['metadata']
 }
 
 export const DocumentCard: React.FC<Props> = ({

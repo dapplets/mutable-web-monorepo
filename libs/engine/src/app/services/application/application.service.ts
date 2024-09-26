@@ -6,31 +6,44 @@ import {
   AppInstanceId,
   AppInstanceSettings,
   AppInstanceWithSettings,
-  AppMetadata,
   AppWithSettings,
 } from './application.entity'
 import { ApplicationRepository } from './application.repository'
+import { ApplicationDto } from './dtos/application.dto'
+import { MutationDto } from '../mutation/dtos/mutation.dto'
+import { ApplicationCreateDto } from './dtos/application-create.dto'
+import { Transaction } from '../unit-of-work/transaction'
 
 export class ApplicationService {
   constructor(private applicationRepository: ApplicationRepository) {}
 
-  public getApplications(): Promise<AppMetadata[]> {
+  public async getApplications(): Promise<ApplicationDto[]> {
     // ToDo: out of gas
-    return this.applicationRepository.getItems()
+    const apps = await this.applicationRepository.getItems()
+    return apps.map((app) => app.toDto())
   }
 
-  public getApplication(appId: AppId): Promise<AppMetadata | null> {
-    return this.applicationRepository.getItem(appId)
+  public async getApplication(appId: AppId): Promise<ApplicationDto | null> {
+    const app = await this.applicationRepository.getItem(appId)
+    return app?.toDto() ?? null
   }
 
-  public async getAppsFromMutation(mutation: Mutation): Promise<AppInstanceWithSettings[]> {
+  public async getAppsFromMutation(mutation: MutationDto): Promise<AppInstanceWithSettings[]> {
     return Promise.all(
       mutation.apps.map((appInstance) => this._getAppInstanceWithSettings(mutation.id, appInstance))
     ).then((apps) => apps.filter((app) => app !== null) as AppInstanceWithSettings[])
   }
 
-  public filterSuitableApps(appsToCheck: AppMetadata[], context: IContextNode): AppMetadata[] {
-    const suitableApps: AppMetadata[] = []
+  async createApplication(dto: ApplicationCreateDto, tx?: Transaction): Promise<ApplicationDto> {
+    const app = await this.applicationRepository.constructItem(dto)
+    return this.applicationRepository.createItem(app, tx)
+  }
+
+  public filterSuitableApps(
+    appsToCheck: ApplicationDto[],
+    context: IContextNode
+  ): ApplicationDto[] {
+    const suitableApps: ApplicationDto[] = []
 
     for (const app of appsToCheck) {
       const suitableTargets = app.targets.filter((target) =>
