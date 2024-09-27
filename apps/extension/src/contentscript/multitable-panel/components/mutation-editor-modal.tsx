@@ -17,6 +17,7 @@ import { DropdownButton } from './dropdown-button'
 import { DocumentsModal } from './documents-modal'
 import { ModalConfirm } from './modals-confirm'
 import { MutationModalMode } from './types'
+import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -204,8 +205,8 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
+  console.log('baseMutation', baseMutation)
   const loggedInAccountId = useAccountId()
-  const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
@@ -221,28 +222,33 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   // ToDo: refactor it.
   // Too much mutations: baseMutation, preOriginalMutation, originalMutation, editingMutation
   // const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
-  const mutationAuthorId = loggedInAccountId ?? 'dapplets.near' // ToDo ????????????????????
-  const isOwn = mutationAuthorId === loggedInAccountId
 
   const [mode, setMode] = useState(
     !baseMutation
       ? MutationModalMode.Creating
-      : isOwn
+      : baseMutation.authorId === loggedInAccountId
       ? MutationModalMode.Editing
       : MutationModalMode.Forking
   )
-  const chooseEditingMutation = (): MutationCreateDto | MutationDto =>
-    mode === MutationModalMode.Forking && baseMutation
-      ? {
-          metadata: {
-            name: '',
-          },
-          apps: cloneDeep(baseMutation.apps),
-          targets: cloneDeep(baseMutation.targets),
-        }
-      : mode === MutationModalMode.Editing && baseMutation
-      ? cloneDeep(baseMutation)
-      : createEmptyMutation()
+
+  const chooseEditingMutation = (
+    changedApps?: AppInMutation[]
+  ): MutationCreateDto | MutationDto => {
+    const mut =
+      mode === MutationModalMode.Forking && baseMutation
+        ? {
+            metadata: {
+              name: '',
+              fork_of: baseMutation.id,
+            },
+            apps: cloneDeep(baseMutation.apps),
+            targets: cloneDeep(baseMutation.targets),
+          }
+        : mode === MutationModalMode.Editing && baseMutation
+        ? cloneDeep(baseMutation)
+        : createEmptyMutation()
+    return changedApps ? mergeDeep(mut, { apps: changedApps }) : mut
+  }
 
   const [editingMutation, setEditingMutation] = useState<MutationCreateDto | MutationDto>(
     chooseEditingMutation()
@@ -268,7 +274,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
   const [alert, setAlert] = useState<IAlert | null>(null)
 
-  useEffect(() => setEditingMutation(chooseEditingMutation()), [mode])
+  useEffect(() => setEditingMutation(chooseEditingMutation(editingMutation.apps)), [mode])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
@@ -278,7 +284,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     }
     setIsModified(true)
     setAlert(doChecksForAlerts())
-  }, [loggedInAccountId, editingMutation, mode, mutations])
+  }, [loggedInAccountId, editingMutation, mode])
 
   useEffect(() => {
     setAlert((val) => {
@@ -409,7 +415,11 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           value={mode}
           items={[
             { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
-            { value: MutationModalMode.Editing, title: 'Save', visible: !!baseMutation && isOwn },
+            {
+              value: MutationModalMode.Editing,
+              title: 'Save',
+              visible: !!baseMutation && baseMutation.authorId === loggedInAccountId,
+            },
             { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
           ]}
           onClick={() => setOpenConfirm(true)}
@@ -439,11 +449,9 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           <ModalConfirm
             itemType="mutation"
             mode={mode}
-            isOwn={isOwn}
             onClose={() => setOpenConfirm(false)}
             editingMutation={editingMutation}
             baseMutation={baseMutation}
-            mutationAuthorId={mutationAuthorId}
             loggedInAccountId={loggedInAccountId}
           />
         </ModalConfirmBackground>

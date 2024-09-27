@@ -1,8 +1,14 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
-import { MutationCreateDto, MutationDto, useCreateMutation, useEditMutation } from '@mweb/engine'
+import {
+  MutationCreateDto,
+  MutationDto,
+  useCreateMutation,
+  useEditMutation,
+  useMutableWeb,
+} from '@mweb/engine'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
@@ -178,11 +184,9 @@ const ButtonsBlock = styled.div`
 export interface Props {
   itemType: 'mutation' | 'document'
   mode: any
-  isOwn: boolean
   onClose: () => void
   editingMutation: MutationCreateDto
   baseMutation: MutationDto | null
-  mutationAuthorId: string
   loggedInAccountId: string
 }
 
@@ -226,24 +230,28 @@ const alerts: { [name: string]: IAlert } = {
 export const ModalConfirm: FC<Props> = ({
   itemType,
   mode,
-  isOwn,
   onClose,
   editingMutation,
   baseMutation,
-  mutationAuthorId,
   loggedInAccountId,
 }) => {
-  const { name, image, fork_of } = editingMutation.metadata
+  const { name, image, description, fork_of } = editingMutation.metadata
   // Close modal with escape key
   useEscape(onClose) // ToDo -- does not work
-  const [title, setTitle] = useState<string>(name ?? '')
+  const [newName, setName] = useState<string>(name ?? '')
   const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
-  const [description, setDescription] = useState<string>('')
+  const [newDescription, setDescription] = useState<string>(description ?? '')
   const [alert, setAlert] = useState<IAlert | null>(null)
+  const { mutations } = useMutableWeb()
+
+  const forkedMutation = useMemo(() => {
+    if (mode !== MutationModalMode.Editing || !fork_of) return null
+    return mutations.find((mutation) => mutation.id === fork_of)
+  }, [fork_of, mutations, mode])
 
   // const checkForSubmit = (): boolean =>
   //   mode === MutationModalMode.Creating || mode === MutationModalMode.Forking
-  //     ? !!title && !!newImage
+  //     ? !!newName && !!newImage
   //     : true
 
   // const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(!checkForSubmit())
@@ -252,12 +260,12 @@ export const ModalConfirm: FC<Props> = ({
 
   const isFormDisabled = isCreating || isEditing
 
-  // useEffect(() => setIsSubmitDisabled(!checkForSubmit()), [title, newImage])
+  // useEffect(() => setIsSubmitDisabled(!checkForSubmit()), [newName, newImage])
 
-  useEffect(() => setAlert(null), [title, newImage])
+  useEffect(() => setAlert(null), [newName, newImage])
 
   const doChecksForAlerts = (): IAlert | null => {
-    if (!title) return alerts.noName
+    if (!newName) return alerts.noName
     if (!newImage || !newImage?.ipfs_cid) return alerts.noImage
     return null
   }
@@ -278,14 +286,14 @@ export const ModalConfirm: FC<Props> = ({
     const mutationToPublish = cloneDeep(editingMutation)
 
     // validate Name
-    if (title.trim() === '') {
-      setTitle('')
+    if (newName.trim() === '') {
+      setName('')
       return
     }
 
-    mutationToPublish.metadata.name = title.trim()
+    mutationToPublish.metadata.name = newName.trim()
     mutationToPublish.metadata.image = newImage
-    mutationToPublish.metadata.description = description.trim()
+    mutationToPublish.metadata.description = newDescription.trim()
 
     // validate changes -- ToDo ????
     // const hasChanges = checkIfModified()
@@ -304,8 +312,12 @@ export const ModalConfirm: FC<Props> = ({
         }
       }
     } else if (mode === MutationModalMode.Editing) {
-      // editMutation(mutationToPublish).then(() => onClose()) - ToDo
-      console.log('mutation to save', mutationToPublish)
+      try {
+        await editMutation(mutationToPublish as MutationDto)
+        onClose()
+      } catch (error: any) {
+        console.error(error)
+      }
     }
   }
 
@@ -334,14 +346,14 @@ export const ModalConfirm: FC<Props> = ({
             />
             <FloatingLabelContainer>
               <StyledInput
-                id={'title'}
+                id={'name'}
                 type={'text'}
-                value={title}
+                value={newName}
                 placeholder={`Enter your ${itemType} name`}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 disabled={isFormDisabled}
               />
-              <StyledLabel htmlFor={'title'}>
+              <StyledLabel htmlFor={'name'}>
                 Name<span>*</span>
               </StyledLabel>
             </FloatingLabelContainer>
@@ -350,7 +362,7 @@ export const ModalConfirm: FC<Props> = ({
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
-              value={description}
+              value={newDescription}
               placeholder={`Describe your ${itemType} here`}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isFormDisabled}
@@ -371,16 +383,21 @@ export const ModalConfirm: FC<Props> = ({
             </ImgWrapper>
             <TextWrapper>
               <p>{baseMutation?.metadata.name}</p>
-              <span>by {isOwn ? `me (${loggedInAccountId})` : baseMutation?.authorId}</span>
+              <span>
+                by{' '}
+                {baseMutation?.authorId === loggedInAccountId
+                  ? `me (${loggedInAccountId})`
+                  : baseMutation?.authorId}
+              </span>
             </TextWrapper>
           </CardWrapper>
 
-          {isOwn ? null : (
+          {baseMutation?.authorId === loggedInAccountId ? null : (
             <CheckboxBlock>
               <span>Ask Origin to apply changes</span>
               <CheckboxInput
                 type="checkbox"
-                checked={true}
+                checked={false}
                 disabled={isFormDisabled}
                 onChange={
                   () => {}
@@ -398,14 +415,14 @@ export const ModalConfirm: FC<Props> = ({
             />
             <FloatingLabelContainer>
               <StyledInput
-                id={'title'}
+                id={'name'}
                 type={'text'}
-                value={title}
+                value={newName}
                 placeholder={`Enter your ${itemType} name`}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 disabled={isFormDisabled}
               />
-              <StyledLabel htmlFor={'title'}>
+              <StyledLabel htmlFor={'name'}>
                 Name<span>*</span>
               </StyledLabel>
             </FloatingLabelContainer>
@@ -414,7 +431,7 @@ export const ModalConfirm: FC<Props> = ({
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
-              value={description}
+              value={newDescription}
               placeholder={`Describe your ${itemType} here`}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isFormDisabled}
@@ -430,38 +447,46 @@ export const ModalConfirm: FC<Props> = ({
               <Image
                 image={newImage}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={title} // ToDo: why?
+                alt={newName} // ToDo: why?
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{title}</p>
-              <span>{title}</span>
+              <p>{newName}</p>
+              <span>by me ({loggedInAccountId})</span>
             </TextWrapper>
           </CardWrapper>
 
-          {isOwn ? null : (
+          {forkedMutation ? (
             <>
               <Label>Originally Forked from</Label>
               <CardWrapper>
                 <ImgWrapper>
-                  {/* todo: Originally Forked from Data */}
                   <Image
-                    image={newImage}
+                    image={forkedMutation.metadata.image}
                     fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                    alt={fork_of}
+                    alt={forkedMutation.metadata.name}
                   />
                 </ImgWrapper>
                 <TextWrapper>
-                  <p>{fork_of}</p>
-                  <span>{fork_of}</span>
+                  <p>{forkedMutation.metadata.name}</p>
+                  <span>
+                    by{' '}
+                    {forkedMutation.authorId === loggedInAccountId
+                      ? `me (${loggedInAccountId})`
+                      : forkedMutation.authorId}
+                  </span>
                 </TextWrapper>
               </CardWrapper>
 
               <CheckboxBlock>
-                <span>Ask Origin to apply changes</span>
+                <span>
+                  {forkedMutation.authorId === loggedInAccountId
+                    ? 'Apply changes to Origin'
+                    : 'Ask Origin to apply changes'}
+                </span>
                 <CheckboxInput
                   type="checkbox"
-                  checked={true}
+                  checked={false}
                   disabled={isFormDisabled}
                   onChange={
                     () => {}
@@ -470,12 +495,12 @@ export const ModalConfirm: FC<Props> = ({
                 />
               </CheckboxBlock>
             </>
-          )}
+          ) : null}
 
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
-              value={description}
+              value={newDescription}
               placeholder={`Describe your ${itemType} here`}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isFormDisabled}
