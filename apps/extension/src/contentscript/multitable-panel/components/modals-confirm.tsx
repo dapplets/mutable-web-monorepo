@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
@@ -15,7 +15,7 @@ import { Alert, AlertProps } from './alert'
 import { Button } from './button'
 import { MutationModalMode } from './types'
 import { InputImage } from './upload-image'
-import { cloneDeep } from '../../helpers'
+import { cloneDeep, compareMutations } from '../../helpers'
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
@@ -265,45 +265,40 @@ export const ModalConfirm: FC<Props> = ({
 
   // useEffect(() => setIsSubmitDisabled(!checkForSubmit()), [newName, newImage])
 
-  useEffect(() => setAlert(null), [newName, newImage])
+  useEffect(() => setAlert(null), [newName, newImage, newDescription, isApplyToOriginChecked])
 
-  const doChecksForAlerts = (): IAlert | null => {
-    if (!newName) return alerts.noName
-    if (!newImage || !newImage?.ipfs_cid) return alerts.noImage
-    return null
-  }
+  const checkIfModified = useCallback(
+    (mutationToPublish: MutationDto) =>
+      baseMutation ? !compareMutations(baseMutation, mutationToPublish) : true,
+    [baseMutation]
+  )
 
-  // const checkIfModified = useCallback(
-  //   () => !(baseMutation ? compareMutations(baseMutation, editingMutation) : false),
-  //   [baseMutation, editingMutation]
-  // )
+  const doChecksForAlerts = useCallback(
+    (mutationToPublish: MutationCreateDto | MutationDto, isEditing: boolean): IAlert | null => {
+      if (!mutationToPublish.metadata.name) return alerts.noName
+      if (!mutationToPublish.metadata.image) return alerts.noImage
+      if (
+        isEditing &&
+        !isApplyToOriginChecked &&
+        !checkIfModified(mutationToPublish as MutationDto)
+      )
+        return alerts.notEditedMutation
+      return null
+    },
+    [newName, newImage, isApplyToOriginChecked, checkIfModified]
+  )
 
   const handleSaveClick = async () => {
-    const newAlert = doChecksForAlerts()
-    if (newAlert) {
-      setAlert(newAlert)
-      return
-    }
-    console.log('editingMutation', editingMutation)
-
     const mutationToPublish = cloneDeep(editingMutation)
-
-    // validate Name
-    if (newName.trim() === '') {
-      setName('')
-      return
-    }
-
     mutationToPublish.metadata.name = newName.trim()
     mutationToPublish.metadata.image = newImage
     mutationToPublish.metadata.description = newDescription.trim()
 
-    // validate changes -- ToDo ????
-    // const hasChanges = checkIfModified()
-    // if (!hasChanges) {
-    //   setIsModified(false)
-    //   return
-    // }
+    const newAlert = doChecksForAlerts(mutationToPublish, mode === MutationModalMode.Editing)
+    if (newAlert) {
+      setAlert(newAlert)
+      return
+    }
 
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
