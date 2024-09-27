@@ -1,14 +1,8 @@
-import {
-  ApplicationDto,
-  DocumentDto,
-  MutationCreateDto,
-  MutationDto,
-  useMutableWeb,
-} from '@mweb/engine'
+import { ApplicationDto, DocumentDto, MutationCreateDto, MutationDto } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, useEffect, useMemo, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { cloneDeep, generateRandomHex, mergeDeep } from '../../helpers'
+import { cloneDeep, mergeDeep } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
@@ -205,23 +199,12 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
-  console.log('baseMutation', baseMutation)
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
 
-  // Close modal with escape key
   useEscape(onClose)
-
-  // const preOriginalMutation = useMemo(
-  //   () => baseMutation ?? createEmptyMutation(),
-  //   [baseMutation, loggedInAccountId]
-  // )
-
-  // ToDo: refactor it.
-  // Too much mutations: baseMutation, preOriginalMutation, originalMutation, editingMutation
-  // const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
 
   const [mode, setMode] = useState(
     !baseMutation
@@ -255,23 +238,6 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   )
   const [openConfirm, setOpenConfirm] = useState(false)
 
-  // useEffect(() => {
-  //   // Replace ID when forking
-  //   if (mode === MutationModalMode.Forking && loggedInAccountId && baseMutation) {
-  //     setOriginalMutation(
-  //       mergeDeep(cloneDeep(preOriginalMutation), {
-  //         metadata: {
-  //           fork_of: baseMutation.id,
-  //         },
-  //       })
-  //     )
-  //   } else {
-  //     setOriginalMutation(preOriginalMutation)
-  //   }
-  // }, [preOriginalMutation, mode, loggedInAccountId])
-
-  // useEffect(() => setEditingMutation(originalMutation), [originalMutation])
-
   const [alert, setAlert] = useState<IAlert | null>(null)
 
   useEffect(() => setEditingMutation(chooseEditingMutation(editingMutation.apps)), [mode])
@@ -293,22 +259,6 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     })
   }, [isModified])
   const isSubmitDisabled = !isModified || !!alert
-
-  // const handleMutationIdChange = (id: string) => {
-  //   if (!isValidSocialIdCharacters(id)) return
-  //   if (!id.startsWith(`${loggedInAccountId}/mutation/`)) return
-  //   setEditingMutation((mut) => mergeDeep(cloneDeep(mut), { id }))
-  // }
-
-  // const handleMutationNameChange = (name: string) => {
-  //   setEditingMutation((mut) => mergeDeep(cloneDeep(mut), { metadata: { name } }))
-  // }
-
-  // const handleMutationImageChange = async (cid: string) => {
-  //   setEditingMutation((mut) =>
-  //     mergeDeep(cloneDeep(mut), { metadata: { image: { ipfs_cid: cid } } })
-  //   )
-  // }
 
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
@@ -360,8 +310,6 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     setAppIdToOpenDocsModal(appId)
     setDocsForModal(docs)
   }
-
-  console.log('editingMutation', editingMutation)
 
   return (
     <SelectedMutationEditorWrapper>

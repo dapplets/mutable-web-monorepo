@@ -195,6 +195,7 @@ interface IAlert extends AlertProps {
   id: string
 }
 
+// ToDo: duplication -- move somewhere
 const alerts: { [name: string]: IAlert } = {
   noWallet: {
     id: 'noWallet',
@@ -252,18 +253,10 @@ export const ModalConfirm: FC<Props> = ({
     return mutations.find((mutation) => mutation.id === fork_of)
   }, [fork_of, mutations, mode])
 
-  // const checkForSubmit = (): boolean =>
-  //   mode === MutationModalMode.Creating || mode === MutationModalMode.Forking
-  //     ? !!newName && !!newImage
-  //     : true
-
-  // const [isSubmitDisabled, setIsSubmitDisabled] = useState<boolean>(!checkForSubmit())
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
 
   const isFormDisabled = isCreating || isEditing
-
-  // useEffect(() => setIsSubmitDisabled(!checkForSubmit()), [newName, newImage])
 
   useEffect(() => setAlert(null), [newName, newImage, newDescription, isApplyToOriginChecked])
 
