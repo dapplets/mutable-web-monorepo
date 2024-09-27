@@ -108,7 +108,7 @@ export class MutationService {
       ])
     )
 
-    return this.populateMutationWithSettings(mutation)
+    return this.populateMutationWithSettings(mutation.toDto())
   }
 
   async editMutation(
@@ -142,7 +142,7 @@ export class MutationService {
       await this.unitOfWorkService.runInTransaction(performTx)
     }
 
-    return this.populateMutationWithSettings(mutation)
+    return this.populateMutationWithSettings(mutation.toDto())
   }
 
   async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
