@@ -31,10 +31,11 @@ export const NotificationFeed = ({
       {reviewingNotification ? (
         <Modal
           title="Review Changes"
-          open={true}
+          open
+          centered
           getContainer={modalContainerRef.current ?? false}
           zIndex={10000}
-          onClose={handleModalClose}
+          onCancel={handleModalClose}
           width={1000}
         >
           <PrReviewer notification={reviewingNotification} />

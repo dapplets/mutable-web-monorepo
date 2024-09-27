@@ -47,8 +47,8 @@ export const PrReviewer: FC<Props> = ({ notification }) => {
   const targetJson = useMemo(() => serializeToDeterministicJson(target, { space: '  ' }), [])
 
   return (
-    <div ref={containerRef}>
-      <CodeMirrorMerge orientation="b-a">
+    <div ref={containerRef} style={{ overflowY: 'scroll', maxHeight: 630 }}>
+      <CodeMirrorMerge>
         <CodeMirrorMerge.Original value={targetJson} editable={false} extensions={[langs.json()]} />
         <CodeMirrorMerge.Modified value={sourceJson} editable={false} extensions={[langs.json()]} />
       </CodeMirrorMerge>
