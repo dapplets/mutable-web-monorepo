@@ -1,8 +1,26 @@
 import React, { FC, useMemo } from 'react'
-import { Modal } from 'antd'
-import serializeToDeterministicJson from 'json-stringify-deterministic'
-import { NotificationDto, NotificationType, PullRequestPayload, useMutation } from '@mweb/engine'
+import { Button, Modal } from 'antd'
+import toJson from 'json-stringify-deterministic'
+import {
+  NotificationDto,
+  NotificationType,
+  PullRequestPayload,
+  useAcceptPullRequest,
+  useMutation,
+  useRejectPullRequest,
+} from '@mweb/engine'
 import { PrReviewer } from './pr-reviewer'
+import { IconBranchButton, IconNotificationClose } from './test-data-notification'
+
+const leaveMergableProps = (mutation: any): any => {
+  return {
+    apps: mutation.apps,
+    targets: mutation.targets,
+    metadata: {
+      description: mutation.metadata.description,
+    },
+  }
+}
 
 export interface Props {
   notification: NotificationDto
@@ -20,8 +38,21 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
   const { mutation: source } = useMutation(sourceMutationId)
   const { mutation: target } = useMutation(targetMutationId)
 
-  const sourceJson = useMemo(() => serializeToDeterministicJson(source, { space: '  ' }), [])
-  const targetJson = useMemo(() => serializeToDeterministicJson(target, { space: '  ' }), [])
+  const { acceptPullRequest, isLoading: isLoadingAccept } = useAcceptPullRequest(notification.id)
+  const { rejectPullRequest, isLoading: isLoadingReject } = useRejectPullRequest(notification.id)
+
+  const sourceJson = useMemo(() => toJson(leaveMergableProps(source), { space: '  ' }), [])
+  const targetJson = useMemo(() => toJson(leaveMergableProps(target), { space: '  ' }), [])
+
+  const handleAcceptClick = () => {
+    // ToDo: replace .then() with useEffect?
+    acceptPullRequest().then(() => onClose())
+  }
+
+  const handleDeclineClick = () => {
+    // ToDo: replace .then() with useEffect?
+    rejectPullRequest().then(() => onClose())
+  }
 
   return (
     <Modal
@@ -32,6 +63,32 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
       zIndex={10000}
       onCancel={onClose}
       width={1000}
+      footer={[
+        <Button
+          key="decline"
+          loading={isLoadingReject}
+          disabled={isLoadingAccept || isLoadingReject}
+          type="default"
+          size="middle"
+          onClick={handleDeclineClick}
+          icon={<IconNotificationClose />}
+          iconPosition="start"
+        >
+          Decline
+        </Button>,
+        <Button
+          key="accept"
+          loading={isLoadingAccept}
+          disabled={isLoadingAccept || isLoadingReject}
+          type="primary"
+          size="middle"
+          onClick={handleAcceptClick}
+          icon={<IconBranchButton />}
+          iconPosition="start"
+        >
+          Accept
+        </Button>,
+      ]}
     >
       <PrReviewer modifiedCode={sourceJson} originalCode={targetJson} />
     </Modal>

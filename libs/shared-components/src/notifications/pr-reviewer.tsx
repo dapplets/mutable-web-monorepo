@@ -26,11 +26,14 @@ export const PrReviewer: FC<Props> = ({ originalCode, modifiedCode }) => {
         setTimeout(() => {
           containerRef.current!.append(styleElement)
         }, 10)
-        observer.disconnect()
       }
     })
 
     observer.observe(document.head, { childList: true })
+
+    return () => {
+      observer.disconnect()
+    }
   }, [])
 
   return (
