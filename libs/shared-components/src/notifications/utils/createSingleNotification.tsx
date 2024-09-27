@@ -259,7 +259,7 @@ export const CreateSingleNotification: FC<{
         <Text type="secondary" style={{ fontSize: '12px' }}>
           #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
           &ensp;on&ensp;
-          {formatDate(date.toLocaleString())}
+          {formatDate(date.toISOString())}
         </Text>
         <Button
           loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
