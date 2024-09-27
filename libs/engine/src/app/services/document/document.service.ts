@@ -28,9 +28,10 @@ export class DocumentSerivce {
     return this.documentRepository.getItemsByIndex({ openWith: [globalAppId] })
   }
 
-  async createDocument(dto: DocumentCreateDto, tx?: Transaction): Promise<Document> {
+  async createDocument(dto: DocumentCreateDto, tx?: Transaction): Promise<DocumentDto> {
     const document = await this.documentRepository.constructItem(dto)
-    return this.documentRepository.createItem(document, tx)
+    await this.documentRepository.createItem(document, tx)
+    return document.toDto()
   }
 
   async createDocumentWithData(
