@@ -1,24 +1,14 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { FC } from 'react'
-import serializeToDeterministicJson from 'json-stringify-deterministic'
 import CodeMirrorMerge from 'react-codemirror-merge'
-import { NotificationDto, NotificationType, PullRequestPayload, useMutation } from '@mweb/engine'
 import { langs } from '@uiw/codemirror-extensions-langs'
 
 export interface Props {
-  notification: NotificationDto
+  originalCode: string
+  modifiedCode: string
 }
 
-export const PrReviewer: FC<Props> = ({ notification }) => {
-  if (notification.type !== NotificationType.PullRequest) {
-    throw new Error('Only PullRequest notifications are supported')
-  }
-
-  const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
-
-  const { mutation: source } = useMutation(sourceMutationId)
-  const { mutation: target } = useMutation(targetMutationId)
-
+export const PrReviewer: FC<Props> = ({ originalCode, modifiedCode }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   // ToDo: workaround that moves styles from head to shadow dom
@@ -43,14 +33,19 @@ export const PrReviewer: FC<Props> = ({ notification }) => {
     observer.observe(document.head, { childList: true })
   }, [])
 
-  const sourceJson = useMemo(() => serializeToDeterministicJson(source, { space: '  ' }), [])
-  const targetJson = useMemo(() => serializeToDeterministicJson(target, { space: '  ' }), [])
-
   return (
     <div ref={containerRef} style={{ overflowY: 'scroll', maxHeight: 630 }}>
       <CodeMirrorMerge>
-        <CodeMirrorMerge.Original value={targetJson} editable={false} extensions={[langs.json()]} />
-        <CodeMirrorMerge.Modified value={sourceJson} editable={false} extensions={[langs.json()]} />
+        <CodeMirrorMerge.Original
+          value={originalCode}
+          editable={false}
+          extensions={[langs.json()]}
+        />
+        <CodeMirrorMerge.Modified
+          value={modifiedCode}
+          editable={false}
+          extensions={[langs.json()]}
+        />
       </CodeMirrorMerge>
     </div>
   )

@@ -33,3 +33,4 @@ export {
 export { NotificationType } from './app/services/notification/notification.entity'
 export { NotificationDto } from './app/services/notification/dtos/notification.dto'
 export { PullRequestPayload } from './app/services/notification/types/pull-request'
+export { BaseDto } from './app/services/base/base.dto'

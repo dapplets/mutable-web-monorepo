@@ -1,8 +1,8 @@
 import { NotificationDto, useNotifications } from '@mweb/engine'
 import React, { useRef, useState } from 'react'
 import { Item } from './item'
-import { Space, notification as notify, Modal } from 'antd'
-import { PrReviewer } from './pr-reviewer'
+import { Space, notification, notification as notify } from 'antd'
+import { PrReviewerModal } from './pr-reviewer-modal'
 
 export const NotificationFeed = ({
   modalContainerRef,
@@ -29,17 +29,11 @@ export const NotificationFeed = ({
   return (
     <>
       {reviewingNotification ? (
-        <Modal
-          title="Review Changes"
-          open
-          centered
-          getContainer={modalContainerRef.current ?? false}
-          zIndex={10000}
-          onCancel={handleModalClose}
-          width={1000}
-        >
-          <PrReviewer notification={reviewingNotification} />
-        </Modal>
+        <PrReviewerModal
+          notification={reviewingNotification}
+          containerRef={modalContainerRef}
+          onClose={handleModalClose}
+        />
       ) : null}
       <Space direction="vertical" ref={overlayRef}>
         {notifications
