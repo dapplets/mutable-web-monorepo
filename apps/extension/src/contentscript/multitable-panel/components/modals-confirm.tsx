@@ -184,7 +184,8 @@ const ButtonsBlock = styled.div`
 export interface Props {
   itemType: 'mutation' | 'document'
   mode: any
-  onClose: () => void
+  onCloseCurrent: () => void
+  onCloseAll: () => void
   editingMutation: MutationCreateDto
   baseMutation: MutationDto | null
   loggedInAccountId: string
@@ -230,14 +231,15 @@ const alerts: { [name: string]: IAlert } = {
 export const ModalConfirm: FC<Props> = ({
   itemType,
   mode,
-  onClose,
+  onCloseCurrent,
+  onCloseAll,
   editingMutation,
   baseMutation,
   loggedInAccountId,
 }) => {
   const { name, image, description, fork_of } = editingMutation.metadata
   // Close modal with escape key
-  useEscape(onClose) // ToDo -- does not work
+  useEscape(onCloseCurrent) // ToDo -- does not work
   const [newName, setName] = useState<string>(name ?? '')
   const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
   const [newDescription, setDescription] = useState<string>(description ?? '')
@@ -305,7 +307,7 @@ export const ModalConfirm: FC<Props> = ({
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
         await createMutation(mutationToPublish)
-        onClose()
+        onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {
           setAlert(alerts.idIsNotUnique)
@@ -314,7 +316,7 @@ export const ModalConfirm: FC<Props> = ({
     } else if (mode === MutationModalMode.Editing) {
       try {
         await editMutation(mutationToPublish as MutationDto)
-        onClose()
+        onCloseAll()
       } catch (error: any) {
         console.error(error)
       }
@@ -511,7 +513,7 @@ export const ModalConfirm: FC<Props> = ({
       ) : null}
 
       <ButtonsBlock>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onCloseCurrent}>Cancel</Button>
         {!isFormDisabled ? (
           <BsButton onClick={handleSaveClick} variant="primary">
             {mode === MutationModalMode.Forking ? 'Fork it!' : 'Do it!'}

@@ -449,7 +449,8 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           <ModalConfirm
             itemType="mutation"
             mode={mode}
-            onClose={() => setOpenConfirm(false)}
+            onCloseCurrent={() => setOpenConfirm(false)}
+            onCloseAll={onClose}
             editingMutation={editingMutation}
             baseMutation={baseMutation}
             loggedInAccountId={loggedInAccountId}
