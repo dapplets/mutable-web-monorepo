@@ -243,6 +243,7 @@ export const ModalConfirm: FC<Props> = ({
   const [newName, setName] = useState<string>(name ?? '')
   const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
   const [newDescription, setDescription] = useState<string>(description ?? '')
+  const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false)
   const [alert, setAlert] = useState<IAlert | null>(null)
   const { mutations } = useMutableWeb()
 
@@ -306,7 +307,12 @@ export const ModalConfirm: FC<Props> = ({
 
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
-        await createMutation(mutationToPublish)
+        await createMutation(
+          mutationToPublish,
+          mode === MutationModalMode.Forking
+            ? { askOriginToApplyChanges: isApplyToOriginChecked }
+            : undefined
+        )
         onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {
@@ -315,7 +321,14 @@ export const ModalConfirm: FC<Props> = ({
       }
     } else if (mode === MutationModalMode.Editing) {
       try {
-        await editMutation(mutationToPublish as MutationDto)
+        await editMutation(
+          mutationToPublish as MutationDto,
+          forkedMutation && isApplyToOriginChecked
+            ? forkedMutation.authorId === loggedInAccountId
+              ? { applyChangesToOrigin: true }
+              : { askOriginToApplyChanges: true }
+            : undefined
+        )
         onCloseAll()
       } catch (error: any) {
         console.error(error)
@@ -399,12 +412,9 @@ export const ModalConfirm: FC<Props> = ({
               <span>Ask Origin to apply changes</span>
               <CheckboxInput
                 type="checkbox"
-                checked={false}
+                checked={isApplyToOriginChecked}
                 disabled={isFormDisabled}
-                onChange={
-                  () => {}
-                  // todo: need onChange
-                }
+                onChange={() => setIsApplyToOriginChecked((val) => !val)}
               />
             </CheckboxBlock>
           )}
@@ -488,12 +498,9 @@ export const ModalConfirm: FC<Props> = ({
                 </span>
                 <CheckboxInput
                   type="checkbox"
-                  checked={false}
+                  checked={isApplyToOriginChecked}
                   disabled={isFormDisabled}
-                  onChange={
-                    () => {}
-                    // todo: need onChange
-                  }
+                  onChange={() => setIsApplyToOriginChecked((val) => !val)}
                 />
               </CheckboxBlock>
             </>
