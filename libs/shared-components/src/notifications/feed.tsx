@@ -1,10 +1,12 @@
 import { useNotifications, useViewAllNotifications } from '@mweb/engine'
-import React, { FC, useRef } from 'react'
+import React, { Dispatch, FC, SetStateAction, useEffect, useRef } from 'react'
 import { Item } from './item'
 import { Space, Typography, Button } from 'antd'
 const { Text } = Typography
 
-export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAccountId }) => {
+export const NotificationFeed: FC<{
+  loggedInAccountId: string
+}> = ({ loggedInAccountId }) => {
   const { notifications } = useNotifications()
   const overlayRef = useRef<HTMLDivElement>(null)
   const {
@@ -18,7 +20,7 @@ export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAc
       prefixCls="notifyWrapper"
       direction="vertical"
       ref={overlayRef}
-      style={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}
+      style={{ overflow: 'hidden', overflowY: 'auto', height: '100%', transition: 'all 0.2s ease' }}
     >
       <Space direction="horizontal">
         <Text type="secondary" style={{ textTransform: 'uppercase' }}>
@@ -34,7 +36,7 @@ export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAc
           Mark all as read
         </Button>
       </Space>
-      <Space direction="vertical">
+      <Space direction="vertical" style={{ transition: 'all 0.2s ease' }}>
         {notifications
           .filter((notify) => notify.status === 'new')
           .map((notification) => (
@@ -44,7 +46,7 @@ export const NotificationFeed: FC<{ loggedInAccountId: string }> = ({ loggedInAc
       <Text type="secondary" style={{ textTransform: 'uppercase' }}>
         Old ({notifications.filter((not) => not.status === 'viewed').length})
       </Text>
-      <Space direction="vertical">
+      <Space direction="vertical" style={{ transition: 'all 0.2s ease' }}>
         {notifications
           .filter((notify) => notify.status === 'viewed')
           .map((notification) => (

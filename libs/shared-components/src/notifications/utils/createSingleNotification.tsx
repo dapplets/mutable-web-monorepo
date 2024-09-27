@@ -12,7 +12,7 @@ import { PullRequestPayload } from '@mweb/engine/lib/app/services/notification/t
 import { actions } from '../test-data-notification'
 
 const CollapseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="9" height="3" viewBox="0 0 9 3" fill="none">
+  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="7" viewBox="0 0 9 3" fill="none">
     <path
       d="M0 1.50684C0 1.29264 0.0660807 1.11263 0.198242 0.966797C0.334961 0.816406 0.530924 0.741211 0.786133 0.741211C1.04134 0.741211 1.23503 0.816406 1.36719 0.966797C1.50391 1.11263 1.57227 1.29264 1.57227 1.50684C1.57227 1.71647 1.50391 1.89421 1.36719 2.04004C1.23503 2.18587 1.04134 2.25879 0.786133 2.25879C0.530924 2.25879 0.334961 2.18587 0.198242 2.04004C0.0660807 1.89421 0 1.71647 0 1.50684Z"
       fill="#7A818B"
@@ -156,7 +156,7 @@ export const CreateSingleNotification: FC<{
   }
 
   return isRegularPayload(notification.payload) ? (
-    <Space prefixCls="notifySingle" direction="vertical">
+    <Space prefixCls="notifySingle" direction="vertical" style={{ transition: 'all 0.2s ease' }}>
       {(errorView || errorHide) && <Text type="danger">Unknown error</Text>}
       <Space size="large" direction="horizontal" style={{ alignItems: 'flex-start' }}>
         <IconBlue />
@@ -270,101 +270,60 @@ export const CreateSingleNotification: FC<{
           }
         />
       </Space>
-      {notification.status !== 'new' ? (
-        <Collapse
-          expandIcon={() => <CollapseIcon />}
-          expandIconPosition={'end'}
-          ghost
-          items={[
-            {
-              key: notification.id,
-              label: (
-                <Space direction="horizontal">
-                  {notification.result && notification.result.status !== 'open' ? (
-                    <Tag
-                      color={
-                        notification.result && notification.result.status === 'rejected'
-                          ? ' #DB504A'
-                          : '#384BFF'
-                      }
-                    >
-                      {notification.result.status}
-                    </Tag>
-                  ) : null}
-                </Space>
-              ),
-              children: (
-                <Space direction="vertical">
-                  <Card
-                    style={{
-                      borderRadius: '10px',
-                      padding: '10px',
-                      background: '#F8F9FF',
-                      width: '100%',
-                      display: 'inline-flex',
-                    }}
+
+      <Collapse
+        expandIcon={() => <CollapseIcon />}
+        expandIconPosition={'end'}
+        ghost
+        items={[
+          {
+            key: notification.id,
+            label: (
+              <Space direction="horizontal">
+                {notification.result && notification.result.status !== 'open' ? (
+                  <Tag
+                    color={
+                      notification.result && notification.result.status === 'rejected'
+                        ? ' #DB504A'
+                        : '#384BFF'
+                    }
                   >
-                    <Text style={{ padding: '0' }} type="secondary">
-                      <Text type="secondary" underline>
-                        {notification.authorId}
-                      </Text>{' '}
-                      asks you to accept changes from{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.sourceMutationId}
-                      </Text>{' '}
-                      &ensp; ({notification.recipients[0]}) into your{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.targetMutationId}
-                      </Text>{' '}
-                    </Text>
-                  </Card>
-                </Space>
-              ),
-            },
-          ]}
-        />
-      ) : (
-        <>
-          <Space direction="horizontal">
-            {notification.result && notification.result.status !== 'open' ? (
-              <Tag
-                color={
-                  notification.result && notification.result.status === 'rejected'
-                    ? ' #DB504A'
-                    : '#384BFF'
-                }
-              >
-                {notification.result.status}
-              </Tag>
-            ) : null}
-          </Space>
-          <Space direction="vertical">
-            <Card
-              style={{
-                borderRadius: '10px',
-                padding: '10px',
-                background: '#F8F9FF',
-                width: '100%',
-                display: 'inline-flex',
-              }}
-            >
-              <Text style={{ padding: '0' }} type="secondary">
-                <Text type="secondary" underline>
-                  {notification.authorId}
-                </Text>{' '}
-                asks you to accept changes from{' '}
-                <Text type="secondary" underline>
-                  {notification.payload!.sourceMutationId}
-                </Text>{' '}
-                &ensp; ({notification.recipients[0]}) into your{' '}
-                <Text type="secondary" underline>
-                  {notification.payload!.targetMutationId}
-                </Text>{' '}
-              </Text>
-            </Card>
-          </Space>
-        </>
-      )}
+                    {notification.result.status}
+                  </Tag>
+                ) : null}
+              </Space>
+            ),
+            children: (
+              <Space direction="vertical">
+                <Card
+                  style={{
+                    borderRadius: '10px',
+                    padding: '10px',
+                    background: '#F8F9FF',
+                    width: '100%',
+                    display: 'inline-flex',
+                  }}
+                >
+                  <Text style={{ padding: '0' }} type="secondary">
+                    <Text type="secondary" underline>
+                      {notification.authorId}
+                    </Text>{' '}
+                    asks you to accept changes from{' '}
+                    <Text type="secondary" underline>
+                      {notification.payload!.sourceMutationId}
+                    </Text>{' '}
+                    &ensp; ({notification.recipients[0]}) into your{' '}
+                    <Text type="secondary" underline>
+                      {notification.payload!.targetMutationId}
+                    </Text>{' '}
+                  </Text>
+                </Card>
+              </Space>
+            ),
+          },
+        ]}
+      />
+
       {!isRegularPayload(notification.payload) &&
       notification.result?.status !== 'accepted' &&
       notification.result?.status !== 'rejected' ? (
@@ -372,7 +331,14 @@ export const CreateSingleNotification: FC<{
           {actions.map((action, i) => (
             <Button
               key={i}
-              loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+              disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+              loading={
+                action.label === 'Accept'
+                  ? isLoadingAccept
+                  : action.label === 'Decline'
+                    ? isLoadingReject
+                    : undefined
+              }
               type={action.type as ButtonProps['type']}
               size="middle"
               onClick={() => {
@@ -380,9 +346,11 @@ export const CreateSingleNotification: FC<{
                 if (action.label === 'Decline') rejectPullRequest && rejectPullRequest()
               }}
             >
-              {isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView
+              {(action.label !== 'Accept' && isLoadingAccept) ||
+              (action.label === 'Decline' && isLoadingReject)
                 ? null
                 : action.icon}
+
               {action.label}
             </Button>
           ))}

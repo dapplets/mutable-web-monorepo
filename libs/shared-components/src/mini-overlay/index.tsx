@@ -1,6 +1,6 @@
 import { AppWithSettings, Mutation } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef } from 'react'
+import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/Image'
@@ -474,11 +474,11 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   trackingRefs.add(overlayRef)
 
   const showDrawer = () => {
-    setOpen(true)
+    setOpen(!open)
   }
 
   const onClose = () => {
-    setOpen(false)
+    setOpen(!open)
   }
 
   const handleMutationIconClick = () => {
