@@ -147,7 +147,8 @@ export const CreateSingleNotification: FC<{
     error: errorReject,
   } = useRejectPullRequest(notification.id)
 
-  // todo: need Date
+  const date = new Date(notification.timestamp)
+
   const isRegularPayload = (
     payload: RegularPayload | PullRequestPayload | null
   ): payload is RegularPayload => {
@@ -156,12 +157,13 @@ export const CreateSingleNotification: FC<{
   }
 
   return isRegularPayload(notification.payload) ? (
-    <Space direction="vertical">
+    <Space prefixCls="notifySingle" direction="vertical">
       {(errorView || errorHide) && <Text type="danger">Unknown error</Text>}
       <Space size="large" direction="horizontal" style={{ alignItems: 'flex-start' }}>
+        <IconBlue />
         <Text type="secondary" style={{ fontSize: '12px' }}>
-          #{notification.localId}&ensp;{notification.authorId}&ensp; on&ensp;
-          {formatDate(Date.now().toString())}
+          #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp; on&ensp;
+          {formatDate(date.toLocaleString())}
         </Text>
         <Button
           loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
@@ -241,15 +243,23 @@ export const CreateSingleNotification: FC<{
       )}
     </Space>
   ) : (
-    <Space direction="vertical">
+    <Space prefixCls="notifySingle" direction="vertical">
       {(errorView || errorHide || errorAccept || errorReject) && (
         <Text type="danger">Unknown error</Text>
       )}
 
       <Space size="large" direction="horizontal" style={{ alignItems: 'flex-start' }}>
+        {notification.result && notification.result.status === 'accepted' ? (
+          <IconGreen />
+        ) : notification.result && notification.result.status === 'rejected' ? (
+          <IconRed />
+        ) : (
+          <IconBlue />
+        )}
         <Text type="secondary" style={{ fontSize: '12px' }}>
-          #{notification.localId}&ensp;{notification.authorId}&ensp;committed &ensp;on&ensp;
-          {formatDate(Date.now().toString())}
+          #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
+          &ensp;on&ensp;
+          {formatDate(date.toLocaleString())}
         </Text>
         <Button
           loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
@@ -271,20 +281,6 @@ export const CreateSingleNotification: FC<{
               key: notification.id,
               label: (
                 <Space direction="horizontal">
-                  <Space direction="horizontal">
-                    {notification.result && notification.result.status === 'accepted' ? (
-                      <IconGreen />
-                    ) : notification.result && notification.result.status === 'rejected' ? (
-                      <IconRed />
-                    ) : (
-                      <IconBlue />
-                    )}
-                    <Text strong underline>
-                      {/* todo: need name? */}
-                      {notification.type}
-                    </Text>
-                  </Space>
-
                   {notification.result && notification.result.status !== 'open' ? (
                     <Tag
                       color={
@@ -331,20 +327,6 @@ export const CreateSingleNotification: FC<{
       ) : (
         <>
           <Space direction="horizontal">
-            <Space direction="horizontal">
-              {notification.result && notification.result.status === 'accepted' ? (
-                <IconGreen />
-              ) : notification.result && notification.result.status === 'rejected' ? (
-                <IconRed />
-              ) : (
-                <IconBlue />
-              )}
-              <Text strong underline>
-                {/* todo: need name? */}
-                {notification.type}
-              </Text>
-            </Space>
-
             {notification.result && notification.result.status !== 'open' ? (
               <Tag
                 color={
@@ -384,7 +366,7 @@ export const CreateSingleNotification: FC<{
           </Space>
         </>
       )}
-      {notification.type !== 'regular' &&
+      {!isRegularPayload(notification.payload) &&
       notification.result?.status !== 'accepted' &&
       notification.result?.status !== 'rejected' ? (
         <Space key={notification.id} direction="horizontal">
@@ -400,7 +382,9 @@ export const CreateSingleNotification: FC<{
                 if (action.label === 'Review') onReview(notification)
               }}
             >
-              {action.icon}
+              {isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView
+                ? null
+                : action.icon}
               {action.label}
             </Button>
           ))}

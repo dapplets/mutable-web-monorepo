@@ -54,24 +54,6 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
-
-  .notifySingle {
-    .ant-notification-notice-icon {
-      display: none;
-    }
-
-    .ant-notification-notice-message {
-      margin-inline-start: 0 !important;
-    }
-
-    .ant-notification-notice-description {
-      margin-inline-start: 0 !important;
-    }
-
-    .ant-notification-notice-btn {
-      float: none !important;
-    }
-  }
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`

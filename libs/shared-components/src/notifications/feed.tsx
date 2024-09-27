@@ -1,26 +1,28 @@
-import { NotificationDto, useNotifications } from '@mweb/engine'
-import React, { useRef, useState } from 'react'
+import { NotificationDto, useNotifications, useViewAllNotifications } from '@mweb/engine'
+import React, { FC, useRef, useState } from 'react'
 import { Item } from './item'
-import { Space, notification, notification as notify } from 'antd'
+import { Space, Typography, Button } from 'antd'
 import { PrReviewerModal } from './pr-reviewer-modal'
 
-export const NotificationFeed = ({
-  modalContainerRef,
-}: {
+const { Text } = Typography
+
+export const NotificationFeed: FC<{
+  loggedInAccountId: string
   modalContainerRef: React.RefObject<HTMLElement>
-}) => {
+}> = ({ loggedInAccountId, modalContainerRef }) => {
   const { notifications } = useNotifications()
   const overlayRef = useRef<HTMLDivElement>(null)
-  const [api, contextHolder] = notify.useNotification({
-    prefixCls: 'useNotification',
-    getContainer: () => {
-      if (!overlayRef.current) throw new Error('Viewport is not initialized')
-      return overlayRef.current
-    },
-    stack: false,
-  })
+  const {
+    viewAllNotifcations,
+    isLoading: isLoadingView,
+    error: errorView,
+  } = useViewAllNotifications(loggedInAccountId)
 
   const [reviewingNotification, setReviewingNotification] = useState<NotificationDto | null>(null)
+
+  const handleReviewClick = (notification: NotificationDto) => {
+    setReviewingNotification(notification)
+  }
 
   const handleModalClose = () => {
     setReviewingNotification(null)
@@ -35,28 +37,45 @@ export const NotificationFeed = ({
           onClose={handleModalClose}
         />
       ) : null}
-      <Space direction="vertical" ref={overlayRef}>
-        {notifications
-          .filter((notify) => notify.status === 'new')
-          .map((notification) => (
-            <Item
-              key={notification.id}
-              notification={notification}
-              api={api}
-              onReview={setReviewingNotification}
-            />
-          ))}
-        {notifications
-          .filter((notify) => notify.status !== 'new')
-          .map((notification) => (
-            <Item
-              key={notification.id}
-              notification={notification}
-              api={api}
-              onReview={setReviewingNotification}
-            />
-          ))}
-        {contextHolder}
+      <Space
+        prefixCls="notifyWrapper"
+        direction="vertical"
+        ref={overlayRef}
+        style={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}
+      >
+        <Space direction="horizontal">
+          <Text type="secondary" style={{ textTransform: 'uppercase' }}>
+            New ({notifications.filter((not) => not.status === 'new').length})
+          </Text>
+          <Button style={{ float: 'right' }} onClick={viewAllNotifcations} type="link">
+            Mark all as read
+          </Button>
+        </Space>
+        <Space direction="vertical">
+          {notifications
+            .filter((notify) => notify.status === 'new')
+            .map((notification) => (
+              <Item
+                key={notification.id}
+                notification={notification}
+                onReview={handleReviewClick}
+              />
+            ))}
+        </Space>
+        <Text type="secondary" style={{ textTransform: 'uppercase' }}>
+          Old ({notifications.filter((not) => not.status === 'viewed').length})
+        </Text>
+        <Space direction="vertical">
+          {notifications
+            .filter((notify) => notify.status === 'viewed')
+            .map((notification) => (
+              <Item
+                key={notification.id}
+                notification={notification}
+                onReview={handleReviewClick}
+              />
+            ))}
+        </Space>
       </Space>
     </>
   )

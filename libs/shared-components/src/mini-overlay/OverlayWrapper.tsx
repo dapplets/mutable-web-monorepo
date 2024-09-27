@@ -2,9 +2,9 @@ import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
-import { NotificationProvider } from '@mweb/engine'
+import { NotificationProvider, useNotifications, useViewAllNotifications } from '@mweb/engine'
 import { NotificationFeed } from '../notifications/feed'
-const { Title } = Typography
+const { Title, Text } = Typography
 
 const IconNotificationClose = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
@@ -32,57 +32,40 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   font-family: sans-serif;
   box-sizing: border-box;
 
-  .useNotification {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    bottom: 0 !important;
-    top: 0 !important;
-    left: 0;
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 
-    .useNotification-notice-wrapper {
-      box-shadow: none;
+  .notifySingle {
+    width: 100%;
+    user-select: none;
+    column-gap: 8px;
+    justify-content: space-between;
+    background: #fff;
+    border: 1px solid #e2e2e5;
+    padding: 10px;
+    border-radius: 10px;
+
+    .notifySingle-item {
+      column-gap: 8px;
+    }
+
+    .ant-typography {
+      line-height: 1;
     }
 
     .ant-card-body {
       padding: 0;
     }
+
+    .ant-collapse-header {
+      padding: 0 16px;
+    }
   }
-
-  .notifySingle {
-    width: 100%;
-
-    .useNotification-notice-icon {
-      display: none;
-    }
-
-    .useNotification-notice-message {
-      margin-inline-start: 0 !important;
-
-      .ant-collapse-header {
-        .ant-space {
-          justify-content: space-between;
-        }
-      }
-    }
-
-    .useNotification-notice-description {
-      margin-inline-start: 0 !important;
-    }
-
-    .useNotification-notice-btn {
-      float: none !important;
-    }
-
-    .useNotification-notice-close {
-      inset-inline-end: 10px;
-      top: 10px;
-    }
-
+  .notifyWrapper-item:first-of-type {
     .ant-space {
       width: 100%;
-      user-select: none;
+      justify-content: space-between;
     }
   }
 `
@@ -105,9 +88,20 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
     0px 44px 17px 0px rgba(71, 65, 252, 0.01),
     0px 68px 19px 0px rgba(71, 65, 252, 0);
 
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+
+  .driwingWrapper {
+    overflow: hidden;
+  }
+
   .driwingContent {
     background: #f8f9ff;
     overflow: hidden;
+    &::-webkit-scrollbar {
+      width: 0;
+    }
 
     .ant-drawer-close {
       display: none;
@@ -116,6 +110,7 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
     .ant-drawer-header {
       border-bottom: none;
       padding: 10px;
+      padding-bottom: 0;
 
       h3 {
         margin-bottom: 0;
@@ -137,7 +132,10 @@ const Body = styled.div`
   height: 100%;
   position: relative;
   overflow: hidden;
-  overflow-y: scroll;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 `
 
 export interface IOverlayWrapperProps {
@@ -173,15 +171,6 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                   <IconNotificationClose />
                 </Button>
               </Space>
-              <Button
-                style={{ float: 'right' }}
-                onClick={() => {
-                  // todo need function mark all read
-                }}
-                type="link"
-              >
-                Mark all as read
-              </Button>
             </Space>
           }
           placement="right"
@@ -198,7 +187,10 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
           children={
             <Body ref={overlayRef}>
               <NotificationProvider recipientId={loggedInAccountId}>
-                <NotificationFeed modalContainerRef={modalContainerRef} />
+                <NotificationFeed
+                  loggedInAccountId={loggedInAccountId}
+                  modalContainerRef={modalContainerRef}
+                />
               </NotificationProvider>
             </Body>
           }

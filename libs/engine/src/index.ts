@@ -27,6 +27,7 @@ export {
   useNotifications,
   useAcceptPullRequest,
   useRejectPullRequest,
+  useViewAllNotifications,
   useViewNotification,
   useHideNotification,
 } from './app/contexts/notification-context'

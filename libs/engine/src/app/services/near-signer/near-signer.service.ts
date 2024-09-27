@@ -25,10 +25,10 @@ export class NearSigner {
   constructor(
     private _selector: WalletSelector,
     private _localDb: LocalDbService,
-    private _nearConfig: NearConfig
+    public nearConfig: NearConfig
   ) {
     this.provider = new nearAPI.providers.JsonRpcProvider({
-      url: _nearConfig.nodeUrl,
+      url: nearConfig.nodeUrl,
     })
   }
 
@@ -58,7 +58,7 @@ export class NearSigner {
   }
 
   async call(contractName: string, methodName: string, args: any, gas?: string, deposit?: string) {
-    if (contractName === this._nearConfig.contractName) {
+    if (contractName === this.nearConfig.contractName) {
       const account = await this._createConnectionForContract(contractName)
 
       // No session key for this contract
@@ -127,13 +127,13 @@ export class NearSigner {
 
     if (!loggedInAccountId) throw new Error('Not logged in')
 
-    const keyForContract = await keyStore.getKey(this._nearConfig.networkId, loggedInAccountId)
+    const keyForContract = await keyStore.getKey(this.nearConfig.networkId, loggedInAccountId)
 
     if (!keyForContract) return null
 
     const near = await nearAPI.connect({
       keyStore,
-      networkId: this._nearConfig.networkId,
+      networkId: this.nearConfig.networkId,
       nodeUrl: this.provider.connection.url,
       headers: {},
     })
@@ -206,7 +206,7 @@ export class NearSigner {
     })
 
     const keyStore = this._getKeyStoreForContract(contractName)
-    await keyStore.setKey(this._nearConfig.networkId, accountId, keyPair)
+    await keyStore.setKey(this.nearConfig.networkId, accountId, keyPair)
 
     localStorage.setItem(
       `${contractName}_wallet_auth_key`,
