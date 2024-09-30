@@ -147,9 +147,16 @@ export interface IOverlayWrapperProps {
   onClose: () => void
   open: boolean
   loggedInAccountId: string
+  modalContainerRef: React.RefObject<HTMLElement>
 }
 
-const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedInAccountId }) => {
+const OverlayWrapper: FC<IOverlayWrapperProps> = ({
+  apps,
+  onClose,
+  open,
+  loggedInAccountId,
+  modalContainerRef,
+}) => {
   const [waiting, setWaiting] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -184,7 +191,10 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
           children={
             <Body ref={overlayRef}>
               <NotificationProvider recipientId={loggedInAccountId}>
-                <NotificationFeed loggedInAccountId={loggedInAccountId} />
+                <NotificationFeed
+                  loggedInAccountId={loggedInAccountId}
+                  modalContainerRef={modalContainerRef}
+                />
               </NotificationProvider>
             </Body>
           }
