@@ -606,6 +606,9 @@ importers:
       '@mweb/engine':
         specifier: workspace:*
         version: link:../engine
+      antd:
+        specifier: ^5.18.3
+        version: 5.19.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       ethereum-blockies-base64:
         specifier: ^1.0.2
         version: 1.0.2
