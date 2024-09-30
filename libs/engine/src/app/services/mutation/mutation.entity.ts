@@ -5,6 +5,7 @@ import { EntityMetadata } from '../../common/entity-metadata'
 import { Base } from '../base/base.entity'
 import { Column, ColumnType } from '../base/decorators/column'
 import { Entity } from '../base/decorators/entity'
+import { MutationDto } from './dtos/mutation.dto'
 
 export type MutationId = string
 
@@ -23,9 +24,18 @@ export class Mutation extends Base {
 
   @Column({ type: ColumnType.Json })
   targets: Target[] = []
+
+  toDto(): MutationDto {
+    return {
+      ...super.toDto(),
+      metadata: this.metadata,
+      apps: this.apps,
+      targets: this.targets,
+    }
+  }
 }
 
-export type MutationWithSettings = Mutation & {
+export type MutationWithSettings = MutationDto & {
   settings: {
     lastUsage: string | null
   }

@@ -5,6 +5,7 @@ import { getEntity } from './decorators/entity'
 import { ColumnType, getColumn } from './decorators/column'
 import { mergeDeep } from '../../common/merge-deep'
 import { Transaction } from '../unit-of-work/transaction'
+import { EntityMetadata } from '../../common/entity-metadata'
 
 // ToDo: parametrize?
 const ProjectIdKey = 'dapplets.near'
@@ -187,6 +188,28 @@ export class BaseRepository<T extends Base> {
     await this._commitOrQueue(nullData, tx)
   }
 
+  async constructItem(
+    item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId> }
+  ): Promise<T> {
+    if (!item?.metadata?.name) {
+      throw new Error('Metadata name is required')
+    }
+
+    const localId = BaseRepository._normalizeNameToLocalId(item.metadata.name)
+
+    // ToDo: have to make signer public for it
+    const authorId = await this.socialDb.signer.getAccountId()
+
+    if (!authorId) {
+      throw new Error('User is not logged in')
+    }
+
+    // @ts-ignore
+    const entity: T = this.EntityType.create({ ...item, localId, authorId })
+
+    return entity
+  }
+
   private async _commitOrQueue(dataToSave: Value, tx?: Transaction) {
     if (tx) {
       tx.queue(dataToSave)
@@ -314,5 +337,10 @@ export class BaseRepository<T extends Base> {
 
   private static _clearObjectFromMeta(obj: Value): Value {
     return this._replaceEmptyKeyWithValue(this._removeBlockKeys(obj))
+  }
+
+  private static _normalizeNameToLocalId(name: string): string {
+    // allow only alphanumeric
+    return name.replace(/[^a-zA-Z0-9]/g, '')
   }
 }

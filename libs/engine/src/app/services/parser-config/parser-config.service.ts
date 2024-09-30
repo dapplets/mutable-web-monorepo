@@ -1,4 +1,5 @@
-import { AnyParserValue, AppMetadata } from '../application/application.entity'
+import { AnyParserValue } from '../application/application.entity'
+import { ApplicationDto } from '../application/dtos/application.dto'
 import { ParserConfig, ParserConfigId } from './parser-config.entity'
 import { ParserConfigRepository } from './parser-config.repository'
 
@@ -14,7 +15,7 @@ export class ParserConfigService {
     return this.parserConfigRepository.getItems()
   }
 
-  public async getParserConfigsForApps(apps: AppMetadata[]): Promise<ParserConfig[]> {
+  public async getParserConfigsForApps(apps: ApplicationDto[]): Promise<ParserConfig[]> {
     const namespaces = new Set<ParserConfigId>()
 
     for (const app of apps) {

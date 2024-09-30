@@ -10,6 +10,9 @@ import { PullRequestPayload } from '../notification/types/pull-request'
 import { generateGuid } from '../../common/generate-guid'
 import { EntityId } from '../base/base.entity'
 import { NotificationDto } from '../notification/dtos/notification.dto'
+import { MutationDto } from './dtos/mutation.dto'
+import { MutationCreateDto } from './dtos/mutation-create.dto'
+import { NotificationCreateDto } from '../notification/dtos/notification-create.dto'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
@@ -24,16 +27,18 @@ export class MutationService {
     private nearConfig: { defaultMutationId: string }
   ) {}
 
-  async getMutation(mutationId: string): Promise<Mutation | null> {
+  async getMutation(mutationId: string): Promise<MutationDto | null> {
     const mutation = await this.mutationRepository.getItem(mutationId)
-    return mutation
+    return mutation?.toDto() ?? null
   }
 
-  async getMutationsForContext(context: IContextNode): Promise<Mutation[]> {
+  async getMutationsForContext(context: IContextNode): Promise<MutationDto[]> {
     const mutations = await this.mutationRepository.getItems()
-    return mutations.filter((mutation) =>
-      mutation.targets.some((target) => TargetService.isTargetMet(target, context))
-    )
+    return mutations
+      .filter((mutation) =>
+        mutation.targets.some((target) => TargetService.isTargetMet(target, context))
+      )
+      .map((mutation) => mutation.toDto())
   }
 
   async getMutationsWithSettings(context: IContextNode): Promise<MutationWithSettings[]> {
@@ -80,13 +85,15 @@ export class MutationService {
   }
 
   async createMutation(
-    mutation: Mutation,
+    dto: MutationCreateDto,
     options: SaveMutationOptions = {
       applyChangesToOrigin: false,
       askOriginToApplyChanges: false,
     }
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
+
+    const mutation = await this.mutationRepository.constructItem(dto)
 
     // ToDo: move to provider?
     if (await this.mutationRepository.getItem(mutation.id)) {
@@ -101,11 +108,11 @@ export class MutationService {
       ])
     )
 
-    return this.populateMutationWithSettings(mutation)
+    return this.populateMutationWithSettings(mutation.toDto())
   }
 
   async editMutation(
-    mutation: Mutation,
+    dto: MutationDto,
     options: SaveMutationOptions = {
       applyChangesToOrigin: false,
       askOriginToApplyChanges: false,
@@ -113,6 +120,8 @@ export class MutationService {
     tx?: Transaction
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
+
+    const mutation = Mutation.create(dto)
 
     // ToDo: move to provider?
     if (!(await this.mutationRepository.getItem(mutation.id))) {
@@ -133,7 +142,7 @@ export class MutationService {
       await this.unitOfWorkService.runInTransaction(performTx)
     }
 
-    return this.populateMutationWithSettings(mutation)
+    return this.populateMutationWithSettings(mutation.toDto())
   }
 
   async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
@@ -184,14 +193,14 @@ export class MutationService {
     return currentDate
   }
 
-  public async populateMutationWithSettings(mutation: Mutation): Promise<MutationWithSettings> {
+  public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {
     const lastUsage = await this.mutationRepository.getMutationLastUsage(
       mutation.id,
       window.location.hostname
     )
 
     // ToDo: do not mix MutationWithSettings and Mutation
-    return (Mutation.create(mutation) as MutationWithSettings).copy({ settings: { lastUsage } })
+    return { ...mutation, settings: { lastUsage } }
   }
 
   private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {
@@ -238,9 +247,7 @@ export class MutationService {
       throw new Error('You cannot ask yourself to apply changes')
     }
 
-    const notification = {
-      authorId: forkAuthorId,
-      localId: generateGuid(),
+    const notification: NotificationCreateDto = {
       type: NotificationType.PullRequest,
       recipients: [originAuthorId],
       payload: {

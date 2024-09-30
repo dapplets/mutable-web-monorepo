@@ -1,4 +1,4 @@
-import { AppWithSettings, Mutation } from '@mweb/engine'
+import { AppWithSettings, MutationDto } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
@@ -413,7 +413,7 @@ interface IAppSwitcherProps extends IMutationAppsControl {
 }
 
 interface IMiniOverlayProps extends Partial<IWalletConnect> {
-  baseMutation: Mutation | null
+  baseMutation: MutationDto | null
   mutationApps: AppWithSettings[]
   children: ReactElement
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
