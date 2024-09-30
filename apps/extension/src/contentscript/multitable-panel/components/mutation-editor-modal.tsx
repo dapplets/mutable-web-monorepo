@@ -12,6 +12,7 @@ import { DocumentsModal } from './documents-modal'
 import { ModalConfirm } from './modals-confirm'
 import { MutationModalMode } from './types'
 import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { Image } from './image'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -127,6 +128,53 @@ const ModalConfirmBackground = styled.div`
   border-radius: inherit;
 `
 
+const ImgWrapper = styled.div`
+  width: 42px;
+  height: 42px;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`
+
+const CardWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+  padding: 5px 10px;
+  margin-bottom: 10px;
+`
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 184px;
+  margin-right: auto;
+
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #02193a;
+    margin: 0;
+  }
+  span {
+    font-size: 10px;
+    color: #7a818b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+`
+
+const Label = styled.div`
+  color: #7a818b;
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+`
+
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
     <path
@@ -142,6 +190,25 @@ const CloseIcon = () => (
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+    />
+  </svg>
+)
+
+const PopupIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path
+      d="M9.33301 10.5L12.833 7L9.33301 3.5"
+      stroke="#7A818B"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M4.66699 3.5L1.16699 7L4.66699 10.5"
+      stroke="#7A818B"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
     />
   </svg>
 )
@@ -326,7 +393,30 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
 
+      {mode === MutationModalMode.Editing || mode === MutationModalMode.Forking ? (
+        <>
+          <Label>Current Mutation</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={editingMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={editingMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{editingMutation.metadata.name}</p>
+              <span>{editingMutation.id}</span>
+            </TextWrapper>
+            <div>
+              <PopupIcon />
+            </div>
+          </CardWrapper>
+        </>
+      ) : null}
+
       <AppsList>
+        <Label>Applications List</Label>
         {apps.map((app) =>
           app.permissions.documents ? (
             <ApplicationCardWithDocs
