@@ -1,4 +1,4 @@
-import { Document } from '@mweb/engine'
+import { DocumentDto } from '@mweb/engine'
 import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
@@ -142,7 +142,7 @@ const CloseIcon = () => (
 )
 
 export interface Props {
-  docs: Document[] | null
+  docs: DocumentDto[] | null
   chosenDocumentsIds: (string | null)[]
   setDocumentsIds: (ids: (string | null)[]) => void
   onClose: () => void

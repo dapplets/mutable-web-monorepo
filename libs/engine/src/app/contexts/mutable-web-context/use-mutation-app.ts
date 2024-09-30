@@ -23,7 +23,7 @@ export function useMutationApp(appInstanceId: string) {
       setMutationApps((apps) =>
         apps.map((app) =>
           app.instanceId === appInstanceId
-            ? app.copy({ settings: { ...app.settings, isEnabled: true } })
+            ? { ...app, settings: { ...app.settings, isEnabled: true } }
             : app
         )
       )
@@ -55,7 +55,7 @@ export function useMutationApp(appInstanceId: string) {
       setMutationApps((apps) =>
         apps.map((app) =>
           app.instanceId === appInstanceId
-            ? app.copy({ settings: { ...app.settings, isEnabled: false } })
+            ? { ...app, settings: { ...app.settings, isEnabled: false } }
             : app
         )
       )
