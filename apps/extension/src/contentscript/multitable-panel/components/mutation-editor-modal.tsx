@@ -12,6 +12,7 @@ import { DocumentsModal } from './documents-modal'
 import { ModalConfirm } from './modals-confirm'
 import { MutationModalMode } from './types'
 import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { Image } from './image'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -125,6 +126,57 @@ const ModalConfirmBackground = styled.div`
   left: 0;
   background-color: rgba(255, 255, 255, 0.7);
   border-radius: inherit;
+`
+
+const Label = styled.div`
+  color: #7a818b;
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+`
+
+const CardWrapper = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+`
+
+const ImgWrapper = styled.div`
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 52px);
+
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #02193a;
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  span {
+    font-size: 10px;
+    color: #7a818b;
+    overflow-wrap: break-word;
+  }
 `
 
 const CloseIcon = () => (
@@ -326,7 +378,33 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
 
+      {(mode === MutationModalMode.Editing || mode === MutationModalMode.Forking) &&
+      baseMutation ? (
+        <>
+          <Label>Current Mutation</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={baseMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={baseMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{baseMutation.metadata.name}</p>
+              <span>
+                by{' '}
+                {baseMutation.authorId === loggedInAccountId
+                  ? `me (${loggedInAccountId})`
+                  : baseMutation.authorId}
+              </span>
+            </TextWrapper>
+          </CardWrapper>
+        </>
+      ) : null}
+
       <AppsList>
+        <Label>Applications List</Label>
         {apps.map((app) =>
           app.permissions.documents ? (
             <ApplicationCardWithDocs
