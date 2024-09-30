@@ -71,6 +71,9 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   )
 
   useEffect(() => {
+    // Mutation already selected
+    if (selectedMutationId) return
+
     getMutationToBeLoaded().then((favoriteMutationId) => {
       if (mutations.length === 0) return
 
@@ -96,7 +99,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
       switchMutation(defaultMutationId ?? favoriteMutationId)
     })
-  }, [getMutationToBeLoaded, defaultMutationId, mutations, modalApi])
+  }, [getMutationToBeLoaded, defaultMutationId, mutations, modalApi, selectedMutationId])
 
   const {
     mutationApps,
