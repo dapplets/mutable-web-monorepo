@@ -12,13 +12,12 @@ export function useCreateMutation() {
   const createMutation = async (
     creatingMutation: MutationCreateDto,
     options?: SaveMutationOptions
-  ) => {
+  ): Promise<string> => {
     try {
       setIsLoading(true)
-
       const createdMutation = await engine.mutationService.createMutation(creatingMutation, options)
-
       setMutations((mutations) => [...mutations, createdMutation])
+      return createdMutation.id
     } catch (err) {
       console.error(err)
       if (err instanceof Error) {

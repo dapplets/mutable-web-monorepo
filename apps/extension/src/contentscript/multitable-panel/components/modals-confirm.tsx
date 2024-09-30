@@ -246,7 +246,7 @@ export const ModalConfirm: FC<Props> = ({
   const [newDescription, setDescription] = useState<string>(description ?? '')
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false)
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations } = useMutableWeb()
+  const { mutations, switchMutation } = useMutableWeb()
 
   const forkedMutation = useMemo(() => {
     if (mode !== MutationModalMode.Editing || !fork_of) return null
@@ -295,12 +295,13 @@ export const ModalConfirm: FC<Props> = ({
 
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
-        await createMutation(
+        const id = await createMutation(
           mutationToPublish,
           mode === MutationModalMode.Forking
             ? { askOriginToApplyChanges: isApplyToOriginChecked }
             : undefined
         )
+        switchMutation(id)
         onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {
