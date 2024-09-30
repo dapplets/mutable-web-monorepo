@@ -41,7 +41,12 @@ export const NotificationFeed: FC<{
         prefixCls="notifyWrapper"
         direction="vertical"
         ref={overlayRef}
-        style={{ overflow: 'hidden', overflowY: 'auto', height: '100%' }}
+        style={{
+          overflow: 'hidden',
+          overflowY: 'auto',
+          height: '100%',
+          transition: 'all 0.2s ease',
+        }}
       >
         <Space direction="horizontal">
           <Text type="secondary" style={{ textTransform: 'uppercase' }}>
@@ -51,7 +56,8 @@ export const NotificationFeed: FC<{
             Mark all as read
           </Button>
         </Space>
-        <Space direction="vertical">
+
+        <Space direction="vertical" style={{ transition: 'all 0.2s ease' }}>
           {notifications
             .filter((notify) => notify.status === 'new')
             .map((notification) => (
@@ -65,7 +71,7 @@ export const NotificationFeed: FC<{
         <Text type="secondary" style={{ textTransform: 'uppercase' }}>
           Old ({notifications.filter((not) => not.status === 'viewed').length})
         </Text>
-        <Space direction="vertical">
+        <Space direction="vertical" style={{ transition: 'all 0.2s ease' }}>
           {notifications
             .filter((notify) => notify.status === 'viewed')
             .map((notification) => (

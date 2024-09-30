@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react'
+import React, { Dispatch, FC, SetStateAction, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
@@ -45,6 +45,7 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     border: 1px solid #e2e2e5;
     padding: 10px;
     border-radius: 10px;
+    transition: all 0.2s ease;
 
     .notifySingle-item {
       column-gap: 8px;
@@ -94,11 +95,14 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
 
   .driwingWrapper {
     overflow: hidden;
+    transition: all 0.2s ease;
   }
 
   .driwingContent {
     background: #f8f9ff;
     overflow: hidden;
+    transition: all 0.2s ease;
+
     &::-webkit-scrollbar {
       width: 0;
     }

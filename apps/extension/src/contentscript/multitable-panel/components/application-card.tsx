@@ -1,4 +1,4 @@
-import { AppMetadata, Document, useAppDocuments } from '@mweb/engine'
+import { ApplicationDto, DocumentDto, useAppDocuments } from '@mweb/engine'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
@@ -182,7 +182,7 @@ const CheckedIcon = () => (
 
 export interface ISimpleApplicationCardProps {
   src: string
-  metadata: AppMetadata['metadata']
+  metadata: ApplicationDto['metadata']
   disabled: boolean
   isChecked: boolean
   onChange: (isChecked: boolean) => void
@@ -193,19 +193,19 @@ export interface ISimpleApplicationCardProps {
 
 export interface IApplicationCardWithDocsProps {
   src: string
-  metadata: AppMetadata['metadata']
+  metadata: ApplicationDto['metadata']
   disabled: boolean
   docsIds: AppInMutation['documentId'][]
   onDocCheckboxChange: (docId: string | null, isChecked: boolean) => void
-  onOpenDocumentsModal: (docs: Document[]) => void
+  onOpenDocumentsModal: (docs: DocumentDto[]) => void
 }
 
 interface IApplicationCard
   extends ISimpleApplicationCardProps,
     Omit<IApplicationCardWithDocsProps, 'docsIds'> {
   hasDocuments: boolean
-  usingDocs: (Document | null)[]
-  allDocs: Document[]
+  usingDocs: (DocumentDto | null)[]
+  allDocs: DocumentDto[]
 }
 
 const ApplicationCard: React.FC<IApplicationCard> = ({
@@ -289,7 +289,7 @@ export const SimpleApplicationCard: React.FC<ISimpleApplicationCardProps> = (pro
 export const ApplicationCardWithDocs: React.FC<IApplicationCardWithDocsProps> = (props) => {
   const { src, docsIds } = props
   const { documents, isLoading } = useAppDocuments(src)
-  const usingDocs: (Document | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
+  const usingDocs: (DocumentDto | null)[] = documents?.filter((doc) => docsIds.includes(doc.id))
   if (docsIds.includes(null)) usingDocs.unshift(null)
 
   return isLoading ? (

@@ -1,7 +1,7 @@
 import {
-  AppMetadata,
-  Document,
-  Mutation,
+  ApplicationDto,
+  DocumentDto,
+  MutationDto,
   useCreateMutation,
   useEditMutation,
   useMutableWeb,
@@ -147,9 +147,15 @@ const CloseIcon = () => (
   </svg>
 )
 
-const createEmptyMutation = (accountId: string): Mutation =>
-  Mutation.create({
-    id: `${accountId}/mutation/Untitled-${generateRandomHex(6)}`,
+// ToDo: use MutationCreateDto
+const createEmptyMutation = (accountId: string): MutationDto => {
+  const localId = `Untitled-${generateRandomHex(6)}`
+  return {
+    id: `${accountId}/mutation/${localId}`,
+    authorId: accountId,
+    blockNumber: 0,
+    timestamp: 0,
+    localId: localId,
     apps: [],
     metadata: {
       name: '',
@@ -161,11 +167,12 @@ const createEmptyMutation = (accountId: string): Mutation =>
         if: { id: { in: [window.location.hostname] } },
       },
     ],
-  })
+  }
+}
 
 export interface Props {
-  apps: AppMetadata[]
-  baseMutation: Mutation | null
+  apps: ApplicationDto[]
+  baseMutation: MutationDto | null
   onClose: () => void
 }
 
@@ -219,7 +226,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
-  const [docsForModal, setDocsForModal] = useState<Document[] | null>(null)
+  const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
 
   // Close modal with escape key
   useEscape(onClose)
@@ -392,7 +399,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     setMode(itemId as MutationModalMode)
   }
 
-  const handleOpenDocumentsModal = (appId: string, docs: Document[]) => {
+  const handleOpenDocumentsModal = (appId: string, docs: DocumentDto[]) => {
     setAppIdToOpenDocsModal(appId)
     setDocsForModal(docs)
   }
@@ -442,7 +449,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               docsIds={editingMutation.apps
                 .filter((_app) => _app.appId === app.id)
                 .map((_app) => _app.documentId)}
-              onOpenDocumentsModal={(docs: Document[]) => handleOpenDocumentsModal(app.id, docs)}
+              onOpenDocumentsModal={(docs: DocumentDto[]) => handleOpenDocumentsModal(app.id, docs)}
               onDocCheckboxChange={(docId: string | null, isChecked: boolean) =>
                 handleDocCheckboxChange(docId, app.id, isChecked)
               }

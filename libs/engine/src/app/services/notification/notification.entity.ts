@@ -3,6 +3,8 @@ import { Entity } from '../base/decorators/entity'
 import { Column, ColumnType } from '../base/decorators/column'
 import { RegularPayload } from './types/regular'
 import { PullRequestPayload } from './types/pull-request'
+import { Resolution } from './resolution.entity'
+import { NotificationDto } from './dtos/notification.dto'
 
 export enum NotificationType {
   Regular = 'regular',
@@ -20,6 +22,4 @@ export class Notification extends Base {
 
   @Column({ type: ColumnType.Set })
   recipients: string[] = []
-
-  //   createdAt: string // 2024-01-01T00:00:00.000Z
 }

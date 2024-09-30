@@ -1,18 +1,20 @@
 import { Engine } from '../../../engine'
 import { createContext } from 'react'
-import { AppMetadata, AppInstanceWithSettings } from '../../services/application/application.entity'
-import { Mutation, MutationWithSettings } from '../../services/mutation/mutation.entity'
+import { AppInstanceWithSettings } from '../../services/application/application.entity'
+import { ApplicationDto } from '../../services/application/dtos/application.dto'
+import { MutationWithSettings } from '../../services/mutation/mutation.entity'
+import { MutationDto } from '../../services/mutation/dtos/mutation.dto'
 import { NearConfig } from '../../../constants'
 
 export type MutableWebContextState = {
   config: NearConfig
   engine: Engine
   mutations: MutationWithSettings[]
-  allApps: AppMetadata[]
+  allApps: ApplicationDto[]
   mutationApps: AppInstanceWithSettings[]
   activeApps: AppInstanceWithSettings[]
   selectedMutation: MutationWithSettings | null
-  refreshMutation: (mutation: Mutation) => Promise<void>
+  refreshMutation: (mutation: MutationDto) => Promise<void>
   isLoading: boolean
   switchMutation: (mutationId: string | null) => void
   favoriteMutationId: string | null
