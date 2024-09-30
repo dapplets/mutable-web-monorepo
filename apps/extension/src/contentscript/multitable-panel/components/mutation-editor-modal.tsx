@@ -128,51 +128,55 @@ const ModalConfirmBackground = styled.div`
   border-radius: inherit;
 `
 
+const Label = styled.div`
+  color: #7a818b;
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+`
+
+const CardWrapper = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+`
+
 const ImgWrapper = styled.div`
   width: 42px;
   height: 42px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+
   img {
     width: 100%;
     height: 100%;
   }
 `
 
-const CardWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background: #fff;
-  padding: 5px 10px;
-  margin-bottom: 10px;
-`
-
 const TextWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 184px;
-  margin-right: auto;
+  width: calc(100% - 52px);
 
   p {
     font-size: 14px;
     font-weight: 600;
     color: #02193a;
     margin: 0;
+    overflow-wrap: break-word;
   }
+
   span {
     font-size: 10px;
     color: #7a818b;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: break-word;
   }
-`
-
-const Label = styled.div`
-  color: #7a818b;
-  font-size: 8px;
-  text-transform: uppercase;
-  font-weight: 700;
 `
 
 const CloseIcon = () => (
@@ -190,25 +194,6 @@ const CloseIcon = () => (
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
-    />
-  </svg>
-)
-
-const PopupIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path
-      d="M9.33301 10.5L12.833 7L9.33301 3.5"
-      stroke="#7A818B"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-    <path
-      d="M4.66699 3.5L1.16699 7L4.66699 10.5"
-      stroke="#7A818B"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
     />
   </svg>
 )
@@ -393,24 +378,27 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
 
-      {mode === MutationModalMode.Editing || mode === MutationModalMode.Forking ? (
+      {(mode === MutationModalMode.Editing || mode === MutationModalMode.Forking) &&
+      baseMutation ? (
         <>
           <Label>Current Mutation</Label>
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={editingMutation.metadata.image}
+                image={baseMutation.metadata.image}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
+                alt={baseMutation.metadata.name}
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{editingMutation.metadata.name}</p>
-              <span>{editingMutation.id}</span>
+              <p>{baseMutation.metadata.name}</p>
+              <span>
+                by{' '}
+                {baseMutation.authorId === loggedInAccountId
+                  ? `me (${loggedInAccountId})`
+                  : baseMutation.authorId}
+              </span>
             </TextWrapper>
-            <div>
-              <PopupIcon />
-            </div>
           </CardWrapper>
         </>
       ) : null}
