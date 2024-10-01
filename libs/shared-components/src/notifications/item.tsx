@@ -1,11 +1,13 @@
 import React, { FC } from 'react'
-import { CreateSingleNotification } from './utils/createSingleNotification'
+import Notification from './Notification'
 import { NotificationDto } from '@mweb/engine'
 
-export const Item: FC<{ notification: NotificationDto }> = ({ notification }) => {
+const NotificationsResolver: FC<{ notification: NotificationDto }> = ({ notification }) => {
   return notification.type === 'regular' ? (
-    <CreateSingleNotification notification={notification} />
+    <Notification notification={notification} />
   ) : (
-    <CreateSingleNotification notification={notification} />
+    <Notification notification={notification} />
   )
 }
+
+export default NotificationsResolver

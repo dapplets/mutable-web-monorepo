@@ -1,10 +1,10 @@
 import { useNotifications, useViewAllNotifications } from '@mweb/engine'
 import React, { Dispatch, FC, SetStateAction, useEffect, useRef } from 'react'
-import { Item } from './item'
+import NotificationsResolver from './item'
 import { Space, Typography, Button } from 'antd'
 const { Text } = Typography
 
-export const NotificationFeed: FC<{
+const NotificationFeed: FC<{
   loggedInAccountId: string
 }> = ({ loggedInAccountId }) => {
   const { notifications } = useNotifications()
@@ -40,7 +40,7 @@ export const NotificationFeed: FC<{
         {notifications
           .filter((notify) => notify.status === 'new')
           .map((notification) => (
-            <Item key={notification.id} notification={notification} />
+            <NotificationsResolver key={notification.id} notification={notification} />
           ))}
       </Space>
       <Text type="secondary" style={{ textTransform: 'uppercase' }}>
@@ -50,9 +50,11 @@ export const NotificationFeed: FC<{
         {notifications
           .filter((notify) => notify.status === 'viewed')
           .map((notification) => (
-            <Item key={notification.id} notification={notification} />
+            <NotificationsResolver key={notification.id} notification={notification} />
           ))}
       </Space>
     </Space>
   )
 }
+
+export default NotificationFeed

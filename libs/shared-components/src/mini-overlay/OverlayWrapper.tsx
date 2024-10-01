@@ -1,22 +1,11 @@
-import React, { Dispatch, FC, SetStateAction, useRef, useState } from 'react'
+import React, { FC, useRef } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
-import { NotificationProvider, useNotifications, useViewAllNotifications } from '@mweb/engine'
-import { NotificationFeed } from '../notifications/feed'
-const { Title, Text } = Typography
-
-const IconNotificationClose = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="9" height="10" viewBox="0 0 9 10" fill="none">
-    <path
-      d="M8 1.5L1 8.5M1 1.5L8 8.5"
-      stroke="#7A818B"
-      strokeWidth="1.16667"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+import { NotificationProvider } from '@mweb/engine'
+import NotificationFeed from '../notifications/NotificationFeed'
+import CloseIcon from './assets/icons/Close'
+const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   position: fixed;
@@ -63,6 +52,7 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
       padding: 0 16px;
     }
   }
+
   .notifyWrapper-item:first-of-type {
     .ant-space {
       width: 100%;
@@ -70,6 +60,7 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     }
   }
 `
+
 const OverlayContent = styled.div<{ $isOpen: boolean }>`
   position: relative;
   display: ${(props) => (props.$isOpen ? 'block' : 'none')};
@@ -150,7 +141,6 @@ export interface IOverlayWrapperProps {
 }
 
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedInAccountId }) => {
-  const [waiting, setWaiting] = useState(false)
   const overlayRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -165,7 +155,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
                 </Title>
 
                 <Button type="text" onClick={onClose}>
-                  <IconNotificationClose />
+                  <CloseIcon />
                 </Button>
               </Space>
             </Space>
