@@ -58,6 +58,7 @@ module.exports = {
     path: path.join(__dirname, 'build'),
     filename: '[name].js',
     publicPath: '',
+    chunkFormat: false
   },
   module: {
     rules: [
