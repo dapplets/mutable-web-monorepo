@@ -138,9 +138,16 @@ export interface IOverlayWrapperProps {
   onClose: () => void
   open: boolean
   loggedInAccountId: string
+  connectWallet: (() => Promise<void>) | undefined
 }
 
-const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedInAccountId }) => {
+const OverlayWrapper: FC<IOverlayWrapperProps> = ({
+  apps,
+  onClose,
+  open,
+  loggedInAccountId,
+  connectWallet,
+}) => {
   const overlayRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -174,7 +181,10 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, loggedI
           children={
             <Body ref={overlayRef}>
               <NotificationProvider recipientId={loggedInAccountId}>
-                <NotificationFeed loggedInAccountId={loggedInAccountId} />
+                <NotificationFeed
+                  connectWallet={connectWallet}
+                  loggedInAccountId={loggedInAccountId}
+                />
               </NotificationProvider>
             </Body>
           }

@@ -443,6 +443,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
         apps={mutationApps.length > 0}
         onClose={onClose}
         open={open}
+        connectWallet={connectWallet}
         loggedInAccountId={loggedInAccountId}
       />
     </WrapperDriver>
