@@ -2,7 +2,6 @@ import React, { FC, useRef } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
-import { NotificationProvider } from '@mweb/engine'
 import NotificationFeed from '../notifications/NotificationFeed'
 import CloseIcon from './assets/icons/Close'
 const { Title } = Typography
@@ -180,12 +179,10 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
           data-testid="overlay-notify"
           children={
             <Body ref={overlayRef}>
-              <NotificationProvider recipientId={loggedInAccountId}>
-                <NotificationFeed
-                  connectWallet={connectWallet}
-                  loggedInAccountId={loggedInAccountId}
-                />
-              </NotificationProvider>
+              <NotificationFeed
+                connectWallet={connectWallet}
+                loggedInAccountId={loggedInAccountId}
+              />
             </Body>
           }
         ></Drawer>
