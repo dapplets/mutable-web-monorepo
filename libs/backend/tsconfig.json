@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./lib",
+    "emitDecoratorMetadata": true
+  },
+  "files": ["src/index.ts", "src/types-patch.d.ts"]
+}
