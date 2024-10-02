@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import Notification from './Notification'
+import Notification from './notification'
 import { NotificationDto } from '@mweb/engine'
 
 const NotificationsResolver: FC<{ notification: NotificationDto }> = ({ notification }) => {

@@ -1,7 +1,7 @@
-import BlueBadge from "./BlueBadge";
-import RedBadge from "./RedBadge";
-import GreenBadge from "./GreenBadge";
-import Collapse from "./Collapse";
-import NotificationMessage from "./NotificationMessage";
-import NotificationClose from "./NotificationClose";
+import BlueBadge from "./blue-badge";
+import RedBadge from "./red-badge";
+import GreenBadge from "./green-badge";
+import Collapse from "./collapse";
+import NotificationMessage from "./notification-message";
+import NotificationClose from "./notification-close";
 export { BlueBadge, RedBadge, GreenBadge, Collapse, NotificationMessage, NotificationClose }

@@ -3,13 +3,13 @@ import { useAccountId } from 'near-social-vm'
 import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
-import { Image } from '../common/Image'
-import { IWalletConnect } from './Profile'
+import { Image } from '../common/image'
+import { IWalletConnect } from './profile'
 import { Drawer } from 'antd'
-import OverlayWrapper from './OverlayWrapper'
+import OverlayWrapper from './overlay-wrapper'
 import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
 import { NotificationProvider } from '@mweb/engine'
-import SidePanel from './SidePanel'
+import SidePanel from './side-panel'
 
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;

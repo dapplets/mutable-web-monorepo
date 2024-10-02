@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from 'antd'
 import { AppWithSettings, MutationDto, useNotifications } from '@mweb/engine'
-import { Image } from '../common/Image'
-import Profile, { IWalletConnect } from './Profile'
+import { Image } from '../common/image'
+import Profile, { IWalletConnect } from './profile'
 import { MutationFallbackIcon, ArrowIcon, BellIcon, BellWithCircle } from './assets/icons'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`

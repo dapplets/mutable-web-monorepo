@@ -2,8 +2,8 @@ import React, { FC, useRef } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
-import NotificationFeed from '../notifications/NotificationFeed'
-import CloseIcon from './assets/icons/Close'
+import NotificationFeed from '../notifications/notification-feed'
+import { Close as CloseIcon } from './assets/icons'
 const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
