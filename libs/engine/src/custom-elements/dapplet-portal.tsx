@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useState, useCallback, useMemo } from 'react'
 import { useEngine } from '../app/contexts/engine-context'
 import { InjectableTarget, Portal } from '../app/contexts/engine-context/engine-context'
-import { TargetService } from '../app/services/target/target.service'
+import { utils } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 import { buildTransferableContext } from '../app/common/transferable-context'
 
@@ -43,8 +43,8 @@ export const FirstTargetTransformerHoc = <
     const handleContextStartedOrFinished = useCallback(
       (context: IContextNode) => {
         // ToDo: tha similar code is in the context manager
-        const rootContext = TargetService.getRootContext(context)
-        const foundContext = TargetService.findContextByTarget(props.target, rootContext)
+        const rootContext = utils.getRootContext(context)
+        const foundContext = utils.findContextByTarget(props.target, rootContext)
         setFirstContext(foundContext)
       },
       [props.target]

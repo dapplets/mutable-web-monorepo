@@ -1,6 +1,6 @@
 import React from 'react'
 import { ContextTree, useCore } from '@mweb/react'
-import { TargetService } from '../services/target/target.service'
+import { utils } from '@mweb/backend'
 import { useHighlighter } from '../contexts/highlighter-context'
 import { Highlighter } from './highlighter'
 
@@ -9,15 +9,14 @@ export const ContextHighlighter = () => {
   const { highlighterTask } = useHighlighter()
 
   if (!tree || !highlighterTask) return null
+
   return (
     <ContextTree>
       {({ context }) => {
         const isSuitable = highlighterTask?.target
           ? Array.isArray(highlighterTask.target)
-            ? highlighterTask.target
-                .map((t) => TargetService.isTargetMet(t, context))
-                .includes(true)
-            : TargetService.isTargetMet(highlighterTask.target, context)
+            ? highlighterTask.target.map((t) => utils.isTargetMet(t, context)).includes(true)
+            : utils.isTargetMet(highlighterTask.target, context)
           : true
 
         const calloutLevel =

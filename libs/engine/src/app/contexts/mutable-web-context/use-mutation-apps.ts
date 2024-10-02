@@ -1,6 +1,6 @@
-import { AppInstanceWithSettings } from '../../services/application/application.entity'
-import { MutationDto } from '../../services/mutation/dtos/mutation.dto'
-import { Engine } from '../../../engine'
+import { AppInstanceWithSettings } from '@mweb/backend'
+import { MutationDto } from '@mweb/backend'
+import { Engine } from '@mweb/backend'
 import { useQueryArray } from '../../hooks/use-query-array'
 
 export const useMutationApps = (engine: Engine, mutation?: MutationDto | null) => {

@@ -1,4 +1,4 @@
-import { DocumentDto } from '@mweb/engine'
+import { DocumentDto } from '@mweb/backend'
 import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'

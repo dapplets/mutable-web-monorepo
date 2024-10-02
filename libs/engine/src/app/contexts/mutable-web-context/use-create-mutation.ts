@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react'
 import { MutableWebContext } from './mutable-web-context'
-import { SaveMutationOptions } from '../../services/mutation/mutation.service'
-import { MutationCreateDto } from '../../services/mutation/dtos/mutation-create.dto'
+import { SaveMutationOptions } from '@mweb/backend'
+import { MutationCreateDto } from '@mweb/backend'
 
 export function useCreateMutation() {
   const { engine, setMutations } = useContext(MutableWebContext)

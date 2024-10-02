@@ -1,4 +1,4 @@
-import { AppWithSettings, MutationDto } from '@mweb/engine'
+import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'

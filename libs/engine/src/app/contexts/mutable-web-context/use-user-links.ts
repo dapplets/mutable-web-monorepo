@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { IContextNode } from '@mweb/core'
-import { BosUserLinkWithInstance, UserLinkId } from '../../services/user-link/user-link.entity'
+import { BosUserLinkWithInstance, UserLinkId } from '@mweb/backend'
 import { useMutableWeb } from '.'
-import { AppId } from '../../services/application/application.entity'
+import { AppId } from '@mweb/backend'
 
 // Reuse reference to empty array to avoid unnecessary re-renders
 const NoLinks: BosUserLinkWithInstance[] = []

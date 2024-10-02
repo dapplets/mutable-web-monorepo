@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@mweb/engine": "workspace:*",
+    "@mweb/backend": "workspace:*",
     "ethereum-blockies-base64": "^1.0.2"
   }
 }

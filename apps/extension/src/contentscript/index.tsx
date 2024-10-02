@@ -1,6 +1,7 @@
 import { NetworkId, setupWalletSelector } from '@near-wallet-selector/core'
 import { EventEmitter as NEventEmitter } from 'events'
-import { customElements, EngineConfig, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
+import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
+import { EngineConfig } from '@mweb/backend'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'

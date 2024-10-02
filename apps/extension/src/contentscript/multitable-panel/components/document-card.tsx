@@ -1,8 +1,7 @@
-import { ApplicationDto } from '@mweb/engine'
+import { ApplicationDto, DocumentMetadata } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
-import { DocumentMetadata } from '@mweb/engine/lib/app/services/document/document.entity'
 
 const Card = styled.div`
   position: relative;

@@ -3,7 +3,7 @@ import { NotificationContext, NotificationContextState } from './notification-co
 import { Button, Space, notification } from 'antd'
 import { useViewport } from '../viewport-context'
 import { useQueryArray } from '../../hooks/use-query-array'
-import { NotificationDto } from '../../services/notification/dtos/notification.dto'
+import { NotificationDto } from '@mweb/backend'
 import { useMutableWeb } from '../mutable-web-context'
 
 type Props = {

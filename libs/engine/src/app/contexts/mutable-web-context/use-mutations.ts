@@ -1,6 +1,6 @@
 import { useCore } from '@mweb/react'
-import { MutationWithSettings } from '../../services/mutation/mutation.entity'
-import { Engine } from '../../../engine'
+import { MutationWithSettings } from '@mweb/backend'
+import { Engine } from '@mweb/backend'
 import { useQueryArray } from '../../hooks/use-query-array'
 
 export const useMutations = (engine: Engine) => {

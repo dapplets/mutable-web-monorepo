@@ -65,6 +65,7 @@
   },
   "dependencies": {
     "@mweb/engine": "workspace:*",
+    "@mweb/backend": "workspace:*",
     "@mweb/shared-components": "workspace:*",
     "@near-wallet-selector/core": "^8.9.1",
     "@near-wallet-selector/wallet-utils": "^8.9.1",

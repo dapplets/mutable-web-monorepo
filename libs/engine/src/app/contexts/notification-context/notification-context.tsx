@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { NotificationDto } from '../../services/notification/dtos/notification.dto'
+import { NotificationDto } from '@mweb/backend'
 
 export type NotificationContextState = {
   notifications: NotificationDto[]

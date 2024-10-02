@@ -1,4 +1,4 @@
-import { ApplicationDto, DocumentDto, MutationCreateDto, MutationDto } from '@mweb/engine'
+import { ApplicationDto, DocumentDto, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -11,7 +11,7 @@ import { DropdownButton } from './dropdown-button'
 import { DocumentsModal } from './documents-modal'
 import { ModalConfirm } from './modals-confirm'
 import { MutationModalMode } from './types'
-import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
 
 const SelectedMutationEditorWrapper = styled.div`

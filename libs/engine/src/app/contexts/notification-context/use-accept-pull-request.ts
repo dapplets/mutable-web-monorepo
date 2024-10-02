@@ -1,5 +1,5 @@
 import { usePromise } from '../../hooks/use-promise'
-import { EntityId } from '../../services/base/base.entity'
+import { EntityId } from '@mweb/backend'
 import { useMutableWeb } from '../mutable-web-context'
 import { useNotifications } from './use-notifications'
 

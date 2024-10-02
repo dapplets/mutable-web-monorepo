@@ -1,7 +1,7 @@
 import React, { ReactElement, Fragment, ReactNode, useState } from 'react'
 import { FC } from 'react'
 import { CoreProvider } from '@mweb/react'
-import { EngineConfig } from '../engine'
+import { EngineConfig } from '@mweb/backend'
 import { EngineProvider } from './contexts/engine-context'
 import { MutableWebProvider } from './contexts/mutable-web-context'
 import { ViewportProvider } from './contexts/viewport-context'
