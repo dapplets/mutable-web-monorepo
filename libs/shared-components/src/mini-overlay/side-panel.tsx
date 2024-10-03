@@ -3,7 +3,8 @@ import styled from 'styled-components'
 import { Button } from 'antd'
 import { AppWithSettings, MutationDto, useNotifications } from '@mweb/engine'
 import { Image } from '../common/image'
-import Profile, { IWalletConnect } from './profile'
+import Profile from './profile'
+import { IWalletConnect } from './types'
 import { MutationFallbackIcon, ArrowIcon, BellIcon, BellWithCircle } from './assets/icons'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
@@ -36,82 +37,9 @@ const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
   border-radius: ${(props) => (props.$noMutations ? '4px 0 0 4px' : '4px 0 0 0')};
   position: relative;
   gap: 6px;
-`
 
-const ButtonWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  box-sizing: content-box !important;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  width: 46px;
-  margin-top: -7px;
-  padding: 0 5px 5px;
-`
-
-const AppsWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 5px 6px;
-  gap: 10px;
-`
-
-const ButtonOpenWrapper = styled.div<{ $open?: boolean }>`
-  display: flex;
-  box-sizing: border-box;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  width: 100%;
-  height: 32px;
-  background: ${(props) => (props.$open ? '#fff' : 'transparent')};
-  padding-left: 6px;
-  padding-right: 6px;
-  border-width: 1px 0 1px 1px;
-  border-style: solid;
-  border-color: #e2e2e5;
-  border-radius: 0 0 0 4px;
-
-  .svgTransform {
-    svg {
-      transform: rotate(180deg);
-    }
-  }
-`
-
-const ButtonOpen = styled.button<{ $open?: boolean }>`
-  display: flex;
-  box-sizing: border-box;
-  overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 22px;
-  outline: none;
-  background: transparent;
-  border-radius: 4px;
-  border: ${(props) => (props.$open ? 'none' : '1px solid #e2e2e5')};
-  padding: 0;
-
-  path {
-    stroke: #7a818b;
-  }
-
-  &:hover {
-    background: #fff;
-
-    path {
-      stroke: #384bff;
-    }
-  }
-
-  &:active {
-    background: #384bff;
-
-    path {
-      stroke: #fff;
-    }
+  .ant-btn {
+    padding: 0 0 0 16px;
   }
 `
 
@@ -173,24 +101,89 @@ const MutationIconWrapper = styled.button<{ $isStopped?: boolean; $isButton: boo
   }
 `
 
-const BellButton = styled(Button)<{ type?: string }>`
-  width: 44px !important;
+const ActionLikeButton = styled(Button)<{ type: string }>`
+  width: 46px !important;
   height: 22px;
-  padding: 0 0 0 15px;
+  border-radius: 4px;
   display: flex;
   justify-content: flex-start;
 
-  svg > circle {
+  path {
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    fill: ${(props) => (props.type === 'primary' ? 'white' : '#7a818b')};
+    stroke: ${(props) => (props.type === 'primary' ? 'white' : '#7a818b')};
+  }
+
+  circle {
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     stroke: ${(props) => (props.type === 'primary' ? '#1677ff' : 'white')};
+    fill: ${(props) => (props.type === 'primary' ? 'white' : '#d9304f')};
   }
 
-  &:hover svg > circle {
-    stroke: ${(props) => (props.type === 'primary' ? '#4096ff' : 'white')};
+  &:hover {
+    path {
+      stroke: ${(props) => (props.type === 'primary' ? 'white' : '#4096ff')};
+      fill: ${(props) => (props.type === 'primary' ? 'white' : '#4096ff')};
+    }
+
+    circle {
+      stroke: ${(props) => (props.type === 'primary' ? '#4096ff' : 'white')};
+    }
   }
 
-  &:active svg > circle {
-    stroke: ${(props) => (props.type === 'primary' ? '#0958d9' : 'white')};
+  &:active {
+    path {
+      stroke: ${(props) => (props.type === 'primary' ? 'white' : '#0958d9')};
+      fill: ${(props) => (props.type === 'primary' ? 'white' : '#0958d9')};
+    }
+
+    circle {
+      stroke: ${(props) => (props.type === 'primary' ? '#0958d9' : 'white')};
+    }
+  }
+`
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  width: 46px;
+  margin-top: -7px;
+  padding: 0 6px 5px 7px;
+`
+
+const AppsWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 5px 6px 5px 7px;
+  gap: 10px;
+`
+
+const ButtonOpenWrapper = styled.div`
+  display: flex;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+  height: 32px;
+  background: #fff;
+  border-width: 1px 0 1px 1px;
+  border-style: solid;
+  border-color: #e2e2e5;
+  border-radius: 0 0 0 4px;
+
+  .ant-btn {
+    padding: 0 0 0 15px;
+  }
+
+  .svg-transform {
+    svg {
+      transform: rotate(180deg);
+    }
   }
 `
 
@@ -201,8 +194,8 @@ interface ISidePanelProps extends Partial<IWalletConnect> {
   loggedInAccountId?: string | null
   overlayRef: React.RefObject<HTMLDivElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  open: boolean
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  isNotificationPageOpen: boolean
+  onOpenCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const SidePanel: React.FC<ISidePanelProps> = ({
@@ -215,14 +208,14 @@ const SidePanel: React.FC<ISidePanelProps> = ({
   mutationApps,
   overlayRef,
   trackingRefs = new Set(),
-  open, // ToDo: change name
-  setOpen, // ToDo: change name
+  isNotificationPageOpen,
+  onOpenCloseNotificationPage,
 }) => {
   const { notifications } = useNotifications()
   const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
     !!notifications.filter((not) => not.status === 'new').length
   )
-  const [isOpen, setIsOpen] = useState(false) // ToDo: change name
+  const [isOpenAppsPane, setIsOpenAppsPane] = useState(false)
   const [isProfileOpen, setProfileOpen] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -235,27 +228,21 @@ const SidePanel: React.FC<ISidePanelProps> = ({
     setHaveUnreadNotifications(!!notifications.filter((not) => not.status === 'new').length)
   }, [notifications])
 
-  const showDrawer = () => setOpen((val) => !val)
-
-  const handleMutationIconClick = () => {
-    setProfileOpen((val) => !val)
-  }
-
   const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
 
   return (
     <SidePanelWrapper
       ref={rootRef}
-      $isApps={mutationApps.length > 0}
+      $isApps={!!mutationApps.length}
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
       data-mweb-context-level="system"
     >
-      <TopBlock $open={isOpen || mutationApps.length > 0} $noMutations={!mutationApps.length}>
+      <TopBlock $open={isOpenAppsPane || !!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
-          onClick={handleMutationIconClick}
+          onClick={() => setProfileOpen((val) => !val)}
           ref={openCloseWalletPopupRef}
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
@@ -270,51 +257,42 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
-        {open ? (
-          <BellButton block type="primary" onClick={showDrawer}>
-            {haveUnreadNotifications ? (
-              <BellWithCircle isPrimary={true} />
-            ) : (
-              <BellIcon color="white" />
-            )}
-          </BellButton>
-        ) : (
-          <BellButton block onClick={showDrawer}>
-            {haveUnreadNotifications ? (
-              <BellWithCircle isPrimary={false} />
-            ) : (
-              <BellIcon color="#7A818B" />
-            )}
-          </BellButton>
-        )}
-      </TopBlock>
-      {isOpen || !mutationApps.length ? null : (
-        <ButtonWrapper
-          data-mweb-insertion-point="mweb-actions-panel"
-          data-mweb-layout-manager="vertical"
-        />
-      )}
-      {isOpen ? <AppsWrapper>{children}</AppsWrapper> : null}
-      {mutationApps.length > 0 ? (
-        <ButtonOpenWrapper
-          $open={isOpen || mutationApps.length > 0}
-          data-mweb-context-type="mweb-overlay"
-          data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
-          data-mweb-context-level="system"
+        <ActionLikeButton
+          block
+          type={isNotificationPageOpen ? 'primary' : 'default'}
+          onClick={() => onOpenCloseNotificationPage((val) => !val)}
         >
-          <ButtonOpen
-            $open={isOpen}
-            className={isOpen ? 'svgTransform' : ''}
-            onClick={() => {
-              setOpen(false)
-              setIsOpen(!isOpen)
-            }}
+          {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
+        </ActionLikeButton>
+      </TopBlock>
+
+      {mutationApps.length ? (
+        <>
+          {!isOpenAppsPane ? (
+            <ButtonWrapper
+              data-mweb-insertion-point="mweb-actions-panel"
+              data-mweb-layout-manager="vertical"
+            />
+          ) : (
+            <AppsWrapper>{children}</AppsWrapper>
+          )}
+          <ButtonOpenWrapper
+            data-mweb-context-type="mweb-overlay"
+            data-mweb-context-parsed={JSON.stringify({ id: 'open-apps-button' })}
+            data-mweb-context-level="system"
           >
-            <ArrowIcon />
-          </ButtonOpen>
-          <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
-        </ButtonOpenWrapper>
+            <ActionLikeButton
+              type={isOpenAppsPane ? 'primary' : 'default'}
+              className={isOpenAppsPane ? 'svg-transform' : ''}
+              onClick={() => setIsOpenAppsPane((val) => !val)}
+            >
+              <ArrowIcon />
+            </ActionLikeButton>
+            <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
+          </ButtonOpenWrapper>
+        </>
       ) : null}
+
       {isProfileOpen && isMutationIconButton ? (
         <Profile
           accountId={loggedInAccountId ?? null}

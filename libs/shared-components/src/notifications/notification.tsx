@@ -9,7 +9,6 @@ import {
 } from '@mweb/engine'
 import { RegularPayload } from '@mweb/engine/lib/app/services/notification/types/regular'
 import { PullRequestPayload } from '@mweb/engine/lib/app/services/notification/types/pull-request'
-import { actions } from './test-data-notification'
 import {
   Collapse as CollapseIcon,
   BlueBadge,
@@ -17,8 +16,29 @@ import {
   GreenBadge,
   NotificationMessage as NotificationMessageIcon,
   NotificationClose as NotificationCloseIcon,
+  Decline,
+  Review,
+  Branch,
 } from './assets/icons'
 const { Text } = Typography
+
+const actions = [
+  {
+    label: 'Decline',
+    type: 'default',
+    icon: <Decline />,
+  },
+  {
+    label: 'Review',
+    type: 'default',
+    icon: <Review />,
+  },
+  {
+    label: 'Accept',
+    type: 'primary',
+    icon: <Branch />,
+  },
+]
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString)

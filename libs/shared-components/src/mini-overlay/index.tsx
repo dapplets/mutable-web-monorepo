@@ -4,7 +4,7 @@ import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
-import { IWalletConnect } from './profile'
+import { IWalletConnect } from './types'
 import { Drawer } from 'antd'
 import OverlayWrapper from './overlay-wrapper'
 import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
@@ -231,8 +231,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
             overlayRef={overlayRef}
             loggedInAccountId={loggedInAccountId}
             trackingRefs={trackingRefs}
-            open={open}
-            setOpen={setOpen}
+            isNotificationPageOpen={open}
+            onOpenCloseNotificationPage={setOpen}
           >
             {children}
           </SidePanel>
