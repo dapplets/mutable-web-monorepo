@@ -20,7 +20,7 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
     box-shadow: none;
     width: min-content !important;
     top: 10px;
-    transition: all 0.2s;
+    transition: all 0.2s ease-in-out;
     transform: ${(props) => (props.$isOpen ? 'translateX(-360px)' : 'translateX(0)')};
 
     .ant-drawer-header-close-only {
@@ -232,7 +232,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
             loggedInAccountId={loggedInAccountId}
             trackingRefs={trackingRefs}
             isNotificationPageOpen={open}
-            onOpenCloseNotificationPage={setOpen}
+            openCloseNotificationPage={setOpen}
           >
             {children}
           </SidePanel>

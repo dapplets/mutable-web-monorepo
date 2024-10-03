@@ -1,21 +1,56 @@
 import { useNotifications, useViewAllNotifications } from '@mweb/engine'
-import React, { FC, useRef, useState } from 'react'
+import React, { FC, useMemo, useRef, useState } from 'react'
 import NotificationsResolver from './notification-resolver'
 import { Space, Typography, Button, Spin, Flex } from 'antd'
+import styled from 'styled-components'
 const { Text } = Typography
+
+const FeedContainer = styled(Space)`
+  overflow: hidden;
+  overflow-y: auto;
+  height: 100%;
+  transition: all 0.2s ease;
+  width: 100%;
+`
+
+const SmoothSpace = styled(Space)`
+  transition: all 0.2s ease;
+`
+
+const SpinContainer = styled(Flex)`
+  transition: all 0.2s ease;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+`
+
+const Loader = () => (
+  <SpinContainer prefixCls="spin">
+    <Spin size="large" />
+  </SpinContainer>
+)
 
 const NotificationFeed: FC<{
   loggedInAccountId: string
   connectWallet: (() => Promise<void>) | undefined
 }> = ({ loggedInAccountId, connectWallet }) => {
-  const [waiting, setWaiting] = useState(false)
+  const [isWaiting, setWaiting] = useState(false)
   const { notifications, isLoading } = useNotifications()
   const overlayRef = useRef<HTMLDivElement>(null)
-  const {
-    viewAllNotifcations,
-    isLoading: isLoadingView,
-    error: errorView,
-  } = useViewAllNotifications(loggedInAccountId)
+  const { viewAllNotifcations } = useViewAllNotifications(loggedInAccountId)
+
+  const newNotifications = useMemo(
+    () => notifications.filter((notification) => notification.status === 'new'),
+    [notifications]
+  )
+
+  const viewedNotifications = useMemo(
+    () => notifications.filter((notification) => notification.status === 'viewed'),
+    [notifications]
+  )
 
   const handleSignIn = async () => {
     setWaiting(true)
@@ -27,93 +62,48 @@ const NotificationFeed: FC<{
   }
 
   return (
-    <Space
-      prefixCls="notifyWrapper"
-      direction="vertical"
-      ref={overlayRef}
-      style={{
-        overflow: 'hidden',
-        overflowY: 'auto',
-        height: '100%',
-        transition: 'all 0.2s ease',
-        width: '100%',
-      }}
-    >
-      <Space direction="horizontal">
-        <Text type="secondary" style={{ textTransform: 'uppercase' }}>
-          New ({notifications.filter((not) => not.status === 'new').length})
-        </Text>
-        <Button
-          style={{ float: 'right' }}
-          onClick={() => {
-            viewAllNotifcations()
-          }}
-          type="link"
-        >
-          Mark all as read
-        </Button>
-      </Space>{' '}
-      {!loggedInAccountId ? (
-        <>
-          {waiting ? (
-            <Flex
-              prefixCls="spin"
-              style={{
-                transition: 'all 0.2s ease',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-              }}
-            >
-              <Spin size="large" />
-            </Flex>
+    <FeedContainer prefixCls="notifyWrapper" direction="vertical" ref={overlayRef}>
+      {isLoading || isWaiting ? (
+        <Loader />
+      ) : !loggedInAccountId ? (
+        <Text type="secondary">
+          {!!connectWallet ? (
+            <Button style={{ padding: ' 4px 4px' }} type="link" onClick={handleSignIn}>
+              Login
+            </Button>
           ) : (
-            <Text type="secondary">
-              <Button style={{ padding: ' 4px 4px' }} type="link" onClick={handleSignIn}>
-                Login
-              </Button>
-              to see more notifications
-            </Text>
+            'Login '
           )}
-        </>
-      ) : isLoading ? (
-        <Flex
-          prefixCls="spin"
-          style={{
-            transition: 'all 0.2s ease',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-          }}
-        >
-          <Spin size="large" />
-        </Flex>
+          to see more notifications
+        </Text>
       ) : (
         <>
-          <Space direction="vertical" style={{ transition: 'all 0.2s ease' }}>
-            {notifications
-              .filter((notify) => notify.status === 'new')
-              .map((notification) => (
-                <NotificationsResolver key={notification.id} notification={notification} />
-              ))}
-          </Space>
+          <Space direction="horizontal">
+            <Text type="secondary" style={{ textTransform: 'uppercase' }}>
+              New ({newNotifications.length})
+            </Text>
+            {newNotifications.length ? (
+              <Button style={{ float: 'right' }} onClick={() => viewAllNotifcations()} type="link">
+                Mark all as read
+              </Button>
+            ) : null}
+          </Space>{' '}
+          <SmoothSpace direction="vertical">
+            {newNotifications.map((notification) => (
+              <NotificationsResolver key={notification.id} notification={notification} />
+            ))}
+          </SmoothSpace>
           <Text type="secondary" style={{ textTransform: 'uppercase' }}>
-            Old ({notifications.filter((not) => not.status === 'viewed').length})
+            Old ({viewedNotifications.length})
           </Text>
-          <Space direction="vertical" style={{ transition: 'all 0.2s ease' }}>
-            {notifications
-              .filter((notify) => notify.status === 'viewed')
-              .map((notification) => (
-                <NotificationsResolver key={notification.id} notification={notification} />
-              ))}
-          </Space>
+          <SmoothSpace direction="vertical">
+            {viewedNotifications.map((notification) => (
+              <NotificationsResolver key={notification.id} notification={notification} />
+            ))}
+          </SmoothSpace>
         </>
       )}
-    </Space>
+    </FeedContainer>
   )
 }
 

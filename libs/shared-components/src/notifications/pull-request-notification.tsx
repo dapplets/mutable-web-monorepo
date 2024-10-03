@@ -1,14 +1,15 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import { Space, Typography, Card, Tag, Collapse, Button, ButtonProps } from 'antd'
 import {
   NotificationDto,
+  NotificationType,
   useAcceptPullRequest,
   useHideNotification,
   useRejectPullRequest,
   useViewNotification,
+  PullRequestPayload,
+  PullRequestResult,
 } from '@mweb/engine'
-import { RegularPayload } from '@mweb/engine/lib/app/services/notification/types/regular'
-import { PullRequestPayload } from '@mweb/engine/lib/app/services/notification/types/pull-request'
 import {
   Collapse as CollapseIcon,
   BlueBadge,
@@ -20,9 +21,25 @@ import {
   Review,
   Branch,
 } from './assets/icons'
+import { formatDate } from './utils'
+import styled from 'styled-components'
 const { Text } = Typography
 
-const actions = [
+const StyledCard = styled(Card)`
+  display: inline-flex;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f8f9ff;
+`
+
+type TAction = {
+  label: string
+  type: Required<ButtonProps['type']>
+  icon: React.JSX.Element
+}
+
+const actions: TAction[] = [
   {
     label: 'Decline',
     type: 'default',
@@ -40,24 +57,14 @@ const actions = [
   },
 ]
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'UTC',
-  }
-  const formattedDate = date.toLocaleString('en-US', options)
-  const [monthDay, time] = formattedDate.split(', ')
-
-  return `${monthDay} in ${time}`
+export interface PullRequestNotificationDto extends NotificationDto {
+  type: NotificationType.PullRequest
+  payload: PullRequestPayload
+  result: PullRequestResult
 }
 
-const Notification: FC<{
-  notification: NotificationDto
+const PullRequestNotification: FC<{
+  notification: PullRequestNotificationDto
 }> = ({ notification }) => {
   const {
     viewNotification,
@@ -80,102 +87,24 @@ const Notification: FC<{
     error: errorReject,
   } = useRejectPullRequest(notification.id)
 
-  const date = new Date(notification.timestamp)
+  const date = useMemo(
+    () => formatDate(new Date(notification.timestamp).toLocaleString()),
+    [notification.timestamp]
+  )
 
-  const isRegularPayload = (
-    payload: RegularPayload | PullRequestPayload | null
-  ): payload is RegularPayload => {
-    if (payload === null) return false
-    return payload && 'subject' in payload
+  const handleAction = async (action: TAction) => {
+    try {
+      if (action.label === 'Accept' && !!acceptPullRequest) {
+        await acceptPullRequest()
+      } else if (action.label === 'Decline' && !!rejectPullRequest) {
+        await rejectPullRequest()
+      }
+    } catch (e) {
+      console.error(e)
+    }
   }
 
-  return isRegularPayload(notification.payload) ? (
-    <Space prefixCls="notifySingle" direction="vertical" style={{ transition: 'all 0.2s ease' }}>
-      {(errorView || errorHide) && <Text type="danger">Unknown error</Text>}
-      <Space size="large" direction="horizontal" style={{ alignItems: 'flex-start' }}>
-        <BlueBadge />
-        <Text type="secondary" style={{ fontSize: '12px' }}>
-          #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp; on&ensp;
-          {formatDate(date.toLocaleString())}
-        </Text>
-        <Button
-          loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-          onClick={notification.status === 'new' ? viewNotification : hideNotification}
-          style={{ marginLeft: 'auto' }}
-          type="text"
-          icon={
-            notification.status === 'new' ? <NotificationMessageIcon /> : <NotificationCloseIcon />
-          }
-        />
-      </Space>
-
-      {notification.status === 'viewed' ? (
-        <Collapse
-          expandIcon={() => <CollapseIcon />}
-          expandIconPosition={'end'}
-          ghost
-          items={[
-            {
-              key: notification.id,
-              label:
-                notification.payload.subject !== null ? (
-                  <Space direction="horizontal">
-                    <BlueBadge />
-                    <Text strong underline>
-                      {notification.payload.subject as string}
-                    </Text>
-                  </Space>
-                ) : (
-                  <Space direction="horizontal">
-                    <BlueBadge />
-                    <Text strong underline>
-                      {notification.type as string}
-                    </Text>
-                  </Space>
-                ),
-              children: (
-                <Card
-                  style={{
-                    borderRadius: '10px',
-                    padding: '10px',
-                    background: '#F8F9FF',
-                    width: '100%',
-                    display: 'inline-flex',
-                  }}
-                >
-                  <Text style={{ padding: '0' }} underline type="secondary">
-                    {notification.payload.body as string}
-                  </Text>
-                </Card>
-              ),
-            },
-          ]}
-        />
-      ) : (
-        <>
-          <Space direction="horizontal">
-            <BlueBadge />
-            <Text strong underline>
-              {notification.payload.subject as string}
-            </Text>
-          </Space>
-          <Card
-            style={{
-              borderRadius: '10px',
-              padding: '10px',
-              background: '#F8F9FF',
-              width: '100%',
-              display: 'inline-flex',
-            }}
-          >
-            <Text style={{ padding: '0' }} underline type="secondary">
-              {notification.payload.body}
-            </Text>
-          </Card>
-        </>
-      )}
-    </Space>
-  ) : (
+  return (
     <Space prefixCls="notifySingle" direction="vertical">
       {(errorView || errorHide || errorAccept || errorReject) && (
         <Text type="danger">Unknown error</Text>
@@ -189,11 +118,13 @@ const Notification: FC<{
         ) : (
           <BlueBadge />
         )}
+
         <Text type="secondary" style={{ fontSize: '12px' }}>
           #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
           &ensp;on&ensp;
-          {formatDate(date.toLocaleString())}
+          {date}
         </Text>
+
         <Button
           loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
           onClick={notification.status === 'new' ? viewNotification : hideNotification}
@@ -229,15 +160,7 @@ const Notification: FC<{
             ),
             children: (
               <Space direction="vertical">
-                <Card
-                  style={{
-                    borderRadius: '10px',
-                    padding: '10px',
-                    background: '#F8F9FF',
-                    width: '100%',
-                    display: 'inline-flex',
-                  }}
-                >
+                <StyledCard>
                   <Text style={{ padding: '0' }} type="secondary">
                     <Text type="secondary" underline>
                       {notification.authorId}
@@ -251,16 +174,14 @@ const Notification: FC<{
                       {notification.payload!.targetMutationId}
                     </Text>{' '}
                   </Text>
-                </Card>
+                </StyledCard>
               </Space>
             ),
           },
         ]}
       />
 
-      {!isRegularPayload(notification.payload) &&
-      notification.result?.status !== 'accepted' &&
-      notification.result?.status !== 'rejected' ? (
+      {notification.result?.status !== 'accepted' && notification.result?.status !== 'rejected' ? (
         <Space key={notification.id} direction="horizontal">
           {actions.map((action, i) => (
             <Button
@@ -275,10 +196,7 @@ const Notification: FC<{
               }
               type={action.type as ButtonProps['type']}
               size="middle"
-              onClick={() => {
-                if (action.label === 'Accept') acceptPullRequest && acceptPullRequest()
-                if (action.label === 'Decline') rejectPullRequest && rejectPullRequest()
-              }}
+              onClick={() => handleAction(action)}
             >
               {(action.label !== 'Accept' && isLoadingAccept) ||
               (action.label === 'Decline' && isLoadingReject)
@@ -294,4 +212,4 @@ const Notification: FC<{
   )
 }
 
-export default Notification
+export default PullRequestNotification

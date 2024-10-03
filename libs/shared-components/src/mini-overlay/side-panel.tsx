@@ -11,8 +11,7 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
   z-index: 6000;
   display: flex;
-  width: 58px;
-  top: 55px;
+  top: 68px;
   user-select: none;
   flex-direction: column;
   justify-content: center;
@@ -147,17 +146,17 @@ const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  overflow: hidden;
   justify-content: center;
   align-items: center;
-  width: 46px;
-  margin-top: -7px;
+  width: 100%;
   padding: 0 6px 5px 7px;
+  margin-top: -7px;
 `
 
 const AppsWrapper = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
   padding: 5px 6px 5px 7px;
   gap: 10px;
 `
@@ -195,7 +194,7 @@ interface ISidePanelProps extends Partial<IWalletConnect> {
   overlayRef: React.RefObject<HTMLDivElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   isNotificationPageOpen: boolean
-  onOpenCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
+  openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const SidePanel: React.FC<ISidePanelProps> = ({
@@ -209,14 +208,14 @@ const SidePanel: React.FC<ISidePanelProps> = ({
   overlayRef,
   trackingRefs = new Set(),
   isNotificationPageOpen,
-  onOpenCloseNotificationPage,
+  openCloseNotificationPage,
 }) => {
   const { notifications } = useNotifications()
   const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
     !!notifications.filter((not) => not.status === 'new').length
   )
-  const [isOpenAppsPane, setIsOpenAppsPane] = useState(false)
-  const [isProfileOpen, setProfileOpen] = useState(false)
+  const [isOpenAppsPane, openCloseAppsPane] = useState(false)
+  const [isProfileOpen, openCloseProfile] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
   const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
@@ -242,7 +241,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
         <MutationIconWrapper
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
-          onClick={() => setProfileOpen((val) => !val)}
+          onClick={() => openCloseProfile((val) => !val)}
           ref={openCloseWalletPopupRef}
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
@@ -260,7 +259,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
         <ActionLikeButton
           block
           type={isNotificationPageOpen ? 'primary' : 'default'}
-          onClick={() => onOpenCloseNotificationPage((val) => !val)}
+          onClick={() => openCloseNotificationPage((val) => !val)}
         >
           {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
         </ActionLikeButton>
@@ -284,7 +283,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
             <ActionLikeButton
               type={isOpenAppsPane ? 'primary' : 'default'}
               className={isOpenAppsPane ? 'svg-transform' : ''}
-              onClick={() => setIsOpenAppsPane((val) => !val)}
+              onClick={() => openCloseAppsPane((val) => !val)}
             >
               <ArrowIcon />
             </ActionLikeButton>
@@ -297,7 +296,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
         <Profile
           accountId={loggedInAccountId ?? null}
           closeProfile={() => {
-            setProfileOpen(false)
+            openCloseProfile(false)
           }}
           connectWallet={connectWallet}
           disconnectWallet={disconnectWallet}
