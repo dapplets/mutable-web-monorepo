@@ -11,6 +11,7 @@ const FeedContainer = styled(Space)`
   height: 100%;
   transition: all 0.2s ease;
   width: 100%;
+  gap: 10px;
 `
 
 const SmoothSpace = styled(Space)`
@@ -40,7 +41,8 @@ const NotificationFeed: FC<{
   const [isWaiting, setWaiting] = useState(false)
   const { notifications, isLoading } = useNotifications()
   const overlayRef = useRef<HTMLDivElement>(null)
-  const { viewAllNotifcations } = useViewAllNotifications(loggedInAccountId)
+  const { viewAllNotifcations, isLoading: isViewAllLoading } =
+    useViewAllNotifications(loggedInAccountId)
 
   const newNotifications = useMemo(
     () => notifications.filter((notification) => notification.status === 'new'),
@@ -63,7 +65,7 @@ const NotificationFeed: FC<{
 
   return (
     <FeedContainer prefixCls="notifyWrapper" direction="vertical" ref={overlayRef}>
-      {isLoading || isWaiting ? (
+      {isLoading || isWaiting || isViewAllLoading ? (
         <Loader />
       ) : !loggedInAccountId ? (
         <Text type="secondary">
@@ -78,29 +80,39 @@ const NotificationFeed: FC<{
         </Text>
       ) : (
         <>
-          <Space direction="horizontal">
-            <Text type="secondary" style={{ textTransform: 'uppercase' }}>
-              New ({newNotifications.length})
-            </Text>
-            {newNotifications.length ? (
-              <Button style={{ float: 'right' }} onClick={() => viewAllNotifcations()} type="link">
-                Mark all as read
-              </Button>
-            ) : null}
-          </Space>{' '}
-          <SmoothSpace direction="vertical">
-            {newNotifications.map((notification) => (
-              <NotificationsResolver key={notification.id} notification={notification} />
-            ))}
-          </SmoothSpace>
-          <Text type="secondary" style={{ textTransform: 'uppercase' }}>
-            Old ({viewedNotifications.length})
-          </Text>
-          <SmoothSpace direction="vertical">
-            {viewedNotifications.map((notification) => (
-              <NotificationsResolver key={notification.id} notification={notification} />
-            ))}
-          </SmoothSpace>
+          <Flex vertical>
+            <Space direction="horizontal">
+              <Text type="secondary" style={{ textTransform: 'uppercase' }}>
+                New ({newNotifications.length})
+              </Text>
+              {newNotifications.length ? (
+                <Button
+                  style={{ float: 'right' }}
+                  onClick={() => viewAllNotifcations()}
+                  type="link"
+                >
+                  Mark all as read
+                </Button>
+              ) : null}
+            </Space>
+            <SmoothSpace direction="vertical">
+              {newNotifications.map((notification) => (
+                <NotificationsResolver key={notification.id} notification={notification} />
+              ))}
+            </SmoothSpace>
+          </Flex>
+          <Flex vertical>
+            <Space direction="horizontal" style={{ height: 32 }}>
+              <Text type="secondary" style={{ textTransform: 'uppercase' }}>
+                Old ({viewedNotifications.length})
+              </Text>
+            </Space>
+            <SmoothSpace direction="vertical">
+              {viewedNotifications.map((notification) => (
+                <NotificationsResolver key={notification.id} notification={notification} />
+              ))}
+            </SmoothSpace>
+          </Flex>
         </>
       )}
     </FeedContainer>

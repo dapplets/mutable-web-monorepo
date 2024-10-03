@@ -35,7 +35,7 @@ const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
   border-color: #e2e2e5;
   border-radius: ${(props) => (props.$noMutations ? '4px 0 0 4px' : '4px 0 0 0')};
   position: relative;
-  gap: 6px;
+  gap: 10px;
 
   .ant-btn {
     padding: 0 0 0 16px;
@@ -107,38 +107,18 @@ const ActionLikeButton = styled(Button)<{ type: string }>`
   display: flex;
   justify-content: flex-start;
 
-  path {
-    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    fill: ${(props) => (props.type === 'primary' ? 'white' : '#7a818b')};
-    stroke: ${(props) => (props.type === 'primary' ? 'white' : '#7a818b')};
-  }
-
   circle {
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     stroke: ${(props) => (props.type === 'primary' ? '#1677ff' : 'white')};
     fill: ${(props) => (props.type === 'primary' ? 'white' : '#d9304f')};
   }
 
-  &:hover {
-    path {
-      stroke: ${(props) => (props.type === 'primary' ? 'white' : '#4096ff')};
-      fill: ${(props) => (props.type === 'primary' ? 'white' : '#4096ff')};
-    }
-
-    circle {
-      stroke: ${(props) => (props.type === 'primary' ? '#4096ff' : 'white')};
-    }
+  &:hover circle {
+    stroke: ${(props) => (props.type === 'primary' ? '#4096ff' : 'white')};
   }
 
-  &:active {
-    path {
-      stroke: ${(props) => (props.type === 'primary' ? 'white' : '#0958d9')};
-      fill: ${(props) => (props.type === 'primary' ? 'white' : '#0958d9')};
-    }
-
-    circle {
-      stroke: ${(props) => (props.type === 'primary' ? '#0958d9' : 'white')};
-    }
+  &:active circle {
+    stroke: ${(props) => (props.type === 'primary' ? '#0958d9' : 'white')};
   }
 `
 
@@ -166,14 +146,12 @@ const ButtonOpenWrapper = styled.div`
   box-sizing: border-box;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
-  width: 100%;
-  height: 32px;
   background: #fff;
   border-width: 1px 0 1px 1px;
   border-style: solid;
   border-color: #e2e2e5;
   border-radius: 0 0 0 4px;
+  padding: 6px;
 
   .ant-btn {
     padding: 0 0 0 15px;

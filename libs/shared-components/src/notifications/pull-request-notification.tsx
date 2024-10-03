@@ -130,6 +130,7 @@ const PullRequestNotification: FC<{
           onClick={notification.status === 'new' ? viewNotification : hideNotification}
           style={{ marginLeft: 'auto' }}
           type="text"
+          title={notification.status === 'new' ? 'Mark as read' : 'Delete'}
           icon={
             notification.status === 'new' ? <NotificationMessageIcon /> : <NotificationCloseIcon />
           }
@@ -182,7 +183,11 @@ const PullRequestNotification: FC<{
       />
 
       {notification.result?.status !== 'accepted' && notification.result?.status !== 'rejected' ? (
-        <Space key={notification.id} direction="horizontal">
+        <Space
+          key={notification.id}
+          direction="horizontal"
+          style={{ width: '100%', justifyContent: 'space-between' }}
+        >
           {actions.map((action, i) => (
             <Button
               key={i}
