@@ -1,31 +1,18 @@
-import {
-  ApplicationDto,
-  DocumentDto,
-  MutationDto,
-  useCreateMutation,
-  useEditMutation,
-  useMutableWeb,
-} from '@mweb/engine'
+import { ApplicationDto, DocumentDto, MutationCreateDto, MutationDto } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
-import BsButton from 'react-bootstrap/Button'
-import BsSpinner from 'react-bootstrap/Spinner'
+import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import {
-  cloneDeep,
-  compareMutations,
-  generateRandomHex,
-  isValidSocialIdCharacters,
-  mergeDeep,
-} from '../../helpers'
+import { cloneDeep, mergeDeep } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { DropdownButton } from './dropdown-button'
-import { Input } from './input'
-import { InputImage } from './upload-image'
 import { DocumentsModal } from './documents-modal'
+import { ModalConfirm } from './modals-confirm'
+import { MutationModalMode } from './types'
+import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { Image } from './image'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -128,6 +115,70 @@ const BlurredBackground = styled.div`
   z-index: 3;
 `
 
+const ModalConfirmBackground = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: inherit;
+`
+
+const Label = styled.div`
+  color: #7a818b;
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+`
+
+const CardWrapper = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background: #fff;
+`
+
+const ImgWrapper = styled.div`
+  width: 42px;
+  height: 42px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+`
+
+const TextWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 52px);
+
+  p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #02193a;
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  span {
+    font-size: 10px;
+    color: #7a818b;
+    overflow-wrap: break-word;
+  }
+`
+
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
     <path
@@ -147,39 +198,24 @@ const CloseIcon = () => (
   </svg>
 )
 
-// ToDo: use MutationCreateDto
-const createEmptyMutation = (accountId: string): MutationDto => {
-  const localId = `Untitled-${generateRandomHex(6)}`
-  return {
-    id: `${accountId}/mutation/${localId}`,
-    authorId: accountId,
-    blockNumber: 0,
-    timestamp: 0,
-    localId: localId,
-    apps: [],
-    metadata: {
-      name: '',
+const createEmptyMutation = (): MutationCreateDto => ({
+  apps: [],
+  metadata: {
+    name: '',
+  },
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: { id: { in: [window.location.hostname] } },
     },
-    targets: [
-      {
-        namespace: 'engine',
-        contextType: 'website',
-        if: { id: { in: [window.location.hostname] } },
-      },
-    ],
-  }
-}
+  ],
+})
 
 export interface Props {
   apps: ApplicationDto[]
   baseMutation: MutationDto | null
   onClose: () => void
-}
-
-export enum MutationModalMode {
-  Editing = 'editing',
-  Creating = 'creating',
-  Forking = 'forking',
 }
 
 interface IAlert extends AlertProps {
@@ -207,11 +243,6 @@ const alerts: { [name: string]: IAlert } = {
     text: 'This mutation ID already exists.',
     severity: 'warning',
   },
-  noId: {
-    id: 'noId',
-    text: 'ID must be specified.',
-    severity: 'error',
-  },
   noName: {
     id: 'noName',
     text: 'Name must be specified.',
@@ -221,80 +252,57 @@ const alerts: { [name: string]: IAlert } = {
 
 export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
   const loggedInAccountId = useAccountId()
-  const { createMutation, isLoading: isCreating } = useCreateMutation()
-  const { editMutation, isLoading: isEditing } = useEditMutation()
-  const { mutations } = useMutableWeb()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
 
-  // Close modal with escape key
   useEscape(onClose)
-
-  const preOriginalMutation = useMemo(
-    () => baseMutation ?? createEmptyMutation(loggedInAccountId ?? 'dapplets.near'),
-    [baseMutation, loggedInAccountId]
-  )
-
-  // ToDo: refactor it.
-  // Too much mutations: baseMutation, preOriginalMutation, originalMutation, editingMutation
-  const [originalMutation, setOriginalMutation] = useState(preOriginalMutation)
-  const [editingMutation, setEditingMutation] = useState(originalMutation)
-
-  const [mutationAuthorId] = preOriginalMutation.id.split('/')
-  const isOwn = mutationAuthorId === loggedInAccountId
 
   const [mode, setMode] = useState(
     !baseMutation
       ? MutationModalMode.Creating
-      : isOwn
+      : baseMutation.authorId === loggedInAccountId
       ? MutationModalMode.Editing
       : MutationModalMode.Forking
   )
 
-  useEffect(() => {
-    // Replace ID when forking
-    if (mode === MutationModalMode.Forking && loggedInAccountId) {
-      const [, , mutLocalId] = preOriginalMutation.id.split('/')
-      const newId = `${loggedInAccountId}/mutation/${mutLocalId}`
-      setOriginalMutation(
-        mergeDeep(cloneDeep(preOriginalMutation), {
-          id: newId,
-          metadata: {
-            fork_of: preOriginalMutation.id,
-          },
-        })
-      )
-    } else {
-      setOriginalMutation(preOriginalMutation)
-    }
-  }, [preOriginalMutation, mode, loggedInAccountId])
+  const chooseEditingMutation = (
+    changedApps?: AppInMutation[]
+  ): MutationCreateDto | MutationDto => {
+    const mut =
+      mode === MutationModalMode.Forking && baseMutation
+        ? {
+            metadata: {
+              name: '',
+              fork_of: baseMutation.id,
+            },
+            apps: cloneDeep(baseMutation.apps),
+            targets: cloneDeep(baseMutation.targets),
+          }
+        : mode === MutationModalMode.Editing && baseMutation
+        ? cloneDeep(baseMutation)
+        : createEmptyMutation()
+    return changedApps ? mergeDeep(mut, { apps: changedApps }) : mut
+  }
 
-  useEffect(() => setEditingMutation(originalMutation), [originalMutation])
-
-  const checkIfModified = useCallback(
-    () => !(baseMutation ? compareMutations(baseMutation, editingMutation) : false),
-    [baseMutation, editingMutation]
+  const [editingMutation, setEditingMutation] = useState<MutationCreateDto | MutationDto>(
+    chooseEditingMutation()
   )
+  const [openConfirm, setOpenConfirm] = useState(false)
 
   const [alert, setAlert] = useState<IAlert | null>(null)
+
+  useEffect(() => setEditingMutation(chooseEditingMutation(editingMutation.apps)), [mode])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
       if (!loggedInAccountId) return alerts.noWallet
       if (!editingMutation?.apps || editingMutation?.apps?.length === 0) return alerts.emptyMutation
-      if (!editingMutation.id) return alerts.noId
-      if (!editingMutation.metadata.name) return alerts.noName
-      if (
-        (mode === MutationModalMode.Forking || mode === MutationModalMode.Creating) &&
-        mutations.map((m) => m.id).includes(editingMutation.id)
-      )
-        return alerts.idIsNotUnique
       return null
     }
     setIsModified(true)
     setAlert(doChecksForAlerts())
-  }, [loggedInAccountId, editingMutation, mode, mutations])
+  }, [loggedInAccountId, editingMutation, mode])
 
   useEffect(() => {
     setAlert((val) => {
@@ -302,25 +310,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       return !val || val?.id === 'notEditedMutation' ? null : val
     })
   }, [isModified])
-
-  const isFormDisabled = isCreating || isEditing
-  const isSubmitDisabled = !isModified || isCreating || isEditing || !!alert
-
-  const handleMutationIdChange = (id: string) => {
-    if (!isValidSocialIdCharacters(id)) return
-    if (!id.startsWith(`${loggedInAccountId}/mutation/`)) return
-    setEditingMutation((mut) => mergeDeep(cloneDeep(mut), { id }))
-  }
-
-  const handleMutationNameChange = (name: string) => {
-    setEditingMutation((mut) => mergeDeep(cloneDeep(mut), { metadata: { name } }))
-  }
-
-  const handleMutationImageChange = async (cid: string) => {
-    setEditingMutation((mut) =>
-      mergeDeep(cloneDeep(mut), { metadata: { image: { ipfs_cid: cid } } })
-    )
-  }
+  const isSubmitDisabled = !isModified || !!alert
 
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
@@ -361,38 +351,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   }
 
   const handleRevertClick = () => {
-    setEditingMutation(cloneDeep(originalMutation))
-  }
-
-  const handleSaveClick = () => {
-    // validate Name
-    if (editingMutation.id === `${loggedInAccountId}/mutation/`) {
-      setAlert(alerts.noId)
-      return
-    }
-
-    // validate Name
-    const name = editingMutation.metadata.name
-    if (name !== name?.trim()) {
-      if (!name || name.trim() === '') {
-        handleMutationNameChange('')
-        return
-      }
-      editingMutation.metadata.name = name?.trim()
-    }
-
-    // validate changes
-    const hasChanges = checkIfModified()
-    if (!hasChanges) {
-      setIsModified(false)
-      return
-    }
-
-    if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
-      createMutation(editingMutation).then(() => onClose())
-    } else if (mode === MutationModalMode.Editing) {
-      editMutation(editingMutation).then(() => onClose())
-    }
+    setEditingMutation(chooseEditingMutation())
   }
 
   const handleSaveDropdownChange = (itemId: string) => {
@@ -418,34 +377,41 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       </HeaderEditor>
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
-      <InputImage
-        ipfsCid={editingMutation.metadata.image?.ipfs_cid ?? undefined}
-        onImageChange={handleMutationImageChange}
-      />
-      <Input
-        label="Mutation ID"
-        value={editingMutation.id}
-        placeholder="dapplets.near/mutation/web"
-        onChange={handleMutationIdChange}
-        disabled={isFormDisabled || mode === MutationModalMode.Editing}
-      />
 
-      <Input
-        label="Mutation Name"
-        value={editingMutation.metadata.name ?? ''}
-        placeholder="My Mutation"
-        onChange={handleMutationNameChange}
-        disabled={isFormDisabled}
-      />
+      {(mode === MutationModalMode.Editing || mode === MutationModalMode.Forking) &&
+      baseMutation ? (
+        <>
+          <Label>Current Mutation</Label>
+          <CardWrapper>
+            <ImgWrapper>
+              <Image
+                image={baseMutation.metadata.image}
+                fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+                alt={baseMutation.metadata.name}
+              />
+            </ImgWrapper>
+            <TextWrapper>
+              <p>{baseMutation.metadata.name}</p>
+              <span>
+                by{' '}
+                {baseMutation.authorId === loggedInAccountId
+                  ? `me (${loggedInAccountId})`
+                  : baseMutation.authorId}
+              </span>
+            </TextWrapper>
+          </CardWrapper>
+        </>
+      ) : null}
 
       <AppsList>
+        <Label>Applications List</Label>
         {apps.map((app) =>
           app.permissions.documents ? (
             <ApplicationCardWithDocs
               key={app.id}
               src={app.id}
               metadata={app.metadata}
-              disabled={isFormDisabled}
+              disabled={false}
               docsIds={editingMutation.apps
                 .filter((_app) => _app.appId === app.id)
                 .map((_app) => _app.documentId)}
@@ -459,7 +425,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               key={app.id}
               src={app.id}
               metadata={app.metadata}
-              disabled={isFormDisabled}
+              disabled={false}
               isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
               onChange={(val) => handleAppCheckboxChange(app.id, val)}
             />
@@ -471,25 +437,22 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
         <Button disabled={isSubmitDisabled} onClick={handleRevertClick}>
           Revert changes
         </Button>
-        {!isFormDisabled ? (
-          <DropdownButton
-            value={mode}
-            items={[
-              { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
-              { value: MutationModalMode.Editing, title: 'Save', visible: !!baseMutation && isOwn },
-              { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
-            ]}
-            onClick={handleSaveClick}
-            onChange={handleSaveDropdownChange}
-            disabled={isSubmitDisabled}
-            disabledAll={isFormDisabled}
-          />
-        ) : (
-          <BsButton style={{ width: 175, height: 42, borderRadius: 10 }} variant="primary" disabled>
-            <BsSpinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />{' '}
-            Sending...
-          </BsButton>
-        )}
+        <DropdownButton
+          value={mode}
+          items={[
+            { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
+            {
+              value: MutationModalMode.Editing,
+              title: 'Save',
+              visible: !!baseMutation && baseMutation.authorId === loggedInAccountId,
+            },
+            { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
+          ]}
+          onClick={() => setOpenConfirm(true)}
+          onChange={handleSaveDropdownChange}
+          disabled={isSubmitDisabled}
+          disabledAll={false}
+        />
       </ButtonsBlock>
 
       {appIdToOpenDocsModal ? (
@@ -507,6 +470,19 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           />
         </>
       ) : null}
+      {openConfirm && loggedInAccountId && (
+        <ModalConfirmBackground>
+          <ModalConfirm
+            itemType="mutation"
+            mode={mode}
+            onCloseCurrent={() => setOpenConfirm(false)}
+            onCloseAll={onClose}
+            editingMutation={editingMutation}
+            baseMutation={baseMutation}
+            loggedInAccountId={loggedInAccountId}
+          />
+        </ModalConfirmBackground>
+      )}
     </SelectedMutationEditorWrapper>
   )
 }
