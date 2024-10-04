@@ -33,20 +33,22 @@ interface Props {
   value: string
   placeholder: string
   disabled?: boolean
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
+  readonly?: boolean
 }
 
-export const Input: FC<Props> = ({ value, label, placeholder, disabled, onChange }) => {
+export const Input: FC<Props> = ({ value, label, placeholder, disabled, onChange, readonly }) => {
   const inputId = useId()
   return (
     <InputContainer>
       <FloatingLabel controlId={inputId} label={label} className="mb-3">
         <Form.Control
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange && onChange(e.target.value)}
           value={value}
           disabled={disabled}
           type="text"
           placeholder={placeholder}
+          readOnly={readonly}
         />
       </FloatingLabel>
     </InputContainer>

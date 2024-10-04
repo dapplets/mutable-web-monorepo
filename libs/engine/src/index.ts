@@ -37,5 +37,10 @@ export {
 } from './app/contexts/notification-context'
 export { NotificationType } from './app/services/notification/notification.entity'
 export { NotificationDto } from './app/services/notification/dtos/notification.dto'
-export { PullRequestPayload } from './app/services/notification/types/pull-request'
 export { BaseDto } from './app/services/base/base.dto'
+export {
+  PullRequestPayload,
+  PullRequestResult,
+  PullRequestStatus,
+} from './app/services/notification/types/pull-request'
+export { RegularPayload } from './app/services/notification/types/regular'

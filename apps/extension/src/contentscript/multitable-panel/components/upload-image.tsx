@@ -8,18 +8,21 @@ const InputContainer = styled.div`
   gap: 6px;
   align-self: center;
 `
+
 const CustomFileUpload = styled.label`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  border: 1px solid #e2e2e5;
-  background: #fff;
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: #f8f9ff;
   cursor: pointer;
   box-sizing: border-box;
+  border-radius: 6px;
   overflow: hidden;
+  flex-shrink: 0;
+
   img {
     width: 100%;
     height: 100%;
@@ -33,27 +36,10 @@ const UploadInput = styled.input`
 const UploadIcon = styled.div``
 
 const IconImage = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22" fill="none">
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M19 13.6667V17.2222C19 17.6937 18.8127 18.1459 18.4793 18.4793C18.1459 18.8127 17.6937 19 17.2222 19H4.77778C4.30628 19 3.8541 18.8127 3.5207 18.4793C3.1873 18.1459 3 17.6937 3 17.2222V13.6667"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M15.4445 7.44444L11 3L6.55557 7.44444"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M11 3V13.6667"
-      stroke="#7A818B"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M1.77778 16C1.28889 16 0.870518 15.8261 0.522667 15.4782C0.174815 15.1304 0.000592593 14.7117 0 14.2222V1.77778C0 1.28889 0.174222 0.870518 0.522667 0.522667C0.871111 0.174815 1.28948 0.000592593 1.77778 0H14.2222C14.7111 0 15.1298 0.174222 15.4782 0.522667C15.8267 0.871111 16.0006 1.28948 16 1.77778V14.2222C16 14.7111 15.8261 15.1298 15.4782 15.4782C15.1304 15.8267 14.7117 16.0006 14.2222 16H1.77778ZM2.66667 12.4444H13.3333L10 8L7.33333 11.5556L5.33333 8.88889L2.66667 12.4444Z"
+      fill="#7A818B"
     />
   </svg>
 )
@@ -61,9 +47,10 @@ const IconImage = () => (
 interface Props {
   onImageChange: (event: any) => Promise<void>
   ipfsCid: string | undefined
+  isDisabled: boolean
 }
 
-export const InputImage: FC<Props> = ({ onImageChange, ipfsCid }) => {
+export const InputImage: FC<Props> = ({ onImageChange, ipfsCid, isDisabled }) => {
   const image = {
     ipfs_cid: ipfsCid,
   }
@@ -86,11 +73,12 @@ export const InputImage: FC<Props> = ({ onImageChange, ipfsCid }) => {
           onChange={handleImageChange}
           type="file"
           accept=".png, .jpeg, .jpg, .svg"
+          disabled={isDisabled}
         />
         {image?.ipfs_cid ? (
           <Image image={image} />
         ) : (
-          <UploadIcon>
+          <UploadIcon title="Upload the image">
             <IconImage />
           </UploadIcon>
         )}
