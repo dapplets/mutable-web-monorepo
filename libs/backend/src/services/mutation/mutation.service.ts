@@ -96,13 +96,15 @@ export class MutationService {
 
     const mutation = await this.mutationRepository.constructItem(dto)
 
-    await this.unitOfWorkService.runInTransaction((tx) =>
-      Promise.all([
-        this.mutationRepository.createItem(mutation, tx),
-        applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
-        askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
-      ])
-    )
+    // await this.unitOfWorkService.runInTransaction((tx) =>
+    //   Promise.all([
+    //     this.mutationRepository.createItem(mutation, tx),
+    //     applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+    //     askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
+    //   ])
+    // )
+
+    await this.mutationRepository.createItem(mutation)
 
     return this.populateMutationWithSettings(mutation.toDto())
   }
