@@ -46,8 +46,8 @@ import { ApplicationService } from './services/application/application.service'
 import { TargetService } from './services/target/target.service'
 
 export const utils = {
-  isTargetMet: TargetService.isTargetMet,
-  getRootContext: TargetService.getRootContext,
-  findContextByTarget: TargetService.findContextByTarget,
-  constructAppInstanceId: ApplicationService.constructAppInstanceId,
+  isTargetMet: TargetService.isTargetMet.bind(TargetService),
+  getRootContext: TargetService.getRootContext.bind(TargetService),
+  findContextByTarget: TargetService.findContextByTarget.bind(TargetService),
+  constructAppInstanceId: ApplicationService.constructAppInstanceId.bind(TargetService),
 }
