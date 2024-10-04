@@ -235,6 +235,7 @@ export class NotificationService {
   private _toDto(notification: Notification, resolution: Resolution): NotificationDto {
     return {
       id: notification.id,
+      source: notification.source,
       localId: notification.localId,
       authorId: notification.authorId,
       blockNumber: notification.blockNumber,
