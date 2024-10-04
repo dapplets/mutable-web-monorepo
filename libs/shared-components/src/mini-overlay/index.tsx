@@ -244,6 +244,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           open={open}
           connectWallet={connectWallet}
           loggedInAccountId={loggedInAccountId}
+          modalContainerRef={overlayRef}
         />
       </NotificationProvider>
     </WrapperDriver>
