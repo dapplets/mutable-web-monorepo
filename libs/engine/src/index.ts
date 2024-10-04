@@ -2,6 +2,8 @@ export * as customElements from './custom-elements'
 export { App } from './app/app'
 export { useEngine } from './app/contexts/engine-context'
 export {
+  useMutation,
+  useMutations,
   useMutableWeb,
   useCreateMutation,
   useEditMutation,

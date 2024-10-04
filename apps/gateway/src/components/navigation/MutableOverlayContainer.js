@@ -1,6 +1,13 @@
 import React from 'react'
 import { useMutableWeb, useMutationApp } from '@mweb/engine'
 import { MiniOverlay, AppSwitcher } from '@mweb/shared-components'
+import styled from 'styled-components'
+
+const MiniOverlayContainer = styled(MiniOverlay)`
+  div[data-mweb-context-type="mweb-overlay"] {
+    top: 80px;
+  }
+`
 
 function AppSwitcherContainer({ app }) {
   // ToDo: move to @mweb/engine
@@ -14,11 +21,11 @@ function MutableOverlayContainer() {
   // ToDo: move to @mweb/engine
   const { selectedMutation, mutationApps } = useMutableWeb()
   return (
-    <MiniOverlay baseMutation={selectedMutation} mutationApps={mutationApps}>
+    <MiniOverlayContainer baseMutation={selectedMutation} mutationApps={mutationApps}>
       {mutationApps.map((app) => (
         <AppSwitcherContainer key={app.id} app={app} />
       ))}
-    </MiniOverlay>
+    </MiniOverlayContainer>
   )
 }
 

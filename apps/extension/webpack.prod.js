@@ -17,6 +17,15 @@ module.exports = merge(common, {
     minimizer: [
       new TerserPlugin({
         extractComments: false,
+        parallel: true,
+        // fixes codemirror
+        // https://stackoverflow.com/questions/49979397/chrome-says-my-content-script-isnt-utf-8
+        terserOptions: {
+          ecma: 6,
+          output: {
+            ascii_only: true,
+          },
+        },
       }),
     ],
   },
