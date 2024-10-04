@@ -1,16 +1,10 @@
 import React, { FC, useMemo } from 'react'
 import { Button, Modal } from 'antd'
 import toJson from 'json-stringify-deterministic'
-import {
-  NotificationDto,
-  NotificationType,
-  PullRequestPayload,
-  useAcceptPullRequest,
-  useMutation,
-  useRejectPullRequest,
-} from '@mweb/engine'
+import { useAcceptPullRequest, useMutation, useRejectPullRequest } from '@mweb/engine'
 import { PrReviewer } from './pr-reviewer'
-import { IconBranchButton, IconNotificationClose } from './test-data-notification'
+import { NotificationDto, NotificationType, PullRequestPayload } from '@mweb/backend'
+import { Decline, Branch } from './assets/icons'
 
 const leaveMergableProps = (mutation: any): any => {
   return {
@@ -71,7 +65,7 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
           type="default"
           size="middle"
           onClick={handleDeclineClick}
-          icon={<IconNotificationClose />}
+          icon={<Decline />}
           iconPosition="start"
         >
           Decline
@@ -83,7 +77,7 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
           type="primary"
           size="middle"
           onClick={handleAcceptClick}
-          icon={<IconBranchButton />}
+          icon={<Branch />}
           iconPosition="start"
         >
           Accept

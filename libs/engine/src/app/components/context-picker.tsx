@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useMemo, useState } from 'react'
 import { ContextTree, useCore } from '@mweb/react'
 import { PickerHighlighter } from './picker-highlighter'
-import { TargetService } from '../services/target/target.service'
+import { utils } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 import { usePicker } from '../contexts/picker-context'
 
@@ -49,7 +49,7 @@ export const ContextPicker: FC = () => {
         }
 
         const isSuitable = useMemo(
-          () => pickerTask.target?.some((t) => TargetService.isTargetMet(t, context)) ?? true,
+          () => pickerTask.target?.some((t) => utils.isTargetMet(t, context)) ?? true,
           [pickerTask, context]
         )
 

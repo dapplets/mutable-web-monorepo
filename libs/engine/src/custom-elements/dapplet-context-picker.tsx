@@ -1,6 +1,6 @@
-import React, { ReactElement } from 'react'
-import { Target } from '../app/services/target/target.entity'
-import { TransferableContext, buildTransferableContext } from '../app/common/transferable-context'
+import React from 'react'
+import { TransferableContext, Target } from '@mweb/backend'
+import { buildTransferableContext } from '../app/common/transferable-context'
 import { usePicker } from '../app/contexts/picker-context'
 import { TLatchVariant } from '../app/contexts/picker-context/picker-context'
 

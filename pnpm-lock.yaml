@@ -56,6 +56,9 @@ importers:
 
   apps/extension:
     dependencies:
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../../libs/backend
       '@mweb/engine':
         specifier: workspace:*
         version: link:../../libs/engine
@@ -488,6 +491,52 @@ importers:
         specifier: ^5.8.0
         version: 5.10.0
 
+  libs/backend:
+    dependencies:
+      '@mweb/core':
+        specifier: workspace:*
+        version: link:../core
+      '@mweb/react':
+        specifier: workspace:*
+        version: link:../react
+      big.js:
+        specifier: ^6.2.1
+        version: 6.2.1
+      caching-decorator:
+        specifier: ^1.0.3
+        version: 1.0.3
+      js-sha256:
+        specifier: ^0.11.0
+        version: 0.11.0
+      json-stringify-deterministic:
+        specifier: ^1.0.12
+        version: 1.0.12
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+    devDependencies:
+      '@near-wallet-selector/core':
+        specifier: ^8.9.1
+        version: 8.9.10(near-api-js@2.1.3)
+      '@types/big.js':
+        specifier: ^6.2.2
+        version: 6.2.2
+      '@types/bn.js':
+        specifier: ^5.1.5
+        version: 5.1.5
+      base64-js:
+        specifier: ^1.5.1
+        version: 1.5.1
+      fake-indexeddb:
+        specifier: ^5.0.2
+        version: 5.0.2
+      ieee754:
+        specifier: ^1.2.1
+        version: 1.2.1
+      near-api-js:
+        specifier: 2.1.3
+        version: 2.1.3
+
   libs/core:
     dependencies:
       json-stringify-deterministic:
@@ -499,6 +548,9 @@ importers:
       '@ant-design/cssinjs':
         specifier: ^1.21.0
         version: 1.21.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../backend
       '@mweb/core':
         specifier: workspace:*
         version: link:../core
@@ -603,6 +655,9 @@ importers:
 
   libs/shared-components:
     dependencies:
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../backend
       '@codemirror/state':
         specifier: ^6.4.1
         version: 6.4.1

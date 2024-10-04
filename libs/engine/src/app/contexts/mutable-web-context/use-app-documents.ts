@@ -1,5 +1,5 @@
-import { AppId } from '../../services/application/application.entity'
-import { DocumentDto } from '../../services/document/dtos/document.dto'
+import { AppId } from '@mweb/backend'
+import { DocumentDto } from '@mweb/backend'
 import { useMutableWeb } from './use-mutable-web'
 import { useQueryArray } from '../../hooks/use-query-array'
 

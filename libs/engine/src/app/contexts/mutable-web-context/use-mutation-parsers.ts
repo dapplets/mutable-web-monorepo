@@ -1,6 +1,6 @@
-import { ApplicationDto } from '../../services/application/dtos/application.dto'
-import { ParserConfig } from '../../services/parser-config/parser-config.entity'
-import { Engine } from '../../../engine'
+import { ApplicationDto } from '@mweb/backend'
+import { ParserConfig } from '@mweb/backend'
+import { Engine } from '@mweb/backend'
 import { useQueryArray } from '../../hooks/use-query-array'
 
 export const useMutationParsers = (engine: Engine, apps: ApplicationDto[]) => {

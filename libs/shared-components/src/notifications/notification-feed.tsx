@@ -1,9 +1,8 @@
-import { NotificationDto, useNotifications, useViewAllNotifications } from '@mweb/engine'
+import { useNotifications, useViewAllNotifications } from '@mweb/engine'
 import React, { FC, useMemo, useRef, useState } from 'react'
 import NotificationsResolver from './notification-resolver'
 import { Space, Typography, Button, Spin, Flex } from 'antd'
 import styled from 'styled-components'
-import { PrReviewerModal } from './pr-reviewer-modal'
 
 const { Text } = Typography
 

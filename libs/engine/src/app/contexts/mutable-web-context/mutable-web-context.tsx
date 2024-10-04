@@ -1,10 +1,10 @@
-import { Engine } from '../../../engine'
+import { Engine } from '@mweb/backend'
 import { createContext } from 'react'
-import { AppInstanceWithSettings } from '../../services/application/application.entity'
-import { ApplicationDto } from '../../services/application/dtos/application.dto'
-import { MutationWithSettings } from '../../services/mutation/mutation.entity'
-import { MutationDto } from '../../services/mutation/dtos/mutation.dto'
-import { NearConfig } from '../../../constants'
+import { AppInstanceWithSettings } from '@mweb/backend'
+import { ApplicationDto } from '@mweb/backend'
+import { MutationWithSettings } from '@mweb/backend'
+import { MutationDto } from '@mweb/backend'
+import { NearConfig } from '@mweb/backend'
 
 export type MutableWebContextState = {
   config: NearConfig

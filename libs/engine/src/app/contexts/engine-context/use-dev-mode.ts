@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { BosRedirectMap, getRedirectMap } from '../../services/dev-server-service'
+import { BosRedirectMap, getRedirectMap } from '@mweb/backend'
 import stringify from 'json-stringify-deterministic'
 
 const DevModeUpdateInterval = 1500

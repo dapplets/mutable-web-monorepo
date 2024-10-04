@@ -1,4 +1,5 @@
-import { AppInstanceWithSettings, useMutableWeb, useMutationApp } from '@mweb/engine'
+import { useMutableWeb, useMutationApp } from '@mweb/engine'
+import { AppInstanceWithSettings } from '@mweb/backend'
 import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
 import React from 'react'
 import Background from '../../common/background'

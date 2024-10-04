@@ -1,7 +1,7 @@
 import { createContext } from 'react'
-import { BosRedirectMap } from '../../services/dev-server-service'
-import { Target } from '../../services/target/target.entity'
-import { TransferableContext } from '../../common/transferable-context'
+import { BosRedirectMap } from '@mweb/backend'
+import { Target } from '@mweb/backend'
+import { TransferableContext } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 
 export type InjectableTarget = (Target | TransferableContext) & {

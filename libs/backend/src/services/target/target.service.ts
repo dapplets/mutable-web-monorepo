@@ -1,5 +1,5 @@
 import { IContextNode } from '@mweb/core'
-import { TransferableContext } from '../../common/transferable-context'
+import { TransferableContext } from '../../types/transferable-context'
 import { ScalarType, TargetCondition, Target } from './target.entity'
 
 export class TargetService {

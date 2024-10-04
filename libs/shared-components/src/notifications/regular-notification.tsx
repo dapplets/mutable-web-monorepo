@@ -1,12 +1,7 @@
 import React, { FC, useMemo } from 'react'
 import { Space, Typography, Card, Collapse, Button } from 'antd'
-import {
-  NotificationDto,
-  NotificationType,
-  useHideNotification,
-  useViewNotification,
-  RegularPayload,
-} from '@mweb/engine'
+import { useHideNotification, useViewNotification } from '@mweb/engine'
+import { NotificationDto, NotificationType, RegularPayload } from '@mweb/backend'
 import {
   Collapse as CollapseIcon,
   BlueBadge,
@@ -15,6 +10,7 @@ import {
 } from './assets/icons'
 import { formatDate } from './utils'
 import styled from 'styled-components'
+
 const { Text } = Typography
 
 const StyledCard = styled(Card)`

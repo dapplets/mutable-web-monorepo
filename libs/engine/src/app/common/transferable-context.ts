@@ -1,14 +1,5 @@
-import { IContextNode, ContextLevel } from '@mweb/core'
-
-export interface TransferableContext {
-  namespace: string
-  type: string
-  level: ContextLevel
-  id: string | null
-  parsed: any
-  parent: TransferableContext | null
-  isVisible: boolean
-}
+import { IContextNode } from '@mweb/core'
+import { TransferableContext } from '@mweb/backend'
 
 // ToDo: reuse in ContextPicker
 export const buildTransferableContext = (context: IContextNode): TransferableContext => ({

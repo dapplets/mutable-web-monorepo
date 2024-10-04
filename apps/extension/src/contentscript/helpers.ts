@@ -1,4 +1,4 @@
-import { MutationDto } from '@mweb/engine'
+import { MutationDto } from '@mweb/backend'
 
 /**
  * Simple object check.

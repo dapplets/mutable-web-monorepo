@@ -1,16 +1,16 @@
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
-import { Engine, EngineConfig } from '../../../engine'
+import { Engine, EngineConfig } from '@mweb/backend'
 import { useMutationApps } from './use-mutation-apps'
 import { useMutationParsers } from './use-mutation-parsers'
 import { useCore } from '@mweb/react'
 import { useMutations } from './use-mutations'
 import { useApplications } from './use-applications'
-import { TargetService } from '../../services/target/target.service'
+import { utils } from '@mweb/backend'
 import { mutationDisabled, mutationSwitched } from './notifications'
-import { getNearConfig } from '../../../constants'
+import { getNearConfig } from '@mweb/backend'
 import { ModalContextState } from '../modal-context/modal-context'
-import { MutationDto } from '../../services/mutation/dtos/mutation.dto'
+import { MutationDto } from '@mweb/backend'
 import { ParserType, ParserConfig } from '@mweb/core'
 
 type Props = {
@@ -132,9 +132,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     // Load parser configs for root context
     // ToDo: generalize for whole context tree
     for (const parser of parserConfigs) {
-      const isSuitableParser = parser.targets.some((target) =>
-        TargetService.isTargetMet(target, tree)
-      )
+      const isSuitableParser = parser.targets.some((target) => utils.isTargetMet(target, tree))
 
       if (isSuitableParser) {
         attachParserConfig(parser)

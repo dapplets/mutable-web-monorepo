@@ -1,9 +1,10 @@
-import { ApplicationDto, DocumentDto, useAppDocuments } from '@mweb/engine'
+import { useAppDocuments } from '@mweb/engine'
+import { ApplicationDto, DocumentDto } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
 import { DocumentCard } from './document-card'
-import { AppInMutation } from '@mweb/engine/lib/app/services/mutation/mutation.entity'
+import { AppInMutation } from '@mweb/backend'
 import { Spin } from 'antd'
 
 const Card = styled.div<{ $backgroundColor?: string }>`

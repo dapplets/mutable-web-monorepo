@@ -1,4 +1,4 @@
-import { TransferableContext } from '../../common/transferable-context'
+import { TransferableContext } from '../../types/transferable-context'
 import { AppId } from '../application/application.entity'
 import { Transaction } from '../unit-of-work/transaction'
 import { LinkedDataByAccountDto } from '../link-db/link-db.entity'

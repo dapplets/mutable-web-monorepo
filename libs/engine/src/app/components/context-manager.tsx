@@ -1,6 +1,22 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ContextPortal } from '@mweb/react'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
+import {
+  BosUserLinkWithInstance,
+  ControllerLink,
+  UserLinkId,
+  ApplicationDto,
+  AppId,
+  BuiltInLayoutManagers,
+  TransferableContext,
+  LinkedDataByAccountDto,
+  LinkIndexRules,
+  Target,
+  DocumentId,
+  DocumentMetadata,
+  DocumentDto,
+  utils,
+} from '@mweb/backend'
 import { useEngine } from '../contexts/engine-context'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
 import { Widget } from 'near-social-vm'
@@ -8,28 +24,14 @@ import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
 import { ContextTree } from '@mweb/react'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
 import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
-import { AppId } from '../services/application/application.entity'
-import { ApplicationDto } from '../services/application/dtos/application.dto'
-import {
-  BosUserLinkWithInstance,
-  ControllerLink,
-  UserLinkId,
-} from '../services/user-link/user-link.entity'
-import { TransferableContext, buildTransferableContext } from '../common/transferable-context'
+import { buildTransferableContext } from '../common/transferable-context'
 import { useModal } from '../contexts/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
-import { BuiltInLayoutManagers } from '../../constants'
-import { TargetService } from '../services/target/target.service'
-import { LinkedDataByAccountDto, LinkIndexRules } from '../services/link-db/link-db.entity'
 import { memoize } from '../common/memoize'
 import { createPortal } from 'react-dom'
 import { ModalProps } from '../contexts/modal-context/modal-context'
 import { Portal } from '../contexts/engine-context/engine-context'
-import { Target } from '../services/target/target.entity'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
-import { DocumentId, DocumentMetadata } from '../services/document/document.entity'
-import { ApplicationService } from '../services/application/application.service'
-import { DocumentDto } from '../services/document/dtos/document.dto'
 
 interface WidgetProps {
   context: TransferableContext
@@ -107,7 +109,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const portalComponents = useMemo(() => {
     return Array.from(portals.values())
-      .filter(({ target }) => TargetService.isTargetMet(target, context))
+      .filter(({ target }) => utils.isTargetMet(target, context))
       .sort((a, b) => (b.key > a.key ? 1 : -1))
   }, [portals, context.parsedContext, context.isVisible])
 
@@ -152,8 +154,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleContextQuery = useCallback(
     (target: Target): TransferableContext | null => {
-      const rootContext = TargetService.getRootContext(context)
-      const foundContext = TargetService.findContextByTarget(target, rootContext)
+      const rootContext = utils.getRootContext(context)
+      const foundContext = utils.findContextByTarget(target, rootContext)
       return foundContext ? buildTransferableContext(foundContext) : null
     },
     [context]
@@ -175,7 +177,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         (ctx: TransferableContext, accountIds?: string[] | string, indexRules?: LinkIndexRules) => {
           if (!selectedMutation) throw new Error('No selected mutation')
           const appInstance = selectedMutation.apps.find(
-            (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+            (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
 
@@ -202,7 +204,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
           const appInstance = selectedMutation.apps.find(
-            (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+            (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
 
@@ -223,7 +225,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     memoize((appInstanceId: string) => async () => {
       if (!selectedMutation) throw new Error('No selected mutation')
       const appInstance = selectedMutation.apps.find(
-        (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+        (app) => utils.constructAppInstanceId(app) === appInstanceId
       )
       if (!appInstance) throw new Error('The app is not active')
 
@@ -247,7 +249,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         ) => {
           if (!selectedMutation) throw new Error('No selected mutation')
           const appInstance = selectedMutation.apps.find(
-            (app) => ApplicationService.constructAppInstanceId(app) === appInstanceId
+            (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
 
@@ -451,7 +453,7 @@ const InsPointHandler: FC<{
     apps: apps
       .filter((app) => {
         const suitableNonStaticTargets = app.targets.filter(
-          (target) => !target.static && TargetService.isTargetMet(target, context)
+          (target) => !target.static && utils.isTargetMet(target, context)
         )
 
         if (suitableNonStaticTargets.length === 0) {
