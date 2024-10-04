@@ -3,19 +3,18 @@ import { NearSigner } from '../near-signer/near-signer.service'
 import { Transaction } from '../unit-of-work/transaction'
 import { UserLinkService } from '../user-link/user-link.service'
 import { Notification, NotificationType } from './notification.entity'
-import { NotificationRepository } from './notification.repository'
 import { NotificationStatus, Resolution } from './resolution.entity'
-import { ResolutionRepository } from './resolution.repository'
 import { NotificationDto } from './dtos/notification.dto'
 import { NotificationCreateDto } from './dtos/notification-create.dto'
 import { PullRequestStatus } from './types/pull-request'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { generateGuid } from '../../common/generate-guid'
+import { IRepository } from '../base/repository.interface'
 
 export class NotificationService {
   constructor(
-    private notificationRepository: NotificationRepository,
-    private resolutionRepository: ResolutionRepository,
+    private notificationRepository: IRepository<Notification>,
+    private resolutionRepository: IRepository<Resolution>,
     private unitOfWorkService: UnitOfWorkService,
     private nearSigner: NearSigner
   ) {}

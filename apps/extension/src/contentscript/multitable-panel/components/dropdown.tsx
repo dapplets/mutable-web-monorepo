@@ -189,7 +189,7 @@ export const Dropdown: FC<DropdownProps> = ({
                       <InputMutation
                         className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
                       >
-                        {mut.metadata ? mut.metadata.name : ''}
+                        {mut.metadata ? mut.metadata.name : ''} {mut.source}
                       </InputMutation>
                       {/* todo: mocked classname */}
                       <AuthorMutation

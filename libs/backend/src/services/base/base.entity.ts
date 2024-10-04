@@ -7,6 +7,7 @@ export type EntityId = string
 
 export class Base {
   id: EntityId = ''
+  source: 'local' | 'origin' = 'local'
   blockNumber: number = 0 // ToDo: fake block number
   timestamp: number = 0 // ToDo: fake timestamp
 
@@ -50,6 +51,7 @@ export class Base {
       id: this.id,
       localId: this.localId,
       authorId: this.authorId,
+      source: this.source,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
     }

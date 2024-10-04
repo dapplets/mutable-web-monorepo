@@ -6,6 +6,7 @@ import { ColumnType, getColumn } from './decorators/column'
 import { mergeDeep } from '../../common/merge-deep'
 import { Transaction } from '../unit-of-work/transaction'
 import { EntityMetadata } from '../../common/entity-metadata'
+import { IRepository } from './repository.interface'
 
 // ToDo: parametrize?
 const ProjectIdKey = 'dapplets.near'
@@ -21,7 +22,7 @@ const BlockNumberKey = ':block'
 // ToDo:
 type EntityId = string
 
-export class BaseRepository<T extends Base> {
+export class BaseRepository<T extends Base> implements IRepository<T> {
   private _entityKey: string
 
   constructor(
@@ -136,11 +137,7 @@ export class BaseRepository<T extends Base> {
       throw new Error('Item with that ID already exists')
     }
 
-    await this.saveItem(item, tx)
-
-    // ToDo: update timestamp and blockNumber
-
-    return item
+    return this.saveItem(item, tx)
   }
 
   async editItem(item: T, tx?: Transaction): Promise<T> {
@@ -148,11 +145,7 @@ export class BaseRepository<T extends Base> {
       throw new Error('Item with that ID does not exist')
     }
 
-    await this.saveItem(item, tx)
-
-    // ToDo: update timestamp and blockNumber
-
-    return item
+    return this.saveItem(item, tx)
   }
 
   public async saveItem(item: T, tx?: Transaction): Promise<T> {
@@ -166,7 +159,12 @@ export class BaseRepository<T extends Base> {
 
     await this._commitOrQueue(dataToSave, tx)
 
-    return item
+    // ToDo: add timestamp and blockNumber
+
+    // @ts-ignore
+    const entity: T = this.EntityType.create({ ...item, localId, authorId, source: 'origin' })
+
+    return entity
   }
 
   async deleteItem(id: EntityId, tx?: Transaction): Promise<void> {
@@ -188,6 +186,7 @@ export class BaseRepository<T extends Base> {
     await this._commitOrQueue(nullData, tx)
   }
 
+  // ToDo: move to Entity contstructor?
   async constructItem(
     item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId> }
   ): Promise<T> {
@@ -205,7 +204,7 @@ export class BaseRepository<T extends Base> {
     }
 
     // @ts-ignore
-    const entity: T = this.EntityType.create({ ...item, localId, authorId })
+    const entity: T = this.EntityType.create({ ...item, localId, authorId, source: 'local' })
 
     return entity
   }
@@ -224,6 +223,8 @@ export class BaseRepository<T extends Base> {
 
     entity.id = id
     entity.blockNumber = rawWithMeta[BlockNumberKey]
+    entity.source = 'origin'
+
     // ToDo: calculate it like localId and authorId?
     entity.timestamp = this.socialDb.getTimestampByBlockHeight(entity.blockNumber)
 

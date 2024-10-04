@@ -18,9 +18,9 @@ import {
   LinkIndexObject,
   UserLinkId,
 } from './user-link.entity'
-import { UserLinkRepository } from './user-link.repository'
 import { NearSigner } from '../near-signer/near-signer.service'
 import { generateGuid } from '../../common/generate-guid'
+import { IRepository } from '../base/repository.interface'
 
 // ToDo: is in the entity
 const LinkKey = 'link'
@@ -28,7 +28,7 @@ const KeyDelimiter = '/'
 
 export class UserLinkService {
   constructor(
-    private userLinkRepository: UserLinkRepository,
+    private userLinkRepository: IRepository<IndexedLink>,
     private applicationService: ApplicationService,
     private _signer: NearSigner // ToDo: is it necessary dependency injection?
   ) {}

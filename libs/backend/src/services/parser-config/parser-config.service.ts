@@ -1,10 +1,10 @@
 import { AnyParserValue } from '../application/application.entity'
 import { ApplicationDto } from '../application/dtos/application.dto'
+import { IRepository } from '../base/repository.interface'
 import { ParserConfig, ParserConfigId } from './parser-config.entity'
-import { ParserConfigRepository } from './parser-config.repository'
 
 export class ParserConfigService {
-  constructor(private parserConfigRepository: ParserConfigRepository) {}
+  constructor(private parserConfigRepository: IRepository<ParserConfig>) {}
 
   public async getParserConfig(parserId: ParserConfigId): Promise<ParserConfig | null> {
     if (parserId === 'mweb') return null
