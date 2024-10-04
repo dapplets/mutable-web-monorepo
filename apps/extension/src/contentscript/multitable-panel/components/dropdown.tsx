@@ -25,7 +25,7 @@ import {
   SelectedMutationInfo,
   StarSelectedMutationWrapper,
   WrapperDropdown,
-} from '../assets/stylesDropdown'
+} from '../assets/styles-dropdown'
 import {
   AvailableIcon,
   Back,

@@ -28,6 +28,13 @@ export {
   ControllerLink,
   UserLinkId,
 } from './services/user-link/user-link.entity'
+export { BaseDto } from './services/base/base.dto'
+export {
+  PullRequestPayload,
+  PullRequestResult,
+  PullRequestStatus,
+} from './services/notification/types/pull-request'
+export { RegularPayload } from './services/notification/types/regular'
 
 // ToDo: replace with DTO
 export { ParserConfig } from './services/parser-config/parser-config.entity'
