@@ -138,6 +138,7 @@ export interface IOverlayWrapperProps {
   open: boolean
   loggedInAccountId: string
   connectWallet: (() => Promise<void>) | undefined
+  modalContainerRef: React.RefObject<HTMLElement>
 }
 
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({
@@ -146,6 +147,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
   open,
   loggedInAccountId,
   connectWallet,
+  modalContainerRef,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -182,6 +184,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
               <NotificationFeed
                 connectWallet={connectWallet}
                 loggedInAccountId={loggedInAccountId}
+                modalContainerRef={modalContainerRef}
               />
             </Body>
           }

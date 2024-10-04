@@ -13,6 +13,8 @@ export { IStorage } from './app/services/local-db/local-storage'
 export { App } from './app/app'
 export { useEngine } from './app/contexts/engine-context'
 export {
+  useMutation,
+  useMutations,
   useMutableWeb,
   useCreateMutation,
   useEditMutation,
@@ -35,5 +37,10 @@ export {
 } from './app/contexts/notification-context'
 export { NotificationType } from './app/services/notification/notification.entity'
 export { NotificationDto } from './app/services/notification/dtos/notification.dto'
-export { PullRequestPayload, PullRequestResult, PullRequestStatus } from './app/services/notification/types/pull-request'
+export { BaseDto } from './app/services/base/base.dto'
+export {
+  PullRequestPayload,
+  PullRequestResult,
+  PullRequestStatus,
+} from './app/services/notification/types/pull-request'
 export { RegularPayload } from './app/services/notification/types/regular'

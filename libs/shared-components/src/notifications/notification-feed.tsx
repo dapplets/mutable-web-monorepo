@@ -1,8 +1,10 @@
-import { useNotifications, useViewAllNotifications } from '@mweb/engine'
+import { NotificationDto, useNotifications, useViewAllNotifications } from '@mweb/engine'
 import React, { FC, useMemo, useRef, useState } from 'react'
 import NotificationsResolver from './notification-resolver'
 import { Space, Typography, Button, Spin, Flex } from 'antd'
 import styled from 'styled-components'
+import { PrReviewerModal } from './pr-reviewer-modal'
+
 const { Text } = Typography
 
 const FeedContainer = styled(Space)`
@@ -37,7 +39,8 @@ const Loader = () => (
 const NotificationFeed: FC<{
   loggedInAccountId: string
   connectWallet: (() => Promise<void>) | undefined
-}> = ({ loggedInAccountId, connectWallet }) => {
+  modalContainerRef: React.RefObject<HTMLElement>
+}> = ({ loggedInAccountId, connectWallet, modalContainerRef }) => {
   const [isWaiting, setWaiting] = useState(false)
   const { notifications, isLoading } = useNotifications()
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -97,7 +100,11 @@ const NotificationFeed: FC<{
             </Space>
             <SmoothSpace direction="vertical">
               {newNotifications.map((notification) => (
-                <NotificationsResolver key={notification.id} notification={notification} />
+                <NotificationsResolver
+                  key={notification.id}
+                  notification={notification}
+                  modalContainerRef={modalContainerRef}
+                />
               ))}
             </SmoothSpace>
           </Flex>
@@ -109,7 +116,11 @@ const NotificationFeed: FC<{
             </Space>
             <SmoothSpace direction="vertical">
               {viewedNotifications.map((notification) => (
-                <NotificationsResolver key={notification.id} notification={notification} />
+                <NotificationsResolver
+                  key={notification.id}
+                  notification={notification}
+                  modalContainerRef={modalContainerRef}
+                />
               ))}
             </SmoothSpace>
           </Flex>
