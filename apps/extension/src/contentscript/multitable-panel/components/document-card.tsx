@@ -2,6 +2,7 @@ import { ApplicationDto, DocumentMetadata } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
+import { Badge } from './badge'
 
 const Card = styled.div`
   position: relative;
@@ -137,6 +138,7 @@ const FALLBACK_IMAGE_URL =
 export interface Props {
   src: string | null
   metadata: DocumentMetadata | null
+  source: 'origin' | 'local' | undefined
   onChange: () => void
   disabled: boolean
   appMetadata: ApplicationDto['metadata']
@@ -144,6 +146,7 @@ export interface Props {
 
 export const DocumentCard: React.FC<Props> = ({
   src,
+  source,
   metadata,
   onChange,
   disabled,
@@ -173,6 +176,7 @@ export const DocumentCard: React.FC<Props> = ({
           </TextLink>
 
           <TextLink small ellipsis>
+            {source === 'local' && <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />}{' '}
             {srcParts && `@${srcParts[0]}`}
           </TextLink>
         </CardContent>

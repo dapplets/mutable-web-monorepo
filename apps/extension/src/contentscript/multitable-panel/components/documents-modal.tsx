@@ -187,6 +187,7 @@ export const DocumentsModal: FC<Props> = ({
       <AppsList>
         {docs?.map((doc) => (
           <SimpleApplicationCard
+            source={doc.source}
             key={doc.id}
             src={doc.id}
             metadata={doc.metadata}

@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
 
-const Wrapper = styled.span<{ $theme: 'yellow' | 'blue' | 'white' }>`
+const Wrapper = styled.span<{ $theme: 'yellow' | 'blue' | 'white'; $margin: string }>`
   display: inline-flex;
   text-transform: uppercase;
   padding: 2px;
@@ -12,7 +12,7 @@ const Wrapper = styled.span<{ $theme: 'yellow' | 'blue' | 'white' }>`
   color: ${(props) => (props.$theme === 'yellow' || props.$theme === 'blue' ? '#fff' : '#384BFF')};
   font-size: 8px;
   font-weight: 600;
-  margin-left: 8px;
+  margin: ${(props) => props.$margin};
   align-items: center;
   justify-content: center;
 `
@@ -20,8 +20,13 @@ const Wrapper = styled.span<{ $theme: 'yellow' | 'blue' | 'white' }>`
 export interface IBadgeProps {
   text: string
   theme: 'yellow' | 'blue' | 'white'
+  margin: string
 }
 
-export const Badge: FC<IBadgeProps> = ({ text, theme }) => {
-  return <Wrapper $theme={theme}>{text}</Wrapper>
+export const Badge: FC<IBadgeProps> = ({ text, theme, margin }) => {
+  return (
+    <Wrapper $margin={margin} $theme={theme}>
+      {text}
+    </Wrapper>
+  )
 }

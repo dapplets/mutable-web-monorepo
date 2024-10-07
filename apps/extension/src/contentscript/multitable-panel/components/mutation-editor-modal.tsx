@@ -410,6 +410,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             <ApplicationCardWithDocs
               key={app.id}
               src={app.id}
+              source={app.source}
               metadata={app.metadata}
               disabled={false}
               docsIds={editingMutation.apps
@@ -424,6 +425,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             <SimpleApplicationCard
               key={app.id}
               src={app.id}
+              source={app.source}
               metadata={app.metadata}
               disabled={false}
               isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}

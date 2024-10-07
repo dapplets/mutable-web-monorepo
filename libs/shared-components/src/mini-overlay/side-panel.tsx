@@ -7,6 +7,7 @@ import { Image } from '../common/image'
 import Profile from './profile'
 import { IWalletConnect } from './types'
 import { MutationFallbackIcon, ArrowIcon, BellIcon, BellWithCircle } from './assets/icons'
+import { Badge } from '../common/badge'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
@@ -22,6 +23,12 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
+`
+
+const BadgeWrapper = styled.span`
+  position: absolute;
+  left: 0;
+  bottom: -5px;
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
@@ -229,7 +236,14 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           data-mweb-context-level="system"
         >
           {baseMutation?.metadata.image ? (
-            <Image image={baseMutation?.metadata.image} />
+            <>
+              <Image image={baseMutation?.metadata.image} />
+              {baseMutation.source === 'local' && (
+                <BadgeWrapper>
+                  <Badge text={baseMutation.source} theme={'blue'} />
+                </BadgeWrapper>
+              )}
+            </>
           ) : (
             <MutationFallbackIcon />
           )}

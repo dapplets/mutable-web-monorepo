@@ -42,6 +42,7 @@ import { useMutableWeb } from '@mweb/engine'
 import { MutationWithSettings } from '@mweb/backend'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
+import { Badge } from './badge'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
@@ -125,6 +126,9 @@ export const Dropdown: FC<DropdownProps> = ({
             <>
               <SelectedMutationDescription>
                 {selectedMutation.metadata.name}
+                {selectedMutation.source === 'local' && (
+                  <Badge margin="0 0 0 8px" text={selectedMutation.source} theme={'white'} />
+                )}
               </SelectedMutationDescription>
               <SelectedMutationId>{selectedMutation.id}</SelectedMutationId>
             </>
@@ -189,7 +193,10 @@ export const Dropdown: FC<DropdownProps> = ({
                       <InputMutation
                         className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
                       >
-                        {mut.metadata ? mut.metadata.name : ''} {mut.source}
+                        {mut.metadata ? mut.metadata.name : ''}{' '}
+                        {mut.source === 'local' && (
+                          <Badge margin="0" text={mut.source} theme={'blue'} />
+                        )}
                       </InputMutation>
                       {/* todo: mocked classname */}
                       <AuthorMutation
