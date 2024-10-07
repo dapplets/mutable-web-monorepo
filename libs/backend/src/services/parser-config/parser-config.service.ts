@@ -8,6 +8,8 @@ export class ParserConfigService {
 
   public async getParserConfig(parserId: ParserConfigId): Promise<ParserConfig | null> {
     if (parserId === 'mweb') return null
+    if (parserId === 'engine') return null
+
     return this.parserConfigRepository.getItem(parserId)
   }
 

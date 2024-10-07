@@ -294,7 +294,9 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
     if (entityType !== this._entityKey) {
       // ToDo: or null?
-      throw new Error(`Wrong entity type. Expected: ${this._entityKey}, received: ${entityType}`)
+      throw new Error(
+        `Wrong entity type. Expected: ${this._entityKey}, received: ${entityType}. Global ID: ${globalId}`
+      )
     }
 
     return { authorId, localId }
