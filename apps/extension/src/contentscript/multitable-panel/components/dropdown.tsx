@@ -35,7 +35,6 @@ import {
   StarMutationListDefault,
   StarSelectMutation,
   StarSelectMutationDefault,
-  Trash,
 } from '../assets/vectors'
 
 import { useMutableWeb } from '@mweb/engine'
@@ -43,6 +42,7 @@ import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
 import { Badge } from './badge'
+import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
@@ -219,9 +219,13 @@ export const Dropdown: FC<DropdownProps> = ({
                       <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
                         <StarMutationListDefault />
                       </InputIconWrapper>
+                    ) : mut.source === EntitySourceType.Local ? (
+                      <InputIconWrapper onClick={() => console.log('mut', mut)}>
+                        <DeleteOutlined />
+                      </InputIconWrapper>
                     ) : (
                       <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
-                        <Trash />
+                        <ArrowDownOutlined />
                       </InputIconWrapper>
                     )}
                   </InputBlock>

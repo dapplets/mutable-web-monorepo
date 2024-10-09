@@ -64,6 +64,7 @@
     "webpack-merge": "^5.9.0"
   },
   "dependencies": {
+    "@ant-design/icons": "5.5.1",
     "@mweb/engine": "workspace:*",
     "@mweb/backend": "workspace:*",
     "@mweb/shared-components": "workspace:*",
