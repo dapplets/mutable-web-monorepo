@@ -1,9 +1,11 @@
-import React, { FC, useRef } from 'react'
+import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
 import NotificationFeed from '../notifications/notification-feed'
 import { Close as CloseIcon } from './assets/icons'
+import Profile from './profile'
+import { IWalletConnect } from './types'
 const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
@@ -132,13 +134,14 @@ const Body = styled.div`
   }
 `
 
-export interface IOverlayWrapperProps {
+export interface IOverlayWrapperProps extends IWalletConnect {
   apps: boolean
   onClose: () => void
   open: boolean
   loggedInAccountId: string
-  connectWallet: (() => Promise<void>) | undefined
   modalContainerRef: React.RefObject<HTMLElement>
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({
@@ -147,9 +150,15 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
   open,
   loggedInAccountId,
   connectWallet,
+  disconnectWallet,
+  nearNetwork,
   modalContainerRef,
+  trackingRefs,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const [isProfileOpen, openCloseProfile] = useState(false)
+  const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
+  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
@@ -159,7 +168,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
             <Space direction="vertical">
               <Space direction="horizontal">
                 <Title style={{ userSelect: 'none' }} level={3}>
-                  Notifications
+                  Mutable Web
                 </Title>
 
                 <Button type="text" onClick={onClose}>
@@ -181,6 +190,18 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
           data-testid="overlay-notify"
           children={
             <Body ref={overlayRef}>
+              <Profile
+                accountId={loggedInAccountId ?? null}
+                closeProfile={() => {
+                  openCloseProfile(false)
+                }}
+                connectWallet={connectWallet!}
+                disconnectWallet={disconnectWallet}
+                nearNetwork={nearNetwork}
+                trackingRefs={trackingRefs!}
+                openCloseWalletPopupRef={openCloseWalletPopupRef}
+              />
+
               <NotificationFeed
                 connectWallet={connectWallet}
                 loggedInAccountId={loggedInAccountId}
