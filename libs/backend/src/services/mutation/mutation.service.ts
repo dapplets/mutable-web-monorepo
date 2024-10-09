@@ -182,6 +182,10 @@ export class MutationService {
     return this.populateMutationWithSettings(mutation.toDto())
   }
 
+  async deleteMutation(mutationId: EntityId): Promise<void> {
+    await this.mutationRepository.deleteItem(mutationId)
+  }
+
   async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
     const notification = await this.notificationService.getNotification(notificationId)
 
