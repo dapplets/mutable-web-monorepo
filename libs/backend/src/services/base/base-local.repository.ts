@@ -1,4 +1,4 @@
-import { Base, EntityId } from './base.entity'
+import { Base, EntityId, EntitySourceType } from './base.entity'
 import { getEntity } from './decorators/entity'
 import { IRepository } from './repository.interface'
 import { IStorage } from '../local-db/local-storage'
@@ -31,7 +31,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
     if (!raw) return null
 
     // @ts-ignore
-    const entity: T = this.EntityType.create({ source: 'local', ...raw })
+    const entity: T = this.EntityType.create({ source: EntitySourceType.Local, ...raw })
 
     return entity
   }
@@ -108,7 +108,26 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
   async constructItem(
     item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId> }
   ): Promise<T> {
-    throw new Error('Method not implemented.')
+    console.log(item)
+
+    if (!item?.metadata?.name) {
+      throw new Error('Metadata name is required')
+    }
+
+    const localId = BaseLocalRepository._normalizeNameToLocalId(item.metadata.name)
+
+    // ToDo: magic value
+    const authorId = null
+
+    // @ts-ignore
+    const entity: T = this.EntityType.create({
+      ...item,
+      localId,
+      authorId,
+      source: EntitySourceType.Local,
+    })
+
+    return entity
   }
 
   private static _parseGlobalId(globalId: EntityId): {
@@ -126,5 +145,11 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
 
     const [authorId, type, localId] = globalId.split(KeyDelimiter)
     return { authorId, type, localId }
+  }
+
+  // ToDo: duplicate in base.repository.ts
+  private static _normalizeNameToLocalId(name: string): string {
+    // allow only alphanumeric
+    return name.replace(/[^a-zA-Z0-9]/g, '')
   }
 }

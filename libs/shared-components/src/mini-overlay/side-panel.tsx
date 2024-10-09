@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from 'antd'
 import { useNotifications } from '@mweb/engine'
-import { AppWithSettings, MutationDto } from '@mweb/backend'
+import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
 import { Image } from '../common/image'
 import Profile from './profile'
 import { IWalletConnect } from './types'
@@ -238,7 +238,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           {baseMutation?.metadata.image ? (
             <>
               <Image image={baseMutation?.metadata.image} />
-              {baseMutation.source === 'local' && (
+              {baseMutation.source === EntitySourceType.Local && (
                 <BadgeWrapper>
                   <Badge text={baseMutation.source} theme={'blue'} />
                 </BadgeWrapper>

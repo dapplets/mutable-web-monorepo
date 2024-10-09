@@ -1,5 +1,5 @@
 import serializeToDeterministicJson from 'json-stringify-deterministic'
-import { Base } from './base.entity'
+import { Base, EntitySourceType } from './base.entity'
 import { SocialDbService, Value } from '../social-db/social-db.service'
 import { getEntity } from './decorators/entity'
 import { ColumnType, getColumn } from './decorators/column'
@@ -162,7 +162,12 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
     // ToDo: add timestamp and blockNumber
 
     // @ts-ignore
-    const entity: T = this.EntityType.create({ ...item, localId, authorId, source: 'origin' })
+    const entity: T = this.EntityType.create({
+      ...item,
+      localId,
+      authorId,
+      source: EntitySourceType.Origin,
+    })
 
     return entity
   }
@@ -204,7 +209,12 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
     }
 
     // @ts-ignore
-    const entity: T = this.EntityType.create({ ...item, localId, authorId, source: 'local' })
+    const entity: T = this.EntityType.create({
+      ...item,
+      localId,
+      authorId,
+      source: EntitySourceType.Local,
+    })
 
     return entity
   }
@@ -223,7 +233,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
     entity.id = id
     entity.blockNumber = rawWithMeta[BlockNumberKey]
-    entity.source = 'origin'
+    entity.source = EntitySourceType.Origin
 
     // ToDo: calculate it like localId and authorId?
     entity.timestamp = this.socialDb.getTimestampByBlockHeight(entity.blockNumber)

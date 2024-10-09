@@ -1,4 +1,10 @@
-import { ApplicationDto, DocumentDto, MutationCreateDto, MutationDto } from '@mweb/backend'
+import {
+  ApplicationDto,
+  DocumentDto,
+  EntitySourceType,
+  MutationCreateDto,
+  MutationDto,
+} from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -13,6 +19,7 @@ import { ModalConfirm } from './modals-confirm'
 import { MutationModalMode } from './types'
 import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
+import { useSaveMutation, useMutableWeb } from '@mweb/engine'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -199,9 +206,10 @@ const CloseIcon = () => (
 )
 
 const createEmptyMutation = (): MutationCreateDto => ({
+  source: EntitySourceType.Local, // ToDo: actually source will be changed in click handlers
   apps: [],
   metadata: {
-    name: '',
+    name: 'New Mutation',
   },
   targets: [
     {
@@ -251,27 +259,34 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
+  const { switchMutation } = useMutableWeb()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
+
+  const { saveMutation, isLoading: isSaving } = useSaveMutation()
 
   useEscape(onClose)
 
   const [mode, setMode] = useState(
     !baseMutation
       ? MutationModalMode.Creating
+      : !baseMutation.authorId // Newly created local mutation doesn't have author
+      ? MutationModalMode.Editing
       : baseMutation.authorId === loggedInAccountId
       ? MutationModalMode.Editing
       : MutationModalMode.Forking
   )
 
+  // Call `setEditingMutation(chooseEditingMutation())` if you want to revert changes
   const chooseEditingMutation = (
     changedApps?: AppInMutation[]
   ): MutationCreateDto | MutationDto => {
     const mut =
       mode === MutationModalMode.Forking && baseMutation
         ? {
+            source: EntitySourceType.Local, // ToDo: actually source will be changed in click handlers
             metadata: {
               name: '',
               fork_of: baseMutation.id,
@@ -350,8 +365,17 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     })
   }
 
-  const handleRevertClick = () => {
-    setEditingMutation(chooseEditingMutation())
+  const handleSaveLocallyClick = () => {
+    const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
+    console.log({ editingMutation, localMutation })
+
+    if (mode === MutationModalMode.Creating) {
+      saveMutation(localMutation)
+        .then(({ id }) => switchMutation(id))
+        .then(onClose)
+    } else if (mode === MutationModalMode.Editing || mode === MutationModalMode.Forking) {
+      saveMutation(localMutation).then(onClose)
+    }
   }
 
   const handleSaveDropdownChange = (itemId: string) => {
@@ -436,17 +460,23 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       </AppsList>
 
       <ButtonsBlock>
-        <Button disabled={isSubmitDisabled} onClick={handleRevertClick}>
-          Revert changes
+        <Button disabled={isSubmitDisabled || isSaving} onClick={handleSaveLocallyClick}>
+          Save Locally
         </Button>
         <DropdownButton
           value={mode}
           items={[
-            { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
+            {
+              value: MutationModalMode.Forking,
+              title: 'Fork',
+              visible: !!baseMutation && !!baseMutation.authorId,
+            },
             {
               value: MutationModalMode.Editing,
               title: 'Save',
-              visible: !!baseMutation && baseMutation.authorId === loggedInAccountId,
+              visible:
+                !!baseMutation &&
+                (baseMutation.authorId === loggedInAccountId || !baseMutation.authorId),
             },
             { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
           ]}

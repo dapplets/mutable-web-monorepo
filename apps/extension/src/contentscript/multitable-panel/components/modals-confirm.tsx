@@ -3,7 +3,7 @@ import BsButton from 'react-bootstrap/Button'
 import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { useCreateMutation, useEditMutation, useMutableWeb } from '@mweb/engine'
-import { MutationCreateDto, MutationDto } from '@mweb/backend'
+import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
@@ -281,6 +281,7 @@ export const ModalConfirm: FC<Props> = ({
     mutationToPublish.metadata.name = newName.trim()
     mutationToPublish.metadata.image = newImage
     mutationToPublish.metadata.description = newDescription.trim()
+    mutationToPublish.source = EntitySourceType.Origin
 
     const newAlert = doChecksForAlerts(mutationToPublish, mode === MutationModalMode.Editing)
     if (newAlert) {

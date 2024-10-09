@@ -123,7 +123,12 @@ const ButtonGroup = styled.div`
   overflow: hidden;
 `
 
-type ItemProps = { value: string; title: string; visible?: boolean }
+type ItemProps = {
+  value: string
+  title: string
+  visible?: boolean
+  onClick?: (value: string) => void
+}
 
 export interface Props {
   value: string
@@ -152,7 +157,11 @@ export const DropdownButton: FC<Props> = ({
   )
 
   if (!currentItem) {
-    throw new Error(`Invalid value: ${value}`)
+    throw new Error(
+      `[DropdownButton] Invalid value: ${value}. Possible values: ${visibleItems
+        .map((item) => item.value)
+        .join(', ')}`
+    )
   }
 
   const handleDropdownToggle = () => {
@@ -166,6 +175,7 @@ export const DropdownButton: FC<Props> = ({
 
   const handleMainButtonClick = () => {
     onClick(currentItem.value)
+    currentItem.onClick?.(currentItem.value)
   }
 
   return (

@@ -1,8 +1,8 @@
-import { EntityId } from './base.entity'
+import { EntityId, EntitySourceType } from './base.entity'
 
 export type BaseDto = {
   id: EntityId
-  source: 'origin' | 'local'
+  source: EntitySourceType
   localId: string
   authorId: string
   blockNumber: number

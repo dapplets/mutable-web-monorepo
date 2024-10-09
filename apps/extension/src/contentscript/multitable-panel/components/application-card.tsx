@@ -1,5 +1,5 @@
 import { useAppDocuments } from '@mweb/engine'
-import { ApplicationDto, DocumentDto } from '@mweb/backend'
+import { ApplicationDto, DocumentDto, EntitySourceType } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
@@ -246,8 +246,10 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           </TextLink>
 
           <TextLink small ellipsis>
-            {source === 'local' && <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />} @
-            {accountId}
+            {source === EntitySourceType.Local && (
+              <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
+            )}{' '}
+            @{accountId}
           </TextLink>
         </CardContent>
 

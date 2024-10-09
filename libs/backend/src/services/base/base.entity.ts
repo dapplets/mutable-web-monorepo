@@ -5,9 +5,14 @@ const KeyDelimiter = '/'
 
 export type EntityId = string
 
+export enum EntitySourceType {
+  Local = 'local',
+  Origin = 'origin',
+}
+
 export class Base {
   id: EntityId = ''
-  source: 'local' | 'origin' = 'local'
+  source: EntitySourceType = EntitySourceType.Local
   blockNumber: number = 0 // ToDo: fake block number
   timestamp: number = 0 // ToDo: fake timestamp
 

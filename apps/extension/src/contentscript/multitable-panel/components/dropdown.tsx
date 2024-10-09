@@ -39,7 +39,7 @@ import {
 } from '../assets/vectors'
 
 import { useMutableWeb } from '@mweb/engine'
-import { MutationWithSettings } from '@mweb/backend'
+import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
 import { Badge } from './badge'
@@ -126,7 +126,7 @@ export const Dropdown: FC<DropdownProps> = ({
             <>
               <SelectedMutationDescription>
                 {selectedMutation.metadata.name}
-                {selectedMutation.source === 'local' && (
+                {selectedMutation.source === EntitySourceType.Local && (
                   <Badge margin="0 0 0 8px" text={selectedMutation.source} theme={'white'} />
                 )}
               </SelectedMutationDescription>
@@ -194,7 +194,7 @@ export const Dropdown: FC<DropdownProps> = ({
                         className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
                       >
                         {mut.metadata ? mut.metadata.name : ''}{' '}
-                        {mut.source === 'local' && (
+                        {mut.source === EntitySourceType.Local && (
                           <Badge margin="0" text={mut.source} theme={'blue'} />
                         )}
                       </InputMutation>

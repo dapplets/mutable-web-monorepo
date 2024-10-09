@@ -16,6 +16,7 @@ import {
   DocumentMetadata,
   DocumentDto,
   utils,
+  EntitySourceType,
 } from '@mweb/backend'
 import { useEngine } from '../contexts/engine-context'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
@@ -256,7 +257,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           // ToDo: replace with DocumentCreateDto
           const document: DocumentDto = {
             id: appDocId,
-            source: 'local',
+            source: EntitySourceType.Local,
             authorId: appDocId.split('/')[0],
             localId: appDocId.split('/')[2],
             blockNumber: 0,

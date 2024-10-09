@@ -1,4 +1,4 @@
-import { ApplicationDto, DocumentMetadata } from '@mweb/backend'
+import { ApplicationDto, DocumentMetadata, EntitySourceType } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
@@ -138,7 +138,7 @@ const FALLBACK_IMAGE_URL =
 export interface Props {
   src: string | null
   metadata: DocumentMetadata | null
-  source: 'origin' | 'local' | undefined
+  source?: EntitySourceType
   onChange: () => void
   disabled: boolean
   appMetadata: ApplicationDto['metadata']
@@ -176,7 +176,9 @@ export const DocumentCard: React.FC<Props> = ({
           </TextLink>
 
           <TextLink small ellipsis>
-            {source === 'local' && <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />}{' '}
+            {source === EntitySourceType.Local && (
+              <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
+            )}{' '}
             {srcParts && `@${srcParts[0]}`}
           </TextLink>
         </CardContent>

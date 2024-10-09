@@ -1,4 +1,4 @@
-import { Base, EntityId } from './base.entity'
+import { Base, EntityId, EntitySourceType } from './base.entity'
 import { IRepository } from './repository.interface'
 import { EntityMetadata } from '../../common/entity-metadata'
 
@@ -27,18 +27,33 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
   }
 
   async createItem(item: T): Promise<T> {
-    await this.local.createItem(item)
-    return item
+    if (item.source === EntitySourceType.Local) {
+      return this.local.createItem(item)
+    } else if (item.source === EntitySourceType.Origin) {
+      return this.remote.createItem(item)
+    } else {
+      throw new Error('Invalid source')
+    }
   }
 
   async editItem(item: T): Promise<T> {
-    await this.local.editItem(item)
-    return item
+    if (item.source === EntitySourceType.Local) {
+      return this.local.editItem(item)
+    } else if (item.source === EntitySourceType.Origin) {
+      return this.remote.editItem(item)
+    } else {
+      throw new Error('Invalid source')
+    }
   }
 
   async saveItem(item: T): Promise<T> {
-    await this.local.saveItem(item)
-    return item
+    if (item.source === EntitySourceType.Local) {
+      return this.local.saveItem(item)
+    } else if (item.source === EntitySourceType.Origin) {
+      return this.remote.saveItem(item)
+    } else {
+      throw new Error('Invalid source')
+    }
   }
 
   async deleteItem(id: EntityId): Promise<void> {
@@ -46,9 +61,15 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
   }
 
   async constructItem(
-    item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId> }
+    item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId>; source: EntitySourceType }
   ): Promise<T> {
-    return this.remote.constructItem(item)
+    if (item.source === EntitySourceType.Local) {
+      return this.local.constructItem(item)
+    } else if (item.source === EntitySourceType.Origin) {
+      return this.remote.constructItem(item)
+    } else {
+      throw new Error('Invalid source')
+    }
   }
 
   private _mergeItems(localItems: T[], socialItems: T[]): T[] {
