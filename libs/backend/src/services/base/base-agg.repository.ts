@@ -1,6 +1,7 @@
 import { Base, EntityId, EntitySourceType } from './base.entity'
 import { IRepository } from './repository.interface'
 import { EntityMetadata } from '../../common/entity-metadata'
+import { Transaction } from '../unit-of-work/transaction'
 
 export class BaseAggRepository<T extends Base> implements IRepository<T> {
   constructor(
@@ -26,31 +27,31 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     return this._mergeItems(localItems, socialItems)
   }
 
-  async createItem(item: T): Promise<T> {
+  async createItem(item: T, tx?: Transaction): Promise<T> {
     if (item.source === EntitySourceType.Local) {
       return this.local.createItem(item)
     } else if (item.source === EntitySourceType.Origin) {
-      return this.remote.createItem(item)
+      return this.remote.createItem(item, tx)
     } else {
       throw new Error('Invalid source')
     }
   }
 
-  async editItem(item: T): Promise<T> {
+  async editItem(item: T, tx?: Transaction): Promise<T> {
     if (item.source === EntitySourceType.Local) {
       return this.local.editItem(item)
     } else if (item.source === EntitySourceType.Origin) {
-      return this.remote.editItem(item)
+      return this.remote.editItem(item, tx)
     } else {
       throw new Error('Invalid source')
     }
   }
 
-  async saveItem(item: T): Promise<T> {
+  async saveItem(item: T, tx?: Transaction): Promise<T> {
     if (item.source === EntitySourceType.Local) {
       return this.local.saveItem(item)
     } else if (item.source === EntitySourceType.Origin) {
-      return this.remote.saveItem(item)
+      return this.remote.saveItem(item, tx)
     } else {
       throw new Error('Invalid source')
     }

@@ -234,8 +234,10 @@ export const ModalConfirm: FC<Props> = ({
   loggedInAccountId,
 }) => {
   const { name, image, description, fork_of } = editingMutation.metadata
+
   // Close modal with escape key
   useEscape(onCloseCurrent) // ToDo -- does not work
+
   const [newName, setName] = useState<string>(name ?? '')
   const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
   const [newDescription, setDescription] = useState<string>(description ?? '')
@@ -244,10 +246,8 @@ export const ModalConfirm: FC<Props> = ({
   const { mutations, switchMutation } = useMutableWeb()
 
   const [mode, setMode] = useState(
-    !fork_of
+    !editingMutation.authorId // Newly created local mutation doesn't have author
       ? MutationModalMode.Creating
-      : !editingMutation.authorId // Newly created local mutation doesn't have author
-      ? MutationModalMode.Editing
       : editingMutation.authorId === loggedInAccountId
       ? MutationModalMode.Editing
       : MutationModalMode.Forking
