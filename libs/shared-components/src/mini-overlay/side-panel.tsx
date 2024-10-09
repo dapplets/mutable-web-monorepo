@@ -7,7 +7,7 @@ import { Image } from '../common/image'
 import Profile from './profile'
 import { IWalletConnect } from './types'
 import { MutationFallbackIcon, ArrowIcon, BellIcon, BellWithCircle } from './assets/icons'
-import { Badge } from '../common/badge'
+import { Badge } from '../common/Badge'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
