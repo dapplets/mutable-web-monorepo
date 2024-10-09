@@ -527,16 +527,18 @@ export const ModalConfirm: FC<Props> = ({
             {
               value: MutationModalMode.Forking,
               title: 'Fork',
-              visible: !!baseMutation && !!baseMutation.authorId,
+              visible: !!editingMutation.authorId && editingMutation.authorId !== loggedInAccountId,
             },
             {
               value: MutationModalMode.Editing,
               title: 'Save',
-              visible:
-                !!baseMutation &&
-                (baseMutation.authorId === loggedInAccountId || !baseMutation.authorId),
+              visible: !!editingMutation.authorId && editingMutation.authorId === loggedInAccountId,
             },
-            { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
+            {
+              value: MutationModalMode.Creating,
+              title: 'Create',
+              visible: !editingMutation.authorId,
+            },
           ]}
           onClick={handleSaveClick}
           onChange={handleSaveDropdownChange}
