@@ -233,7 +233,7 @@ interface IAlert extends AlertProps {
 const alerts: { [name: string]: IAlert } = {
   noWallet: {
     id: 'noWallet',
-    text: 'Connect the NEAR wallet to create the mutation.',
+    text: 'Connect the NEAR wallet to publish the mutation.',
     severity: 'warning',
   },
   emptyMutation: {
@@ -325,7 +325,9 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       return !val || val?.id === 'notEditedMutation' ? null : val
     })
   }, [isModified])
-  const isSubmitDisabled = !isModified || !!alert
+
+  const isLocalSubmitDisabled = !isModified || (alert && alert.id !== 'noWallet') || isSaving
+  const isRemoteSubmitDisabled = !isModified || !!alert
 
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
@@ -460,7 +462,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       </AppsList>
 
       <ButtonsBlock>
-        <Button disabled={isSubmitDisabled || isSaving} onClick={handleSaveLocallyClick}>
+        <Button disabled={isLocalSubmitDisabled} onClick={handleSaveLocallyClick}>
           Save Locally
         </Button>
         <DropdownButton
@@ -482,7 +484,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           ]}
           onClick={() => setOpenConfirm(true)}
           onChange={handleSaveDropdownChange}
-          disabled={isSubmitDisabled}
+          disabled={isRemoteSubmitDisabled}
           disabledAll={false}
         />
       </ButtonsBlock>
