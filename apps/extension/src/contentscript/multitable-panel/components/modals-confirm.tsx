@@ -527,7 +527,7 @@ export const ModalConfirm: FC<Props> = ({
             {
               value: MutationModalMode.Forking,
               title: 'Fork',
-              visible: !!editingMutation.authorId && editingMutation.authorId !== loggedInAccountId,
+              visible: !!editingMutation.authorId,
             },
             {
               value: MutationModalMode.Editing,
