@@ -369,7 +369,6 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
   const handleSaveLocallyClick = () => {
     const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
-    console.log({ editingMutation, localMutation })
 
     if (mode === MutationModalMode.Creating) {
       saveMutation(localMutation)

@@ -108,8 +108,6 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
   async constructItem(
     item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId> }
   ): Promise<T> {
-    console.log(item)
-
     if (!item?.metadata?.name) {
       throw new Error('Metadata name is required')
     }
