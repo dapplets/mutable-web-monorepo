@@ -213,7 +213,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       ...item,
       localId,
       authorId,
-      source: EntitySourceType.Local,
+      source: EntitySourceType.Origin,
     })
 
     return entity

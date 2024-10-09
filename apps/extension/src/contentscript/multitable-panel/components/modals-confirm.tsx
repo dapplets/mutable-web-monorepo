@@ -1,16 +1,20 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
-import BsButton from 'react-bootstrap/Button'
-import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
-import { useCreateMutation, useEditMutation, useMutableWeb } from '@mweb/engine'
+import { useCreateMutation, useEditMutation, useMutableWeb, useMutation } from '@mweb/engine'
 import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
-import { MutationModalMode } from './types'
 import { InputImage } from './upload-image'
 import { cloneDeep, compareMutations } from '../../helpers'
+import { DropdownButton } from './dropdown-button'
+
+enum MutationModalMode {
+  Editing = 'editing',
+  Creating = 'creating',
+  Forking = 'forking',
+}
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
@@ -178,11 +182,9 @@ const ButtonsBlock = styled.div`
 
 export interface Props {
   itemType: 'mutation' | 'document'
-  mode: any
   onCloseCurrent: () => void
   onCloseAll: () => void
-  editingMutation: MutationCreateDto
-  baseMutation: MutationDto | null
+  editingMutation: MutationDto
   loggedInAccountId: string
 }
 
@@ -226,11 +228,9 @@ const alerts: { [name: string]: IAlert } = {
 
 export const ModalConfirm: FC<Props> = ({
   itemType,
-  mode,
   onCloseCurrent,
   onCloseAll,
   editingMutation,
-  baseMutation,
   loggedInAccountId,
 }) => {
   const { name, image, description, fork_of } = editingMutation.metadata
@@ -243,11 +243,22 @@ export const ModalConfirm: FC<Props> = ({
   const [alert, setAlert] = useState<IAlert | null>(null)
   const { mutations, switchMutation } = useMutableWeb()
 
+  const [mode, setMode] = useState(
+    !fork_of
+      ? MutationModalMode.Creating
+      : !editingMutation.authorId // Newly created local mutation doesn't have author
+      ? MutationModalMode.Editing
+      : editingMutation.authorId === loggedInAccountId
+      ? MutationModalMode.Editing
+      : MutationModalMode.Forking
+  )
+
   const forkedMutation = useMemo(() => {
     if (mode !== MutationModalMode.Editing || !fork_of) return null
     return mutations.find((mutation) => mutation.id === fork_of)
   }, [fork_of, mutations, mode])
 
+  const { mutation: baseMutation } = useMutation(fork_of) ?? {}
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
 
@@ -319,6 +330,10 @@ export const ModalConfirm: FC<Props> = ({
         console.error(error)
       }
     }
+  }
+
+  const handleSaveDropdownChange = (itemId: string) => {
+    setMode(itemId as MutationModalMode)
   }
 
   return (
@@ -506,16 +521,28 @@ export const ModalConfirm: FC<Props> = ({
 
       <ButtonsBlock>
         <Button onClick={onCloseCurrent}>Cancel</Button>
-        {!isFormDisabled ? (
-          <BsButton onClick={handleSaveClick} variant="primary">
-            {mode === MutationModalMode.Forking ? 'Fork it!' : 'Do it!'}
-          </BsButton>
-        ) : (
-          <BsButton variant="primary" disabled>
-            <BsSpinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />{' '}
-            Sending...
-          </BsButton>
-        )}
+        <DropdownButton
+          value={mode}
+          items={[
+            {
+              value: MutationModalMode.Forking,
+              title: 'Fork',
+              visible: !!baseMutation && !!baseMutation.authorId,
+            },
+            {
+              value: MutationModalMode.Editing,
+              title: 'Save',
+              visible:
+                !!baseMutation &&
+                (baseMutation.authorId === loggedInAccountId || !baseMutation.authorId),
+            },
+            { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
+          ]}
+          onClick={handleSaveClick}
+          onChange={handleSaveDropdownChange}
+          disabled={isFormDisabled}
+          disabledAll={false}
+        />
       </ButtonsBlock>
     </ModalConfirmWrapper>
   )

@@ -283,6 +283,10 @@ export class MutationService {
     const { authorId: forkAuthorId } = forkedMutation
     const { authorId: originAuthorId } = originalMutation
 
+    if (!originAuthorId || !forkAuthorId) {
+      throw new Error('The mutation does not have an author')
+    }
+
     // ToDo: check logged in user id?
     if (forkAuthorId === originAuthorId) {
       throw new Error('You cannot ask yourself to apply changes')

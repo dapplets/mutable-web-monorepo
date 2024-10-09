@@ -4,7 +4,7 @@ export type BaseDto = {
   id: EntityId
   source: EntitySourceType
   localId: string
-  authorId: string
+  authorId: string | null
   blockNumber: number
   timestamp: number
 }

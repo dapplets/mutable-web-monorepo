@@ -75,7 +75,7 @@ export class UserLinkService {
           namespace: target.namespace,
           insertionPoint: target.injectTo,
           bosWidgetId: target.componentId,
-          authorId: app.authorId,
+          authorId: app.authorId!, // ToDo: can be null?
           static: true,
           appInstanceId: app.instanceId,
         }))
@@ -155,7 +155,7 @@ export class UserLinkService {
       id: indexedLink.id,
       appId: appGlobalId,
       namespace: target.namespace,
-      authorId: indexedLink.authorId,
+      authorId: indexedLink.authorId!, // ToDo: can be null?
       bosWidgetId: target.componentId,
       insertionPoint: target.injectTo,
       static: false,
@@ -183,7 +183,7 @@ export class UserLinkService {
     return indexedLinks.map((link) => ({
       id: link.id,
       appId: appId,
-      authorId: link.authorId,
+      authorId: link.authorId!, // ToDo: can be null?
       namespace: target.namespace,
       bosWidgetId: target.componentId, // ToDo: unify
       insertionPoint: target.injectTo, // ToDo: unify
