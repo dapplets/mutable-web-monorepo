@@ -39,18 +39,24 @@ export class NotificationService {
 
   // ToDo: move DTOs to controllers?
 
-  async getNotificationsByRecipient(recipientId: string): Promise<NotificationDto[]> {
-    const notifications = await this.notificationRepository.getItemsByIndex({
-      recipients: [recipientId],
+  async getMyNotifications(accountId: string): Promise<NotificationDto[]> {
+    const incomingNotifications = await this.notificationRepository.getItemsByIndex({
+      recipients: [accountId],
     })
 
+    const outgoingNotifications = await this.notificationRepository.getItems({
+      authorId: accountId,
+    })
+
+    const allNotifications = [...incomingNotifications, ...outgoingNotifications]
+
     const resolutions = await Promise.all(
-      notifications.map((notification) =>
-        this._getResolutionForNotification(notification.id, notification.type, recipientId)
+      allNotifications.map((notification) =>
+        this._getResolutionForNotification(notification.id, notification.type, accountId)
       )
     )
 
-    return notifications.map((notification, i) => {
+    return allNotifications.map((notification, i) => {
       const resolution = resolutions[i]
       return this._toDto(notification, resolution)
     })
@@ -71,7 +77,7 @@ export class NotificationService {
   }
 
   async viewAllNotifcations(recipientId: string): Promise<NotificationDto[]> {
-    const notifications = await this.getNotificationsByRecipient(recipientId)
+    const notifications = await this.getMyNotifications(recipientId)
 
     const notificationsToBeViewed = notifications.filter(
       (notification) => notification.status === NotificationStatus.New
