@@ -241,7 +241,7 @@ export const ModalConfirm: FC<Props> = ({
   const [newName, setName] = useState<string>(name ?? '')
   const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
   const [newDescription, setDescription] = useState<string>(description ?? '')
-  const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false)
+  const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
   const { mutations, switchMutation } = useMutableWeb()
 
@@ -258,7 +258,6 @@ export const ModalConfirm: FC<Props> = ({
     return mutations.find((mutation) => mutation.id === fork_of)
   }, [fork_of, mutations, mode])
 
-  const { mutation: baseMutation } = useMutation(fork_of) ?? {}
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
 
@@ -266,25 +265,25 @@ export const ModalConfirm: FC<Props> = ({
 
   useEffect(() => setAlert(null), [newName, newImage, newDescription, isApplyToOriginChecked])
 
-  const checkIfModified = useCallback(
-    (mutationToPublish: MutationDto) =>
-      baseMutation ? !compareMutations(baseMutation, mutationToPublish) : true,
-    [baseMutation]
-  )
+  // const checkIfModified = useCallback(
+  //   (mutationToPublish: MutationDto) =>
+  //     baseMutation ? !compareMutations(baseMutation, mutationToPublish) : true,
+  //   [baseMutation]
+  // )
 
   const doChecksForAlerts = useCallback(
     (mutationToPublish: MutationCreateDto | MutationDto, isEditing: boolean): IAlert | null => {
       if (!mutationToPublish.metadata.name) return alerts.noName
       if (!mutationToPublish.metadata.image) return alerts.noImage
-      if (
-        isEditing &&
-        !isApplyToOriginChecked &&
-        !checkIfModified(mutationToPublish as MutationDto)
-      )
-        return alerts.notEditedMutation
+      // if (
+      //   isEditing &&
+      //   !isApplyToOriginChecked &&
+      //   !checkIfModified(mutationToPublish as MutationDto)
+      // )
+      //   return alerts.notEditedMutation
       return null
     },
-    [newName, newImage, isApplyToOriginChecked, checkIfModified]
+    [newName, newImage, isApplyToOriginChecked] // checkIfModified
   )
 
   const handleSaveClick = async () => {
@@ -292,7 +291,11 @@ export const ModalConfirm: FC<Props> = ({
     mutationToPublish.metadata.name = newName.trim()
     mutationToPublish.metadata.image = newImage
     mutationToPublish.metadata.description = newDescription.trim()
-    mutationToPublish.source = EntitySourceType.Origin
+    mutationToPublish.source = EntitySourceType.Origin // save to the contract
+
+    if (mode === MutationModalMode.Forking) {
+      mutationToPublish.metadata.fork_of = mutationToPublish.id
+    }
 
     const newAlert = doChecksForAlerts(mutationToPublish, mode === MutationModalMode.Editing)
     if (newAlert) {
@@ -391,23 +394,23 @@ export const ModalConfirm: FC<Props> = ({
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={baseMutation?.metadata.image}
+                image={editingMutation.metadata.image}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={baseMutation?.metadata.name}
+                alt={editingMutation.metadata.name}
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{baseMutation?.metadata.name}</p>
+              <p>{editingMutation.metadata.name}</p>
               <span>
                 by{' '}
-                {baseMutation?.authorId === loggedInAccountId
+                {editingMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
-                  : baseMutation?.authorId}
+                  : editingMutation.authorId}
               </span>
             </TextWrapper>
           </CardWrapper>
 
-          {baseMutation?.authorId === loggedInAccountId ? null : (
+          {editingMutation.authorId === loggedInAccountId ? null : (
             <CheckboxBlock>
               <span>Ask Origin to apply changes</span>
               <CheckboxInput
