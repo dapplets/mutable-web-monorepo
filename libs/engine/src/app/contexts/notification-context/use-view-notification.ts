@@ -9,7 +9,7 @@ export const useViewNotification = (notificationId: EntityId) => {
 
   const { fetch, isLoading, error } = usePromise({
     query: async () => {
-      const notification = await engine.notificationService.accountId(notificationId)
+      const notification = await engine.notificationService.viewNotification(notificationId)
       setNotifications((items) =>
         items.map((item) => (item.id === notification.id ? notification : item))
       )
