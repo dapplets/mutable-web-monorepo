@@ -70,7 +70,8 @@ export interface PullRequestNotificationDto extends NotificationDto {
 const PullRequestNotification: FC<{
   notification: PullRequestNotificationDto
   modalContainerRef: React.RefObject<HTMLElement>
-}> = ({ notification, modalContainerRef }) => {
+  loggedInAccountId: string
+}> = ({ notification, modalContainerRef, loggedInAccountId }) => {
   const {
     viewNotification,
     isLoading: isLoadingView,
@@ -143,12 +144,18 @@ const PullRequestNotification: FC<{
           ) : (
             <BlueBadge />
           )}
-
-          <Text type="secondary" style={{ fontSize: '12px' }}>
-            #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
-            &ensp;on&ensp;
-            {date}
-          </Text>
+          {loggedInAccountId === notification.authorId ? (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              #{notification.localId.substring(0, 7)}&ensp;you sent a commit to&ensp;
+              {notification.recipients}
+            </Text>
+          ) : (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
+              &ensp;on&ensp;
+              {date}
+            </Text>
+          )}
 
           <Button
             loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
@@ -157,7 +164,7 @@ const PullRequestNotification: FC<{
             type="text"
             title={notification.status === 'new' ? 'Mark as read' : 'Delete'}
             icon={
-              notification.status === 'new' ? (
+              notification.status === 'new' && notification.authorId !== loggedInAccountId ? (
                 <NotificationMessageIcon />
               ) : (
                 <NotificationCloseIcon />
@@ -218,29 +225,34 @@ const PullRequestNotification: FC<{
             direction="horizontal"
             style={{ width: '100%', justifyContent: 'space-between' }}
           >
-            {actions.map((action, i) => (
-              <Button
-                key={i}
-                disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-                loading={
-                  action.label === 'Accept'
-                    ? isLoadingAccept
-                    : action.label === 'Decline'
-                      ? isLoadingReject
-                      : undefined
-                }
-                type={action.type as ButtonProps['type']}
-                size="middle"
-                onClick={() => handleActionClick(action)}
-              >
-                {(action.label !== 'Accept' && isLoadingAccept) ||
-                (action.label === 'Decline' && isLoadingReject)
-                  ? null
-                  : action.icon}
+            {actions
+              .filter(
+                (filterAction) =>
+                  loggedInAccountId === notification.authorId && filterAction.label !== 'Review'
+              )
+              .map((action, i) => (
+                <Button
+                  key={i}
+                  disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+                  loading={
+                    action.label === 'Accept'
+                      ? isLoadingAccept
+                      : action.label === 'Decline'
+                        ? isLoadingReject
+                        : undefined
+                  }
+                  type={action.type as ButtonProps['type']}
+                  size="middle"
+                  onClick={() => handleActionClick(action)}
+                >
+                  {(action.label !== 'Accept' && isLoadingAccept) ||
+                  (action.label === 'Decline' && isLoadingReject)
+                    ? null
+                    : action.icon}
 
-                {action.label}
-              </Button>
-            ))}
+                  {action.label}
+                </Button>
+              ))}
           </Space>
         ) : null}
       </Space>

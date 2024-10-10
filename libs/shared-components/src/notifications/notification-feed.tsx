@@ -46,13 +46,22 @@ const NotificationFeed: FC<{
   const { viewAllNotifcations, isLoading: isViewAllLoading } =
     useViewAllNotifications(loggedInAccountId)
 
-  const newNotifications = useMemo(
-    () => notifications.filter((notification) => notification.status === 'new'),
+  const viewedNotifications = useMemo(
+    () =>
+      notifications.filter(
+        (notification) =>
+          notification.status === 'viewed' ||
+          (notification.authorId === loggedInAccountId && notification.result?.status === 'open')
+      ),
     [notifications]
   )
 
-  const viewedNotifications = useMemo(
-    () => notifications.filter((notification) => notification.status === 'viewed'),
+  const newNotifications = useMemo(
+    () =>
+      notifications.filter(
+        (notification) =>
+          notification.status === 'new' && viewedNotifications.find((x) => x.id !== notification.id)
+      ),
     [notifications]
   )
 
@@ -103,6 +112,7 @@ const NotificationFeed: FC<{
                   key={notification.id}
                   notification={notification}
                   modalContainerRef={modalContainerRef}
+                  loggedInAccountId={loggedInAccountId}
                 />
               ))}
             </SmoothSpace>
@@ -119,6 +129,7 @@ const NotificationFeed: FC<{
                   key={notification.id}
                   notification={notification}
                   modalContainerRef={modalContainerRef}
+                  loggedInAccountId={loggedInAccountId}
                 />
               ))}
             </SmoothSpace>
