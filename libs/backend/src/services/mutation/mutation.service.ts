@@ -172,6 +172,7 @@ export class MutationService {
       Promise.all([
         this._applyChangesToOrigin(sourceMutation, tx),
         this.notificationService.acceptNotification(notificationId, tx),
+        this._notifyAboutAcceptedPullRequest(sourceMutation, tx),
       ])
     )
 
@@ -179,7 +180,32 @@ export class MutationService {
   }
 
   async rejectPullRequest(notificationId: EntityId): Promise<NotificationDto> {
-    return this.notificationService.rejectNotification(notificationId)
+    const notification = await this.notificationService.getNotification(notificationId)
+
+    if (!notification) {
+      throw new Error('Notification not found')
+    }
+
+    if (notification.type !== NotificationType.PullRequest) {
+      throw new Error('Notification is not a pull request')
+    }
+
+    const { sourceMutationId } = notification.payload as PullRequestPayload
+
+    const sourceMutation = await this.mutationRepository.getItem(sourceMutationId)
+
+    if (!sourceMutation) {
+      throw new Error('Source mutation not found')
+    }
+
+    const [dto] = await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this.notificationService.rejectNotification(notificationId, tx),
+        this._notifyAboutRejectedPullRequest(sourceMutation, tx),
+      ])
+    )
+
+    return dto
   }
 
   async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
@@ -249,6 +275,72 @@ export class MutationService {
 
     const notification: NotificationCreateDto = {
       type: NotificationType.PullRequest,
+      recipients: [originAuthorId],
+      payload: {
+        sourceMutationId: forkedMutation.id,
+        targetMutationId: originalMutation.id,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
+  }
+
+  private async _notifyAboutAcceptedPullRequest(forkedMutation: Mutation, tx?: Transaction) {
+    const originalMutationId = forkedMutation.metadata.fork_of
+
+    if (!originalMutationId) {
+      throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
+    }
+
+    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+
+    if (!originalMutation) {
+      throw new Error('The origin mutation does not exist')
+    }
+
+    const { authorId: forkAuthorId } = forkedMutation
+    const { authorId: originAuthorId } = originalMutation
+
+    // ToDo: check logged in user id?
+    if (forkAuthorId === originAuthorId) {
+      throw new Error('You cannot ask yourself to apply changes')
+    }
+
+    const notification: NotificationCreateDto = {
+      type: NotificationType.PullRequestAccepted,
+      recipients: [originAuthorId],
+      payload: {
+        sourceMutationId: forkedMutation.id,
+        targetMutationId: originalMutation.id,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
+  }
+
+  private async _notifyAboutRejectedPullRequest(forkedMutation: Mutation, tx?: Transaction) {
+    const originalMutationId = forkedMutation.metadata.fork_of
+
+    if (!originalMutationId) {
+      throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
+    }
+
+    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+
+    if (!originalMutation) {
+      throw new Error('The origin mutation does not exist')
+    }
+
+    const { authorId: forkAuthorId } = forkedMutation
+    const { authorId: originAuthorId } = originalMutation
+
+    // ToDo: check logged in user id?
+    if (forkAuthorId === originAuthorId) {
+      throw new Error('You cannot ask yourself to apply changes')
+    }
+
+    const notification: NotificationCreateDto = {
+      type: NotificationType.PullRequestRejected,
       recipients: [originAuthorId],
       payload: {
         sourceMutationId: forkedMutation.id,
