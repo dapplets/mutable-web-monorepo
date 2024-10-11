@@ -257,7 +257,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           // ToDo: replace with DocumentCreateDto
           const document: DocumentDto = {
             id: appDocId,
-            source: EntitySourceType.Local,
+            source: EntitySourceType.Origin,
             authorId: appDocId.split('/')[0],
             localId: appDocId.split('/')[2],
             blockNumber: 0,
