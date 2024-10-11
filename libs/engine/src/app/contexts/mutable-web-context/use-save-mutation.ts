@@ -19,10 +19,14 @@ export function useSaveMutation() {
       const savedMutation = await engine.mutationService.saveMutation(savingMutation, options)
 
       setMutations((mutations) => {
-        const mutationExists = mutations.some((mut) => mut.id === savedMutation.id)
+        const mutationExists = mutations.some(
+          (mut) => mut.id === savedMutation.id && mut.source === savedMutation.source
+        )
 
         if (mutationExists) {
-          return mutations.map((mut) => (mut.id === savedMutation.id ? savedMutation : mut))
+          return mutations.map((mut) =>
+            mut.id === savedMutation.id && mut.source === savedMutation.source ? savedMutation : mut
+          )
         } else {
           return [...mutations, savedMutation]
         }

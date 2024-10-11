@@ -256,7 +256,7 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
-  const { switchMutation } = useMutableWeb()
+  const { switchMutation, switchPreferredSource } = useMutableWeb()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
@@ -339,7 +339,10 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
 
     saveMutation(localMutation)
-      .then(({ id }) => switchMutation(id))
+      .then(({ id }) => {
+        switchMutation(id)
+        switchPreferredSource(EntitySourceType.Local)
+      })
       .then(onClose)
   }
 

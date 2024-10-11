@@ -243,7 +243,7 @@ export const ModalConfirm: FC<Props> = ({
   const [newDescription, setDescription] = useState<string>(description ?? '')
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations, switchMutation } = useMutableWeb()
+  const { mutations, switchMutation, switchPreferredSource } = useMutableWeb()
 
   const [mode, setMode] = useState(
     !editingMutation.authorId // Newly created local mutation doesn't have author
@@ -312,6 +312,7 @@ export const ModalConfirm: FC<Props> = ({
             : undefined
         )
         switchMutation(id)
+        switchPreferredSource(EntitySourceType.Origin)
         onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {

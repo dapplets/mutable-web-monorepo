@@ -9,7 +9,7 @@ export {
   useSaveMutation,
   useEditMutation,
   useMutationApp,
-  useDeleteMutation,
+  useDeleteLocalMutation,
 } from './app/contexts/mutable-web-context'
 export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper'
 export { App as MutableWebProvider } from './app/app'

@@ -85,6 +85,15 @@ export class MutationService {
     return value ?? null
   }
 
+  async getPreferredSource(): Promise<EntitySourceType | null> {
+    const value = await this.settingsService.getPreferredSource()
+    return value ?? null
+  }
+
+  async setPreferredSource(source: EntitySourceType | null): Promise<void> {
+    return this.settingsService.setPreferredSource(source)
+  }
+
   async createMutation(
     dto: MutationCreateDto,
     options: SaveMutationOptions = {
