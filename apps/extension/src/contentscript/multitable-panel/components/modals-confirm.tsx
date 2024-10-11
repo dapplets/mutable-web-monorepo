@@ -1,13 +1,13 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useCreateMutation, useEditMutation, useMutableWeb, useMutation } from '@mweb/engine'
+import { useCreateMutation, useEditMutation, useMutableWeb, useDeleteLocalMutation } from '@mweb/engine'
 import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
 import { InputImage } from './upload-image'
-import { cloneDeep, compareMutations } from '../../helpers'
+import { cloneDeep } from '../../helpers'
 import { DropdownButton } from './dropdown-button'
 
 enum MutationModalMode {
@@ -260,6 +260,7 @@ export const ModalConfirm: FC<Props> = ({
 
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
+  const { deleteLocalMutation } = useDeleteLocalMutation()
 
   const isFormDisabled = isCreating || isEditing
 
@@ -313,6 +314,7 @@ export const ModalConfirm: FC<Props> = ({
         )
         switchMutation(id)
         switchPreferredSource(EntitySourceType.Origin)
+        await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {
@@ -329,6 +331,8 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
+        switchPreferredSource(EntitySourceType.Origin)
+        await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         console.error(error)
