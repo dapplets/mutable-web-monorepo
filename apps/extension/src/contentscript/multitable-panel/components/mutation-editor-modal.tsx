@@ -339,7 +339,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
 
     saveMutation(localMutation)
-      .then(({ id }) => switchMutation(id))
+      .then(({ id }) => switchMutation(id, EntitySourceType.Local))
       .then(onClose)
   }
 

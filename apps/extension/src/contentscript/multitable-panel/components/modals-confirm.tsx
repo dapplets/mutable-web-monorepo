@@ -311,7 +311,7 @@ export const ModalConfirm: FC<Props> = ({
             ? { askOriginToApplyChanges: isApplyToOriginChecked }
             : undefined
         )
-        switchMutation(id)
+        switchMutation(id, EntitySourceType.Origin)
         onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {

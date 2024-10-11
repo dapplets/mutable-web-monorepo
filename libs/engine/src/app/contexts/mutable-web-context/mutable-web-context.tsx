@@ -1,4 +1,4 @@
-import { Engine } from '@mweb/backend'
+import { Engine, EntitySourceType } from '@mweb/backend'
 import { createContext } from 'react'
 import { AppInstanceWithSettings } from '@mweb/backend'
 import { ApplicationDto } from '@mweb/backend'
@@ -16,7 +16,7 @@ export type MutableWebContextState = {
   selectedMutation: MutationWithSettings | null
   refreshMutation: (mutation: MutationDto) => Promise<void>
   isLoading: boolean
-  switchMutation: (mutationId: string | null) => void
+  switchMutation: (mutationId: string | null, source?: EntitySourceType) => void
   favoriteMutationId: string | null
   setFavoriteMutation: (mutationId: string | null) => void
   removeMutationFromRecents: (mutationId: string) => void

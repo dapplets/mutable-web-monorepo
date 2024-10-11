@@ -66,30 +66,39 @@ export const Dropdown: FC<DropdownProps> = ({
 
   const recentlyUsedMutations = useMemo(
     () =>
-      mutations
-        .filter((mut) => mut.settings.lastUsage)
-        .sort((a, b) => {
-          const dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
-          const dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
+      Object.groupBy(
+        mutations
+          .filter((mut) => mut.settings.lastUsage)
+          .sort((a, b) => {
+            const dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
+            const dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
 
-          if (!dateA) return 1
-          if (!dateB) return -1
+            if (!dateA) return 1
+            if (!dateB) return -1
 
-          return dateB - dateB
-        }),
+            return dateB - dateB
+          }),
+        (mut) => mut.id
+      ),
     [mutations]
   )
 
-  const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(recentlyUsedMutations.length === 0)
+  const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(
+    Object.keys(recentlyUsedMutations).length === 0
+  )
 
   const unusedMutations = useMemo(
-    () => mutations.filter((mut) => !mut.settings.lastUsage),
+    () =>
+      Object.groupBy(
+        mutations.filter((mut) => !mut.settings.lastUsage),
+        (mut) => mut.id
+      ),
     [mutations]
   )
 
-  const handleMutationClick = (mutationId: string) => {
+  const handleMutationClick = (mutation: MutationWithSettings) => {
     onVisibilityChange(false)
-    switchMutation(mutationId)
+    switchMutation(mutation.id, mutation.source)
   }
 
   // todo: mock
@@ -126,9 +135,21 @@ export const Dropdown: FC<DropdownProps> = ({
             <>
               <SelectedMutationDescription>
                 {selectedMutation.metadata.name}
-                {selectedMutation.source === EntitySourceType.Local && (
-                  <Badge margin="0 0 0 8px" text={selectedMutation.source} theme={'white'} />
-                )}
+                {recentlyUsedMutations[selectedMutation.id]?.length === 2 &&
+                  selectedMutation.source === EntitySourceType.Local && (
+                    <Badge
+                      margin="0 0 0 8px"
+                      text={selectedMutation.source}
+                      theme={'white'}
+                      onClick={() =>
+                        handleMutationClick(
+                          selectedMutation === recentlyUsedMutations[selectedMutation.id]![0]
+                            ? recentlyUsedMutations[selectedMutation.id]![1]
+                            : recentlyUsedMutations[selectedMutation.id]![0]
+                        )
+                      }
+                    />
+                  )}
               </SelectedMutationDescription>
               <SelectedMutationId>{selectedMutation.id}</SelectedMutationId>
             </>
@@ -175,7 +196,7 @@ export const Dropdown: FC<DropdownProps> = ({
               </ButtonMutation>
             </ButtonListBlock>
 
-            {recentlyUsedMutations.length > 0 ? (
+            {Object.keys(recentlyUsedMutations).length > 0 ? (
               <ListMutations
                 isAccordeonExpanded={isAccordeonExpanded}
                 data-testid="recently-used-mutations"
@@ -183,53 +204,61 @@ export const Dropdown: FC<DropdownProps> = ({
                 data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
                 data-mweb-context-level="system"
               >
-                {recentlyUsedMutations.map((mut) => (
-                  <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
-                    <ImageBlock>
-                      <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
-                    </ImageBlock>
-                    <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
-                      {/* todo: mocked classname */}
-                      <InputMutation
-                        className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
-                      >
-                        {mut.metadata ? mut.metadata.name : ''}{' '}
-                        {mut.source === EntitySourceType.Local && (
-                          <Badge margin="0" text={mut.source} theme={'blue'} />
-                        )}
-                      </InputMutation>
-                      {/* todo: mocked classname */}
-                      <AuthorMutation
-                        className={
-                          mut.id === selectedMutation?.id && mut.id === favoriteMutationId
-                            ? 'authorMutationSelected'
-                            : ''
-                        }
-                      >
-                        {mut.id}
-                      </AuthorMutation>
-                    </InputInfoWrapper>
-                    {/* todo: mocked */}
+                {Object.values(recentlyUsedMutations).map((muts) => {
+                  if (!muts) return null
+                  const [localMut, remoteMut] = muts.sort((a) =>
+                    a.source === EntitySourceType.Local ? -1 : 1
+                  )
+                  const mut = localMut ?? remoteMut
 
-                    {mut.id === favoriteMutationId ? (
-                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
-                        <StarMutationList />
-                      </InputIconWrapper>
-                    ) : mut.id === selectedMutation?.id ? (
-                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
-                        <StarMutationListDefault />
-                      </InputIconWrapper>
-                    ) : mut.source === EntitySourceType.Local ? (
-                      <InputIconWrapper onClick={() => console.log('mut', mut)}>
-                        <DeleteOutlined />
-                      </InputIconWrapper>
-                    ) : (
-                      <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
-                        <ArrowDownOutlined />
-                      </InputIconWrapper>
-                    )}
-                  </InputBlock>
-                ))}
+                  return (
+                    <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
+                      <ImageBlock>
+                        <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
+                      </ImageBlock>
+                      <InputInfoWrapper onClick={() => handleMutationClick(mut)}>
+                        {/* todo: mocked classname */}
+                        <InputMutation
+                          className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
+                        >
+                          {mut.metadata ? mut.metadata.name : ''}{' '}
+                          {localMut && remoteMut && (
+                            <Badge margin="0" text={mut.source} theme={'blue'} />
+                          )}
+                        </InputMutation>
+                        {/* todo: mocked classname */}
+                        <AuthorMutation
+                          className={
+                            mut.id === selectedMutation?.id && mut.id === favoriteMutationId
+                              ? 'authorMutationSelected'
+                              : ''
+                          }
+                        >
+                          {mut.id}
+                        </AuthorMutation>
+                      </InputInfoWrapper>
+                      {/* todo: mocked */}
+
+                      {mut.id === favoriteMutationId ? (
+                        <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
+                          <StarMutationList />
+                        </InputIconWrapper>
+                      ) : mut.id === selectedMutation?.id ? (
+                        <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
+                          <StarMutationListDefault />
+                        </InputIconWrapper>
+                      ) : mut.source === EntitySourceType.Local ? (
+                        <InputIconWrapper onClick={() => console.log('mut', mut)}>
+                          <DeleteOutlined />
+                        </InputIconWrapper>
+                      ) : (
+                        <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
+                          <ArrowDownOutlined />
+                        </InputIconWrapper>
+                      )}
+                    </InputBlock>
+                  )
+                })}
                 <div
                   data-mweb-insertion-point="recently-used-mutations"
                   style={{ display: 'none' }}
@@ -237,7 +266,7 @@ export const Dropdown: FC<DropdownProps> = ({
               </ListMutations>
             ) : null}
 
-            {unusedMutations.length > 0 ? (
+            {Object.keys(unusedMutations).length > 0 ? (
               <AvalibleMutations isAccordeonExpanded={isAccordeonExpanded}>
                 <AvalibleLableBlock
                   onClick={handleAccordeonClick}
@@ -248,7 +277,9 @@ export const Dropdown: FC<DropdownProps> = ({
                   <AvalibleLable>available</AvalibleLable>
                   {/* todo: mock */}
                   <AvalibleArrowBlock className={isAccordeonExpanded ? 'iconRotate' : ''}>
-                    <AvalibleArrowLable>{unusedMutations.length} mutations</AvalibleArrowLable>
+                    <AvalibleArrowLable>
+                      {Object.keys(unusedMutations).length} mutations
+                    </AvalibleArrowLable>
                     <AvailableIcon />
                   </AvalibleArrowBlock>
                   <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
@@ -256,22 +287,27 @@ export const Dropdown: FC<DropdownProps> = ({
 
                 {isAccordeonExpanded ? (
                   <div data-testid="unused-mutations">
-                    {unusedMutations.map((mut) => (
-                      <InputBlock
-                        key={mut.id}
-                        isActive={mut.id === selectedMutation?.id}
-                        onClick={() => handleMutationClick(mut.id)}
-                        className="avalibleMutationsInput"
-                      >
-                        <ImageBlock>
-                          <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
-                        </ImageBlock>
-                        <InputInfoWrapper>
-                          <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
-                          <AuthorMutation>{mut.id}</AuthorMutation>
-                        </InputInfoWrapper>
-                      </InputBlock>
-                    ))}
+                    {Object.values(unusedMutations).map((muts) => {
+                      if (!muts) return null
+                      const [mut] = muts
+
+                      return (
+                        <InputBlock
+                          key={mut.id}
+                          isActive={mut.id === selectedMutation?.id}
+                          onClick={() => handleMutationClick(mut)}
+                          className="avalibleMutationsInput"
+                        >
+                          <ImageBlock>
+                            <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
+                          </ImageBlock>
+                          <InputInfoWrapper>
+                            <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
+                            <AuthorMutation>{mut.id}</AuthorMutation>
+                          </InputInfoWrapper>
+                        </InputBlock>
+                      )
+                    })}
                   </div>
                 ) : null}
               </AvalibleMutations>

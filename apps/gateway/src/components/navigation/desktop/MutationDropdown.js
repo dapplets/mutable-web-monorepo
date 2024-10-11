@@ -289,7 +289,7 @@ export function MutationDropdown({ imageSrc, listPosition = 'right' }) {
 
   const handleMutationClick = async (mutation) => {
     setOpen(false)
-    switchMutation(mutation.id)
+    switchMutation(mutation.id, mutation.source)
   }
 
   const handleResetMutation = () => {

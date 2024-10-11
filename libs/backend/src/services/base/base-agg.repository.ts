@@ -18,13 +18,13 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
   async getItems(options?: { authorId?: EntityId; localId?: EntityId }): Promise<T[]> {
     const localItems = await this.local.getItems(options)
     const remoteItems = await this.remote.getItems(options)
-    return this._mergeItems(localItems, remoteItems)
+    return [...localItems, ...remoteItems]
   }
 
   async getItemsByIndex(entity: Partial<T>): Promise<T[]> {
     const localItems = await this.local.getItemsByIndex(entity)
-    const socialItems = await this.remote.getItemsByIndex(entity)
-    return this._mergeItems(localItems, socialItems)
+    const remoteItems = await this.remote.getItemsByIndex(entity)
+    return [...localItems, ...remoteItems]
   }
 
   async createItem(item: T, tx?: Transaction): Promise<T> {
@@ -71,17 +71,5 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     } else {
       throw new Error('Invalid source')
     }
-  }
-
-  private _mergeItems(localItems: T[], socialItems: T[]): T[] {
-    const mergedItems: T[] = [...localItems]
-
-    for (const socialItem of socialItems) {
-      if (!localItems.find((item) => item.id === socialItem.id)) {
-        mergedItems.push(socialItem)
-      }
-    }
-
-    return mergedItems
   }
 }

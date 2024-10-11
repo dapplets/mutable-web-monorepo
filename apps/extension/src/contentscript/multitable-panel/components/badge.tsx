@@ -21,11 +21,12 @@ export interface IBadgeProps {
   text: string
   theme: 'yellow' | 'blue' | 'white'
   margin: string
+  onClick?: () => void
 }
 
-export const Badge: FC<IBadgeProps> = ({ text, theme, margin }) => {
+export const Badge: FC<IBadgeProps> = ({ text, theme, margin, onClick }) => {
   return (
-    <Wrapper $margin={margin} $theme={theme}>
+    <Wrapper $margin={margin} $theme={theme} onClick={onClick}>
       {text}
     </Wrapper>
   )
