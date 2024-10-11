@@ -37,12 +37,28 @@ import {
   StarSelectMutationDefault,
 } from '../assets/vectors'
 
-import { useMutableWeb } from '@mweb/engine'
+import { useDeleteMutation, useMutableWeb } from '@mweb/engine'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
 import { Badge } from './badge'
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
+import styled from 'styled-components'
+import { ModalDelete } from './modal-delete'
+
+const ModalConfirmBackground = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: inherit;
+  z-index: 1;
+`
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
@@ -64,6 +80,8 @@ export const Dropdown: FC<DropdownProps> = ({
     removeMutationFromRecents,
   } = useMutableWeb()
 
+  const { deleteMutation } = useDeleteMutation()
+
   const recentlyUsedMutations = useMemo(
     () =>
       mutations
@@ -81,6 +99,7 @@ export const Dropdown: FC<DropdownProps> = ({
   )
 
   const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(recentlyUsedMutations.length === 0)
+  const [mutationIdToDelete, setMutationIdToDelete] = useState<string | null>(null)
 
   const unusedMutations = useMemo(
     () => mutations.filter((mut) => !mut.settings.lastUsage),
@@ -102,8 +121,8 @@ export const Dropdown: FC<DropdownProps> = ({
     onMutateButtonClick()
   }
 
-  const handleFavoriteButtonClick = (mutation: MutationWithSettings) => {
-    setFavoriteMutation(mutation.id === favoriteMutationId ? null : mutation.id)
+  const handleFavoriteButtonClick = (mutationId: string) => {
+    setFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
   }
 
   const handleOriginalButtonClick = async () => {
@@ -138,7 +157,9 @@ export const Dropdown: FC<DropdownProps> = ({
         </SelectedMutationInfo>
 
         {selectedMutation ? (
-          <StarSelectedMutationWrapper onClick={() => handleFavoriteButtonClick(selectedMutation)}>
+          <StarSelectedMutationWrapper
+            onClick={() => handleFavoriteButtonClick(selectedMutation.id)}
+          >
             {selectedMutation.id === favoriteMutationId ? (
               <StarSelectMutation />
             ) : (
@@ -212,22 +233,24 @@ export const Dropdown: FC<DropdownProps> = ({
                     {/* todo: mocked */}
 
                     {mut.id === favoriteMutationId ? (
-                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
+                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut.id)}>
                         <StarMutationList />
                       </InputIconWrapper>
                     ) : mut.id === selectedMutation?.id ? (
-                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
+                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut.id)}>
                         <StarMutationListDefault />
                       </InputIconWrapper>
-                    ) : mut.source === EntitySourceType.Local ? (
-                      <InputIconWrapper onClick={() => console.log('mut', mut)}>
+                    ) : null}
+
+                    {mut.source === EntitySourceType.Local ? (
+                      <InputIconWrapper onClick={() => setMutationIdToDelete(mut.id)}>
                         <DeleteOutlined />
                       </InputIconWrapper>
-                    ) : (
+                    ) : mut.id !== selectedMutation?.id ? (
                       <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
                         <ArrowDownOutlined />
                       </InputIconWrapper>
-                    )}
+                    ) : null}
                   </InputBlock>
                 ))}
                 <div
@@ -277,6 +300,20 @@ export const Dropdown: FC<DropdownProps> = ({
               </AvalibleMutations>
             ) : null}
           </MutationsListWrapper>
+
+          {mutationIdToDelete && (
+            <ModalConfirmBackground>
+              <ModalDelete
+                onAction={async () => {
+                  await deleteMutation(mutationIdToDelete)
+                  if (mutationIdToDelete === favoriteMutationId)
+                    handleFavoriteButtonClick(mutationIdToDelete)
+                  setMutationIdToDelete(null)
+                }}
+                onCloseCurrent={() => setMutationIdToDelete(null)}
+              />
+            </ModalConfirmBackground>
+          )}
         </MutationsList>
       )}
     </WrapperDropdown>

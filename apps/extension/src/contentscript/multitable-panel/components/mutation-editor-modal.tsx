@@ -443,6 +443,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           />
         </>
       ) : null}
+
       {isConfirmModalOpen && loggedInAccountId && (
         <ModalConfirmBackground>
           <ModalConfirm
