@@ -35,7 +35,8 @@ export const SelectedMutationDescription = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
 
 export const SelectedMutationId = styled.div`
@@ -424,7 +425,8 @@ export const InputMutation = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
 
 export const AuthorMutation = styled.div`
@@ -435,5 +437,6 @@ export const AuthorMutation = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
