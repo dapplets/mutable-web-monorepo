@@ -1,10 +1,13 @@
-import React, { FC, useRef } from 'react'
+import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
 import NotificationFeed from '../notifications/notification-feed'
 import { Close as CloseIcon } from './assets/icons'
-const { Title } = Typography
+import Profile from './profile'
+import { IWalletConnect } from './types'
+const { Title, Text } = Typography
+import { Connect as ConnectIcon } from './assets/icons'
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   position: fixed;
@@ -132,13 +135,63 @@ const Body = styled.div`
   }
 `
 
-export interface IOverlayWrapperProps {
+const ButtonConnectWrapper = styled.button`
+  display: flex;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  width: 96px;
+  height: 38px;
+  gap: 4px;
+  outline: none;
+  border: none;
+  background: #384bff;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  padding: 0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:active {
+    opacity: 0.6;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+
+  .loading {
+    height: 0;
+    width: 0;
+    padding: 9px;
+    border: 3px solid #8893ff;
+    border-right-color: #0e1ebe;
+    border-radius: 15px;
+    animation: 1s infinite linear rotate;
+  }
+
+  @keyframes rotate {
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`
+
+export interface IOverlayWrapperProps extends IWalletConnect {
   apps: boolean
   onClose: () => void
   open: boolean
   loggedInAccountId: string
-  connectWallet: (() => Promise<void>) | undefined
   modalContainerRef: React.RefObject<HTMLElement>
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({
@@ -147,9 +200,25 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
   open,
   loggedInAccountId,
   connectWallet,
+  disconnectWallet,
+  nearNetwork,
   modalContainerRef,
+  trackingRefs,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const [waiting, setWaiting] = useState(false)
+  const [isProfileOpen, openCloseProfile] = useState(false)
+  const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
+  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
+
+  const handleSignIn = async () => {
+    setWaiting(true)
+    try {
+      await connectWallet()
+    } finally {
+      setWaiting(false)
+    }
+  }
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
@@ -157,15 +226,70 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
         <Drawer
           title={
             <Space direction="vertical">
-              <Space direction="horizontal">
-                <Title style={{ userSelect: 'none' }} level={3}>
-                  Notifications
-                </Title>
+              {loggedInAccountId ? (
+                <Space direction="horizontal">
+                  <Title style={{ userSelect: 'none' }} level={3}>
+                    Mutable Web
+                  </Title>
 
-                <Button type="text" onClick={onClose}>
-                  <CloseIcon />
-                </Button>
-              </Space>
+                  <Button type="text" onClick={onClose}>
+                    <CloseIcon />
+                  </Button>
+                </Space>
+              ) : (
+                <Space
+                  direction="vertical"
+                  style={{
+                    width: '100%',
+                    borderRadius: '20px',
+                    background: '#fff',
+                    padding: '8px 8px 20px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
+                    <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
+                      Sign in
+                    </Title>
+
+                    <Button
+                      type="text"
+                      style={{ marginLeft: 'auto', position: 'absolute', right: '8px', top: '8px' }}
+                      onClick={onClose}
+                    >
+                      <CloseIcon />
+                    </Button>
+                  </Space>
+
+                  <Text
+                    type="secondary"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '5px',
+                      textAlign: 'center',
+                      fontSize: '12px',
+                    }}
+                  >
+                    To see personalized notifications, you must sign in by connecting your wallet.
+                  </Text>
+                  <Space style={{ marginBottom: '16px' }}>
+                    {' '}
+                    <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
+                      {waiting ? (
+                        <div className="loading"></div>
+                      ) : (
+                        <>
+                          <ConnectIcon />
+                          Connect
+                        </>
+                      )}
+                    </ButtonConnectWrapper>
+                  </Space>
+                </Space>
+              )}
             </Space>
           }
           placement="right"
@@ -181,11 +305,29 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
           data-testid="overlay-notify"
           children={
             <Body ref={overlayRef}>
-              <NotificationFeed
-                connectWallet={connectWallet}
-                loggedInAccountId={loggedInAccountId}
-                modalContainerRef={modalContainerRef}
-              />
+              {loggedInAccountId ? (
+                <>
+                  {' '}
+                  <Profile
+                    accountId={loggedInAccountId ?? null}
+                    closeProfile={() => {
+                      openCloseProfile(false)
+                    }}
+                    connectWallet={connectWallet!}
+                    disconnectWallet={disconnectWallet}
+                    nearNetwork={nearNetwork}
+                    trackingRefs={trackingRefs!}
+                    openCloseWalletPopupRef={openCloseWalletPopupRef}
+                  />
+                  <NotificationFeed
+                    connectWallet={connectWallet}
+                    loggedInAccountId={loggedInAccountId}
+                    modalContainerRef={modalContainerRef}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
             </Body>
           }
         ></Drawer>

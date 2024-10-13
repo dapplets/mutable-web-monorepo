@@ -11,20 +11,17 @@ import { IWalletConnect } from './types'
 
 const ProfileWrapper = styled.div`
   display: flex;
-  position: absolute;
-  right: 70px;
-  top: 0;
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
-  width: 300px;
+  width: calc(100% - 2px);
   height: 56px;
   border-radius: 10px;
   padding: 4px 10px;
   background: #fff;
   box-shadow:
-    1px 1px 4px 0px rgba(45, 52, 60, 0.3),
-    0 4px 5px 0 rgba(45, 52, 60, 0.1);
+    0px 4px 20px 0px #0b576f26,
+    0px 4px 5px 0px #2d343c1a;
   font-family: sans-serif;
 `
 

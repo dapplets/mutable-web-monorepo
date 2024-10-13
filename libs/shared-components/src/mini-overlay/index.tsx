@@ -1,6 +1,6 @@
 import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
+import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
@@ -242,9 +242,13 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           apps={mutationApps.length > 0}
           onClose={() => setOpen(false)}
           open={open}
-          connectWallet={connectWallet}
+          connectWallet={connectWallet!}
+          openCloseNotificationPage={setOpen}
           loggedInAccountId={loggedInAccountId}
           modalContainerRef={overlayRef}
+          disconnectWallet={disconnectWallet!}
+          nearNetwork={nearNetwork!}
+          trackingRefs={trackingRefs}
         />
       </NotificationProvider>
     </WrapperDriver>
