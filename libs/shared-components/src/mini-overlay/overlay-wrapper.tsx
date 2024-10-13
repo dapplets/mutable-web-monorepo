@@ -253,7 +253,11 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                       Sign in
                     </Title>
 
-                    <Button type="text" style={{ marginLeft: 'auto' }} onClick={onClose}>
+                    <Button
+                      type="text"
+                      style={{ marginLeft: 'auto', position: 'absolute', right: '8px', top: '8px' }}
+                      onClick={onClose}
+                    >
                       <CloseIcon />
                     </Button>
                   </Space>
@@ -264,21 +268,26 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '20px',
+                      padding: '5px',
+                      textAlign: 'center',
+                      fontSize: '12px',
                     }}
                   >
                     To see personalized notifications, you must sign in by connecting your wallet.
                   </Text>
-                  <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
-                    {waiting ? (
-                      <div className="loading"></div>
-                    ) : (
-                      <>
-                        <ConnectIcon />
-                        Connect
-                      </>
-                    )}
-                  </ButtonConnectWrapper>
+                  <Space style={{ marginBottom: '16px' }}>
+                    {' '}
+                    <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
+                      {waiting ? (
+                        <div className="loading"></div>
+                      ) : (
+                        <>
+                          <ConnectIcon />
+                          Connect
+                        </>
+                      )}
+                    </ButtonConnectWrapper>
+                  </Space>
                 </Space>
               )}
             </Space>
