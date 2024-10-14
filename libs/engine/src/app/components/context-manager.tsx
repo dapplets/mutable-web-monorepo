@@ -238,6 +238,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleGetDocumentCurry = useCallback(
     memoize((appInstanceId: string) => async (_documentId?: EntityId) => {
+      // allow for _documentId to be passed in to check existence of document before creation
       const documentId = _documentId ?? (await _getCurrentDocumentId(appInstanceId))
 
       if (!documentId) return null
