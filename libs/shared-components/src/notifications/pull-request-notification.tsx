@@ -225,34 +225,31 @@ const PullRequestNotification: FC<{
             direction="horizontal"
             style={{ width: '100%', justifyContent: 'space-between' }}
           >
-            {actions
-              .filter(
-                (filterAction) =>
-                  loggedInAccountId === notification.authorId && filterAction.label !== 'Review'
-              )
-              .map((action, i) => (
-                <Button
-                  key={i}
-                  disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-                  loading={
-                    action.label === 'Accept'
-                      ? isLoadingAccept
-                      : action.label === 'Decline'
-                        ? isLoadingReject
-                        : undefined
-                  }
-                  type={action.type as ButtonProps['type']}
-                  size="middle"
-                  onClick={() => handleActionClick(action)}
-                >
-                  {(action.label !== 'Accept' && isLoadingAccept) ||
-                  (action.label === 'Decline' && isLoadingReject)
-                    ? null
-                    : action.icon}
+            {loggedInAccountId === notification.authorId
+              ? null
+              : actions.map((action, i) => (
+                  <Button
+                    key={i}
+                    disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+                    loading={
+                      action.label === 'Accept'
+                        ? isLoadingAccept
+                        : action.label === 'Decline'
+                          ? isLoadingReject
+                          : undefined
+                    }
+                    type={action.type as ButtonProps['type']}
+                    size="middle"
+                    onClick={() => handleActionClick(action)}
+                  >
+                    {(action.label !== 'Accept' && isLoadingAccept) ||
+                    (action.label === 'Decline' && isLoadingReject)
+                      ? null
+                      : action.icon}
 
-                  {action.label}
-                </Button>
-              ))}
+                    {action.label}
+                  </Button>
+                ))}
           </Space>
         ) : null}
       </Space>

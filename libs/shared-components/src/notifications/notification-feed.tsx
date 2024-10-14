@@ -60,9 +60,10 @@ const NotificationFeed: FC<{
     () =>
       notifications.filter(
         (notification) =>
-          notification.status === 'new' && viewedNotifications.find((x) => x.id !== notification.id)
+          notification.status === 'new' &&
+          !viewedNotifications.some((viewed) => viewed.id === notification.id)
       ),
-    [notifications]
+    [notifications, viewedNotifications]
   )
 
   const handleSignIn = async () => {
