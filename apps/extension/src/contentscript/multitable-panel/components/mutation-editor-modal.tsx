@@ -12,6 +12,7 @@ import { ModalConfirm } from './modals-confirm'
 import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
 import { useSaveMutation, useMutableWeb } from '@mweb/engine'
+import { ButtonsGroup } from './buttons-group'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -94,12 +95,6 @@ const AppsList = styled.div`
     border-radius: 2px;
     box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
   }
-`
-
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `
 
 const BlurredBackground = styled.div`
@@ -425,14 +420,14 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
         )}
       </AppsList>
 
-      <ButtonsBlock>
+      <ButtonsGroup>
         <Button disabled={isLocalSubmitDisabled} onClick={handleSaveLocallyClick}>
           Save Locally
         </Button>
         <Button disabled={isRemoteSubmitDisabled} onClick={handlePublishClick} primary>
           Publish
         </Button>
-      </ButtonsBlock>
+      </ButtonsGroup>
 
       {appIdToOpenDocsModal ? (
         <>

@@ -1,6 +1,11 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useCreateMutation, useEditMutation, useMutableWeb, useDeleteLocalMutation } from '@mweb/engine'
+import {
+  useCreateMutation,
+  useEditMutation,
+  useMutableWeb,
+  useDeleteLocalMutation,
+} from '@mweb/engine'
 import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
@@ -9,6 +14,7 @@ import { Button } from './button'
 import { InputImage } from './upload-image'
 import { cloneDeep } from '../../helpers'
 import { DropdownButton } from './dropdown-button'
+import { ButtonsGroup } from './buttons-group'
 
 enum MutationModalMode {
   Editing = 'editing',
@@ -169,15 +175,6 @@ const CheckboxInput = styled.input`
   height: 16px;
   border-radius: 5px;
   border: 1px solid #384bff;
-`
-
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  button {
-    width: 125px;
-  }
 `
 
 export interface Props {
@@ -527,7 +524,7 @@ export const ModalConfirm: FC<Props> = ({
         </>
       ) : null}
 
-      <ButtonsBlock>
+      <ButtonsGroup>
         <Button onClick={onCloseCurrent}>Cancel</Button>
         <DropdownButton
           value={mode}
@@ -553,7 +550,7 @@ export const ModalConfirm: FC<Props> = ({
           disabled={isFormDisabled}
           disabledAll={false}
         />
-      </ButtonsBlock>
+      </ButtonsGroup>
     </ModalConfirmWrapper>
   )
 }

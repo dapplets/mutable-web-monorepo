@@ -2,6 +2,7 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import { useEscape } from '../../hooks/use-escape'
 import { Button } from './button'
+import { ButtonsGroup } from './buttons-group'
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
@@ -44,15 +45,6 @@ const Message = styled.p`
   line-height: 150%;
 `
 
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  button {
-    width: 125px;
-  }
-`
-
 export interface Props {
   onAction: () => void
   onCloseCurrent: () => void
@@ -64,12 +56,12 @@ export const ModalDelete: FC<Props> = ({ onAction, onCloseCurrent }) => {
     <ModalConfirmWrapper data-testid="popup-confirm">
       <Title>Delete local mutation</Title>
       <Message>You're going to delete the local mutation.</Message>
-      <ButtonsBlock>
+      <ButtonsGroup>
         <Button onClick={onCloseCurrent}>Cancel</Button>
         <Button danger onClick={onAction}>
           Delete
         </Button>
-      </ButtonsBlock>
+      </ButtonsGroup>
     </ModalConfirmWrapper>
   )
 }

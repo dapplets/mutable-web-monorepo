@@ -77,7 +77,7 @@ const ItemGroup = styled.div`
   flex-direction: column;
   right: 0;
   top: 52px;
-  width: 175px;
+  width: 100%;
   padding: 10px;
   gap: 5px;
   border-radius: 10px;
@@ -117,7 +117,6 @@ const DropdownButtonItem = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   flex-direction: row;
-  width: 175px;
   height: 42px;
   border-radius: 10px;
   overflow: hidden;

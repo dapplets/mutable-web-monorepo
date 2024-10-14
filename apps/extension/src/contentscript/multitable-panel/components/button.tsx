@@ -8,7 +8,6 @@ export const Button = styled.button<{ primary?: boolean; danger?: boolean }>`
   color: ${(p) => (p.primary || p.danger ? '#fff' : 'rgba(2, 25, 58, 1)')};
   background: ${(p) =>
     p.primary ? 'rgba(56, 75, 255, 1)' : p.danger ? 'rgba(219, 80, 74, 1)' : 'inherit'};
-  width: 175px;
   height: 42px;
   border-radius: 10px;
   font-size: 14px;
