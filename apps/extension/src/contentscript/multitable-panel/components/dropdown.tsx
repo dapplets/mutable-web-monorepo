@@ -42,7 +42,7 @@ import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
 import { Badge } from './badge'
-import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
+import { ArrowDownOutlined, DeleteOutlined, EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
 import styled from 'styled-components'
 import { ModalDelete } from './modal-delete'
 
@@ -171,8 +171,16 @@ export const Dropdown: FC<DropdownProps> = ({
                 {recentlyUsedMutations[selectedMutation.id]?.length === 2 ? (
                   <Badge
                     margin="0 0 0 4px"
-                    text={'eye ' + selectedMutation.source}
-                    theme={'white'}
+                    icon={
+                      selectedMutation.source === EntitySourceType.Local ? (
+                        <EyeFilled />
+                      ) : (
+                        <EyeInvisibleFilled />
+                      )
+                    }
+                    size="small"
+                    text={selectedMutation.source}
+                    theme={selectedMutation.source === EntitySourceType.Local ? 'white' : 'blue'}
                     onClick={handleSwitchSourceClick}
                   />
                 ) : selectedMutation.source === EntitySourceType.Local ? (
