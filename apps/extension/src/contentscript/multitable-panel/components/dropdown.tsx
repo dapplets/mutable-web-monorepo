@@ -170,16 +170,18 @@ export const Dropdown: FC<DropdownProps> = ({
                 {selectedMutation.metadata.name}
                 {recentlyUsedMutations[selectedMutation.id]?.length === 2 ? (
                   <Badge
-                    margin="0 0 0 8px"
+                    margin="0 0 0 4px"
                     text={'eye ' + selectedMutation.source}
                     theme={'white'}
                     onClick={handleSwitchSourceClick}
                   />
                 ) : selectedMutation.source === EntitySourceType.Local ? (
-                  <Badge margin="0 0 0 8px" text={selectedMutation.source} theme={'white'} />
+                  <Badge margin="0 0 0 4px" text={selectedMutation.source} theme={'white'} />
                 ) : null}
               </SelectedMutationDescription>
-              <SelectedMutationId>{selectedMutation.id}</SelectedMutationId>
+              {selectedMutation.authorId ? (
+                <SelectedMutationId>by {selectedMutation.authorId}</SelectedMutationId>
+              ) : null}
             </>
           ) : (
             <SelectedMutationDescription>No mutations applied</SelectedMutationDescription>
@@ -253,19 +255,21 @@ export const Dropdown: FC<DropdownProps> = ({
                         >
                           {mut.metadata ? mut.metadata.name : ''}{' '}
                           {mut.source === EntitySourceType.Local ? (
-                            <Badge margin="0" text={mut.source} theme={'blue'} />
+                            <Badge margin="0 0 0 4px" text={mut.source} theme={'blue'} />
                           ) : null}
                         </InputMutation>
                         {/* todo: mocked classname */}
-                        <AuthorMutation
-                          className={
-                            mut.id === selectedMutation?.id && mut.id === favoriteMutationId
-                              ? 'authorMutationSelected'
-                              : ''
-                          }
-                        >
-                          {mut.id}
-                        </AuthorMutation>
+                        {mut.authorId ? (
+                          <AuthorMutation
+                            className={
+                              mut.id === selectedMutation?.id && mut.id === favoriteMutationId
+                                ? 'authorMutationSelected'
+                                : ''
+                            }
+                          >
+                            by {mut.authorId}
+                          </AuthorMutation>
+                        ) : null}
                       </InputInfoWrapper>
                       {/* todo: mocked */}
 
@@ -335,7 +339,9 @@ export const Dropdown: FC<DropdownProps> = ({
                           </ImageBlock>
                           <InputInfoWrapper>
                             <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
-                            <AuthorMutation>{mut.id}</AuthorMutation>
+                            {mut.authorId ? (
+                              <AuthorMutation>by {mut.authorId}</AuthorMutation>
+                            ) : null}
                           </InputInfoWrapper>
                         </InputBlock>
                       )

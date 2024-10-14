@@ -49,6 +49,7 @@ export class DocumentSerivce {
 
     // ToDo: move to mutation service?
 
+    // ToDo: local or remote?
     const mutation = await this.mutationService.getMutation(mutationId)
 
     if (!mutation) {

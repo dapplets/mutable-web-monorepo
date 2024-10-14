@@ -243,6 +243,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
       if (!documentId) return null
 
+      // ToDo: local or remote?
       const document = await engine.documentService.getDocument(documentId)
 
       return document

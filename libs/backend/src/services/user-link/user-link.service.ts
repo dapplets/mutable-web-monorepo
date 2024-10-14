@@ -109,6 +109,7 @@ export class UserLinkService {
 
     if (!accountId) throw new Error('User is not logged in')
 
+    // ToDo: local or remote?
     const app = await this.applicationService.getApplication(appGlobalId)
 
     if (!app) {

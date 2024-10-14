@@ -81,6 +81,7 @@ export class ApplicationService {
   private async _getAppInstanceWithSettings(mutationId: MutationId, appInstance: AppInMutation) {
     const instanceId = ApplicationService.constructAppInstanceId(appInstance)
 
+    // ToDo: local or remote?
     const [app, settings] = await Promise.all([
       this.getApplication(appInstance.appId),
       this._getAppInstanceSettings(mutationId, instanceId),
