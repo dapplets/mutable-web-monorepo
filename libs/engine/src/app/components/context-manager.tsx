@@ -232,6 +232,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
       if (!appInstance) throw new Error('The app is not active')
 
       if (!appInstance.documentId) return null
+
+      return appInstance.documentId
     },
     [selectedMutation]
   )
