@@ -381,7 +381,10 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               <p>{baseMutation.metadata.name}</p>
               <span>
                 by{' '}
-                {baseMutation.authorId === loggedInAccountId
+                {!baseMutation.authorId && !loggedInAccountId
+                  ? 'me'
+                  : (!baseMutation.authorId && loggedInAccountId) ||
+                    baseMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
                   : baseMutation.authorId}
               </span>
