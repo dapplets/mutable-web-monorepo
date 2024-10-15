@@ -308,7 +308,7 @@ export class MutationService {
 
     const notification: NotificationCreateDto = {
       type: NotificationType.PullRequestAccepted,
-      recipients: [originAuthorId],
+      recipients: [forkAuthorId],
       payload: {
         sourceMutationId: forkedMutation.id,
         targetMutationId: originalMutation.id,
@@ -341,7 +341,7 @@ export class MutationService {
 
     const notification: NotificationCreateDto = {
       type: NotificationType.PullRequestRejected,
-      recipients: [originAuthorId],
+      recipients: [forkAuthorId],
       payload: {
         sourceMutationId: forkedMutation.id,
         targetMutationId: originalMutation.id,
