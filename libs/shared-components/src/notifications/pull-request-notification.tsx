@@ -62,7 +62,10 @@ const actions: TAction[] = [
 ]
 
 export interface PullRequestNotificationDto extends NotificationDto {
-  type: NotificationType.PullRequest
+  type:
+    | NotificationType.PullRequest
+    | NotificationType.PullRequestAccepted
+    | NotificationType.PullRequestRejected
   payload: PullRequestPayload
   result: PullRequestResult
 }
@@ -149,10 +152,15 @@ const PullRequestNotification: FC<{
               #{notification.localId.substring(0, 7)}&ensp;you sent a commit to&ensp;
               {notification.recipients}
             </Text>
+          ) : notification.type === NotificationType.PullRequestAccepted ||
+            notification.type === NotificationType.PullRequestRejected ? (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              The {notification.recipients}&ensp;has changed the status of your commit.
+            </Text>
           ) : (
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
-              &ensp;on&ensp;
+              #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}
+              &ensp;committed &ensp;on&ensp;
               {date}
             </Text>
           )}
@@ -225,7 +233,9 @@ const PullRequestNotification: FC<{
             direction="horizontal"
             style={{ width: '100%', justifyContent: 'space-between' }}
           >
-            {loggedInAccountId === notification.authorId
+            {loggedInAccountId === notification.authorId ||
+            notification.type === NotificationType.PullRequestAccepted ||
+            notification.type === NotificationType.PullRequestRejected
               ? null
               : actions.map((action, i) => (
                   <Button

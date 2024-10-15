@@ -24,6 +24,22 @@ const NotificationsResolver: FC<{
           modalContainerRef={modalContainerRef}
         />
       )
+    case NotificationType.PullRequestAccepted:
+      return (
+        <PullRequestNotification
+          loggedInAccountId={loggedInAccountId}
+          notification={notification as PullRequestNotificationDto}
+          modalContainerRef={modalContainerRef}
+        />
+      )
+    case NotificationType.PullRequestRejected:
+      return (
+        <PullRequestNotification
+          loggedInAccountId={loggedInAccountId}
+          notification={notification as PullRequestNotificationDto}
+          modalContainerRef={modalContainerRef}
+        />
+      )
     default:
       return null
   }

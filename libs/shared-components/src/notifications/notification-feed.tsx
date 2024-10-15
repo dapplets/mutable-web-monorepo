@@ -108,9 +108,9 @@ const NotificationFeed: FC<{
               ) : null}
             </Space>
             <SmoothSpace direction="vertical">
-              {newNotifications.map((notification) => (
+              {newNotifications.map((notification, i) => (
                 <NotificationsResolver
-                  key={notification.id}
+                  key={notification.id + i}
                   notification={notification}
                   modalContainerRef={modalContainerRef}
                   loggedInAccountId={loggedInAccountId}
@@ -125,9 +125,9 @@ const NotificationFeed: FC<{
               </Text>
             </Space>
             <SmoothSpace direction="vertical">
-              {viewedNotifications.map((notification) => (
+              {viewedNotifications.map((notification, i) => (
                 <NotificationsResolver
-                  key={notification.id}
+                  key={i + notification.id}
                   notification={notification}
                   modalContainerRef={modalContainerRef}
                   loggedInAccountId={loggedInAccountId}
