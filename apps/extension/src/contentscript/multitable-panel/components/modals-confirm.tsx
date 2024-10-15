@@ -548,7 +548,7 @@ export const ModalConfirm: FC<Props> = ({
           onClick={handleSaveClick}
           onChange={handleSaveDropdownChange}
           disabled={isFormDisabled}
-          disabledAll={false}
+          disabledAll={isFormDisabled}
         />
       </ButtonsGroup>
     </ModalConfirmWrapper>
