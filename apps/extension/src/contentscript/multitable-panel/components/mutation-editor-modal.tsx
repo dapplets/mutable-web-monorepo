@@ -192,10 +192,12 @@ const CloseIcon = () => (
   </svg>
 )
 
+const EMPTY_MUTATION_ID = '/mutation/NewMutation'
+
 const createEmptyMutation = (): MutationDto => ({
   authorId: null,
   blockNumber: 0,
-  id: '/mutation/NewMutation',
+  id: EMPTY_MUTATION_ID,
   localId: 'NewMutation',
   timestamp: 0,
   source: EntitySourceType.Local, // ToDo: actually source will be changed in click handlers
@@ -215,6 +217,7 @@ const createEmptyMutation = (): MutationDto => ({
 export interface Props {
   apps: ApplicationDto[]
   baseMutation: MutationDto | null
+  localMutations: MutationDto[]
   onClose: () => void
 }
 
@@ -250,7 +253,7 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
+export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
   const { switchMutation, switchPreferredSource } = useMutableWeb()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
@@ -262,10 +265,12 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   useEscape(onClose)
 
   // Call `setEditingMutation(chooseEditingMutation())` if you want to revert changes
-  const chooseEditingMutation = (changedApps?: AppInMutation[]): MutationDto => {
-    const mut = baseMutation ? cloneDeep(baseMutation) : createEmptyMutation()
-    return changedApps ? mergeDeep(mut, { apps: changedApps }) : mut
-  }
+  const chooseEditingMutation = (): MutationDto =>
+    baseMutation
+      ? baseMutation.source === EntitySourceType.Local
+        ? baseMutation
+        : localMutations.find((m) => m.id === baseMutation.id) ?? cloneDeep(baseMutation)
+      : localMutations.find((m) => m.id === EMPTY_MUTATION_ID) ?? createEmptyMutation()
 
   const [editingMutation, setEditingMutation] = useState<MutationDto>(chooseEditingMutation())
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)

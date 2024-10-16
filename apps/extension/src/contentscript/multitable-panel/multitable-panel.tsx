@@ -9,6 +9,7 @@ import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
 import { NearNetworkId } from '../../common/networks'
+import { EntitySourceType } from '@mweb/backend'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -196,6 +197,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
           <MutationEditorModal
             apps={allApps}
             baseMutation={selectedMutation}
+            localMutations={mutations.filter((m) => m.source === EntitySourceType.Local)}
             onClose={handleModalClose}
           />
         ) : (
