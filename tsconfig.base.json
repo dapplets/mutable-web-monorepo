@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "es2023",
     "module": "commonjs",
     "strict": true,
     "declaration": true,
@@ -9,6 +9,6 @@
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
-    "lib": ["es2016", "esnext", "dom"]
+    "lib": ["es2023", "esnext", "dom"]
   }
 }

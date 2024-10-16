@@ -6,14 +6,14 @@ import { LinkDbService } from '../link-db/link-db.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { MutationService } from '../mutation/mutation.service'
 import { Document, DocumentId } from './document.entity'
-import { DocumentRepository } from './document.repository'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { DocumentDto } from './dtos/document.dto'
 import { DocumentCreateDto } from './dtos/document-create.dto'
+import { IRepository } from '../base/repository.interface'
 
 export class DocumentSerivce {
   constructor(
-    private documentRepository: DocumentRepository,
+    private documentRepository: IRepository<Document>,
     private linkDbService: LinkDbService,
     private mutationService: MutationService,
     private unitOfWorkService: UnitOfWorkService
@@ -49,6 +49,7 @@ export class DocumentSerivce {
 
     // ToDo: move to mutation service?
 
+    // ToDo: local or remote?
     const mutation = await this.mutationService.getMutation(mutationId)
 
     if (!mutation) {

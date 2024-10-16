@@ -3,9 +3,9 @@ import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
 import { LinkIndexRules, IndexObject, LinkedDataByAccountDto, CtxLink } from './link-db.entity'
 import { DocumentId } from '../document/document.entity'
-import { LinkDbRepository } from './link-db.repository'
 import { Transaction } from '../unit-of-work/transaction'
 import { UserLinkService } from '../user-link/user-link.service'
+import { IRepository } from '../base/repository.interface'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -17,7 +17,7 @@ const ContextLinkKey = 'ctxlink'
 const KeyDelimiter = '/'
 
 export class LinkDbService {
-  constructor(private _linkDbRepository: LinkDbRepository) {}
+  constructor(private _linkDbRepository: IRepository<CtxLink>) {}
 
   async set(
     mutationId: MutationId,

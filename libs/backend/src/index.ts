@@ -1,5 +1,5 @@
 export { Engine } from './engine'
-export { EntityId } from './services/base/base.entity'
+export { EntityId, EntitySourceType } from './services/base/base.entity'
 export { MutationWithSettings, AppInMutation } from './services/mutation/mutation.entity'
 export { MutationDto } from './services/mutation/dtos/mutation.dto'
 export { SaveMutationOptions } from './services/mutation/mutation.service'

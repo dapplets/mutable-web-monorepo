@@ -35,7 +35,8 @@ export const SelectedMutationDescription = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
 
 export const SelectedMutationId = styled.div`
@@ -123,9 +124,7 @@ export const MutationsList = styled.div`
   display: flex;
   flex-direction: column;
   background: #fff;
-  box-shadow:
-    0 4px 5px rgb(45 52 60 / 10%),
-    0 4px 20px rgb(11 87 111 / 15%);
+  box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   width: 318px;
   left: -26px;
   top: 38px;
@@ -184,9 +183,7 @@ export const MutationsListWrapper = styled.div`
     height: 2px;
     background: #384bff;
     border-radius: 2px;
-    box-shadow:
-      0 2px 6px rgb(0 0 0 / 9%),
-      0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 export const ButtonListBlock = styled.div`
@@ -295,12 +292,26 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
 export const InputIconWrapper = styled.div`
   display: flex;
   padding-right: 3px;
-  transition: all 0.2s ease;
-  &:hover {
-    transform: scale(1.2);
-  }
-  & > svg {
+  transition: all 0.15s ease;
+  color: #a0a2a7;
+  justify-content: center;
+  padding: 0;
+  width: 30px;
+
+  & svg {
     vertical-align: initial;
+  }
+
+  &:hover {
+    color: #656669;
+
+    svg {
+      transform: scale(1.2);
+    }
+  }
+
+  &:active {
+    color: #4f5053;
   }
 `
 
@@ -315,10 +326,12 @@ export const InputInfoWrapper = styled.div`
 
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
+  flex: 1;
+
   .inputMutationSelected {
     color: rgba(34, 34, 34, 1);
   }
+
   .authorMutationSelected {
     color: #384bff;
   }
@@ -412,7 +425,8 @@ export const InputMutation = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
 
 export const AuthorMutation = styled.div`
@@ -423,5 +437,6 @@ export const AuthorMutation = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
