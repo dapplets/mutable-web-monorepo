@@ -19,3 +19,7 @@ export const formatDate = (dateString: string): string => {
 export const sortNotificationsByTimestamp = (notifications: NotificationDto[]) => {
   return notifications.sort((a, b) => b.timestamp - a.timestamp)
 }
+
+export const extractLastPart = (inputStr: string) => {
+  return inputStr.split('mutation/').pop()
+}

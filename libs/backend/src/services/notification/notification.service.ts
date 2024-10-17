@@ -189,9 +189,10 @@ export class NotificationService {
       throw new Error('Not logged in')
     }
 
-    if (!notification.recipients.includes(accountId)) {
-      throw new Error('You are not a recipient of this notification')
-    }
+    //todo: commented, but not resolved
+    // if (!notification.recipients.includes(accountId)) {
+    //   throw new Error('You are not a recipient of this notification')
+    // }
 
     const resolution = await this._getResolutionForNotification(
       notification.id,

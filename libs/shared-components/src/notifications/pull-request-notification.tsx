@@ -23,7 +23,7 @@ import {
   Review,
   Branch,
 } from './assets/icons'
-import { formatDate } from './utils'
+import { extractLastPart, formatDate } from './utils'
 import styled from 'styled-components'
 import { PrReviewerModal } from './pr-reviewer-modal'
 
@@ -149,13 +149,16 @@ const PullRequestNotification: FC<{
           )}
           {loggedInAccountId === notification.authorId ? (
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              #{notification.localId.substring(0, 7)}&ensp;you sent a commit to&ensp;
-              {notification.recipients}
+              {loggedInAccountId}&ensp;sent a commit to&ensp;
+              {notification.recipients}&ensp;on&ensp;
+              {date}
             </Text>
           ) : notification.type === NotificationType.PullRequestAccepted ||
             notification.type === NotificationType.PullRequestRejected ? (
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              The {notification.recipients}&ensp;has changed the status of your commit.
+              {notification.authorId}&ensp;commited commit from&ensp;{loggedInAccountId}
+              &ensp;on&ensp;
+              {date}
             </Text>
           ) : (
             <Text type="secondary" style={{ fontSize: '12px' }}>
@@ -205,21 +208,36 @@ const PullRequestNotification: FC<{
               ),
               children: (
                 <Space direction="vertical">
-                  <StyledCard>
-                    <Text style={{ padding: '0' }} type="secondary">
-                      <Text type="secondary" underline>
-                        {notification.authorId}
-                      </Text>{' '}
-                      asks you to accept changes from{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.sourceMutationId}
-                      </Text>{' '}
-                      &ensp; ({notification.recipients[0]}) into your{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.targetMutationId}
-                      </Text>{' '}
+                  {loggedInAccountId === notification.authorId ? (
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      {loggedInAccountId}&ensp;asks&ensp;{notification.recipients}&ensp;to accept
+                      changes from {extractLastPart(notification.payload!.sourceMutationId)} to{' '}
+                      {extractLastPart(notification.payload!.targetMutationId)}
                     </Text>
-                  </StyledCard>
+                  ) : notification.type === NotificationType.PullRequestAccepted ||
+                    notification.type === NotificationType.PullRequestRejected ? (
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      {notification.authorId}&ensp;asks&ensp;{notification.recipients}&ensp;to
+                      accept changes from {extractLastPart(notification.payload!.sourceMutationId)}{' '}
+                      to {extractLastPart(notification.payload!.targetMutationId)}
+                    </Text>
+                  ) : (
+                    <StyledCard>
+                      <Text style={{ padding: '0' }} type="secondary">
+                        <Text type="secondary" underline>
+                          {notification.authorId}
+                        </Text>{' '}
+                        asks you to accept changes from{' '}
+                        <Text type="secondary" underline>
+                          {extractLastPart(notification.payload!.sourceMutationId)}
+                        </Text>{' '}
+                        &ensp; ({notification.recipients[0]}) into your{' '}
+                        <Text type="secondary" underline>
+                          {extractLastPart(notification.payload!.targetMutationId)}
+                        </Text>{' '}
+                      </Text>
+                    </StyledCard>
+                  )}
                 </Space>
               ),
             },
