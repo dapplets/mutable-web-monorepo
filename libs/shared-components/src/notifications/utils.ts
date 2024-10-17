@@ -1,3 +1,5 @@
+import { NotificationDto } from '@mweb/backend'
+
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
   const options: Intl.DateTimeFormatOptions = {
@@ -12,4 +14,8 @@ export const formatDate = (dateString: string): string => {
   const [monthDay, time] = formattedDate.split(', ')
 
   return `${monthDay} in ${time}`
+}
+
+export const sortNotificationsByTimestamp = (notifications: NotificationDto[]) => {
+  return notifications.sort((a, b) => b.timestamp - a.timestamp)
 }

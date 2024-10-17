@@ -166,7 +166,7 @@ const PullRequestNotification: FC<{
           )}
 
           <Button
-            loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+            disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
             onClick={notification.status === 'new' ? viewNotification : hideNotification}
             style={{ marginLeft: 'auto' }}
             type="text"
@@ -241,13 +241,6 @@ const PullRequestNotification: FC<{
                   <Button
                     key={i}
                     disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-                    loading={
-                      action.label === 'Accept'
-                        ? isLoadingAccept
-                        : action.label === 'Decline'
-                          ? isLoadingReject
-                          : undefined
-                    }
                     type={action.type as ButtonProps['type']}
                     size="middle"
                     onClick={() => handleActionClick(action)}

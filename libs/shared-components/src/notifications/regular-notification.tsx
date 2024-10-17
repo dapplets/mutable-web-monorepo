@@ -57,7 +57,7 @@ const RegularNotification: FC<{
           {date}
         </Text>
         <Button
-          loading={isLoadingHide || isLoadingView}
+          disabled={isLoadingHide || isLoadingView}
           onClick={notification.status === 'new' ? viewNotification : hideNotification}
           style={{ marginLeft: 'auto' }}
           type="text"
