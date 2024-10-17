@@ -60,7 +60,6 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
       footer={[
         <Button
           key="decline"
-          loading={isLoadingReject}
           disabled={isLoadingAccept || isLoadingReject}
           type="default"
           size="middle"
@@ -72,7 +71,6 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
         </Button>,
         <Button
           key="accept"
-          loading={isLoadingAccept}
           disabled={isLoadingAccept || isLoadingReject}
           type="primary"
           size="middle"

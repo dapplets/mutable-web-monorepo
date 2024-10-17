@@ -20,7 +20,7 @@ const NotificationProvider: FC<Props> = ({ children, recipientId }) => {
     isLoading,
     error,
   } = useQueryArray<NotificationDto>({
-    query: () => engine.notificationService.getNotificationsByRecipient(recipientId),
+    query: () => engine.notificationService.getMyNotifications(recipientId),
     deps: [engine, recipientId],
   })
 

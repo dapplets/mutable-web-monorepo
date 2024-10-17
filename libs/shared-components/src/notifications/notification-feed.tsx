@@ -3,6 +3,7 @@ import React, { FC, useMemo, useRef, useState } from 'react'
 import NotificationsResolver from './notification-resolver'
 import { Space, Typography, Button, Spin, Flex } from 'antd'
 import styled from 'styled-components'
+import { sortNotificationsByTimestamp } from './utils'
 
 const { Text } = Typography
 
@@ -46,14 +47,24 @@ const NotificationFeed: FC<{
   const { viewAllNotifcations, isLoading: isViewAllLoading } =
     useViewAllNotifications(loggedInAccountId)
 
-  const newNotifications = useMemo(
-    () => notifications.filter((notification) => notification.status === 'new'),
+  const viewedNotifications = useMemo(
+    () =>
+      notifications.filter(
+        (notification) =>
+          notification.status === 'viewed' ||
+          (notification.authorId === loggedInAccountId && notification.result?.status === 'open')
+      ),
     [notifications]
   )
 
-  const viewedNotifications = useMemo(
-    () => notifications.filter((notification) => notification.status === 'viewed'),
-    [notifications]
+  const newNotifications = useMemo(
+    () =>
+      notifications.filter(
+        (notification) =>
+          notification.status === 'new' &&
+          !viewedNotifications.some((viewed) => viewed.id === notification.id)
+      ),
+    [notifications, viewedNotifications]
   )
 
   const handleSignIn = async () => {
@@ -64,6 +75,7 @@ const NotificationFeed: FC<{
       setWaiting(false)
     }
   }
+  console.log(newNotifications)
 
   return (
     <FeedContainer prefixCls="notifyWrapper" direction="vertical" ref={overlayRef}>
@@ -98,11 +110,12 @@ const NotificationFeed: FC<{
               ) : null}
             </Space>
             <SmoothSpace direction="vertical">
-              {newNotifications.map((notification) => (
+              {sortNotificationsByTimestamp(newNotifications).map((notification, i) => (
                 <NotificationsResolver
-                  key={notification.id}
+                  key={notification.id + i}
                   notification={notification}
                   modalContainerRef={modalContainerRef}
+                  loggedInAccountId={loggedInAccountId}
                 />
               ))}
             </SmoothSpace>
@@ -114,11 +127,12 @@ const NotificationFeed: FC<{
               </Text>
             </Space>
             <SmoothSpace direction="vertical">
-              {viewedNotifications.map((notification) => (
+              {sortNotificationsByTimestamp(viewedNotifications).map((notification, i) => (
                 <NotificationsResolver
-                  key={notification.id}
+                  key={i + notification.id}
                   notification={notification}
                   modalContainerRef={modalContainerRef}
+                  loggedInAccountId={loggedInAccountId}
                 />
               ))}
             </SmoothSpace>

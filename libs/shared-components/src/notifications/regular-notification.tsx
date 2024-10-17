@@ -29,7 +29,8 @@ export interface RegularNotificationDto extends NotificationDto {
 
 const RegularNotification: FC<{
   notification: RegularNotificationDto
-}> = ({ notification }) => {
+  loggedInAccountId: string
+}> = ({ notification, loggedInAccountId }) => {
   const {
     viewNotification,
     isLoading: isLoadingView,
@@ -56,12 +57,16 @@ const RegularNotification: FC<{
           {date}
         </Text>
         <Button
-          loading={isLoadingHide || isLoadingView}
+          disabled={isLoadingHide || isLoadingView}
           onClick={notification.status === 'new' ? viewNotification : hideNotification}
           style={{ marginLeft: 'auto' }}
           type="text"
           icon={
-            notification.status === 'new' ? <NotificationMessageIcon /> : <NotificationCloseIcon />
+            notification.status === 'new' && notification.authorId !== loggedInAccountId ? (
+              <NotificationMessageIcon />
+            ) : (
+              <NotificationCloseIcon />
+            )
           }
         />
       </Space>

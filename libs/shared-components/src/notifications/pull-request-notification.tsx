@@ -23,7 +23,7 @@ import {
   Review,
   Branch,
 } from './assets/icons'
-import { formatDate } from './utils'
+import { extractLastPart, formatDate } from './utils'
 import styled from 'styled-components'
 import { PrReviewerModal } from './pr-reviewer-modal'
 
@@ -62,7 +62,10 @@ const actions: TAction[] = [
 ]
 
 export interface PullRequestNotificationDto extends NotificationDto {
-  type: NotificationType.PullRequest
+  type:
+    | NotificationType.PullRequest
+    | NotificationType.PullRequestAccepted
+    | NotificationType.PullRequestRejected
   payload: PullRequestPayload
   result: PullRequestResult
 }
@@ -70,7 +73,8 @@ export interface PullRequestNotificationDto extends NotificationDto {
 const PullRequestNotification: FC<{
   notification: PullRequestNotificationDto
   modalContainerRef: React.RefObject<HTMLElement>
-}> = ({ notification, modalContainerRef }) => {
+  loggedInAccountId: string
+}> = ({ notification, modalContainerRef, loggedInAccountId }) => {
   const {
     viewNotification,
     isLoading: isLoadingView,
@@ -143,21 +147,35 @@ const PullRequestNotification: FC<{
           ) : (
             <BlueBadge />
           )}
-
-          <Text type="secondary" style={{ fontSize: '12px' }}>
-            #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
-            &ensp;on&ensp;
-            {date}
-          </Text>
+          {loggedInAccountId === notification.authorId ? (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              {loggedInAccountId}&ensp;sent a commit to&ensp;
+              {notification.recipients}&ensp;on&ensp;
+              {date}
+            </Text>
+          ) : notification.type === NotificationType.PullRequestAccepted ||
+            notification.type === NotificationType.PullRequestRejected ? (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              {notification.authorId}&ensp;commited commit from&ensp;{loggedInAccountId}
+              &ensp;on&ensp;
+              {date}
+            </Text>
+          ) : (
+            <Text type="secondary" style={{ fontSize: '12px' }}>
+              #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}
+              &ensp;committed &ensp;on&ensp;
+              {date}
+            </Text>
+          )}
 
           <Button
-            loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+            disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
             onClick={notification.status === 'new' ? viewNotification : hideNotification}
             style={{ marginLeft: 'auto' }}
             type="text"
             title={notification.status === 'new' ? 'Mark as read' : 'Delete'}
             icon={
-              notification.status === 'new' ? (
+              notification.status === 'new' && notification.authorId !== loggedInAccountId ? (
                 <NotificationMessageIcon />
               ) : (
                 <NotificationCloseIcon />
@@ -190,21 +208,36 @@ const PullRequestNotification: FC<{
               ),
               children: (
                 <Space direction="vertical">
-                  <StyledCard>
-                    <Text style={{ padding: '0' }} type="secondary">
-                      <Text type="secondary" underline>
-                        {notification.authorId}
-                      </Text>{' '}
-                      asks you to accept changes from{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.sourceMutationId}
-                      </Text>{' '}
-                      &ensp; ({notification.recipients[0]}) into your{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.targetMutationId}
-                      </Text>{' '}
+                  {loggedInAccountId === notification.authorId ? (
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      {loggedInAccountId}&ensp;asks&ensp;{notification.recipients}&ensp;to accept
+                      changes from {extractLastPart(notification.payload!.sourceMutationId)} to{' '}
+                      {extractLastPart(notification.payload!.targetMutationId)}
                     </Text>
-                  </StyledCard>
+                  ) : notification.type === NotificationType.PullRequestAccepted ||
+                    notification.type === NotificationType.PullRequestRejected ? (
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      {notification.authorId}&ensp;asks&ensp;{notification.recipients}&ensp;to
+                      accept changes from {extractLastPart(notification.payload!.sourceMutationId)}{' '}
+                      to {extractLastPart(notification.payload!.targetMutationId)}
+                    </Text>
+                  ) : (
+                    <StyledCard>
+                      <Text style={{ padding: '0' }} type="secondary">
+                        <Text type="secondary" underline>
+                          {notification.authorId}
+                        </Text>{' '}
+                        asks you to accept changes from{' '}
+                        <Text type="secondary" underline>
+                          {extractLastPart(notification.payload!.sourceMutationId)}
+                        </Text>{' '}
+                        &ensp; ({notification.recipients[0]}) into your{' '}
+                        <Text type="secondary" underline>
+                          {extractLastPart(notification.payload!.targetMutationId)}
+                        </Text>{' '}
+                      </Text>
+                    </StyledCard>
+                  )}
                 </Space>
               ),
             },
@@ -218,29 +251,26 @@ const PullRequestNotification: FC<{
             direction="horizontal"
             style={{ width: '100%', justifyContent: 'space-between' }}
           >
-            {actions.map((action, i) => (
-              <Button
-                key={i}
-                disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-                loading={
-                  action.label === 'Accept'
-                    ? isLoadingAccept
-                    : action.label === 'Decline'
-                      ? isLoadingReject
-                      : undefined
-                }
-                type={action.type as ButtonProps['type']}
-                size="middle"
-                onClick={() => handleActionClick(action)}
-              >
-                {(action.label !== 'Accept' && isLoadingAccept) ||
-                (action.label === 'Decline' && isLoadingReject)
-                  ? null
-                  : action.icon}
+            {loggedInAccountId === notification.authorId ||
+            notification.type === NotificationType.PullRequestAccepted ||
+            notification.type === NotificationType.PullRequestRejected
+              ? null
+              : actions.map((action, i) => (
+                  <Button
+                    key={i}
+                    disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
+                    type={action.type as ButtonProps['type']}
+                    size="middle"
+                    onClick={() => handleActionClick(action)}
+                  >
+                    {(action.label !== 'Accept' && isLoadingAccept) ||
+                    (action.label === 'Decline' && isLoadingReject)
+                      ? null
+                      : action.icon}
 
-                {action.label}
-              </Button>
-            ))}
+                    {action.label}
+                  </Button>
+                ))}
           </Space>
         ) : null}
       </Space>
