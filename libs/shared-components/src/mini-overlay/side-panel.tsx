@@ -236,16 +236,14 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           data-mweb-context-level="system"
         >
           {baseMutation?.metadata.image ? (
-            <>
-              <Image image={baseMutation?.metadata.image} />
-              {baseMutation.source === EntitySourceType.Local && (
-                <BadgeWrapper>
-                  <Badge text={baseMutation.source} theme={'blue'} />
-                </BadgeWrapper>
-              )}
-            </>
+            <Image image={baseMutation?.metadata.image} />
           ) : (
             <MutationFallbackIcon />
+          )}
+          {baseMutation?.source === EntitySourceType.Local && (
+            <BadgeWrapper>
+              <Badge text={baseMutation.source} theme={'blue'} />
+            </BadgeWrapper>
           )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
