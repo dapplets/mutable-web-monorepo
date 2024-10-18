@@ -6,6 +6,7 @@ import { DocumentId } from '../document/document.entity'
 import { Transaction } from '../unit-of-work/transaction'
 import { UserLinkService } from '../user-link/user-link.service'
 import { IRepository } from '../base/repository.interface'
+import { EntitySourceType } from '../base/base.entity'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -46,6 +47,7 @@ export class LinkDbService {
       id: globalId,
       index: indexObject,
       data: dataByAccount[accountId],
+      source: EntitySourceType.Origin,
     })
 
     await this._linkDbRepository.saveItem(ctxLink, tx)
