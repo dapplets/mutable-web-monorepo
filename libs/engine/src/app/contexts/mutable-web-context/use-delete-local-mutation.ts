@@ -1,38 +1,35 @@
-import { MutationDto } from '@mweb/backend'
+import { EntityId, EntitySourceType } from '@mweb/backend'
 import { useContext, useState } from 'react'
 import { MutableWebContext } from './mutable-web-context'
-import { SaveMutationOptions } from '@mweb/backend'
 
-export function useEditMutation() {
+export function useDeleteLocalMutation() {
   const { engine, setMutations } = useContext(MutableWebContext)
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const editMutation = async (editingMutation: MutationDto, options?: SaveMutationOptions) => {
+  const deleteLocalMutation = async (mutationId: EntityId): Promise<void> => {
     try {
       setIsLoading(true)
 
-      const editedMutation = await engine.mutationService.editMutation(editingMutation, options)
+      await engine.mutationService.deleteMutation(mutationId)
 
       setMutations((mutations) =>
-        mutations.map((mut) =>
-          mut.id === editedMutation.id && mut.source === editedMutation.source
-            ? editedMutation
-            : mut
+        mutations.filter(
+          (mutation) => !(mutation.id === mutationId && mutation.source === EntitySourceType.Local)
         )
       )
     } catch (err) {
-      console.error(err)
       if (err instanceof Error) {
         setError(err.message)
       } else {
         setError('Unknown error')
       }
+      throw err
     } finally {
       setIsLoading(false)
     }
   }
 
-  return { editMutation, isLoading, error }
+  return { deleteLocalMutation, isLoading, error }
 }
