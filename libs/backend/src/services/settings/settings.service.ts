@@ -21,13 +21,13 @@ export class SettingsSerivce {
     return this.localDb.setItem(key, mutationId)
   }
 
-  async getPreferredSource(): Promise<EntitySourceType | null> {
-    const key = LocalDbService.makeKey(PREFERRED_SOURCE, window.location.hostname)
+  async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
+    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, window.location.hostname)
     return (await this.localDb.getItem(key)) ?? null
   }
 
-  async setPreferredSource(source: EntitySourceType | null): Promise<void> {
-    const key = LocalDbService.makeKey(PREFERRED_SOURCE, window.location.hostname)
+  async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
+    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, window.location.hostname)
     return this.localDb.setItem(key, source)
   }
 

@@ -50,7 +50,9 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const { applications: allApps, isLoading: isAppsLoading } = useApplications(engine)
 
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
-  const [preferredSource, setPreferredSource] = useState<EntitySourceType | null>(null)
+  const [preferredSources, setPreferredSources] = useState<{
+    [key: string]: EntitySourceType | null
+  }>({})
   const [favoriteMutationId, setFavoriteMutationId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -60,10 +62,16 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   }, [engine])
 
   useEffect(() => {
-    engine.mutationService.getPreferredSource().then((source) => {
-      setPreferredSource(source)
-    })
-  }, [engine])
+    const fn = async () => {
+      const localMutations = mutations.filter((mut) => mut.source === EntitySourceType.Local)
+      const newPreferredSources: { [key: string]: EntitySourceType | null } = {}
+      for (const mut of localMutations) {
+        newPreferredSources[mut.id] = await engine.mutationService.getPreferredSource(mut.id)
+      }
+      setPreferredSources(newPreferredSources)
+    }
+    fn()
+  }, [engine, mutations])
 
   const getMutationToBeLoaded = useCallback(async () => {
     const favoriteMutation = await engine.mutationService.getFavoriteMutation()
@@ -79,14 +87,14 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
       .filter((m) => m.id === selectedMutationId)
       .sort((a) => (a.source === EntitySourceType.Local ? -1 : 1))
 
-    if (preferredSource === EntitySourceType.Local) {
+    if (preferredSources[selectedMutationId] === EntitySourceType.Local) {
       return localMut ?? remoteMut ?? null
-    } else if (preferredSource === EntitySourceType.Origin) {
+    } else if (preferredSources[selectedMutationId] === EntitySourceType.Origin) {
       return remoteMut ?? localMut ?? null
     } else {
       return localMut ?? remoteMut ?? null
     }
-  }, [mutations, selectedMutationId, preferredSource])
+  }, [mutations, selectedMutationId, preferredSources])
 
   useEffect(() => {
     getMutationToBeLoaded().then((favoriteMutationId) => {
@@ -205,16 +213,26 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   // ToDo: move to separate hook
   const switchPreferredSource = useCallback(
-    async (source: EntitySourceType | null) => {
+    async (mutationId: string, source: EntitySourceType | null) => {
       try {
-        setPreferredSource(source)
-        await engine.mutationService.setPreferredSource(source)
+        const mut = mutations.find(
+          (m) => m.id === mutationId && m.source === EntitySourceType.Local
+        )
+        if (!mut) return
+        setPreferredSources((oldPrefferedSources) => ({
+          ...oldPrefferedSources,
+          [mutationId]: source,
+        }))
+        await engine.mutationService.setPreferredSource(mutationId, source)
       } catch (err) {
         console.error(err)
       }
     },
-    [engine]
+    [engine, mutations]
   )
+
+  const getPreferredSource = (mutationId: string): EntitySourceType | null =>
+    preferredSources[mutationId]
 
   // ToDo: move to separate hook
   const removeMutationFromRecents = useCallback(
@@ -248,6 +266,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     isLoading,
     switchMutation,
     switchPreferredSource,
+    getPreferredSource,
     refreshMutation,
     setFavoriteMutation,
     removeMutationFromRecents,

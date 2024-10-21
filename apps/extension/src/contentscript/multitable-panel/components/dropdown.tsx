@@ -78,6 +78,7 @@ export const Dropdown: FC<DropdownProps> = ({
     setFavoriteMutation,
     switchMutation,
     switchPreferredSource,
+    getPreferredSource,
     removeMutationFromRecents,
   } = useMutableWeb()
 
@@ -131,7 +132,7 @@ export const Dropdown: FC<DropdownProps> = ({
         ? EntitySourceType.Origin
         : EntitySourceType.Local
 
-    switchPreferredSource(source)
+    switchPreferredSource(selectedMutation.id, source)
   }
 
   // todo: mock
@@ -167,10 +168,9 @@ export const Dropdown: FC<DropdownProps> = ({
           {selectedMutation && selectedMutation.metadata ? (
             <>
               <SelectedMutationDescription>
-                {selectedMutation.metadata.name}
                 {recentlyUsedMutations[selectedMutation.id]?.length === 2 ? (
                   <Badge
-                    margin="0 0 0 4px"
+                    margin="0 4px 0 0"
                     icon={
                       selectedMutation.source === EntitySourceType.Local ? (
                         <EyeFilled />
@@ -184,8 +184,9 @@ export const Dropdown: FC<DropdownProps> = ({
                     onClick={handleSwitchSourceClick}
                   />
                 ) : selectedMutation.source === EntitySourceType.Local ? (
-                  <Badge margin="0 0 0 4px" text={selectedMutation.source} theme={'white'} />
+                  <Badge margin="0 4px 0 0" text={selectedMutation.source} theme="white" />
                 ) : null}
+                {selectedMutation.metadata.name}
               </SelectedMutationDescription>
               {selectedMutation.authorId ? (
                 <SelectedMutationId>by {selectedMutation.authorId}</SelectedMutationId>
@@ -245,12 +246,12 @@ export const Dropdown: FC<DropdownProps> = ({
                 data-mweb-context-level="system"
               >
                 {Object.values(recentlyUsedMutations).map((muts) => {
-                  if (!muts) return null
-                  const [localMut, remoteMut] = muts.sort((a) =>
-                    a.source === EntitySourceType.Local ? -1 : 1
-                  )
-                  const mut = localMut ?? remoteMut
-
+                  if (!muts || !muts.length) return null
+                  const recentlyUsedSource = getPreferredSource(muts[0].id)
+                  const mut =
+                    muts.find(
+                      (mut) => mut.source === (recentlyUsedSource ?? EntitySourceType.Local)
+                    ) ?? muts[0]
                   return (
                     <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
                       <ImageBlock>
@@ -262,8 +263,14 @@ export const Dropdown: FC<DropdownProps> = ({
                           className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
                         >
                           {mut.metadata ? mut.metadata.name : ''}{' '}
-                          {mut.source === EntitySourceType.Local ? (
-                            <Badge margin="0 0 0 4px" text={mut.source} theme={'blue'} />
+                          {recentlyUsedMutations[mut.id]?.length === 2 ? (
+                            mut.source === EntitySourceType.Local ? (
+                              <Badge margin="0 0 0 4px" text="local on" theme="blue" />
+                            ) : (
+                              <Badge margin="0 0 0 4px" text="local off" theme="yellow" />
+                            )
+                          ) : mut.source === EntitySourceType.Local ? (
+                            <Badge margin="0 0 0 4px" text="local" theme="blue" />
                           ) : null}
                         </InputMutation>
                         {/* todo: mocked classname */}
@@ -295,7 +302,9 @@ export const Dropdown: FC<DropdownProps> = ({
                         <InputIconWrapper onClick={() => setMutationIdToDelete(mut.id)}>
                           <DeleteOutlined />
                         </InputIconWrapper>
-                      ) : mut.id !== selectedMutation?.id ? (
+                      ) : mut.id !== selectedMutation?.id &&
+                        mut.id !== favoriteMutationId &&
+                        !getPreferredSource(mut.id) ? (
                         <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
                           <ArrowDownOutlined />
                         </InputIconWrapper>

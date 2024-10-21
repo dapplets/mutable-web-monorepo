@@ -310,7 +310,7 @@ export const ModalConfirm: FC<Props> = ({
             : undefined
         )
         switchMutation(id)
-        switchPreferredSource(EntitySourceType.Origin)
+        switchPreferredSource(id, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
@@ -328,7 +328,7 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
-        switchPreferredSource(EntitySourceType.Origin)
+        switchPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {

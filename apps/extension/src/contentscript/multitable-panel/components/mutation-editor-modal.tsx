@@ -341,7 +341,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
     saveMutation(localMutation)
       .then(({ id }) => {
         switchMutation(id)
-        switchPreferredSource(EntitySourceType.Local)
+        switchPreferredSource(id, EntitySourceType.Local)
       })
       .then(onClose)
   }

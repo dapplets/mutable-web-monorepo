@@ -7,7 +7,6 @@ export const WrapperDropdown = styled.div`
   align-items: center;
 
   width: 266px;
-  height: 35px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
 `
@@ -29,7 +28,7 @@ export const SelectedMutationInfo = styled.div`
 `
 export const SelectedMutationDescription = styled.div`
   font-size: 12px;
-  line-height: 149%;
+  line-height: 150%;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
@@ -41,7 +40,7 @@ export const SelectedMutationDescription = styled.div`
 
 export const SelectedMutationId = styled.div`
   font-size: 10px;
-  line-height: 100%;
+  line-height: 150%;
   color: rgba(255, 255, 255, 0.6);
   white-space: nowrap;
   overflow: hidden;
@@ -127,7 +126,7 @@ export const MutationsList = styled.div`
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   width: 318px;
   left: -26px;
-  top: 38px;
+  top: 42px;
   padding-right: 6px;
   border-radius: 0px 0px 10px 10px;
   overflow: hidden;
@@ -160,7 +159,7 @@ export const MutationsListWrapper = styled.div`
   max-height: 500px;
   gap: 10px;
   position: relative;
-  padding-top: 55px;
+  padding-top: 46px;
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
@@ -189,24 +188,15 @@ export const MutationsListWrapper = styled.div`
 export const ButtonListBlock = styled.div`
   display: flex;
   border-radius: 0px, 0px, 10px, 10px;
-  height: 41px;
+  height: 40px;
   justify-content: space-evenly;
   width: 100%;
   align-items: center;
   position: fixed;
-  top: 40px;
+  top: 42px;
   z-index: 100;
   left: 0;
-  &::before {
-    content: '';
-    width: 318px;
-    position: fixed;
-    top: 40px;
-    left: 0;
-    background: #f8f9ff;
-    height: 43px;
-    z-index: 0;
-  }
+  background: #f8f9ff;
 `
 
 export const ButtonBack = styled.div`
