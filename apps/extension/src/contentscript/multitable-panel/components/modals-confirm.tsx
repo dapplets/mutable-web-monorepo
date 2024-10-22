@@ -1,16 +1,26 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
-import BsButton from 'react-bootstrap/Button'
-import BsSpinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
-import { useCreateMutation, useEditMutation, useMutableWeb } from '@mweb/engine'
-import { MutationCreateDto, MutationDto } from '@mweb/backend'
+import {
+  useCreateMutation,
+  useEditMutation,
+  useMutableWeb,
+  useDeleteLocalMutation,
+} from '@mweb/engine'
+import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
-import { MutationModalMode } from './types'
 import { InputImage } from './upload-image'
-import { cloneDeep, compareMutations } from '../../helpers'
+import { cloneDeep } from '../../helpers'
+import { DropdownButton } from './dropdown-button'
+import { ButtonsGroup } from './buttons-group'
+
+enum MutationModalMode {
+  Editing = 'editing',
+  Creating = 'creating',
+  Forking = 'forking',
+}
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
@@ -167,22 +177,11 @@ const CheckboxInput = styled.input`
   border: 1px solid #384bff;
 `
 
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  button {
-    width: 125px;
-  }
-`
-
 export interface Props {
   itemType: 'mutation' | 'document'
-  mode: any
   onCloseCurrent: () => void
   onCloseAll: () => void
-  editingMutation: MutationCreateDto
-  baseMutation: MutationDto | null
+  editingMutation: MutationDto
   loggedInAccountId: string
 }
 
@@ -226,22 +225,30 @@ const alerts: { [name: string]: IAlert } = {
 
 export const ModalConfirm: FC<Props> = ({
   itemType,
-  mode,
   onCloseCurrent,
   onCloseAll,
   editingMutation,
-  baseMutation,
   loggedInAccountId,
 }) => {
   const { name, image, description, fork_of } = editingMutation.metadata
+
   // Close modal with escape key
   useEscape(onCloseCurrent) // ToDo -- does not work
+
   const [newName, setName] = useState<string>(name ?? '')
   const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
   const [newDescription, setDescription] = useState<string>(description ?? '')
-  const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false)
+  const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations, switchMutation } = useMutableWeb()
+  const { mutations, switchMutation, switchPreferredSource } = useMutableWeb()
+
+  const [mode, setMode] = useState(
+    !editingMutation.authorId // Newly created local mutation doesn't have author
+      ? MutationModalMode.Creating
+      : editingMutation.authorId === loggedInAccountId
+      ? MutationModalMode.Editing
+      : MutationModalMode.Forking
+  )
 
   const forkedMutation = useMemo(() => {
     if (mode !== MutationModalMode.Editing || !fork_of) return null
@@ -250,30 +257,31 @@ export const ModalConfirm: FC<Props> = ({
 
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
+  const { deleteLocalMutation } = useDeleteLocalMutation()
 
   const isFormDisabled = isCreating || isEditing
 
   useEffect(() => setAlert(null), [newName, newImage, newDescription, isApplyToOriginChecked])
 
-  const checkIfModified = useCallback(
-    (mutationToPublish: MutationDto) =>
-      baseMutation ? !compareMutations(baseMutation, mutationToPublish) : true,
-    [baseMutation]
-  )
+  // const checkIfModified = useCallback(
+  //   (mutationToPublish: MutationDto) =>
+  //     baseMutation ? !compareMutations(baseMutation, mutationToPublish) : true,
+  //   [baseMutation]
+  // )
 
   const doChecksForAlerts = useCallback(
     (mutationToPublish: MutationCreateDto | MutationDto, isEditing: boolean): IAlert | null => {
       if (!mutationToPublish.metadata.name) return alerts.noName
       if (!mutationToPublish.metadata.image) return alerts.noImage
-      if (
-        isEditing &&
-        !isApplyToOriginChecked &&
-        !checkIfModified(mutationToPublish as MutationDto)
-      )
-        return alerts.notEditedMutation
+      // if (
+      //   isEditing &&
+      //   !isApplyToOriginChecked &&
+      //   !checkIfModified(mutationToPublish as MutationDto)
+      // )
+      //   return alerts.notEditedMutation
       return null
     },
-    [newName, newImage, isApplyToOriginChecked, checkIfModified]
+    [newName, newImage, isApplyToOriginChecked] // checkIfModified
   )
 
   const handleSaveClick = async () => {
@@ -281,6 +289,11 @@ export const ModalConfirm: FC<Props> = ({
     mutationToPublish.metadata.name = newName.trim()
     mutationToPublish.metadata.image = newImage
     mutationToPublish.metadata.description = newDescription.trim()
+    mutationToPublish.source = EntitySourceType.Origin // save to the contract
+
+    if (mode === MutationModalMode.Forking) {
+      mutationToPublish.metadata.fork_of = mutationToPublish.id
+    }
 
     const newAlert = doChecksForAlerts(mutationToPublish, mode === MutationModalMode.Editing)
     if (newAlert) {
@@ -297,6 +310,8 @@ export const ModalConfirm: FC<Props> = ({
             : undefined
         )
         switchMutation(id)
+        switchPreferredSource(id, EntitySourceType.Origin)
+        await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         if (error?.message === 'Mutation with that ID already exists') {
@@ -313,11 +328,17 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
+        switchPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
+        await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         console.error(error)
       }
     }
+  }
+
+  const handleSaveDropdownChange = (itemId: string) => {
+    setMode(itemId as MutationModalMode)
   }
 
   return (
@@ -375,23 +396,23 @@ export const ModalConfirm: FC<Props> = ({
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={baseMutation?.metadata.image}
+                image={editingMutation.metadata.image}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={baseMutation?.metadata.name}
+                alt={editingMutation.metadata.name}
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{baseMutation?.metadata.name}</p>
+              <p>{editingMutation.metadata.name}</p>
               <span>
                 by{' '}
-                {baseMutation?.authorId === loggedInAccountId
+                {editingMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
-                  : baseMutation?.authorId}
+                  : editingMutation.authorId}
               </span>
             </TextWrapper>
           </CardWrapper>
 
-          {baseMutation?.authorId === loggedInAccountId ? null : (
+          {editingMutation.authorId === loggedInAccountId ? null : (
             <CheckboxBlock>
               <span>Ask Origin to apply changes</span>
               <CheckboxInput
@@ -503,19 +524,33 @@ export const ModalConfirm: FC<Props> = ({
         </>
       ) : null}
 
-      <ButtonsBlock>
+      <ButtonsGroup>
         <Button onClick={onCloseCurrent}>Cancel</Button>
-        {!isFormDisabled ? (
-          <BsButton onClick={handleSaveClick} variant="primary">
-            {mode === MutationModalMode.Forking ? 'Fork it!' : 'Do it!'}
-          </BsButton>
-        ) : (
-          <BsButton variant="primary" disabled>
-            <BsSpinner as="span" animation="grow" size="sm" role="status" aria-hidden="true" />{' '}
-            Sending...
-          </BsButton>
-        )}
-      </ButtonsBlock>
+        <DropdownButton
+          value={mode}
+          items={[
+            {
+              value: MutationModalMode.Forking,
+              title: 'Fork',
+              visible: !!editingMutation.authorId,
+            },
+            {
+              value: MutationModalMode.Editing,
+              title: 'Save',
+              visible: !!editingMutation.authorId && editingMutation.authorId === loggedInAccountId,
+            },
+            {
+              value: MutationModalMode.Creating,
+              title: 'Create',
+              visible: !editingMutation.authorId,
+            },
+          ]}
+          onClick={handleSaveClick}
+          onChange={handleSaveDropdownChange}
+          disabled={isFormDisabled}
+          disabledAll={isFormDisabled}
+        />
+      </ButtonsGroup>
     </ModalConfirmWrapper>
   )
 }

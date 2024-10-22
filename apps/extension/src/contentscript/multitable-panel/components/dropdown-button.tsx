@@ -77,7 +77,7 @@ const ItemGroup = styled.div`
   flex-direction: column;
   right: 0;
   top: 52px;
-  width: 175px;
+  width: 100%;
   padding: 10px;
   gap: 5px;
   border-radius: 10px;
@@ -117,13 +117,17 @@ const DropdownButtonItem = styled.div`
 const ButtonGroup = styled.div`
   display: flex;
   flex-direction: row;
-  width: 175px;
   height: 42px;
   border-radius: 10px;
   overflow: hidden;
 `
 
-type ItemProps = { value: string; title: string; visible?: boolean }
+type ItemProps = {
+  value: string
+  title: string
+  visible?: boolean
+  onClick?: (value: string) => void
+}
 
 export interface Props {
   value: string
@@ -152,7 +156,11 @@ export const DropdownButton: FC<Props> = ({
   )
 
   if (!currentItem) {
-    throw new Error(`Invalid value: ${value}`)
+    throw new Error(
+      `[DropdownButton] Invalid value: ${value}. Possible values: ${visibleItems
+        .map((item) => item.value)
+        .join(', ')}`
+    )
   }
 
   const handleDropdownToggle = () => {
@@ -166,6 +174,7 @@ export const DropdownButton: FC<Props> = ({
 
   const handleMainButtonClick = () => {
     onClick(currentItem.value)
+    currentItem.onClick?.(currentItem.value)
   }
 
   return (

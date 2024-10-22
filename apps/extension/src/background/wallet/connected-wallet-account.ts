@@ -38,6 +38,7 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
           tx.receiverId,
           nonce,
           tx.actions,
+          // @ts-ignore
           blockHash
         )
       })
@@ -79,6 +80,7 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
     return Promise.all(
       transactionHashes.map((txHash) => {
         return this.walletConnection._near.connection.provider.txStatus(
+          // @ts-ignore
           serialize.base_decode(txHash),
           this.accountId
         )
