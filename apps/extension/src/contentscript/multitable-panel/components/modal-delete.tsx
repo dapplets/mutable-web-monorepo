@@ -8,7 +8,6 @@ const ModalConfirmWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 300px;
-  max-height: calc(100% - 40px);
   padding: 20px;
   gap: 10px;
   border-radius: 10px;

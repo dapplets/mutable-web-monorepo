@@ -53,6 +53,7 @@ const ModalConfirmBackground = styled.div`
   align-items: center;
   width: 100%;
   height: 100%;
+  min-height: 190px;
   top: 0;
   left: 0;
   background-color: rgba(255, 255, 255, 0.7);
@@ -222,24 +223,22 @@ export const Dropdown: FC<DropdownProps> = ({
 
       {isVisible && (
         <MutationsList>
+          <ButtonListBlock>
+            <ButtonBack onClick={handleOriginalButtonClick}>{<Back />} to Original</ButtonBack>
+            <ButtonMutation
+              onClick={handleMutateButtonClick}
+              data-testid="mutate-button"
+              data-mweb-context-type="notch"
+              data-mweb-context-parsed={JSON.stringify({ id: 'mutate-button' })}
+              data-mweb-context-level="system"
+            >
+              Mutate {<Mutate />}
+              <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
+            </ButtonMutation>
+          </ButtonListBlock>
           <MutationsListWrapper>
-            <ButtonListBlock>
-              <ButtonBack onClick={handleOriginalButtonClick}>{<Back />} to Original</ButtonBack>
-              <ButtonMutation
-                onClick={handleMutateButtonClick}
-                data-testid="mutate-button"
-                data-mweb-context-type="notch"
-                data-mweb-context-parsed={JSON.stringify({ id: 'mutate-button' })}
-                data-mweb-context-level="system"
-              >
-                Mutate {<Mutate />}
-                <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-              </ButtonMutation>
-            </ButtonListBlock>
-
             {Object.keys(recentlyUsedMutations).length > 0 ? (
               <ListMutations
-                isAccordeonExpanded={isAccordeonExpanded}
                 data-testid="recently-used-mutations"
                 data-mweb-context-type="notch"
                 data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
@@ -320,7 +319,7 @@ export const Dropdown: FC<DropdownProps> = ({
             ) : null}
 
             {Object.keys(unusedMutations).length > 0 ? (
-              <AvalibleMutations isAccordeonExpanded={isAccordeonExpanded}>
+              <AvalibleMutations>
                 <AvalibleLableBlock
                   onClick={handleAccordeonClick}
                   data-mweb-context-type="notch"

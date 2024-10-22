@@ -118,7 +118,6 @@ export const StarSelectedMutationWrapper = styled.div`
 
 export const MutationsList = styled.div`
   position: absolute;
-  z-index: 3;
   outline: none;
   display: flex;
   flex-direction: column;
@@ -127,9 +126,9 @@ export const MutationsList = styled.div`
   width: 318px;
   left: -26px;
   top: 42px;
-  padding-right: 6px;
+  padding: 0;
   border-radius: 0px 0px 10px 10px;
-  overflow: hidden;
+
   @keyframes listVisible {
     0% {
       opacity: 0;
@@ -143,6 +142,7 @@ export const MutationsList = styled.div`
       opacity: 1;
     }
   }
+
   animation: listVisible 0.2s ease forwards;
   transition: all 0.3s;
 `
@@ -150,16 +150,15 @@ export const MutationsList = styled.div`
 export const MutationsListWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 98%;
   padding: 6px;
-  padding-top: 0;
-  padding-right: 0;
   overflow: hidden;
   overflow-y: auto;
   max-height: 500px;
   gap: 10px;
   position: relative;
-  padding-top: 46px;
+  margin-left: 1%;
+
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
@@ -192,9 +191,7 @@ export const ButtonListBlock = styled.div`
   justify-content: space-evenly;
   width: 100%;
   align-items: center;
-  position: fixed;
   top: 42px;
-  z-index: 100;
   left: 0;
   background: #f8f9ff;
 `
@@ -249,10 +246,8 @@ export const ButtonMutation = styled.div`
   }
 `
 
-export const ListMutations = styled.div<{
-  isAccordeonExpanded?: boolean
-}>`
-  width: ${(props) => (props.isAccordeonExpanded ? 'calc(100% - 5px)' : '100%')};
+export const ListMutations = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -333,6 +328,7 @@ export const ImageBlock = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   img {
     width: 100%;
     height: 100%;
@@ -340,12 +336,8 @@ export const ImageBlock = styled.div`
   }
 `
 
-export const AvalibleMutations = styled.div<{
-  $enable?: string
-  $enableBefore?: string
-  isAccordeonExpanded?: boolean
-}>`
-  width: ${(props) => (props.isAccordeonExpanded ? 'calc(100% - 5px)' : '100%')};
+export const AvalibleMutations = styled.div`
+  width: 100%;
   background: rgba(248, 249, 255, 1);
   border-radius: 10px;
   gap: 10px;
@@ -354,12 +346,14 @@ export const AvalibleMutations = styled.div<{
   box-sizing: border-box;
   padding: 10px;
   z-index: 1;
+
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);
     width: 100%;
     border-radius: 4px;
     padding: 2px 4px;
     margin-bottom: 3px;
+
     &:hover {
       background: rgba(24, 121, 206, 0.08);
     }
