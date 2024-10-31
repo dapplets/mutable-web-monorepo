@@ -28,9 +28,13 @@ export async function generateParserConfigByUrl(url: string): Promise<ParserConf
 
   const thread = await openai.beta.threads.create()
 
+  const parsedUrl = new URL(url)
+
+  const prompt = `Create an adapter for ${url}`
+
   await openai.beta.threads.messages.create(thread.id, {
     role: 'user',
-    content: url,
+    content: prompt,
   })
 
   const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
@@ -43,7 +47,18 @@ export async function generateParserConfigByUrl(url: string): Promise<ParserConf
     const [firstContent] = response.content
 
     if (firstContent.type === 'text') {
-      return JSON.parse(firstContent.text.value)
+      const parserConfig = JSON.parse(firstContent.text.value)
+
+      // ToDo: add logged in user
+      return {
+        ...parserConfig,
+        threadId: run.thread_id,
+        id: `bos.dapplets.near/parser/${parsedUrl.hostname}`,
+        parserType: 'json',
+        targets: [
+          { namespace: 'engine', contextType: 'website', if: { id: { eq: parsedUrl.hostname } } },
+        ],
+      }
     }
   }
 
@@ -51,9 +66,13 @@ export async function generateParserConfigByUrl(url: string): Promise<ParserConf
 }
 
 export async function improveParserConfig(
-  parserConfig: ParserConfig,
+  parserConfig: ParserConfig & { threadId?: string; targets: any[] },
   html: string
 ): Promise<ParserConfig | null> {
+  if (!parserConfig.threadId) {
+    throw new Error('Thread ID is not set')
+  }
+
   const [apiKey, organizationId, projectId, assistantId] = await Promise.all([
     getChatGptApiKey(),
     getOrganizationId(),
@@ -72,18 +91,14 @@ export async function improveParserConfig(
     project: projectId,
   })
 
-  const thread = await openai.beta.threads.create()
+  const prompt = `Add this:\n${html}`
 
-  await openai.beta.threads.messages.create(thread.id, {
+  await openai.beta.threads.messages.create(parserConfig.threadId, {
     role: 'user',
-    content: `
-      ${parserConfig}
-
-      ${html}
-    `,
+    content: prompt,
   })
 
-  const run = await openai.beta.threads.runs.createAndPoll(thread.id, {
+  const run = await openai.beta.threads.runs.createAndPoll(parserConfig.threadId, {
     assistant_id: assistantId,
   })
 
@@ -93,7 +108,16 @@ export async function improveParserConfig(
     const [firstContent] = response.content
 
     if (firstContent.type === 'text') {
-      return JSON.parse(firstContent.text.value)
+      const newParserConfig = JSON.parse(firstContent.text.value)
+
+      // ToDo: add logged in user
+      return {
+        ...newParserConfig,
+        threadId: run.thread_id,
+        id: parserConfig.id,
+        parserType: 'json',
+        targets: parserConfig.targets,
+      }
     }
   }
 

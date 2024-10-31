@@ -55,7 +55,15 @@ async function main() {
     p.targets.some((t: any) => utils.isTargetMet(t, core.tree))
   )
 
-  suitableParsers.forEach((p) => core.attachParserConfig(p))
+  console.log({ suitableParsers })
+
+  suitableParsers.forEach((p) => {
+    try {
+      core.attachParserConfig(p)
+    } catch (err) {
+      console.error(err)
+    }
+  })
 
   function handleNewContext({ child }: { child: IContextNode }) {
     child.on('childContextAdded', handleNewContext)
@@ -66,6 +74,8 @@ async function main() {
     const pc: any = await Background.generateParserConfigByUrl(location.href)
     if (!pc) throw new Error('Cannot generate parser config')
 
+    console.log({ generatedParser: pc })
+
     if (!pc.targets.some((t: any) => utils.isTargetMet(t, core.tree))) {
       throw new Error('The generated parser config is not suitable for this web site. Try again')
     }
@@ -73,12 +83,19 @@ async function main() {
     await Background.saveLocalParserConfig(pc)
 
     suitableParsers.push(pc as any)
-    core.attachParserConfig(pc)
+
+    try {
+      core.attachParserConfig(pc)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   async function improveParserConfig(pc: ParserConfig, html: string) {
     const newPc: any = await Background.improveParserConfig(pc, html)
     if (!newPc) throw new Error('Cannot improve parser config')
+
+    console.log({ generatedParser: newPc, previousVersion: pc })
 
     if (!newPc.targets.some((t: any) => utils.isTargetMet(t, core.tree))) {
       throw new Error('The generated parser config is not suitable for this web site. Try again')
@@ -87,7 +104,12 @@ async function main() {
     await Background.saveLocalParserConfig(newPc)
 
     core.detachParserConfig(pc.id)
-    core.attachParserConfig(newPc)
+
+    try {
+      core.attachParserConfig(newPc)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   browser.runtime.onMessage.addListener((message: any) => {
