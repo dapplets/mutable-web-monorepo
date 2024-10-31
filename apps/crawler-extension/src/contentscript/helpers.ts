@@ -75,3 +75,10 @@ export function isValidSocialIdCharacters(value: string): boolean {
 
 export const generateRandomHex = (size: number) =>
   [...Array(size)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
+
+export const capitalizeWords = (str: string) => str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+export const getNameFromId = (id: string) => {
+  const parts = id.split('/')
+  return capitalizeWords(parts[parts.length - 1])
+}
