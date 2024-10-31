@@ -44,7 +44,7 @@ const extensions = [langs.json()]
 
 type TEditorProps = {
   parserConfig: any
-  saveParserConfig: UseMutateFunction<void, Error, ParserConfig, unknown>
+  saveParserConfig: UseMutateFunction<any[], Error, ParserConfig, unknown>
   isLocalParserSaving: boolean
 }
 

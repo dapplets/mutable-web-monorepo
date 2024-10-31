@@ -6,6 +6,7 @@ import {
   getProjectId,
   getAssistantId,
 } from './settings-service'
+import { getNameFromId } from '../helpers'
 
 export async function generateParserConfigByUrl(url: string): Promise<ParserConfig | null> {
   const [apiKey, organizationId, projectId, assistantId] = await Promise.all([
@@ -69,10 +70,6 @@ export async function improveParserConfig(
   parserConfig: ParserConfig & { threadId?: string; targets: any[] },
   html: string
 ): Promise<ParserConfig | null> {
-  if (!parserConfig.threadId) {
-    throw new Error('Thread ID is not set')
-  }
-
   const [apiKey, organizationId, projectId, assistantId] = await Promise.all([
     getChatGptApiKey(),
     getOrganizationId(),
@@ -91,18 +88,29 @@ export async function improveParserConfig(
     project: projectId,
   })
 
-  const prompt = `Add this:\n${html}`
+  let run: OpenAI.Beta.Threads.Runs.Run
+  if (!parserConfig.threadId) {
+    const thread = await openai.beta.threads.create()
+    const prompt = `This is an adapter for ${getNameFromId(parserConfig.id)}:\n${parserConfig}\nAdd this:\n${html}`
+    await openai.beta.threads.messages.create(thread.id, {
+      role: 'user',
+      content: prompt,
+    })
+    run = await openai.beta.threads.runs.createAndPoll(thread.id, {
+      assistant_id: assistantId,
+    })
+  } else {
+    const prompt = `Add this:\n${html}`
+    await openai.beta.threads.messages.create(parserConfig.threadId, {
+      role: 'user',
+      content: prompt,
+    })
+    run = await openai.beta.threads.runs.createAndPoll(parserConfig.threadId, {
+      assistant_id: assistantId,
+    })
+  }
 
-  await openai.beta.threads.messages.create(parserConfig.threadId, {
-    role: 'user',
-    content: prompt,
-  })
-
-  const run = await openai.beta.threads.runs.createAndPoll(parserConfig.threadId, {
-    assistant_id: assistantId,
-  })
-
-  if (run.status === 'completed') {
+  if (run?.status === 'completed') {
     const messages = await openai.beta.threads.messages.list(run.thread_id, { limit: 1 })
     const [response] = messages.data
     const [firstContent] = response.content

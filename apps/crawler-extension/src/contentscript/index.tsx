@@ -135,7 +135,10 @@ async function main() {
 
     try {
       core.attachParserConfig(newPc)
-      suitableParsers[suitableParsers.findIndex((p) => p.id === newPc.id)] = newPc
+      const index = suitableParsers.findIndex((p) => p.id === newPc.id)
+      if (~index) suitableParsers[index] = newPc
+      else suitableParsers.push(newPc as any)
+      return suitableParsers
     } catch (err) {
       console.error(err)
     }

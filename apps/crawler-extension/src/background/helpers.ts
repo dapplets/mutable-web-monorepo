@@ -66,3 +66,10 @@ export function debounce<T, Q>(
     timeout = setTimeout(() => func.apply(this, args), ms)
   }
 }
+
+export const capitalizeWords = (str: string) => str.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
+
+export const getNameFromId = (id: string) => {
+  const parts = id.split('/')
+  return capitalizeWords(parts[parts.length - 1])
+}
