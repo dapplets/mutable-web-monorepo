@@ -112,6 +112,16 @@ async function reloadCurrentTab() {
   await browser.tabs.reload(currentTab.id)
 }
 
+async function saveLocalParserConfig(parserConfig: ParserConfig): Promise<void> {
+  const currentTab = await getCurrentTab()
+  if (!currentTab?.id) return
+
+  return browser.tabs.sendMessage(currentTab.id, {
+    type: 'SAVE_LOCAL_PARSER_CONFIG',
+    params: parserConfig,
+  })
+}
+
 export default {
   getCurrentTab,
   getSuitableParserConfigs,
@@ -123,4 +133,5 @@ export default {
   improveParserConfig,
   deleteParser,
   reloadCurrentTab,
+  saveLocalParserConfig,
 }

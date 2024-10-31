@@ -107,6 +107,7 @@ async function main() {
 
     try {
       core.attachParserConfig(newPc)
+      suitableParsers[suitableParsers.findIndex((p) => p.id === pc.id)] = newPc
     } catch (err) {
       console.error(err)
     }
@@ -116,6 +117,18 @@ async function main() {
     await Background.deleteParser(pcId)
     suitableParsers.splice(suitableParsers.indexOf(suitableParsers.find((p) => p.id === pcId)), 1)
     core.detachParserConfig(pcId)
+  }
+
+  async function saveLocalParserConfig(newPc: ParserConfig) {
+    await Background.saveLocalParserConfig(newPc)
+    core.detachParserConfig(newPc.id)
+
+    try {
+      core.attachParserConfig(newPc)
+      suitableParsers[suitableParsers.findIndex((p) => p.id === newPc.id)] = newPc
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   browser.runtime.onMessage.addListener((message: any) => {
@@ -145,6 +158,8 @@ async function main() {
       return Promise.resolve(improveParserConfig(message.params.parserConfig, message.params.html))
     } else if (message.type === 'DELETE_PARSER_CONFIG') {
       return Promise.resolve(deleteParser(message.params))
+    } else if (message.type === 'SAVE_LOCAL_PARSER_CONFIG') {
+      return Promise.resolve(saveLocalParserConfig(message.params))
     }
   })
 }

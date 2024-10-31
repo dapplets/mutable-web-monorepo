@@ -58,6 +58,12 @@ export const CollectedData: React.FC = () => {
     queryFn: ContentScript.getSuitableParserConfigs,
   })
 
+  const { mutate: saveLocalParserConfig, isPending: isLocalParserSaving } = useMutation({
+    mutationFn: ContentScript.saveLocalParserConfig,
+  })
+
+  // ToDo: call saveLocalParserConfig(parserConfig)
+
   const { isPending: isElementPicking, mutateAsync: pickElement } = useMutation({
     mutationFn: ContentScript.pickElement,
   })
