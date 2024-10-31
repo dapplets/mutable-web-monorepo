@@ -4,6 +4,7 @@ import * as ChatGptService from './chatgpt-service'
 import * as LocalParserService from './local-parser-service'
 import * as ContextService from './context-service'
 import * as EconomyService from './economy-service'
+import * as MenuService from './menu-service'
 
 export default {
   ...WalletService,
@@ -12,4 +13,5 @@ export default {
   ...LocalParserService,
   ...ContextService,
   ...EconomyService,
+  ...MenuService,
 }

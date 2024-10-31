@@ -116,7 +116,7 @@ export const Popup: FC = () => {
           <Card size="small" style={{ flex: 1 }}>
             <Card.Meta
               title={`${utils.format.formatNearAmount(potentialAmount)} NEAR`}
-              description="Total earned"
+              description="Expected"
             />
           </Card>
         </Flex>

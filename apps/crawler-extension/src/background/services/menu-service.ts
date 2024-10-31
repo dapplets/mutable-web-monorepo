@@ -144,3 +144,16 @@ function handleContextMenuClick(
   }
 }
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)
+
+export async function setIsError(isError: boolean, __request?: any) {
+  const tab = __request?.sender?.tab as browser.Tabs.Tab
+  if (!tab) return
+
+  const tabId = tab.id
+
+  await Promise.all([
+    browser.action.setBadgeBackgroundColor({ color: '#DB504A', tabId }),
+    browser.action.setBadgeTextColor({ color: '#ffffff', tabId }),
+    browser.action.setBadgeText({ text: isError ? '!' : '', tabId }),
+  ])
+}

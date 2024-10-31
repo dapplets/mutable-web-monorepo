@@ -57,6 +57,8 @@ async function main() {
 
   console.log({ suitableParsers })
 
+  let isError = false
+
   suitableParsers.forEach((p) => {
     try {
       core.attachParserConfig(p)
@@ -64,6 +66,14 @@ async function main() {
       console.error(err)
     }
   })
+
+  await setIsError(suitableParsers.length === 0)
+
+  async function setIsError(value: boolean) {
+    if (isError === value) return
+    isError = value
+    await Background.setIsError(value)
+  }
 
   function handleNewContext({ child }: { child: IContextNode }) {
     child.on('childContextAdded', handleNewContext)
