@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import React, { FC } from 'react'
 import { Navigate } from 'react-router-dom'
 import ContentScript from '../content-script'
+import { Layout } from '../components/layout'
 
 export const Default: FC = () => {
   const { data: parsers, isLoading } = useQuery({
@@ -10,7 +11,7 @@ export const Default: FC = () => {
   })
 
   if (isLoading) {
-    return <div>Loading...</div>
+    return <Layout>Loading parsers...</Layout>
   } else if (!parsers?.length) {
     return <Navigate to="/no-parsers" />
   } else {

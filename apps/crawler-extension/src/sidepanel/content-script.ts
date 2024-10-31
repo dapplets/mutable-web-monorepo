@@ -40,9 +40,44 @@ async function generateParserConfig(): Promise<ParserConfig | null> {
   return parserConfig as ParserConfig
 }
 
+function onActiveTabChange(callback: () => void) {
+  const listener = (_: number, __: browser.Tabs.OnUpdatedChangeInfoType, tab: browser.Tabs.Tab) => {
+    if (tab.active) {
+      callback()
+    }
+  }
+
+  browser.tabs.onActivated.addListener(callback)
+  browser.tabs.onUpdated.addListener(listener)
+
+  return {
+    unsubscribe: () => {
+      browser.tabs.onActivated.removeListener(callback)
+      browser.tabs.onUpdated.removeListener(listener)
+    },
+  }
+}
+
+async function ping(): Promise<boolean> {
+  const currentTab = await getCurrentTab()
+  if (!currentTab?.id) return false
+
+  try {
+    const result = await browser.tabs.sendMessage(currentTab.id, {
+      type: 'PING',
+    })
+
+    return result === 'PONG'
+  } catch (_) {
+    return false
+  }
+}
+
 export default {
   getCurrentTab,
   getSuitableParserConfigs,
   getContextTree,
   generateParserConfig,
+  onActiveTabChange,
+  ping,
 }

@@ -1,10 +1,10 @@
-import { Card, Layout, Typography, Spin, Flex, Space, Descriptions, TreeSelect } from 'antd'
-import React, { useEffect, useMemo, useState } from 'react'
-import browser from 'webextension-polyfill'
-import { ClonedContextNode } from '../../common/types'
-import { TreeTraverser } from '../tree-traverser'
-import ContentScript from '../content-script'
 import { useQuery } from '@tanstack/react-query'
+import { Layout as AntdLayout, Card, Descriptions, Flex, TreeSelect, Typography } from 'antd'
+import React, { useMemo, useState } from 'react'
+import { ClonedContextNode } from '../../common/types'
+import { Layout } from '../components/layout'
+import ContentScript from '../content-script'
+import { TreeTraverser } from '../tree-traverser'
 
 type ContextTypeTree = {
   value: string
@@ -46,7 +46,7 @@ export const CollectedData: React.FC = () => {
   )
 
   if (!contextTree) {
-    return <Spin tip="Waiting for parsed data..." fullscreen />
+    return <Layout>No context tree</Layout>
   }
 
   const handleContextTypeChange = (values: string[]) => {
@@ -54,7 +54,7 @@ export const CollectedData: React.FC = () => {
   }
 
   return (
-    <Layout style={{ padding: 16 }}>
+    <AntdLayout style={{ padding: 16 }}>
       <Typography.Title level={4} style={{ margin: '0 0 1em 0' }}>
         Collected Data
       </Typography.Title>
@@ -96,6 +96,6 @@ export const CollectedData: React.FC = () => {
           }}
         />
       </Flex>
-    </Layout>
+    </AntdLayout>
   )
 }
