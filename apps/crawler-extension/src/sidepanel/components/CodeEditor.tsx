@@ -42,6 +42,15 @@ const CodeEditor = ({ parserConfig, saveParserConfig, isLocalParserSaving }: TEd
 
   useEffect(() => setJsonData(sourceJson), [sourceJson])
 
+  const saveConfig = () => {
+    try {
+      const data = JSON.parse(jsonData)
+      saveParserConfig(data)
+    } catch (error) {
+      console.error('Error catched:', error)
+    }
+  }
+
   return (
     <Flex style={{ flexDirection: 'column', gap: 8 }}>
       <Flex
@@ -67,11 +76,7 @@ const CodeEditor = ({ parserConfig, saveParserConfig, isLocalParserSaving }: TEd
 
       {isButtonsDisplayed ? (
         <Flex style={{ gap: 8 }}>
-          <Button
-            loading={isLocalParserSaving}
-            style={{ width: '100%' }}
-            onClick={() => saveParserConfig(JSON.parse(jsonData))}
-          >
+          <Button loading={isLocalParserSaving} style={{ width: '100%' }} onClick={saveConfig}>
             Save
           </Button>
           <Button
