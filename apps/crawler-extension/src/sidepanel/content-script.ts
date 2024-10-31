@@ -105,6 +105,13 @@ async function deleteParser(pcId: string): Promise<void> {
   })
 }
 
+async function reloadCurrentTab() {
+  const currentTab = await getCurrentTab()
+  if (!currentTab?.id) return
+
+  await browser.tabs.reload(currentTab.id)
+}
+
 export default {
   getCurrentTab,
   getSuitableParserConfigs,
@@ -115,4 +122,5 @@ export default {
   pickElement,
   improveParserConfig,
   deleteParser,
+  reloadCurrentTab,
 }

@@ -82,7 +82,11 @@ export const CollectedData: React.FC = () => {
   )
 
   if (!contextTree) {
-    return <Layout>No context tree</Layout>
+    return (
+      <Layout>
+        <Typography.Text style={{ textAlign: 'center' }}>No context tree</Typography.Text>
+      </Layout>
+    )
   }
 
   const handleContextTypeChange = (values: string[]) => {
@@ -104,7 +108,11 @@ export const CollectedData: React.FC = () => {
   }
 
   if (isParserImproving) {
-    return <Layout>Improving parser...</Layout>
+    return (
+      <Layout>
+        <Typography.Text style={{ textAlign: 'center' }}>Improving parser...</Typography.Text>
+      </Layout>
+    )
   }
 
   return (

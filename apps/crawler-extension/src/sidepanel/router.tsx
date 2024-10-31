@@ -4,8 +4,9 @@ import { CollectedData } from './pages/collected-data'
 import { Default } from './pages/default'
 import { NoParsers } from './pages/no-parsers'
 import ContentScript from './content-script'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Layout } from './components/layout'
+import { Button, Typography } from 'antd'
 
 export const Router: React.FC = () => {
   const queryClient = useQueryClient()
@@ -24,8 +25,25 @@ export const Router: React.FC = () => {
     refetchInterval: 1000,
   })
 
+  const { mutate: reloadCurrentTab, isPending: isPageReloading } = useMutation({
+    mutationFn: ContentScript.reloadCurrentTab,
+  })
+
+  const handleReloadClick = () => {
+    reloadCurrentTab()
+  }
+
   if (!isAlive) {
-    return <Layout>No connection to the context page. Please reload the webpage.</Layout>
+    return (
+      <Layout>
+        <Typography.Text style={{ textAlign: 'center' }}>
+          No connection to the context page. Please reload the webpage.
+        </Typography.Text>
+        <Button type="primary" onClick={handleReloadClick} loading={isPageReloading}>
+          Reload Page
+        </Button>
+      </Layout>
+    )
   }
 
   return (
