@@ -155,7 +155,7 @@ export class ContextService {
     }
 
     this.nodes.set(hash, clonedNode);
-    onStore(clonedNode);
+    onStore(hash);
 
     const parentHash = node.parentNode
       ? this.storeNode(node.parentNode, onStore)
