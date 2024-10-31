@@ -54,6 +54,217 @@ importers:
         specifier: ^5.3.3
         version: 5.5.3
 
+  apps/crawler-extension:
+    dependencies:
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../../libs/backend
+      '@mweb/engine':
+        specifier: workspace:*
+        version: link:../../libs/engine
+      '@mweb/shared-components':
+        specifier: workspace:*
+        version: link:../../libs/shared-components
+      '@near-wallet-selector/core':
+        specifier: ^8.9.1
+        version: 8.9.10(near-api-js@2.1.3)
+      '@near-wallet-selector/wallet-utils':
+        specifier: ^8.9.1
+        version: 8.9.10(near-api-js@2.1.3)
+      '@types/styled-components':
+        specifier: ^5.1.34
+        version: 5.1.34
+      antd:
+        specifier: ^5.18.3
+        version: 5.19.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      bn.js:
+        specifier: ^5.2.1
+        version: 5.2.1
+      bootstrap:
+        specifier: ^5.3.1
+        version: 5.3.3(@popperjs/core@2.11.8)
+      borsh:
+        specifier: 0.7.0
+        version: 0.7.0
+      chrome-extension-message-wrapper:
+        specifier: github:dapplets/chrome-extension-message-wrapper
+        version: https://codeload.github.com/dapplets/chrome-extension-message-wrapper/tar.gz/c6d7da50e486fd0bfa0576f0e4b962adb7062096
+      ethereum-blockies-base64:
+        specifier: ^1.0.2
+        version: 1.0.2
+      events:
+        specifier: ^3.3.0
+        version: 3.3.0
+      near-api-js:
+        specifier: ^2.1.3
+        version: 2.1.3
+      near-social-vm:
+        specifier: github:dapplets/near-social-vm
+        version: https://codeload.github.com/dapplets/near-social-vm/tar.gz/574951a1dc6f50994bff6e035b23193adafb4e30(@popperjs/core@2.11.8)(@types/react-dom@18.3.0)(@types/react@18.3.3)(near-api-js@2.1.3)(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(styled-components@5.3.11(@babel/core@7.25.2)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1))
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+      react-bootstrap:
+        specifier: ^2.5.0
+        version: 2.10.4(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.3.1(react@18.3.1)
+      react-singleton-hook:
+        specifier: ^4.0.1
+        version: 4.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      styled-components:
+        specifier: ^5.3.6
+        version: 5.3.11(@babel/core@7.25.2)(react-dom@18.3.1(react@18.3.1))(react-is@18.3.1)(react@18.3.1)
+    devDependencies:
+      '@playwright/test':
+        specifier: ^1.42.1
+        version: 1.45.1
+      '@semantic-release/exec':
+        specifier: ^6.0.3
+        version: 6.0.3(semantic-release@19.0.5)
+      '@semantic-release/git':
+        specifier: ^10.0.1
+        version: 10.0.1(semantic-release@19.0.5)
+      '@svgr/webpack':
+        specifier: ^6.5.1
+        version: 6.5.1
+      '@types/bn.js':
+        specifier: ^5.1.5
+        version: 5.1.5
+      '@types/chrome':
+        specifier: ^0.0.236
+        version: 0.0.236
+      '@types/react':
+        specifier: ^18.2.21
+        version: 18.3.3
+      '@types/react-dom':
+        specifier: ^18.2.7
+        version: 18.3.0
+      '@types/webextension-polyfill':
+        specifier: ^0.10.0
+        version: 0.10.7
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^5.57.1
+        version: 5.62.0(@typescript-eslint/parser@5.62.0(eslint@8.57.0)(typescript@4.9.5))(eslint@8.57.0)(typescript@4.9.5)
+      '@typescript-eslint/parser':
+        specifier: ^5.57.1
+        version: 5.62.0(eslint@8.57.0)(typescript@4.9.5)
+      adm-zip:
+        specifier: ^0.5.10
+        version: 0.5.14
+      assert-browserify:
+        specifier: ^2.0.0
+        version: 2.0.0
+      buffer:
+        specifier: ^6.0.3
+        version: 6.0.3
+      copy-webpack-plugin:
+        specifier: ^11.0.0
+        version: 11.0.0(webpack@5.92.1(webpack-cli@5.1.4))
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      css-loader:
+        specifier: ^6.7.3
+        version: 6.11.0(webpack@5.92.1(webpack-cli@5.1.4))
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      eslint:
+        specifier: ^8.37.0
+        version: 8.57.0
+      eslint-config-prettier:
+        specifier: ^8.8.0
+        version: 8.10.0(eslint@8.57.0)
+      eslint-plugin-prettier:
+        specifier: ^4.2.1
+        version: 4.2.1(eslint-config-prettier@8.10.0(eslint@8.57.0))(eslint@8.57.0)(prettier@2.8.8)
+      eslint-plugin-react:
+        specifier: ^7.32.2
+        version: 7.34.3(eslint@8.57.0)
+      eslint-plugin-react-hooks:
+        specifier: ^4.6.0
+        version: 4.6.2(eslint@8.57.0)
+      fork-ts-checker-webpack-plugin:
+        specifier: ^7.3.0
+        version: 7.3.0(typescript@4.9.5)(webpack@5.92.1(webpack-cli@5.1.4))
+      postcss-scss:
+        specifier: ^4.0.6
+        version: 4.0.9(postcss@8.4.39)
+      prettier:
+        specifier: ^2.8.7
+        version: 2.8.8
+      prettier-plugin-organize-imports:
+        specifier: ^3.2.2
+        version: 3.2.4(prettier@2.8.8)(typescript@4.9.5)
+      process:
+        specifier: ^0.11.10
+        version: 0.11.10
+      raw-loader:
+        specifier: ^4.0.2
+        version: 4.0.2(webpack@5.92.1(webpack-cli@5.1.4))
+      react-draggable:
+        specifier: ^4.4.6
+        version: 4.4.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      resize-observer-polyfill:
+        specifier: ^1.5.1
+        version: 1.5.1
+      resolve-url-loader:
+        specifier: ^5.0.0
+        version: 5.0.0
+      sass:
+        specifier: ^1.60.0
+        version: 1.77.6
+      sass-loader:
+        specifier: ^13.2.2
+        version: 13.3.3(sass@1.77.6)(webpack@5.92.1(webpack-cli@5.1.4))
+      semantic-release:
+        specifier: ^19.0.5
+        version: 19.0.5
+      stream-browserify:
+        specifier: ^3.0.0
+        version: 3.0.0
+      style-loader:
+        specifier: ^3.3.2
+        version: 3.3.4(webpack@5.92.1(webpack-cli@5.1.4))
+      stylelint:
+        specifier: ^14.16.1
+        version: 14.16.1
+      stylelint-config-clean-order:
+        specifier: ^2.3.1
+        version: 2.3.1(stylelint@14.16.1)
+      stylelint-config-prettier-scss:
+        specifier: ^0.0.1
+        version: 0.0.1(stylelint@14.16.1)
+      stylelint-config-standard-scss:
+        specifier: ^6.1.0
+        version: 6.1.0(postcss@8.4.39)(stylelint@14.16.1)
+      ts-loader:
+        specifier: ^9.4.2
+        version: 9.5.1(typescript@4.9.5)(webpack@5.92.1(webpack-cli@5.1.4))
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+      url-loader:
+        specifier: ^4.1.1
+        version: 4.1.1(webpack@5.92.1(webpack-cli@5.1.4))
+      webextension-polyfill:
+        specifier: ^0.10.0
+        version: 0.10.0
+      webpack:
+        specifier: ^5.86.0
+        version: 5.92.1(webpack-cli@5.1.4)
+      webpack-cli:
+        specifier: ^5.1.4
+        version: 5.1.4(webpack-dev-server@4.15.2)(webpack@5.92.1)
+      webpack-dev-server:
+        specifier: ^4.15.1
+        version: 4.15.2(webpack-cli@5.1.4)(webpack@5.92.1)
+      webpack-merge:
+        specifier: ^5.9.0
+        version: 5.10.0
+
   apps/extension:
     dependencies:
       '@mweb/backend':
@@ -655,12 +866,12 @@ importers:
 
   libs/shared-components:
     dependencies:
-      '@mweb/backend':
-        specifier: workspace:*
-        version: link:../backend
       '@codemirror/state':
         specifier: ^6.4.1
         version: 6.4.1
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../backend
       '@mweb/engine':
         specifier: workspace:*
         version: link:../engine
