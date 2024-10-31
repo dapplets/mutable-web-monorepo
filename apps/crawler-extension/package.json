@@ -1,7 +1,7 @@
 {
   "name": "@mweb/crawler-extension",
   "version": "0.1.0",
-  "description": "Bridge to the Mutable Web",
+  "description": "Parses web content into semantic chunks, stores it in decentralized storage, and rewards users with tokens.",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack -w --config webpack.dev.js",
