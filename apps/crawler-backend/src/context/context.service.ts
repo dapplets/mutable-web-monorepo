@@ -64,7 +64,9 @@ export class ContextService {
       return [];
     }
 
-    const hashes = this.storeNode(dto.context, this._rootHash);
+    const storedHashes: string[] = [];
+
+    this.storeNode(dto.context, (hash) => storedHashes.push(hash));
 
     const schema = BorshSchema.Struct({
       data_hash: BorshSchema.Vec(BorshSchema.u8),
@@ -72,7 +74,7 @@ export class ContextService {
       receiver_id: BorshSchema.String,
     });
 
-    const receipts = hashes.map((hash) => {
+    const receipts = storedHashes.map((hash) => {
       const receipt = {
         data_hash: hash,
         amount: '1000000000000000000000',
@@ -138,7 +140,8 @@ export class ContextService {
     };
   }
 
-  private storeNode(node: ContextDto, parentHash: string): string[] {
+  // ToDo: refactor onStore
+  private storeNode(node: ContextDto, onStore: (hash: string) => void): string {
     const { node: clonedNode, hash } = this._prepareNode({
       namespace: node.namespace,
       contextType: node.contextType,
@@ -148,21 +151,20 @@ export class ContextService {
 
     // skip existing nodes => only the first parser will be rewarded
     if (this.nodes.has(hash)) {
-      return [];
+      return hash;
     }
 
     this.nodes.set(hash, clonedNode);
+    onStore(clonedNode);
 
-    const hashes: string[] = [hash];
+    const parentHash = node.parentNode
+      ? this.storeNode(node.parentNode, onStore)
+      : this._rootHash;
 
-    this.edges.set(parentHash, hash);
+    // this.edges.set(parentHash, hash);
     this.edges.set(hash, parentHash);
 
-    if (node.parentNode) {
-      hashes.push(...this.storeNode(node.parentNode, hash));
-    }
-
-    return hashes;
+    return hash;
   }
 
   private _prepareNode(inputNode: any): { node: any; hash: string } {
