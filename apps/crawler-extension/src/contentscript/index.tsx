@@ -92,7 +92,7 @@ async function main() {
   }
 
   async function improveParserConfig(pc: ParserConfig, html: string) {
-    const newPc: any = await Background.improveParserConfig(pc, html)
+    const newPc: any = await Background.improveParserConfig(pc as any, html)
     if (!newPc) throw new Error('Cannot improve parser config')
 
     console.log({ generatedParser: newPc, previousVersion: pc })
@@ -110,6 +110,12 @@ async function main() {
     } catch (err) {
       console.error(err)
     }
+  }
+
+  async function deleteParser(pcId: string) {
+    await Background.deleteParser(pcId)
+    suitableParsers.splice(suitableParsers.indexOf(suitableParsers.find((p) => p.id === pcId)), 1)
+    core.detachParserConfig(pcId)
   }
 
   browser.runtime.onMessage.addListener((message: any) => {
@@ -137,6 +143,8 @@ async function main() {
       return Promise.resolve(picker.pickElement())
     } else if (message.type === 'IMPROVE_PARSER_CONFIG') {
       return Promise.resolve(improveParserConfig(message.params.parserConfig, message.params.html))
+    } else if (message.type === 'DELETE_PARSER_CONFIG') {
+      return Promise.resolve(deleteParser(message.params))
     }
   })
 }

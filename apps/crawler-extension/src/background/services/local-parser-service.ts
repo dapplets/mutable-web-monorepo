@@ -20,3 +20,7 @@ export async function getLocalParserConfig(id: string): Promise<ParserConfig | n
 export async function saveLocalParserConfig(parserConfig: ParserConfig): Promise<void> {
   await browser.storage.local.set({ [parserConfig.id]: parserConfig })
 }
+
+export async function deleteParser(id: string): Promise<void> {
+  await browser.storage.local.remove(id)
+}

@@ -1,4 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { ParserConfig } from '@mweb/core'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Layout as AntdLayout,
   Button,
@@ -9,11 +10,11 @@ import {
   Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ClonedContextNode } from '../../common/types'
 import { Layout } from '../components/layout'
-import ContentScript from '../content-script'
 import { TreeTraverser } from '../components/tree-traverser'
-import { ParserConfig } from '@mweb/core'
+import ContentScript from '../content-script'
 
 type ContextTypeTree = {
   value: string
@@ -40,6 +41,9 @@ function extractContextTypesTree(nodes: ClonedContextNode[]): ContextTypeTree[] 
 }
 
 export const CollectedData: React.FC = () => {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
   const [contextTypes, setContextTypes] = useState<string[]>([])
 
   const { data: contextTree } = useQuery({
@@ -56,6 +60,15 @@ export const CollectedData: React.FC = () => {
 
   const { isPending: isElementPicking, mutateAsync: pickElement } = useMutation({
     mutationFn: ContentScript.pickElement,
+  })
+
+  const { isPending: isParserDeleting, mutateAsync: deleteParser } = useMutation({
+    mutationFn: (pcId: string) => ContentScript.deleteParser(pcId),
+    onSuccess: () => {
+      queryClient
+        .invalidateQueries({ queryKey: ['getSuitableParserConfigs'] })
+        .then(() => navigate('/'))
+    },
   })
 
   const { isPending: isParserImproving, mutateAsync: improveParserConfig } = useMutation({
@@ -84,6 +97,12 @@ export const CollectedData: React.FC = () => {
     await improveParserConfig({ html, pc })
   }
 
+  const handleDeleteParserClick = async () => {
+    if (!parsers?.length) return
+    const pc = parsers[0]
+    await deleteParser(pc.id)
+  }
+
   if (isParserImproving) {
     return <Layout>Improving parser...</Layout>
   }
@@ -94,9 +113,14 @@ export const CollectedData: React.FC = () => {
         Collected Data
       </Typography.Title>
       <Flex vertical gap="small">
-        <Button type="default" onClick={handlePickElementClick} loading={isElementPicking}>
-          Pick Element
-        </Button>
+        <Flex gap="small">
+          <Button block type="default" onClick={handlePickElementClick} loading={isElementPicking}>
+            Pick Element
+          </Button>
+          <Button block type="default" onClick={handleDeleteParserClick} loading={isParserDeleting}>
+            Delete Parser
+          </Button>
+        </Flex>
         <TreeSelect
           style={{ width: '100%' }}
           value={contextTypes}

@@ -95,6 +95,16 @@ async function improveParserConfig(pc: ParserConfig, html: string): Promise<void
   })
 }
 
+async function deleteParser(pcId: string): Promise<void> {
+  const currentTab = await getCurrentTab()
+  if (!currentTab?.id) return
+
+  return browser.tabs.sendMessage(currentTab.id, {
+    type: 'DELETE_PARSER_CONFIG',
+    params: pcId,
+  })
+}
+
 export default {
   getCurrentTab,
   getSuitableParserConfigs,
@@ -104,4 +114,5 @@ export default {
   ping,
   pickElement,
   improveParserConfig,
+  deleteParser,
 }
