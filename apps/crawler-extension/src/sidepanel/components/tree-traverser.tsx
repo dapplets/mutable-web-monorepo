@@ -1,4 +1,4 @@
-import { ClonedContextNode } from '../common/types'
+import { ClonedContextNode } from '../../common/types'
 import React, { FC } from 'react'
 
 export const TreeTraverser: FC<{
@@ -9,7 +9,7 @@ export const TreeTraverser: FC<{
     <>
       <Component node={node} />
 
-      {node.children.map((child) => (
+      {node.children?.map((child) => (
         <TreeTraverser
           key={`${child.namespace}/${child.contextType}/${child.id}`}
           node={child}

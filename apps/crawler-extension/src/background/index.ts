@@ -9,6 +9,7 @@ import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
 import * as ChatGptService from './services/chatgpt-service'
 import * as LocalParserService from './services/local-parser-service'
+import * as ContextService from './services/context-service'
 
 const networkConfigPromise = SettingsService.getCurrentNetwork().then(
   (networkId) => networkConfigs[networkId]
@@ -74,6 +75,7 @@ export const bgFunctions = {
   ...SettingsService,
   ...ChatGptService,
   ...LocalParserService,
+  ...ContextService,
 }
 
 export type BgFunctions = typeof bgFunctions

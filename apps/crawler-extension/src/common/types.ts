@@ -25,5 +25,6 @@ export type ClonedContextNode = {
   contextType: string
   id: string | null
   parsedContext: any
-  children: ClonedContextNode[]
+  children?: ClonedContextNode[]
+  parentNode?: ClonedContextNode | null
 }

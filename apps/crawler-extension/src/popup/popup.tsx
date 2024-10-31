@@ -19,6 +19,12 @@ export const Popup: FC = () => {
     queryFn: Background.near_getAccounts,
   })
 
+  const { data: contextCount } = useQuery({
+    queryKey: ['contextCount'],
+    queryFn: Background.getContextCount,
+    refetchInterval: 1000,
+  })
+
   const [account] = accounts ?? []
 
   const { mutate: connectWallet, isPending: isWalletConnecting } = useMutation({
@@ -82,7 +88,7 @@ export const Popup: FC = () => {
         )}
         <Flex gap="small" justify="center">
           <Card size="small" style={{ flex: 1 }}>
-            <Card.Meta title="52029" description="Items parsed" />
+            <Card.Meta title={contextCount?.toString()} description="Items parsed" />
           </Card>
           {account ? (
             <Card size="small" style={{ flex: 1 }}>

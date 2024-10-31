@@ -44,6 +44,8 @@ async function main() {
   const engine = new Engine(engineConfig)
   const picker = new Picker()
 
+  core.tree.on('childContextAdded', handleNewContext)
+
   const [remoteParsers, localParsers] = await Promise.all([
     engine.parserConfigService.getAllParserConfigs(),
     Background.getAllLocalParserConfigs(),
@@ -54,6 +56,11 @@ async function main() {
   )
 
   suitableParsers.forEach((p) => core.attachParserConfig(p))
+
+  function handleNewContext({ child }: { child: IContextNode }) {
+    child.on('childContextAdded', handleNewContext)
+    Background.storeContext(cloneContextSubtree(child))
+  }
 
   async function generateParserConfig() {
     const pc: any = await Background.generateParserConfigByUrl(location.href)
@@ -122,6 +129,18 @@ function cloneContextTree(tree: IContextNode): ClonedContextNode {
     id: tree.id,
     parsedContext: clonedParsedContext,
     children: tree.children.map((child) => cloneContextTree(child)),
+  }
+}
+
+function cloneContextSubtree(node: IContextNode): ClonedContextNode {
+  const clonedParsedContext = { ...node.parsedContext }
+  delete clonedParsedContext.id
+  return {
+    namespace: node.namespace,
+    contextType: node.contextType,
+    id: node.id,
+    parsedContext: clonedParsedContext,
+    parentNode: node.parentNode ? cloneContextSubtree(node.parentNode) : null,
   }
 }
 

@@ -12,7 +12,7 @@ import React, { useMemo, useState } from 'react'
 import { ClonedContextNode } from '../../common/types'
 import { Layout } from '../components/layout'
 import ContentScript from '../content-script'
-import { TreeTraverser } from '../tree-traverser'
+import { TreeTraverser } from '../components/tree-traverser'
 import { ParserConfig } from '@mweb/core'
 
 type ContextTypeTree = {
@@ -29,7 +29,7 @@ function extractContextTypesTree(nodes: ClonedContextNode[]): ContextTypeTree[] 
       map.set(node.contextType, [])
     }
 
-    node.children.forEach((child) => map.get(node.contextType)!.push(child))
+    node.children?.forEach((child) => map.get(node.contextType)!.push(child))
   }
 
   return Array.from(map.entries()).map(([contextType, children]) => ({
