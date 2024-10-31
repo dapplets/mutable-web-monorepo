@@ -120,7 +120,7 @@ export class ContextService {
     const keyStore = new keyStores.InMemoryKeyStore();
     const signer = new InMemorySigner(keyStore);
     const provider = new providers.JsonRpcProvider({
-      url: 'https://mainnet.near.dapplets.org',
+      url: 'https://rpc.mainnet.near.org',
     });
     const connection = new Connection('mainnet', provider, signer, '');
     const contract = new Contract(connection, 'app.crwl.near', {
