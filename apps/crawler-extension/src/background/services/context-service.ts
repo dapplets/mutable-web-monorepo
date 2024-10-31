@@ -4,12 +4,12 @@ import { saveReceiptToLocalStorage, SignedReceipt } from './economy-service'
 import { near_getAccounts } from './wallet-service'
 import { BN } from 'bn.js'
 
-async function unsafe_incrementContextCount(): Promise<void> {
+async function unsafe_addContextCount(value: number): Promise<void> {
   const { contextCount } = (await browser.storage.local.get('contextCount')) as {
     contextCount: number | null
   }
   await browser.storage.local.set({
-    contextCount: contextCount && typeof contextCount === 'number' ? contextCount + 1 : 1,
+    contextCount: contextCount && typeof contextCount === 'number' ? contextCount + value : value,
   })
 }
 
@@ -49,7 +49,7 @@ async function unsafe_storeContext(context: any) {
     .reduce((acc, x) => acc.add(new BN(x.receipt.amount)), new BN(0))
     .toString()
 
-  await unsafe_incrementContextCount()
+  await unsafe_addContextCount(signedReceipts.length)
   await unsafe_addPotentialAmount(totalAmount)
 }
 

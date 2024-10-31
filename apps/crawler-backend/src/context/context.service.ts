@@ -139,13 +139,17 @@ export class ContextService {
   }
 
   private storeNode(node: ContextDto, parentHash: string): string[] {
-    // ToDo: skip existing nodes
     const { node: clonedNode, hash } = this._prepareNode({
       namespace: node.namespace,
       contextType: node.contextType,
       id: node.id,
       parsedContext: node.parsedContext,
     });
+
+    // skip existing nodes => only the first parser will be rewarded
+    if (this.nodes.has(hash)) {
+      return [];
+    }
 
     this.nodes.set(hash, clonedNode);
 
