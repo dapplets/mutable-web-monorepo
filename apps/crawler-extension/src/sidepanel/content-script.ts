@@ -122,6 +122,10 @@ async function saveLocalParserConfig(parserConfig: ParserConfig): Promise<void> 
   })
 }
 
+async function openSettingsPage() {
+  await browser.runtime.openOptionsPage()
+}
+
 export default {
   getCurrentTab,
   getSuitableParserConfigs,
@@ -134,4 +138,5 @@ export default {
   deleteParser,
   reloadCurrentTab,
   saveLocalParserConfig,
+  openSettingsPage,
 }

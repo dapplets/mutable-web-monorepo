@@ -3,6 +3,7 @@ import { Button, Flex, Typography } from 'antd'
 import React, { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ContentScript from '../content-script'
+import Background from '../../common/background'
 
 export const NoParsers: FC = () => {
   const navigate = useNavigate()
@@ -17,7 +18,11 @@ export const NoParsers: FC = () => {
     },
   })
 
-  const handleCreateAdapterClick = () => {
+  const handleCreateAdapterClick = async () => {
+    if (!(await Background.getChatGptApiKey())) {
+      return await ContentScript.openSettingsPage()
+    }
+
     mutate()
   }
 
