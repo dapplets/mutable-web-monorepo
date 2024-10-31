@@ -16,13 +16,31 @@ const Container = styled.div`
   width: 100%;
   height: 500px;
   overflow: scroll;
+  background-color: #fff;
 
-  .cm-mergeViewEditors > .cm-mergeViewEditor:first-child {
+  .cm-mergeView {
+    overflow-y: unset;
+  }
+
+  .cm-mergeViewEditor:first-child {
     display: none;
+  }
+
+  .cm-mergeViewEditor:nth-child(2) {
+    overflow: unset;
+  }
+
+  .cm-editor {
+    width: 100px;
+    outline: none !important;
+  }
+
+  .cm-scroller {
+    overflow-x: unset;
   }
 `
 
-const extensions = [langs.json()] // ToDo: turn on in prod mode
+const extensions = [langs.json()]
 
 type TEditorProps = {
   parserConfig: any
