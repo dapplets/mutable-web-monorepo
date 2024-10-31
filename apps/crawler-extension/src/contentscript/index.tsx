@@ -10,6 +10,9 @@ import { NearNetworkId, networkConfigs } from '../common/networks'
 import Background from '../common/background'
 import { ExtensionStorage } from './extension-storage'
 import { setupWallet } from './wallet'
+import { Core, IContextNode } from '@mweb/core'
+import TwitterParser from '../parsers/twitter.json'
+import { ClonedContextNode } from '../common/types'
 
 const eventEmitter = new NEventEmitter()
 const networkIdPromise = Background.getCurrentNetwork()
@@ -105,6 +108,31 @@ async function main() {
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(<div></div>)
+
+  const core = new Core()
+
+  const handleChangeTree = ({ child }: { child: IContextNode }) => {
+    browser.runtime.sendMessage({ type: 'CONTEXT_TREE_CHANGE', data: cloneContextTree(core.tree) })
+    child.on('childContextAdded', handleChangeTree)
+  }
+
+  handleChangeTree({ child: core.tree })
+
+  // @ts-ignore
+  core.attachParserConfig(TwitterParser)
+}
+
+function cloneContextTree(tree: IContextNode): ClonedContextNode {
+  const clonedParsedContext = { ...tree.parsedContext }
+  delete clonedParsedContext.id
+
+  return {
+    namespace: tree.namespace,
+    contextType: tree.contextType,
+    id: tree.id,
+    parsedContext: clonedParsedContext,
+    children: tree.children.map((child) => cloneContextTree(child)),
+  }
 }
 
 main().catch(console.error)

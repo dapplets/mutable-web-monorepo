@@ -62,6 +62,9 @@ importers:
       '@mweb/backend':
         specifier: workspace:*
         version: link:../../libs/backend
+      '@mweb/core':
+        specifier: workspace:*
+        version: link:../../libs/core
       '@mweb/engine':
         specifier: workspace:*
         version: link:../../libs/engine
