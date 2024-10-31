@@ -150,7 +150,7 @@ export class WalletImpl {
     const appKeyPrefix = networkId
     const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX
     const authData = JSON.parse(
-      (await browser.storage.local.get(authDataKey))[authDataKey] ?? 'null'
+      ((await browser.storage.local.get(authDataKey))[authDataKey] ?? 'null') as string
     )
 
     // ToDo: replace this._config.networkId with app_key prefix

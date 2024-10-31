@@ -8,7 +8,7 @@ export class ExtensionStorage implements StorageService, IStorage {
   async getItem(key: string): Promise<string> {
     const globalKey = this._makeKey(key)
     const result = await browser.storage.local.get(globalKey)
-    return result[globalKey]
+    return result[globalKey] as string
   }
 
   async setItem(key: string, value: string): Promise<void> {

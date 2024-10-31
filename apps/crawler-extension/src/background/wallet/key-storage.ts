@@ -25,7 +25,7 @@ export class WebExtensionKeyStorage extends keyStores.KeyStore {
       throw new Error(`No key for ${accountId} account`)
     }
 
-    return KeyPair.fromString(result[key])
+    return KeyPair.fromString(result[key] as string)
   }
 
   async removeKey(networkId: string, accountId: string): Promise<void> {

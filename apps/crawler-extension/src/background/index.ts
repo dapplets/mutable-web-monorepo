@@ -10,7 +10,7 @@ import { WalletImpl } from './wallet'
 const getCurrentNetwork = async (): Promise<NearNetworkId> => {
   return browser.storage.local
     .get('networkId')
-    .then(({ networkId }) => networkId ?? DefaultNetworkId)
+    .then(({ networkId }) => (networkId as NearNetworkId | null) ?? DefaultNetworkId)
 }
 
 const switchNetwork = async (networkId: NearNetworkId) => {
@@ -70,7 +70,7 @@ const disconnectWallet = async (): Promise<void> => {
 
 const getDevServerUrl = async (): Promise<string | null> => {
   const { devServerUrl } = await browser.storage.local.get('devServerUrl')
-  return devServerUrl ? devServerUrl : null
+  return devServerUrl ? (devServerUrl as string) : null
 }
 
 const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
