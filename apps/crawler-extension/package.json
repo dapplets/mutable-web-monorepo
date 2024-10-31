@@ -1,6 +1,6 @@
 {
   "name": "@mweb/crawler-extension",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Parses web content into semantic chunks, stores it in decentralized storage, and rewards users with tokens.",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
