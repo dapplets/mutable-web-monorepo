@@ -50,8 +50,8 @@ function handleInsertStyles(element) {
 
 module.exports = {
   entry: {
-    'sidepanel': path.join(__dirname, 'src/sidepanel/index.tsx'),
-    'popup': path.join(__dirname, 'src/popup/index.tsx'),
+    sidepanel: path.join(__dirname, 'src/sidepanel/index.tsx'),
+    popup: path.join(__dirname, 'src/popup/index.tsx'),
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
     contentscript: path.join(__dirname, 'src/contentscript/index.tsx'),
     options: path.join(__dirname, 'src/options/index.tsx'),
@@ -60,7 +60,7 @@ module.exports = {
     path: path.join(__dirname, 'build'),
     filename: '[name].js',
     publicPath: '',
-    chunkFormat: false
+    chunkFormat: false,
   },
   module: {
     rules: [
@@ -162,6 +162,9 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       EXTENSION_VERSION: JSON.stringify(package.version),
+      DEFAULT_CRAWLER_API_URL: process.env.DEFAULT_CRAWLER_API_URL
+        ? JSON.stringify(process.env.DEFAULT_CRAWLER_API_URL)
+        : null,
     }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
