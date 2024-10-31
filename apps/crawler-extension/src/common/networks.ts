@@ -6,6 +6,7 @@ export const networkConfigs = {
     helperUrl: 'https://helper.mainnet.near.org',
     explorerUrl: 'https://nearblocks.io',
     socialDbContract: 'social.near',
+    avatarUrl: 'https://i.near.social/magic/thumbnail/https://near.social/magic/img/account',
   },
   testnet: {
     networkId: 'testnet',
@@ -14,6 +15,7 @@ export const networkConfigs = {
     helperUrl: 'https://helper.testnet.near.org',
     explorerUrl: 'https://testnet.nearblocks.io',
     socialDbContract: 'v1.social08.testnet',
+    avatarUrl: 'https://i.near.social/magic/thumbnail/https://test.near.social/magic/img/account',
   },
 }
 

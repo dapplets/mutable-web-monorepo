@@ -21,7 +21,7 @@
     "@types/chrome": "^0.0.236",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
-    "@types/webextension-polyfill": "^0.10.0",
+    "@types/webextension-polyfill": "^0.12.1",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "adm-zip": "^0.5.10",
@@ -57,19 +57,22 @@
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.5",
     "url-loader": "^4.1.1",
-    "webextension-polyfill": "^0.10.0",
+    "webextension-polyfill": "^0.12.0",
     "webpack": "^5.86.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1",
     "webpack-merge": "^5.9.0"
   },
   "dependencies": {
-    "@mweb/engine": "workspace:*",
+    "@ant-design/icons": "^5.5.1",
     "@mweb/backend": "workspace:*",
+    "@mweb/engine": "workspace:*",
     "@mweb/shared-components": "workspace:*",
     "@near-wallet-selector/core": "^8.9.1",
     "@near-wallet-selector/wallet-utils": "^8.9.1",
+    "@tanstack/react-query": "^5.59.15",
     "@types/styled-components": "^5.1.34",
+    "antd": "^5.18.3",
     "bn.js": "^5.2.1",
     "bootstrap": "^5.3.1",
     "borsh": "0.7.0",
@@ -82,8 +85,7 @@
     "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
     "react-singleton-hook": "^4.0.1",
-    "styled-components": "^5.3.6",
-    "antd": "^5.18.3"
+    "styled-components": "^5.3.6"
   },
   "directories": {
     "doc": "docs"
