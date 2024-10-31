@@ -20,13 +20,17 @@ export async function storeContext(context: any): Promise<void> {
 
   // ToDo: use new URL
   // ToDo: extract to the separate service
-  await fetch(storageServerUrl + '/context', {
+  const response = await fetch(storageServerUrl + '/context', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(context),
+    body: JSON.stringify({ context, receiverId: 'dapplets.near' }),
   })
+
+  const json = await response.json()
+
+  console.log({ json })
 
   return promise
 }

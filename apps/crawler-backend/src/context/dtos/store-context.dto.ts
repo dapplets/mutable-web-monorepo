@@ -1,8 +1,13 @@
-export class StoreContextDto {
+export type ContextDto = {
   namespace: string;
   contextType: string;
   id: string | null;
   parsedContext: any;
-  children?: StoreContextDto[];
-  parentNode?: StoreContextDto | null;
+  children?: ContextDto[];
+  parentNode?: ContextDto | null;
+};
+
+export class StoreContextDto {
+  context: ContextDto;
+  receiverId: string;
 }

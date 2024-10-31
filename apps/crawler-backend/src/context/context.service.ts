@@ -1,13 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { StoreContextDto } from './dtos/store-context.dto';
+import { ContextDto, StoreContextDto } from './dtos/store-context.dto';
+import { CRAWLER_PRIVATE_KEY } from '../env';
+import stringify from 'json-stringify-deterministic';
+import { sha256 } from '@noble/hashes/sha256';
+import { utils } from 'near-api-js';
+import { BorshSchema, borshSerialize } from 'borsher';
+
+const toHexString = (arr: Uint8Array) =>
+  Array.from(arr, (i) => i.toString(16).padStart(2, '0')).join('');
 
 @Injectable()
 export class ContextService {
   nodes = new Map<string, any>();
   edges = new Map<string, string>();
 
+  private _rootHash: string;
+  private _keyPair = new utils.KeyPairEd25519(CRAWLER_PRIVATE_KEY);
+
   constructor() {
-    this.nodes.set('root', {
+    const { node, hash } = this._prepareNode({
       id: 'root',
       namespace: 'root',
       contextType: 'root',
@@ -15,10 +26,41 @@ export class ContextService {
         id: 'root',
       },
     });
+
+    this.nodes.set(hash, node);
+
+    this._rootHash = hash;
   }
 
-  async storeContext(node: StoreContextDto): Promise<void> {
-    this.storeNode(node);
+  async storeContext(
+    dto: StoreContextDto,
+  ): Promise<{ receipt: any; signature: string; public_key: string }[]> {
+    const schema = BorshSchema.Struct({
+      data_hash: BorshSchema.Vec(BorshSchema.u8),
+      amount: BorshSchema.u128,
+      receiver_id: BorshSchema.String,
+    });
+
+    const hashes = this.storeNode(dto.context, this._rootHash);
+
+    const receipts = hashes
+      .map((hash) => ({
+        hash,
+        amount: '0.0001',
+        receiver_id: dto.receiverId,
+      }))
+      .map((receipt) => {
+        const { signature, publicKey } = this._keyPair.sign(
+          borshSerialize(schema, receipt),
+        );
+        return {
+          receipt,
+          signature: toHexString(signature),
+          public_key: toHexString(publicKey.data),
+        };
+      });
+
+    return receipts;
   }
 
   async getContexts(): Promise<{
@@ -39,30 +81,36 @@ export class ContextService {
     };
   }
 
-  private storeNode(node: StoreContextDto): number {
-    const globalId = `${node.namespace}/${node.contextType}/${node.id}`;
-
+  private storeNode(node: ContextDto, parentHash: string): string[] {
     // ToDo: skip existing nodes
-    const clonedNode = {
+    const { node: clonedNode, hash } = this._prepareNode({
       namespace: node.namespace,
       contextType: node.contextType,
       id: node.id,
       parsedContext: node.parsedContext,
+    });
+
+    this.nodes.set(hash, clonedNode);
+
+    const hashes: string[] = [hash];
+
+    this.edges.set(parentHash, hash);
+    this.edges.set(hash, parentHash);
+
+    hashes.push(...this.storeNode(node.parentNode, hash));
+
+    return hashes;
+  }
+
+  private _prepareNode(inputNode: any): { node: any; hash: string } {
+    const node = {
+      namespace: inputNode.namespace,
+      contextType: inputNode.contextType,
+      id: inputNode.id,
+      parsedContext: inputNode.parsedContext,
     };
-    this.nodes.set(globalId, clonedNode);
-
-    let i = 1;
-
-    if (node.parentNode) {
-      const parentGlobalId = `${node.parentNode.namespace}/${node.parentNode.contextType}/${node.parentNode.id}`;
-      this.edges.set(parentGlobalId, globalId);
-      this.edges.set(globalId, parentGlobalId);
-      i += this.storeNode(node.parentNode);
-    } else {
-      this.edges.set(globalId, 'root');
-      this.edges.set('root', globalId);
-    }
-
-    return i;
+    const json = stringify(node);
+    const hash = toHexString(new Uint8Array(sha256(json)));
+    return { node, hash };
   }
 }

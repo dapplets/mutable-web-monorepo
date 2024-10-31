@@ -8,7 +8,7 @@ export class ContextController {
 
   @Post()
   async storeContext(@Body() storeContextDto: StoreContextDto) {
-    await this.contextService.storeContext(storeContextDto);
+    return await this.contextService.storeContext(storeContextDto);
   }
 
   @Get()

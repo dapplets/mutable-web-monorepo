@@ -23,6 +23,10 @@
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@noble/hashes": "^1.5.0",
+    "borsher": "^3.5.0",
+    "json-stringify-deterministic": "^1.0.12",
+    "near-api-js": "^5.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
