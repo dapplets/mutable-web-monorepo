@@ -1,18 +1,12 @@
-import { NetworkId, setupWalletSelector } from '@near-wallet-selector/core'
+import { Engine, EngineConfig, utils } from '@mweb/backend'
+import { Core, IContextNode } from '@mweb/core'
+import { setupWalletSelector } from '@near-wallet-selector/core'
 import { EventEmitter as NEventEmitter } from 'events'
-import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
-import { EngineConfig } from '@mweb/backend'
-import { useInitNear } from 'near-social-vm'
-import React, { FC, useEffect } from 'react'
-import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
-import { NearNetworkId, networkConfigs } from '../common/networks'
 import Background from '../common/background'
+import { ClonedContextNode } from '../common/types'
 import { ExtensionStorage } from './extension-storage'
 import { setupWallet } from './wallet'
-import { Core, IContextNode } from '@mweb/core'
-import TwitterParser from '../parsers/twitter.json'
-import { ClonedContextNode } from '../common/types'
 
 const eventEmitter = new NEventEmitter()
 const networkIdPromise = Background.getCurrentNetwork()
@@ -34,55 +28,44 @@ const selectorPromise = networkIdPromise.then((networkId) =>
   })
 )
 
-const App: FC<{ networkId: NearNetworkId }> = ({ networkId }) => {
-  const networkConfig = networkConfigs[networkId]
-
-  const { initNear } = useInitNear()
-
-  useEffect(() => {
-    if (initNear) {
-      initNear({
-        networkId: networkConfig.networkId,
-        config: {
-          nodeUrl: networkConfig.nodeUrl,
-        },
-        selector: selectorPromise,
-        features: {
-          skipTxConfirmationPopup: true,
-        },
-        customElements,
-      })
-    }
-  }, [initNear])
-
-  return null
-}
-
 async function main() {
-  const networkId = await networkIdPromise
-  const devServerUrl = await Background.getDevServerUrl()
-
-  // Execute useInitNear hook before start the engine
-  // It's necessary for widgets from near-social-vm
-  createRoot(document.createDocumentFragment()).render(<App networkId={networkId} />)
-
-  const tabState = await Background.popTabState()
-  const selector = await selectorPromise
-
-  const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
-
-  // ToDo: move to MutableWebContext
   const engineConfig: EngineConfig = {
-    networkId,
-    gatewayId: 'mutable-web-extension',
-    selector,
+    networkId: await networkIdPromise,
+    gatewayId: 'crawler-extension',
+    selector: await selectorPromise,
     storage: new ExtensionStorage('mutableweb'),
-    bosElementStyleSrc: bootstrapCssUrl,
+    bosElementStyleSrc: browser.runtime.getURL('bootstrap.min.css'),
   }
 
-  const mutationIdToLoad = tabState?.mutationId
+  await engineConfig.selector.wallet()
 
-  await selector.wallet()
+  const core = new Core()
+  const engine = new Engine(engineConfig)
+
+  const [remoteParsers, localParsers] = await Promise.all([
+    engine.parserConfigService.getAllParserConfigs(),
+    Background.getAllLocalParserConfigs(),
+  ])
+
+  const suitableParsers = ([...remoteParsers, ...localParsers] as any[]).filter((p) =>
+    p.targets.some((t: any) => utils.isTargetMet(t, core.tree))
+  )
+
+  suitableParsers.forEach((p) => core.attachParserConfig(p))
+
+  async function generateParserConfig() {
+    const pc: any = await Background.generateParserConfigByUrl(location.href)
+    if (!pc) throw new Error('Cannot generate parser config')
+
+    if (!pc.targets.some((t: any) => utils.isTargetMet(t, core.tree))) {
+      throw new Error('The generated parser config is not suitable for this web site. Try again')
+    }
+
+    await Background.saveLocalParserConfig(pc)
+
+    suitableParsers.push(pc as any)
+    core.attachParserConfig(pc)
+  }
 
   browser.runtime.onMessage.addListener((message: any) => {
     if (!message || !message.type) return
@@ -99,27 +82,14 @@ async function main() {
     } else if (message.type === 'OPEN_NEW_MUTATION_POPUP') {
       // ToDo: eventEmitter is intended for near-wallet-selector
       eventEmitter.emit('openMutationPopup')
+    } else if (message.type === 'GET_CONTEXT_TREE') {
+      return Promise.resolve(cloneContextTree(core.tree))
+    } else if (message.type === 'GET_SUITABLE_PARSERS') {
+      return Promise.resolve(suitableParsers)
+    } else if (message.type === 'GENERATE_PARSER_CONFIG') {
+      return Promise.resolve(generateParserConfig())
     }
   })
-
-  const container = document.createElement('div')
-  container.className = 'mweb-extension'
-  container.style.display = 'flex'
-  document.body.appendChild(container)
-  const root = createRoot(container)
-  root.render(<div></div>)
-
-  const core = new Core()
-
-  const handleChangeTree = ({ child }: { child: IContextNode }) => {
-    browser.runtime.sendMessage({ type: 'CONTEXT_TREE_CHANGE', data: cloneContextTree(core.tree) })
-    child.on('childContextAdded', handleChangeTree)
-  }
-
-  handleChangeTree({ child: core.tree })
-
-  // @ts-ignore
-  core.attachParserConfig(TwitterParser)
 }
 
 function cloneContextTree(tree: IContextNode): ClonedContextNode {

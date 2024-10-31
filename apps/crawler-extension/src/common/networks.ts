@@ -19,6 +19,13 @@ export const networkConfigs = {
   },
 }
 
+export const crawlerConfig = {
+  chatGptApiKey: '', // ToDo: specify something
+  organizationId: 'org-E5yF3X7tcVHJQ0geNL5v0FDY',
+  projectId: 'proj_kptuPrR2y29wj9gnsbtMH2cT',
+  assistantId: 'asst_Pbw8hjZvGRhxbJtH9FrjU0xm',
+}
+
 export type NearNetworkId = 'testnet' | 'mainnet'
 
 export const DefaultNetworkId: NearNetworkId = 'mainnet'

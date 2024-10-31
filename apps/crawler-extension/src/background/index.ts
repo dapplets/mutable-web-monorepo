@@ -2,23 +2,17 @@ import { SignInParams } from '@near-wallet-selector/core'
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
-import { DefaultNetworkId, NearNetworkId, networkConfigs } from '../common/networks'
+import { networkConfigs } from '../common/networks'
 import { debounce } from './helpers'
+import * as SettingsService from './services/settings-service'
 import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
+import * as ChatGptService from './services/chatgpt-service'
+import * as LocalParserService from './services/local-parser-service'
 
-const getCurrentNetwork = async (): Promise<NearNetworkId> => {
-  return browser.storage.local
-    .get('networkId')
-    .then(({ networkId }) => (networkId as NearNetworkId | null) ?? DefaultNetworkId)
-}
-
-const switchNetwork = async (networkId: NearNetworkId) => {
-  await browser.storage.local.set({ networkId })
-  browser.runtime.reload()
-}
-
-const networkConfigPromise = getCurrentNetwork().then((networkId) => networkConfigs[networkId])
+const networkConfigPromise = SettingsService.getCurrentNetwork().then(
+  (networkId) => networkConfigs[networkId]
+)
 
 // Services
 
@@ -68,15 +62,6 @@ const disconnectWallet = async (): Promise<void> => {
   updateMenuForDisconnectedState()
 }
 
-const getDevServerUrl = async (): Promise<string | null> => {
-  const { devServerUrl } = await browser.storage.local.get('devServerUrl')
-  return devServerUrl ? (devServerUrl as string) : null
-}
-
-const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
-  await browser.storage.local.set({ devServerUrl })
-}
-
 export const bgFunctions = {
   near_signIn: near.signIn.bind(near),
   near_signOut: near.signOut.bind(near),
@@ -86,9 +71,9 @@ export const bgFunctions = {
   popTabState: tabStateService.popForTab.bind(tabStateService),
   connectWallet,
   disconnectWallet,
-  getCurrentNetwork,
-  getDevServerUrl,
-  setDevServerUrl,
+  ...SettingsService,
+  ...ChatGptService,
+  ...LocalParserService,
 }
 
 export type BgFunctions = typeof bgFunctions
@@ -113,7 +98,7 @@ const openNewMutationPopup = (tab: browser.Tabs.Tab) => {
 // Context menu updaters
 
 const updateNetworkMenu = async () => {
-  const networkId = await getCurrentNetwork()
+  const networkId = await SettingsService.getCurrentNetwork()
   const networkMenuId = browser.contextMenus.create({
     title: 'Switch network',
     id: 'network',
@@ -245,10 +230,10 @@ function handleContextMenuClick(
       break
 
     case 'testnet':
-      return switchNetwork('testnet')
+      return SettingsService.switchNetwork('testnet')
 
     case 'mainnet':
-      return switchNetwork('mainnet')
+      return SettingsService.switchNetwork('mainnet')
 
     default:
       console.log('There is no such a menu command')
