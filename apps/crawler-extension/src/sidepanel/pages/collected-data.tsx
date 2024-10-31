@@ -6,15 +6,19 @@ import {
   Card,
   Descriptions,
   Flex,
+  Space,
   TreeSelect,
   Typography,
 } from 'antd'
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClonedContextNode } from '../../common/types'
+import CodeEditor from '../components/CodeEditor'
+import CodeIcon from '../components/CodeIcon'
 import { Layout } from '../components/layout'
 import { TreeTraverser } from '../components/tree-traverser'
 import ContentScript from '../content-script'
+import { getNameFromId } from '../../contentscript/helpers'
 
 type ContextTypeTree = {
   value: string
@@ -45,6 +49,7 @@ export const CollectedData: React.FC = () => {
   const queryClient = useQueryClient()
 
   const [contextTypes, setContextTypes] = useState<string[]>([])
+  const [isCodeEditorOpened, setIsCodeEditorOpened] = useState(false)
 
   const { data: contextTree } = useQuery({
     queryFn: ContentScript.getContextTree,
@@ -123,55 +128,100 @@ export const CollectedData: React.FC = () => {
 
   return (
     <AntdLayout style={{ padding: 16 }}>
-      <Typography.Title level={4} style={{ margin: '0 0 1em 0' }}>
-        Collected Data
-      </Typography.Title>
-      <Flex vertical gap="small">
-        <Flex gap="small">
-          <Button block type="default" onClick={handlePickElementClick} loading={isElementPicking}>
-            Pick Element
-          </Button>
-          <Button block type="default" onClick={handleDeleteParserClick} loading={isParserDeleting}>
-            Delete Parser
-          </Button>
-        </Flex>
-        <TreeSelect
-          style={{ width: '100%' }}
-          value={contextTypes}
-          dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-          treeData={contextTypesTree}
-          placeholder="Please select"
-          treeDefaultExpandAll
-          onChange={handleContextTypeChange}
-          multiple
-        />
-        <TreeTraverser
-          node={contextTree}
-          component={({ node }) => {
-            if (!contextTypes.includes(node.contextType) && contextTypes.length > 0) return null
-            return (
-              <Card size="small">
-                <Descriptions size="small">
-                  <Descriptions.Item style={{ padding: 0 }} label="Namespace">
-                    {node.namespace}
-                  </Descriptions.Item>
-                  <Descriptions.Item style={{ padding: 0 }} label="Context Type">
-                    {node.contextType}
-                  </Descriptions.Item>
-                  <Descriptions.Item style={{ padding: 0 }} label="ID">
-                    {node.id}
-                  </Descriptions.Item>
-                  {Object.entries(node.parsedContext).map(([key, value]: [string, any]) => (
-                    <Descriptions.Item style={{ padding: 0 }} key={key} label={key}>
-                      {value}
-                    </Descriptions.Item>
-                  ))}
-                </Descriptions>
+      <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+        {parsers?.length ? (
+          <Space direction="vertical" size="small" style={{ display: 'flex' }}>
+            <Flex style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography.Title level={4} style={{ margin: '0' }}>
+                {parsers[0].name
+                  ? parsers[0].name + ' adapter'
+                  : parsers[0].title
+                  ? parsers[0].title + ' adapter'
+                  : parsers[0].id
+                  ? getNameFromId(parsers[0].id) + ' adapter'
+                  : 'Adapter'}
+              </Typography.Title>
+              <Button
+                type="link"
+                icon={<CodeIcon />}
+                iconPosition="start"
+                style={{ padding: 0 }}
+                onClick={() => setIsCodeEditorOpened((val) => !val)}
+              >
+                {isCodeEditorOpened ? 'Hide adapter' : 'Edit scheme'}
+              </Button>
+            </Flex>
+
+            {isCodeEditorOpened ? (
+              <Card styles={{ body: { padding: 0, overflow: 'hidden' } }}>
+                <CodeEditor parserConfig={parsers[0]} />
               </Card>
-            )
-          }}
-        />
-      </Flex>
+            ) : null}
+          </Space>
+        ) : null}
+
+        <Space direction="vertical" size="small" style={{ display: 'flex' }}>
+          <Typography.Title level={4} style={{ margin: '0' }}>
+            Collected Data
+          </Typography.Title>
+          <Flex vertical gap="small">
+            <Flex gap="small">
+              <Button
+                block
+                type="default"
+                onClick={handlePickElementClick}
+                loading={isElementPicking}
+              >
+                Pick Element
+              </Button>
+              <Button
+                block
+                type="default"
+                onClick={handleDeleteParserClick}
+                loading={isParserDeleting}
+              >
+                Delete Parser
+              </Button>
+            </Flex>
+            <TreeSelect
+              style={{ width: '100%' }}
+              value={contextTypes}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              treeData={contextTypesTree}
+              placeholder="Please select"
+              treeDefaultExpandAll
+              onChange={handleContextTypeChange}
+              multiple
+            />
+            <TreeTraverser
+              node={contextTree}
+              component={({ node }) => {
+                if (!contextTypes.includes(node.contextType) && contextTypes.length > 0) return null
+                return (
+                  <Card size="small">
+                    <Descriptions size="small">
+                      <Descriptions.Item style={{ padding: 0 }} label="Namespace">
+                        {node.namespace}
+                      </Descriptions.Item>
+                      <Descriptions.Item style={{ padding: 0 }} label="Context Type">
+                        {node.contextType}
+                      </Descriptions.Item>
+                      <Descriptions.Item style={{ padding: 0 }} label="ID">
+                        {node.id}
+                      </Descriptions.Item>
+                      {Object.entries(node.parsedContext).map(([key, value]: [string, any]) => (
+                        <Descriptions.Item style={{ padding: 0 }} key={key} label={key}>
+                          {value}
+                        </Descriptions.Item>
+                      ))}
+                    </Descriptions>
+                  </Card>
+                )
+              }}
+            />
+          </Flex>
+        </Space>
+      </Space>
     </AntdLayout>
   )
 }

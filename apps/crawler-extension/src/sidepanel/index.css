@@ -7,3 +7,7 @@ body, #app {
   display: flex;
   justify-content: center;
 }
+
+.cm-content {
+  width: 100;
+}
