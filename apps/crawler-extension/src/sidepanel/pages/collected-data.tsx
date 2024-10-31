@@ -61,6 +61,7 @@ export const CollectedData: React.FC = () => {
   const { data: parsers } = useQuery({
     queryKey: ['getSuitableParserConfigs'],
     queryFn: ContentScript.getSuitableParserConfigs,
+    refetchInterval: 1000,
   })
 
   const { mutate: saveLocalParserConfig, isPending: isLocalParserSaving } = useMutation({
@@ -200,19 +201,19 @@ export const CollectedData: React.FC = () => {
               component={({ node }) => {
                 if (!contextTypes.includes(node.contextType) && contextTypes.length > 0) return null
                 return (
-                  <Card size="small">
+                  <Card size="small" styles={{ body: { padding: 8 } }}>
                     <Descriptions size="small">
-                      <Descriptions.Item style={{ padding: 0 }} label="Namespace">
+                      <Descriptions.Item style={{ padding: 4 }} label="Namespace">
                         {node.namespace}
                       </Descriptions.Item>
-                      <Descriptions.Item style={{ padding: 0 }} label="Context Type">
+                      <Descriptions.Item style={{ padding: 4 }} label="Context Type">
                         {node.contextType}
                       </Descriptions.Item>
-                      <Descriptions.Item style={{ padding: 0 }} label="ID">
+                      <Descriptions.Item style={{ padding: 4 }} label="ID">
                         {node.id}
                       </Descriptions.Item>
                       {Object.entries(node.parsedContext).map(([key, value]: [string, any]) => (
-                        <Descriptions.Item style={{ padding: 0 }} key={key} label={key}>
+                        <Descriptions.Item style={{ padding: 4 }} key={key} label={key}>
                           {value}
                         </Descriptions.Item>
                       ))}

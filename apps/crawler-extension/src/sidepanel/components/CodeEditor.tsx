@@ -56,7 +56,7 @@ const CodeEditor = ({ parserConfig, saveParserConfig, isLocalParserSaving }: TEd
   useEffect(() => {
     if (!isButtonsDisplayed && jsonData !== sourceJson) setIsButtonsDisplayed(true)
     if (isButtonsDisplayed && jsonData === sourceJson) setIsButtonsDisplayed(false)
-  }, [jsonData])
+  }, [jsonData, sourceJson])
 
   useEffect(() => setJsonData(sourceJson), [sourceJson])
 
@@ -94,11 +94,15 @@ const CodeEditor = ({ parserConfig, saveParserConfig, isLocalParserSaving }: TEd
 
       {isButtonsDisplayed ? (
         <Flex style={{ gap: 8 }}>
-          <Button loading={isLocalParserSaving} style={{ width: '100%' }} onClick={saveConfig}>
+          <Button
+            // loading={isLocalParserSaving}
+            style={{ width: '100%' }}
+            onClick={saveConfig}
+          >
             Save
           </Button>
           <Button
-            loading={isLocalParserSaving}
+            // loading={isLocalParserSaving}
             style={{ width: '100%' }}
             onClick={() => setJsonData(sourceJson)}
           >
