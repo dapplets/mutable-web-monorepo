@@ -140,7 +140,7 @@ export const CollectedData: React.FC = () => {
                   ? parsers[0].title
                   : parsers[0].id
                   ? getNameFromId(parsers[0].id)
-                  : 'Adapter'}
+                  : 'Parser'}
               </Typography.Title>
               <Button
                 type="link"
@@ -149,7 +149,7 @@ export const CollectedData: React.FC = () => {
                 style={{ padding: 0 }}
                 onClick={() => setIsCodeEditorOpened((val) => !val)}
               >
-                {isCodeEditorOpened ? 'Hide adapter' : 'Edit scheme'}
+                {isCodeEditorOpened ? 'Hide parser' : 'Edit scheme'}
               </Button>
             </Flex>
 
