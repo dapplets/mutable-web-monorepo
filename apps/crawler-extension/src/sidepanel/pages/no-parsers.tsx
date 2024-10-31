@@ -28,14 +28,14 @@ export const NoParsers: FC = () => {
 
   return (
     <Flex style={{ padding: 16 }} vertical justify="center" align="center" gap="middle">
-      <Typography.Title level={4}>There is no adapter for this website</Typography.Title>
+      <Typography.Title level={4}>There is no parser for this website</Typography.Title>
       <Typography.Text style={{ textAlign: 'center' }}>
-        It seems like this site doesn't have an adapter yet. Would you like to create one now? Our
-        tool simplifies the process of generating custom adapters for parsing content from new
+        It seems like this site doesn't have a parser yet. Would you like to create one now? Our
+        AI-tool simplifies the process of generating custom parsers for parsing content from new
         websites. Click the button below to get started.
       </Typography.Text>
       <Button type="primary" onClick={handleCreateAdapterClick} loading={isPending}>
-        Create Adapter
+        Create Parser
       </Button>
     </Flex>
   )

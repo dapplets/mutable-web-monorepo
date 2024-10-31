@@ -135,11 +135,11 @@ export const CollectedData: React.FC = () => {
             <Flex style={{ alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography.Title level={4} style={{ margin: '0' }}>
                 {parsers[0].name
-                  ? parsers[0].name + ' adapter'
+                  ? parsers[0].name
                   : parsers[0].title
-                  ? parsers[0].title + ' adapter'
+                  ? parsers[0].title
                   : parsers[0].id
-                  ? getNameFromId(parsers[0].id) + ' adapter'
+                  ? getNameFromId(parsers[0].id)
                   : 'Adapter'}
               </Typography.Title>
               <Button
