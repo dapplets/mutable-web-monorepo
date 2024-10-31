@@ -3,11 +3,27 @@ import { ContextDto, StoreContextDto } from './dtos/store-context.dto';
 import { CRAWLER_PRIVATE_KEY } from '../env';
 import stringify from 'json-stringify-deterministic';
 import { sha256 } from '@noble/hashes/sha256';
-import { utils } from 'near-api-js';
+import {
+  utils,
+  Contract,
+  Connection,
+  InMemorySigner,
+  providers,
+  keyStores,
+} from 'near-api-js';
 import { BorshSchema, borshSerialize } from 'borsher';
 
-const toHexString = (arr: Uint8Array) =>
-  Array.from(arr, (i) => i.toString(16).padStart(2, '0')).join('');
+function base64ToBytes(base64: string): Uint8Array {
+  const binString = atob(base64);
+  return Uint8Array.from(binString, (m) => m.codePointAt(0));
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  const binString = Array.from(bytes, (byte) =>
+    String.fromCodePoint(byte),
+  ).join('');
+  return btoa(binString);
+}
 
 @Injectable()
 export class ContextService {
@@ -32,52 +48,93 @@ export class ContextService {
     this._rootHash = hash;
   }
 
-  async storeContext(
-    dto: StoreContextDto,
-  ): Promise<{ receipt: any; signature: string; public_key: string }[]> {
+  async storeContext(dto: StoreContextDto): Promise<
+    {
+      receipt: {
+        data_hash: string;
+        amount: string;
+        receiver_id: string;
+      };
+      signature: string;
+      public_key: string;
+    }[]
+  > {
+    // ToDo
+    if (dto.context.parentNode?.contextType === 'post') {
+      return [];
+    }
+
+    const hashes = this.storeNode(dto.context, this._rootHash);
+
     const schema = BorshSchema.Struct({
       data_hash: BorshSchema.Vec(BorshSchema.u8),
       amount: BorshSchema.u128,
       receiver_id: BorshSchema.String,
     });
 
-    const hashes = this.storeNode(dto.context, this._rootHash);
-
-    const receipts = hashes
-      .map((hash) => ({
-        hash,
-        amount: '0.0001',
+    const receipts = hashes.map((hash) => {
+      const receipt = {
+        data_hash: hash,
+        amount: '1000000000000000000000',
         receiver_id: dto.receiverId,
-      }))
-      .map((receipt) => {
-        const { signature, publicKey } = this._keyPair.sign(
-          borshSerialize(schema, receipt),
-        );
-        return {
-          receipt,
-          signature: toHexString(signature),
-          public_key: toHexString(publicKey.data),
-        };
-      });
+      };
+
+      const { signature, publicKey } = this._keyPair.sign(
+        borshSerialize(schema, {
+          data_hash: base64ToBytes(receipt.data_hash),
+          amount: receipt.amount,
+          receiver_id: receipt.receiver_id,
+        }),
+      );
+
+      return {
+        receipt,
+        signature: bytesToBase64(signature),
+        public_key: bytesToBase64(publicKey.data),
+      };
+    });
 
     return receipts;
   }
 
   async getContexts(): Promise<{
-    nodes: { id: string; data: StoreContextDto }[];
+    nodes: { id: string; label: string }[];
     edges: { source: string; target: string }[];
   }> {
     return {
-      nodes: Array.from(this.nodes.entries()).map(([id, data]) => ({
+      nodes: Array.from(this.nodes.entries()).map(([id]) => ({
         id,
-        label: data.id,
-        data,
+        label: id.substring(0, 10),
       })),
       edges: Array.from(this.edges.entries()).map(([source, target]) => ({
         id: `${source}-${target}`,
         source,
         target,
       })),
+    };
+  }
+
+  async getContext(
+    hash: string,
+  ): Promise<{ context: ContextDto | null; status: 'paid' | 'unpaid' }> {
+    const keyStore = new keyStores.InMemoryKeyStore();
+    const signer = new InMemorySigner(keyStore);
+    const provider = new providers.JsonRpcProvider({
+      url: 'https://mainnet.near.dapplets.org',
+    });
+    const connection = new Connection('mainnet', provider, signer, '');
+    const contract = new Contract(connection, 'app.crwl.near', {
+      useLocalViewExecution: false,
+      viewMethods: ['is_paid_data'],
+      changeMethods: [],
+    });
+
+    // @ts-expect-error methods are not typed
+    const isPaid = await contract.is_paid_data({ data_hash: hash });
+
+    return {
+      context: isPaid ? this.nodes.get(hash) : null,
+      status: isPaid ? 'paid' : 'unpaid',
     };
   }
 
@@ -97,7 +154,9 @@ export class ContextService {
     this.edges.set(parentHash, hash);
     this.edges.set(hash, parentHash);
 
-    hashes.push(...this.storeNode(node.parentNode, hash));
+    if (node.parentNode) {
+      hashes.push(...this.storeNode(node.parentNode, hash));
+    }
 
     return hashes;
   }
@@ -110,7 +169,7 @@ export class ContextService {
       parsedContext: inputNode.parsedContext,
     };
     const json = stringify(node);
-    const hash = toHexString(new Uint8Array(sha256(json)));
+    const hash = bytesToBase64(new Uint8Array(sha256(json)));
     return { node, hash };
   }
 }

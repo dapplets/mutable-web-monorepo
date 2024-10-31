@@ -1,20 +1,33 @@
 import browser from 'webextension-polyfill'
 import { getStorageServerUrl } from './settings-service'
-
-let promise: Promise<any> | null = null
+import { saveReceiptToLocalStorage, SignedReceipt } from './economy-service'
+import { near_getAccounts } from './wallet-service'
+import { BN } from 'bn.js'
 
 async function unsafe_incrementContextCount(): Promise<void> {
   const { contextCount } = (await browser.storage.local.get('contextCount')) as {
     contextCount: number | null
   }
-  await browser.storage.local.set({ contextCount: contextCount ? contextCount + 1 : 1 })
+  await browser.storage.local.set({
+    contextCount: contextCount && typeof contextCount === 'number' ? contextCount + 1 : 1,
+  })
 }
 
-export async function storeContext(context: any): Promise<void> {
-  // ToDo: memory leak?
-  promise = promise
-    ? promise.then(() => unsafe_incrementContextCount())
-    : unsafe_incrementContextCount()
+async function unsafe_addPotentialAmount(amount: string): Promise<void> {
+  const { potentialAmount } = (await browser.storage.local.get('potentialAmount')) as {
+    potentialAmount: string | null
+  }
+
+  const bn = potentialAmount ? new BN(potentialAmount) : new BN(0)
+
+  await browser.storage.local.set({ potentialAmount: bn.add(new BN(amount)).toString() })
+}
+
+async function unsafe_storeContext(context: any) {
+  const [account] = await near_getAccounts()
+
+  // ToDo: collect data to the localstorage
+  if (!account) return
 
   const storageServerUrl = await getStorageServerUrl()
 
@@ -25,13 +38,25 @@ export async function storeContext(context: any): Promise<void> {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ context, receiverId: 'dapplets.near' }),
+    body: JSON.stringify({ context, receiverId: account.accountId }),
   })
 
-  const json = await response.json()
+  const signedReceipts: SignedReceipt[] = await response.json()
 
-  console.log({ json })
+  await Promise.all(signedReceipts.map((x: any) => saveReceiptToLocalStorage(x)))
 
+  const totalAmount = signedReceipts
+    .reduce((acc, x) => acc.add(new BN(x.receipt.amount)), new BN(0))
+    .toString()
+
+  await unsafe_incrementContextCount()
+  await unsafe_addPotentialAmount(totalAmount)
+}
+
+let promise: Promise<void> = Promise.resolve()
+
+export function storeContext(context: any): Promise<void> {
+  promise = promise.then(() => unsafe_storeContext(context))
   return promise
 }
 
@@ -41,4 +66,12 @@ export async function getContextCount(): Promise<number> {
   }
 
   return contextCount ?? 0
+}
+
+export async function getPotentialAmount(): Promise<string> {
+  const { potentialAmount } = (await browser.storage.local.get('potentialAmount')) as {
+    potentialAmount: string | null
+  }
+
+  return potentialAmount ?? '0'
 }

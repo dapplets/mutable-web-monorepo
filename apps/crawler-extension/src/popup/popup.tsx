@@ -5,6 +5,7 @@ import React, { FC } from 'react'
 import browser from 'webextension-polyfill'
 import Background from '../common/background'
 import { networkConfigs } from '../common/networks'
+import { utils } from 'near-api-js'
 
 export const Popup: FC = () => {
   const queryClient = useQueryClient()
@@ -25,6 +26,19 @@ export const Popup: FC = () => {
     refetchInterval: 1000,
   })
 
+  const { data: claimableAmount, isFetching: isClaimableAmountFetching } = useQuery({
+    queryKey: ['claimableAmount'],
+    queryFn: Background.getAvailableToClaimAmount,
+    initialData: '0',
+  })
+
+  const { data: potentialAmount } = useQuery({
+    queryKey: ['potentialAmount'],
+    queryFn: Background.getPotentialAmount,
+    initialData: '0',
+    refetchInterval: 1000,
+  })
+
   const [account] = accounts ?? []
 
   const { mutate: connectWallet, isPending: isWalletConnecting } = useMutation({
@@ -35,6 +49,10 @@ export const Popup: FC = () => {
   const { mutate: disconnectWallet, isPending: isWalletDisconnecting } = useMutation({
     mutationFn: Background.disconnectWallet,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['accounts'] }),
+  })
+
+  const { mutate: claimTokens, isPending: isClaiming } = useMutation({
+    mutationFn: Background.claimTokens,
   })
 
   const handleSidePanelButtonClick = async () => {
@@ -50,6 +68,10 @@ export const Popup: FC = () => {
 
   const handleLogoutButtonClick = () => {
     disconnectWallet()
+  }
+
+  const handleClaimClick = () => {
+    claimTokens()
   }
 
   if (!networkId) return null
@@ -91,12 +113,36 @@ export const Popup: FC = () => {
           <Card size="small" style={{ flex: 1 }}>
             <Card.Meta title={contextCount?.toString()} description="Items parsed" />
           </Card>
-          {account ? (
-            <Card size="small" style={{ flex: 1 }}>
-              <Card.Meta title="4.2814" description="Total earned" />
-            </Card>
-          ) : null}
+          <Card size="small" style={{ flex: 1 }}>
+            <Card.Meta
+              title={`${utils.format.formatNearAmount(potentialAmount)} NEAR`}
+              description="Total earned"
+            />
+          </Card>
         </Flex>
+
+        <Card size="small" style={{ flex: 1 }}>
+          {isClaimableAmountFetching ? (
+            <Card.Meta title="Loading..." description="Available to claim" />
+          ) : (
+            <Flex gap="small" justify="space-between" align="center">
+              <Card.Meta
+                title={`${utils.format.formatNearAmount(claimableAmount)} NEAR`}
+                description="Available to claim"
+              />
+              {claimableAmount !== '0' ? (
+                <Button
+                  type="primary"
+                  onClick={handleClaimClick}
+                  loading={isClaiming}
+                  disabled={!account}
+                >
+                  Claim
+                </Button>
+              ) : null}
+            </Flex>
+          )}
+        </Card>
         <Flex vertical gap="small" style={{ width: '100%' }}>
           <Button block icon={<ControlOutlined />} onClick={handleSidePanelButtonClick}>
             Open side panel

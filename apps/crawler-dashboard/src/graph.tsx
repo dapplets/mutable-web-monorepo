@@ -1,8 +1,10 @@
-import React, { FC, useMemo, useRef } from 'react'
-import { GraphCanvas, GraphCanvasRef, useSelection } from 'reagraph'
 import { useQuery } from '@tanstack/react-query'
-import { Card, Button, Descriptions, Drawer } from 'antd'
+import { Drawer, Flex } from 'antd'
+import { FC, useMemo, useRef } from 'react'
+import { GraphCanvas, GraphCanvasRef, useSelection } from 'reagraph'
 import { getGraph } from './api'
+import { ContextDetails } from './context-details'
+import { Navigation } from './navigation'
 
 export const Graph: FC = () => {
   const { data } = useQuery({
@@ -44,25 +46,17 @@ export const Graph: FC = () => {
         edgeArrowPosition="none"
         sizingType="centrality"
       />
-      <Drawer title="Selected Context" onClose={handleCloseDrawerClick} open={isDrawerOpen} width={450}>
-        {selectedNode ? (
-          <Descriptions size="small" layout="vertical" column={1}>
-            <Descriptions.Item style={{ padding: 0 }} label="Namespace">
-              {selectedNode.data.namespace}
-            </Descriptions.Item>
-            <Descriptions.Item style={{ padding: 0 }} label="Context Type">
-              {selectedNode.data.contextType}
-            </Descriptions.Item>
-            <Descriptions.Item style={{ padding: 0 }} label="ID">
-              {selectedNode.data.id}
-            </Descriptions.Item>
-            {Object.entries(selectedNode.data.parsedContext).map(([key, value]: [string, any]) => (
-              <Descriptions.Item style={{ padding: 0 }} key={key} label={key}>
-                {value}
-              </Descriptions.Item>
-            ))}
-          </Descriptions>
-        ) : null}
+      <Drawer
+        title="Selected Context"
+        onClose={handleCloseDrawerClick}
+        open={isDrawerOpen}
+        width={450}
+        mask={false}
+      >
+        <Flex gap="middle" vertical>
+          <Navigation />
+          {selectedNode ? <ContextDetails selectedNode={selectedNode} /> : null}
+        </Flex>
       </Drawer>
     </>
   )

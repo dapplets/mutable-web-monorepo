@@ -133,6 +133,11 @@ export class WalletImpl {
     return finalExecutionOutcomes
   }
 
+  getWalletConnection = async (): Promise<CustomWalletConnection> => {
+    const _state = await this._statePromise
+    return _state.wallet
+  }
+
   private async _setupWalletState() {
     const keyStore = new WebExtensionKeyStorage()
 

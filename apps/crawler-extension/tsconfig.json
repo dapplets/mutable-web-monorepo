@@ -1,8 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./lib",
-    "resolveJsonModule": true
+    "outDir": "./lib"
   },
   "exclude": ["tests", "lib", "jslib", "build", "node_modules"],
   "include": ["src/**/*"]
