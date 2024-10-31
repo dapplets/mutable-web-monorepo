@@ -8,6 +8,7 @@ type Settings = {
   assistantId: string | null
   projectId: string | null
   chatGptApiKey: string | null
+  storageServerUrl: string | null
 }
 
 const get = async <K extends keyof Settings>(key: K): Promise<Settings[K]> => {
@@ -66,4 +67,12 @@ export const getAssistantId = async (): Promise<string | null> => {
 
 export const setAssistantId = async (assistantId: string | null): Promise<void> => {
   await set({ assistantId })
+}
+
+export const getStorageServerUrl = async (): Promise<string | null> => {
+  return (await get('storageServerUrl')) ?? crawlerConfig.storageServerUrl
+}
+
+export const setStorageServerUrl = async (storageServerUrl: string | null): Promise<void> => {
+  await set({ storageServerUrl })
 }

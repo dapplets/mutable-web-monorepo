@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill'
+import { getStorageServerUrl } from './settings-service'
 
 let promise: Promise<any> | null = null
 
@@ -14,6 +15,18 @@ export async function storeContext(context: any): Promise<void> {
   promise = promise
     ? promise.then(() => unsafe_incrementContextCount())
     : unsafe_incrementContextCount()
+
+  const storageServerUrl = await getStorageServerUrl()
+
+  // ToDo: use new URL
+  // ToDo: extract to the separate service
+  await fetch(storageServerUrl + '/context', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(context),
+  })
 
   return promise
 }

@@ -9,12 +9,14 @@ export const App: React.FC = () => {
   const [isApiKeyNotSet, setIsApiKeyNotSet] = useState(false)
 
   const loadData = useCallback(async () => {
-    const [chatGptApiKey, organizationId, projectId, assistantId] = await Promise.all([
-      Background.getChatGptApiKey(),
-      Background.getOrganizationId(),
-      Background.getProjectId(),
-      Background.getAssistantId(),
-    ])
+    const [chatGptApiKey, organizationId, projectId, assistantId, storageServerUrl] =
+      await Promise.all([
+        Background.getChatGptApiKey(),
+        Background.getOrganizationId(),
+        Background.getProjectId(),
+        Background.getAssistantId(),
+        Background.getStorageServerUrl(),
+      ])
 
     setIsApiKeyNotSet(!chatGptApiKey)
 
@@ -23,6 +25,7 @@ export const App: React.FC = () => {
       organizationId,
       projectId,
       assistantId,
+      storageServerUrl,
     })
   }, [form])
 
@@ -36,6 +39,7 @@ export const App: React.FC = () => {
       Background.setOrganizationId(form.getFieldValue('organizationId') ?? null),
       Background.setProjectId(form.getFieldValue('projectId') ?? null),
       Background.setAssistantId(form.getFieldValue('assistantId') ?? null),
+      Background.setStorageServerUrl(form.getFieldValue('storageServerUrl') ?? null),
     ])
     await loadData()
   }
@@ -64,6 +68,9 @@ export const App: React.FC = () => {
           </Form.Item>
           <Form.Item name="assistantId" label="Assistant ID">
             <Input placeholder={crawlerConfig.assistantId} />
+          </Form.Item>
+          <Form.Item name="storageServerUrl" label="Storage Server URL">
+            <Input placeholder={crawlerConfig.storageServerUrl} />
           </Form.Item>
           <Form.Item>
             <Space>

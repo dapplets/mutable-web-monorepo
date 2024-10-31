@@ -24,6 +24,7 @@ export const crawlerConfig = {
   organizationId: 'org-E5yF3X7tcVHJQ0geNL5v0FDY',
   projectId: 'proj_kptuPrR2y29wj9gnsbtMH2cT',
   assistantId: 'asst_Pbw8hjZvGRhxbJtH9FrjU0xm',
+  storageServerUrl: 'http://localhost:3001',
 }
 
 export type NearNetworkId = 'testnet' | 'mainnet'
