@@ -1,7 +1,6 @@
 import { SignInParams } from '@near-wallet-selector/core'
 import { setupMessageListener } from 'chrome-extension-message-wrapper'
 import browser from 'webextension-polyfill'
-import { MUTATION_LINK_URL } from '../common/constants'
 import { networkConfigs } from '../common/networks'
 import { debounce } from './helpers'
 import * as SettingsService from './services/settings-service'
@@ -93,10 +92,6 @@ const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
   setClipboard(tab, (await near.getAccounts())[0].accountId)
 }
 
-const openNewMutationPopup = (tab: browser.Tabs.Tab) => {
-  tab?.id && browser.tabs.sendMessage(tab.id, { type: 'OPEN_NEW_MUTATION_POPUP' })
-}
-
 // Context menu updaters
 
 const updateNetworkMenu = async () => {
@@ -131,11 +126,6 @@ const updateMenuForDisconnectedState = async () => {
     id: 'connect',
     contexts: ['action'],
   })
-  browser.contextMenus.create({
-    title: 'Mutate',
-    id: 'mutate',
-    contexts: ['action'],
-  })
 
   await updateNetworkMenu()
 }
@@ -158,11 +148,6 @@ const updateMenuForConnectedState = async (accountName: string) => {
     title: 'Disconnect NEAR wallet',
     parentId: walletMenuId,
     id: 'disconnect',
-    contexts: ['action'],
-  })
-  browser.contextMenus.create({
-    title: 'Mutate',
-    id: 'mutate',
     contexts: ['action'],
   })
 
@@ -225,12 +210,6 @@ function handleContextMenuClick(
       break
     }
 
-    case 'mutate':
-      if (tab) {
-        return openNewMutationPopup(tab)
-      }
-      break
-
     case 'testnet':
       return SettingsService.switchNetwork('testnet')
 
@@ -242,42 +221,3 @@ function handleContextMenuClick(
   }
 }
 browser.contextMenus.onClicked.addListener(handleContextMenuClick)
-
-// Redirect from share link with mutations
-const mutationLinkListener = async (tabId: number | undefined) => {
-  if (!tabId) return
-
-  const tab = await browser.tabs.get(tabId)
-
-  // Prevent concurrency
-  if (!tab || tab.status !== 'complete' || !tab.url) return
-
-  if (tab?.url.startsWith(MUTATION_LINK_URL)) {
-    const url = new URL(tab.url)
-
-    // URL example:
-    // https://augm.link/mutate?t=https://twitter.com/MrConCreator&m=bos.dapplets.near/mutation/Zoo
-    if (url.pathname === '/mutate' || url.pathname === '/mutate/') {
-      const redirectUrl = url.searchParams.get('t')
-      const mutationId = url.searchParams.get('m')
-
-      if (!redirectUrl || !mutationId) return
-
-      // Add mutationId to the queue. It will be fetch later, when the page loaded
-      tabStateService.push(tabId, { mutationId })
-
-      await browser.tabs.update(tabId, { url: redirectUrl, active: true })
-    }
-  }
-}
-
-browser.runtime.onInstalled.addListener(async () => {
-  const serviceTabs = await browser.tabs.query({
-    url: `${new URL('/', MUTATION_LINK_URL).href}*`,
-  })
-
-  await Promise.all(serviceTabs.map((tab) => mutationLinkListener(tab.id)))
-})
-
-browser.tabs.onActivated.addListener(({ tabId }) => mutationLinkListener(tabId))
-browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))
