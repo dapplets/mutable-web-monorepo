@@ -40,7 +40,8 @@ export const Popup: FC = () => {
   const handleSidePanelButtonClick = async () => {
     const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
     // @ts-ignore
-    browser.sidePanel.open({ tabId: currentTab.id, windowId: currentTab.windowId })
+    await browser.sidePanel.open({ tabId: currentTab.id, windowId: currentTab.windowId })
+    window.close()
   }
 
   const handleConnectButtonClick = () => {
@@ -100,9 +101,9 @@ export const Popup: FC = () => {
           <Button block icon={<ControlOutlined />} onClick={handleSidePanelButtonClick}>
             Open side panel
           </Button>
-          <Button block icon={<WifiOutlined />}>
+          {/* <Button block icon={<WifiOutlined />}>
             Allowed websites
-          </Button>
+          </Button> */}
           {account ? (
             <Button
               block
