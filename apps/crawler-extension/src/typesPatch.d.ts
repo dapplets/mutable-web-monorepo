@@ -1,4 +1,5 @@
-declare let EXTENSION_VERSION: string
+declare const EXTENSION_VERSION: string
+declare const DEFAULT_CRAWLER_API_URL: string | null
 
 declare module 'near-social-vm' {
   export function useAccountId(): string | null
