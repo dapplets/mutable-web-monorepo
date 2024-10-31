@@ -42,10 +42,7 @@ export class ContextService {
   private storeNode(node: StoreContextDto): number {
     const globalId = `${node.namespace}/${node.contextType}/${node.id}`;
 
-    if (this.nodes.has(globalId)) {
-      return 0;
-    }
-
+    // ToDo: skip existing nodes
     const clonedNode = {
       namespace: node.namespace,
       contextType: node.contextType,
