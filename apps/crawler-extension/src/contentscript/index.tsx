@@ -1,5 +1,5 @@
 import { Engine, EngineConfig, utils } from '@mweb/backend'
-import { Core, IContextNode } from '@mweb/core'
+import { Core, IContextNode, ParserConfig } from '@mweb/core'
 import { setupWalletSelector } from '@near-wallet-selector/core'
 import { EventEmitter as NEventEmitter } from 'events'
 import browser from 'webextension-polyfill'
@@ -7,6 +7,7 @@ import Background from '../common/background'
 import { ClonedContextNode } from '../common/types'
 import { ExtensionStorage } from './extension-storage'
 import { setupWallet } from './wallet'
+import { Picker } from './picker'
 
 const eventEmitter = new NEventEmitter()
 const networkIdPromise = Background.getCurrentNetwork()
@@ -41,6 +42,7 @@ async function main() {
 
   const core = new Core()
   const engine = new Engine(engineConfig)
+  const picker = new Picker()
 
   const [remoteParsers, localParsers] = await Promise.all([
     engine.parserConfigService.getAllParserConfigs(),
@@ -67,6 +69,20 @@ async function main() {
     core.attachParserConfig(pc)
   }
 
+  async function improveParserConfig(pc: ParserConfig, html: string) {
+    const newPc: any = await Background.improveParserConfig(pc, html)
+    if (!newPc) throw new Error('Cannot improve parser config')
+
+    if (!newPc.targets.some((t: any) => utils.isTargetMet(t, core.tree))) {
+      throw new Error('The generated parser config is not suitable for this web site. Try again')
+    }
+
+    await Background.saveLocalParserConfig(newPc)
+
+    core.detachParserConfig(pc.id)
+    core.attachParserConfig(newPc)
+  }
+
   browser.runtime.onMessage.addListener((message: any) => {
     if (!message || !message.type) return
     if (message.type === 'PING') {
@@ -88,6 +104,10 @@ async function main() {
       return Promise.resolve(suitableParsers)
     } else if (message.type === 'GENERATE_PARSER_CONFIG') {
       return Promise.resolve(generateParserConfig())
+    } else if (message.type === 'PICK_ELEMENT') {
+      return Promise.resolve(picker.pickElement())
+    } else if (message.type === 'IMPROVE_PARSER_CONFIG') {
+      return Promise.resolve(improveParserConfig(message.params.parserConfig, message.params.html))
     }
   })
 }

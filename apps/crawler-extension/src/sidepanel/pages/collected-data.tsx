@@ -1,10 +1,19 @@
-import { useQuery } from '@tanstack/react-query'
-import { Layout as AntdLayout, Card, Descriptions, Flex, TreeSelect, Typography } from 'antd'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import {
+  Layout as AntdLayout,
+  Button,
+  Card,
+  Descriptions,
+  Flex,
+  TreeSelect,
+  Typography,
+} from 'antd'
 import React, { useMemo, useState } from 'react'
 import { ClonedContextNode } from '../../common/types'
 import { Layout } from '../components/layout'
 import ContentScript from '../content-script'
 import { TreeTraverser } from '../tree-traverser'
+import { ParserConfig } from '@mweb/core'
 
 type ContextTypeTree = {
   value: string
@@ -33,11 +42,25 @@ function extractContextTypesTree(nodes: ClonedContextNode[]): ContextTypeTree[] 
 export const CollectedData: React.FC = () => {
   const [contextTypes, setContextTypes] = useState<string[]>([])
 
-  const { data: contextTree } = useQuery<ClonedContextNode | null>({
+  const { data: contextTree } = useQuery({
     queryFn: ContentScript.getContextTree,
     queryKey: ['getContextTree'],
     initialData: null,
     refetchInterval: 1000,
+  })
+
+  const { data: parsers } = useQuery({
+    queryKey: ['getSuitableParserConfigs'],
+    queryFn: ContentScript.getSuitableParserConfigs,
+  })
+
+  const { isPending: isElementPicking, mutateAsync: pickElement } = useMutation({
+    mutationFn: ContentScript.pickElement,
+  })
+
+  const { isPending: isParserImproving, mutateAsync: improveParserConfig } = useMutation({
+    mutationFn: ({ pc, html }: { pc: ParserConfig; html: string }) =>
+      ContentScript.improveParserConfig(pc, html),
   })
 
   const contextTypesTree = useMemo(
@@ -53,12 +76,27 @@ export const CollectedData: React.FC = () => {
     setContextTypes(values)
   }
 
+  const handlePickElementClick = async () => {
+    if (!parsers?.length) return
+    const pc = parsers[0]
+    const html = await pickElement()
+    if (!html) return
+    await improveParserConfig({ html, pc })
+  }
+
+  if (isParserImproving) {
+    return <Layout>Improving parser...</Layout>
+  }
+
   return (
     <AntdLayout style={{ padding: 16 }}>
       <Typography.Title level={4} style={{ margin: '0 0 1em 0' }}>
         Collected Data
       </Typography.Title>
       <Flex vertical gap="small">
+        <Button type="default" onClick={handlePickElementClick} loading={isElementPicking}>
+          Pick Element
+        </Button>
         <TreeSelect
           style={{ width: '100%' }}
           value={contextTypes}

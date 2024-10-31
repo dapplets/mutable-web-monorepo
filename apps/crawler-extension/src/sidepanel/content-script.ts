@@ -73,6 +73,28 @@ async function ping(): Promise<boolean> {
   }
 }
 
+async function pickElement(): Promise<string | null> {
+  const currentTab = await getCurrentTab()
+  if (!currentTab?.id) return null
+
+  return browser.tabs.sendMessage(currentTab.id, {
+    type: 'PICK_ELEMENT',
+  })
+}
+
+async function improveParserConfig(pc: ParserConfig, html: string): Promise<void> {
+  const currentTab = await getCurrentTab()
+  if (!currentTab?.id) return
+
+  return browser.tabs.sendMessage(currentTab.id, {
+    type: 'IMPROVE_PARSER_CONFIG',
+    params: {
+      parserConfig: pc,
+      html: html,
+    },
+  })
+}
+
 export default {
   getCurrentTab,
   getSuitableParserConfigs,
@@ -80,4 +102,6 @@ export default {
   generateParserConfig,
   onActiveTabChange,
   ping,
+  pickElement,
+  improveParserConfig,
 }
