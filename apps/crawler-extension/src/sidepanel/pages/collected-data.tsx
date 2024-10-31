@@ -13,12 +13,12 @@ import {
 import React, { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ClonedContextNode } from '../../common/types'
+import { getNameFromId } from '../../contentscript/helpers'
 import CodeEditor from '../components/CodeEditor'
 import CodeIcon from '../components/CodeIcon'
 import { Layout } from '../components/layout'
 import { TreeTraverser } from '../components/tree-traverser'
 import ContentScript from '../content-script'
-import { getNameFromId } from '../../contentscript/helpers'
 
 type ContextTypeTree = {
   value: string
@@ -153,9 +153,11 @@ export const CollectedData: React.FC = () => {
             </Flex>
 
             {isCodeEditorOpened ? (
-              <Card styles={{ body: { padding: 0, overflow: 'hidden' } }}>
-                <CodeEditor parserConfig={parsers[0]} />
-              </Card>
+              <CodeEditor
+                parserConfig={parsers[0]}
+                saveParserConfig={saveLocalParserConfig}
+                isLocalParserSaving={isLocalParserSaving}
+              />
             ) : null}
           </Space>
         ) : null}
