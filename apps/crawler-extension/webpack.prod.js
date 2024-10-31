@@ -13,7 +13,7 @@ module.exports = merge(common, {
     //   },
     //   name: 'common',
     // },
-    minimize: false,
+    minimize: true,
     minimizer: [
       new TerserPlugin({
         extractComments: false,
