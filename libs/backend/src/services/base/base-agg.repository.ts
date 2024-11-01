@@ -10,6 +10,7 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
   ) {}
 
   async getItem(id: EntityId): Promise<T | null> {
+    // ToDo: why local is preferred?
     const localItem = await this.local.getItem(id)
     if (localItem) return localItem
     return this.remote.getItem(id)
@@ -58,6 +59,7 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
   }
 
   async deleteItem(id: EntityId): Promise<void> {
+    // ToDo: not obvious that local will be deleted
     await this.local.deleteItem(id)
   }
 
