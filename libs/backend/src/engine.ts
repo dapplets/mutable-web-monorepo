@@ -48,7 +48,7 @@ export class Engine {
 
   constructor(public readonly config: EngineConfig) {
     if (!this.config.storage) {
-      this.config.storage = new LocalStorage('mutable-web-engine')
+      this.config.storage = new LocalStorage(`mweb:${config.networkId}`)
     }
 
     const storage = this.config.storage
