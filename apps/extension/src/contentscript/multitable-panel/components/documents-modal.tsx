@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { MinusCircle, PlusCircle } from '../assets/vectors'
+import { ButtonsGroup } from './buttons-group'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -116,12 +117,6 @@ const InlineButton = styled.button`
   }
 `
 
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
     <path
@@ -187,6 +182,7 @@ export const DocumentsModal: FC<Props> = ({
       <AppsList>
         {docs?.map((doc) => (
           <SimpleApplicationCard
+            source={doc.source}
             key={doc.id}
             src={doc.id}
             metadata={doc.metadata}
@@ -200,7 +196,7 @@ export const DocumentsModal: FC<Props> = ({
         ))}
       </AppsList>
 
-      <ButtonsBlock>
+      <ButtonsGroup>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           primary
@@ -212,7 +208,7 @@ export const DocumentsModal: FC<Props> = ({
         >
           Confirm
         </Button>
-      </ButtonsBlock>
+      </ButtonsGroup>
     </Wrapper>
   )
 }

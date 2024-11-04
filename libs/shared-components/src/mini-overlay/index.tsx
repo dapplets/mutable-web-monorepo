@@ -1,6 +1,6 @@
 import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
+import React, { FC, ReactElement, useState, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
@@ -14,9 +14,10 @@ import SidePanel from './side-panel'
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;
   position: relative;
+  border: none;
+  z-index: 5000;
 
   .sideWrapper {
-    z-index: 6000;
     box-shadow: none;
     width: min-content !important;
     top: 10px;
@@ -214,9 +215,9 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
             content: 'sideContent',
           }}
           open
-          style={{ boxShadow: 'none', background: 'none' }}
+          style={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
           mask={false}
-          rootStyle={{ boxShadow: 'none', background: 'none' }}
+          rootStyle={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
           getContainer={() => {
             if (!overlayRef.current) return
             return overlayRef.current as any
