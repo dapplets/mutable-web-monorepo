@@ -39,7 +39,7 @@ export class NotificationService {
   // ToDo: move DTOs to controllers?
 
   async getMyNotifications(accountId: string): Promise<NotificationDto[]> {
-    if (!accountId) return [];
+    if (!accountId) return []
 
     const incomingNotifications = await this.notificationRepository.getItemsByIndex({
       recipients: [accountId],
@@ -49,7 +49,13 @@ export class NotificationService {
       authorId: accountId,
     })
 
-    const allNotifications = [...incomingNotifications, ...outgoingNotifications]
+    const allNotifications = incomingNotifications
+
+    for (const outgoingNotification of outgoingNotifications) {
+      if (!allNotifications.some((n) => n.id === outgoingNotification.id)) {
+        allNotifications.push(outgoingNotification)
+      }
+    }
 
     const resolutions = await Promise.all(
       allNotifications.map((notification) =>

@@ -146,14 +146,16 @@ const PullRequestNotification: FC<{
           )}
           {loggedInAccountId === notification.authorId ? (
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              {loggedInAccountId}&ensp;sent a commit to&ensp;
+              #{notification.localId.substring(0, 7)}&ensp;{loggedInAccountId}&ensp;sent a commit
+              to&ensp;
               {notification.recipients}&ensp;on&ensp;
               {date}
             </Text>
           ) : notification.type === NotificationType.PullRequestAccepted ||
             notification.type === NotificationType.PullRequestRejected ? (
             <Text type="secondary" style={{ fontSize: '12px' }}>
-              {notification.authorId}&ensp;commited commit from&ensp;{loggedInAccountId}
+              #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;commited
+              commit from&ensp;{loggedInAccountId}
               &ensp;on&ensp;
               {date}
             </Text>
