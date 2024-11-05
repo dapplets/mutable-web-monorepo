@@ -11,6 +11,8 @@ import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { generateGuid } from '../../common/generate-guid'
 import { IRepository } from '../base/repository.interface'
 
+const KeyDelimiter = '/'
+
 export class NotificationService {
   constructor(
     private notificationRepository: IRepository<Notification>,
@@ -218,10 +220,11 @@ export class NotificationService {
   private async _getResolutionForNotification(
     notificationId: EntityId,
     notificationType: NotificationType,
-    accountId: string
+    recipientId: string
   ): Promise<Resolution> {
+    const [senderId] = notificationId.split(KeyDelimiter)
     const hash = UserLinkService._hashString(notificationId)
-    const resolutionId = `${accountId}/resolution/${hash}`
+    const resolutionId = `${recipientId}/resolution/${hash}`
 
     const resolution = await this.resolutionRepository.getItem(resolutionId)
 
@@ -235,7 +238,8 @@ export class NotificationService {
         return Resolution.create({
           id: resolutionId,
           source: EntitySourceType.Origin,
-          status: NotificationStatus.New,
+          // ToDo: outgoing notifications are viewed by default
+          status: recipientId === senderId ? NotificationStatus.Viewed : NotificationStatus.New,
           result: { status: PullRequestStatus.Open },
         })
 
@@ -244,7 +248,8 @@ export class NotificationService {
         return Resolution.create({
           id: resolutionId,
           source: EntitySourceType.Origin,
-          status: NotificationStatus.New,
+          // ToDo: outgoing notifications are viewed by default
+          status: recipientId === senderId ? NotificationStatus.Viewed : NotificationStatus.New,
         })
     }
   }

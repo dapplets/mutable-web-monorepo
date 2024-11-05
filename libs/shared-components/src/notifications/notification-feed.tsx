@@ -48,22 +48,12 @@ const NotificationFeed: FC<{
     useViewAllNotifications(loggedInAccountId)
 
   const viewedNotifications = useMemo(
-    () =>
-      notifications.filter(
-        (notification) =>
-          notification.status === 'viewed' ||
-          (notification.authorId === loggedInAccountId && notification.result?.status === 'open')
-      ),
+    () => notifications.filter((notification) => notification.status === 'viewed'),
     [notifications]
   )
 
   const newNotifications = useMemo(
-    () =>
-      notifications.filter(
-        (notification) =>
-          notification.status === 'new' &&
-          !viewedNotifications.some((viewed) => viewed.id === notification.id)
-      ),
+    () => notifications.filter((notification) => notification.status === 'new'),
     [notifications, viewedNotifications]
   )
 
@@ -75,7 +65,6 @@ const NotificationFeed: FC<{
       setWaiting(false)
     }
   }
-  console.log(newNotifications)
 
   return (
     <FeedContainer prefixCls="notifyWrapper" direction="vertical" ref={overlayRef}>
