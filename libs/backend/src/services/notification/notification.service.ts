@@ -1,4 +1,4 @@
-import { EntityId } from '../base/base.entity'
+import { EntityId, EntitySourceType } from '../base/base.entity'
 import { NearSigner } from '../near-signer/near-signer.service'
 import { Transaction } from '../unit-of-work/transaction'
 import { UserLinkService } from '../user-link/user-link.service'
@@ -40,7 +40,7 @@ export class NotificationService {
 
   async getMyNotifications(accountId: string): Promise<NotificationDto[]> {
     if (!accountId) return [];
-    
+
     const incomingNotifications = await this.notificationRepository.getItemsByIndex({
       recipients: [accountId],
     })
@@ -228,6 +228,7 @@ export class NotificationService {
       case NotificationType.PullRequest:
         return Resolution.create({
           id: resolutionId,
+          source: EntitySourceType.Origin,
           status: NotificationStatus.New,
           result: { status: PullRequestStatus.Open },
         })
@@ -236,6 +237,7 @@ export class NotificationService {
       default:
         return Resolution.create({
           id: resolutionId,
+          source: EntitySourceType.Origin,
           status: NotificationStatus.New,
         })
     }

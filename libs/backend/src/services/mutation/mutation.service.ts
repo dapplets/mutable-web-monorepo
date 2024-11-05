@@ -356,6 +356,10 @@ export class MutationService {
     const { authorId: forkAuthorId } = forkedMutation
     const { authorId: originAuthorId } = originalMutation
 
+    if (!forkAuthorId) {
+      throw new Error('The mutation does not have an author')
+    }
+
     // ToDo: check logged in user id?
     if (forkAuthorId === originAuthorId) {
       throw new Error('You cannot ask yourself to apply changes')
@@ -363,6 +367,7 @@ export class MutationService {
 
     const notification: NotificationCreateDto = {
       type: NotificationType.PullRequestAccepted,
+      source: EntitySourceType.Origin,
       recipients: [forkAuthorId],
       payload: {
         sourceMutationId: forkedMutation.id,
@@ -389,12 +394,17 @@ export class MutationService {
     const { authorId: forkAuthorId } = forkedMutation
     const { authorId: originAuthorId } = originalMutation
 
+    if (!forkAuthorId) {
+      throw new Error('The mutation does not have an author')
+    }
+
     // ToDo: check logged in user id?
     if (forkAuthorId === originAuthorId) {
       throw new Error('You cannot ask yourself to apply changes')
     }
 
     const notification: NotificationCreateDto = {
+      source: EntitySourceType.Origin,
       type: NotificationType.PullRequestRejected,
       recipients: [forkAuthorId],
       payload: {

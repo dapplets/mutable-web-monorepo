@@ -167,10 +167,18 @@ const PullRequestNotification: FC<{
 
           <Button
             disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-            onClick={notification.status === 'new' ? viewNotification : hideNotification}
+            onClick={
+              notification.status === 'new' && notification.authorId !== loggedInAccountId
+                ? viewNotification
+                : hideNotification
+            }
             style={{ marginLeft: 'auto' }}
             type="text"
-            title={notification.status === 'new' ? 'Mark as read' : 'Delete'}
+            title={
+              notification.status === 'new' && notification.authorId !== loggedInAccountId
+                ? 'Mark as read'
+                : 'Delete'
+            }
             icon={
               notification.status === 'new' && notification.authorId !== loggedInAccountId ? (
                 <NotificationMessageIcon />
