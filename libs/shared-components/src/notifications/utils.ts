@@ -1,7 +1,7 @@
 import { NotificationDto } from '@mweb/backend'
 
-export const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
+export const formatTimestamp = (timestamp: number): string => {
+  const date = new Date(timestamp)
   const options: Intl.DateTimeFormatOptions = {
     month: 'short',
     day: 'numeric',

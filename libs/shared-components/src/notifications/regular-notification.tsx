@@ -8,7 +8,7 @@ import {
   NotificationMessage as NotificationMessageIcon,
   NotificationClose as NotificationCloseIcon,
 } from './assets/icons'
-import { formatDate } from './utils'
+import { formatTimestamp } from './utils'
 import styled from 'styled-components'
 
 const { Text } = Typography
@@ -42,10 +42,7 @@ const RegularNotification: FC<{
     error: errorHide,
   } = useHideNotification(notification.id)
 
-  const date = useMemo(
-    () => formatDate(new Date(notification.timestamp).toLocaleString()),
-    [notification.timestamp]
-  )
+  const date = useMemo(() => formatTimestamp(notification.timestamp), [notification.timestamp])
 
   return (
     <Space prefixCls="notifySingle" direction="vertical" style={{ transition: 'all 0.2s ease' }}>

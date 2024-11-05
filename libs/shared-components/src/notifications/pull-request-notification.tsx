@@ -23,7 +23,7 @@ import {
   Review,
   Branch,
 } from './assets/icons'
-import { extractLastPart, formatDate } from './utils'
+import { extractLastPart, formatTimestamp } from './utils'
 import styled from 'styled-components'
 import { PrReviewerModal } from './pr-reviewer-modal'
 
@@ -96,10 +96,7 @@ const PullRequestNotification: FC<{
     error: errorReject,
   } = useRejectPullRequest(notification.id)
 
-  const date = useMemo(
-    () => formatDate(new Date(notification.timestamp).toLocaleString()),
-    [notification.timestamp]
-  )
+  const date = useMemo(() => formatTimestamp(notification.timestamp), [notification.timestamp])
 
   const [isReviewing, setIsReviewing] = React.useState(false)
 
