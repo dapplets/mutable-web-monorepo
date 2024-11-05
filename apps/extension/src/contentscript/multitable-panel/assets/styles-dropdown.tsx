@@ -7,7 +7,6 @@ export const WrapperDropdown = styled.div`
   align-items: center;
 
   width: 266px;
-  height: 35px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
 `
@@ -29,18 +28,19 @@ export const SelectedMutationInfo = styled.div`
 `
 export const SelectedMutationDescription = styled.div`
   font-size: 12px;
-  line-height: 149%;
+  line-height: 150%;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
 
 export const SelectedMutationId = styled.div`
   font-size: 10px;
-  line-height: 100%;
+  line-height: 150%;
   color: rgba(255, 255, 255, 0.6);
   white-space: nowrap;
   overflow: hidden;
@@ -118,20 +118,17 @@ export const StarSelectedMutationWrapper = styled.div`
 
 export const MutationsList = styled.div`
   position: absolute;
-  z-index: 3;
   outline: none;
   display: flex;
   flex-direction: column;
   background: #fff;
-  box-shadow:
-    0 4px 5px rgb(45 52 60 / 10%),
-    0 4px 20px rgb(11 87 111 / 15%);
+  box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   width: 318px;
   left: -26px;
-  top: 38px;
-  padding-right: 6px;
+  top: 42px;
+  padding: 0;
   border-radius: 0px 0px 10px 10px;
-  overflow: hidden;
+
   @keyframes listVisible {
     0% {
       opacity: 0;
@@ -145,6 +142,7 @@ export const MutationsList = styled.div`
       opacity: 1;
     }
   }
+
   animation: listVisible 0.2s ease forwards;
   transition: all 0.3s;
 `
@@ -152,16 +150,15 @@ export const MutationsList = styled.div`
 export const MutationsListWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: 98%;
   padding: 6px;
-  padding-top: 0;
-  padding-right: 0;
   overflow: hidden;
   overflow-y: auto;
   max-height: 500px;
   gap: 10px;
   position: relative;
-  padding-top: 55px;
+  margin-left: 1%;
+
   &::-webkit-scrollbar {
     cursor: pointer;
     width: 4px;
@@ -184,32 +181,19 @@ export const MutationsListWrapper = styled.div`
     height: 2px;
     background: #384bff;
     border-radius: 2px;
-    box-shadow:
-      0 2px 6px rgb(0 0 0 / 9%),
-      0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 export const ButtonListBlock = styled.div`
   display: flex;
   border-radius: 0px, 0px, 10px, 10px;
-  height: 41px;
+  height: 40px;
   justify-content: space-evenly;
   width: 100%;
   align-items: center;
-  position: fixed;
-  top: 40px;
-  z-index: 100;
+  top: 42px;
   left: 0;
-  &::before {
-    content: '';
-    width: 318px;
-    position: fixed;
-    top: 40px;
-    left: 0;
-    background: #f8f9ff;
-    height: 43px;
-    z-index: 0;
-  }
+  background: #f8f9ff;
 `
 
 export const ButtonBack = styled.div`
@@ -262,10 +246,8 @@ export const ButtonMutation = styled.div`
   }
 `
 
-export const ListMutations = styled.div<{
-  isAccordeonExpanded?: boolean
-}>`
-  width: ${(props) => (props.isAccordeonExpanded ? 'calc(100% - 5px)' : '100%')};
+export const ListMutations = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -295,12 +277,26 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
 export const InputIconWrapper = styled.div`
   display: flex;
   padding-right: 3px;
-  transition: all 0.2s ease;
-  &:hover {
-    transform: scale(1.2);
-  }
-  & > svg {
+  transition: all 0.15s ease;
+  color: #a0a2a7;
+  justify-content: center;
+  padding: 0;
+  width: 30px;
+
+  & svg {
     vertical-align: initial;
+  }
+
+  &:hover {
+    color: #656669;
+
+    svg {
+      transform: scale(1.2);
+    }
+  }
+
+  &:active {
+    color: #4f5053;
   }
 `
 
@@ -315,10 +311,12 @@ export const InputInfoWrapper = styled.div`
 
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
+  flex: 1;
+
   .inputMutationSelected {
     color: rgba(34, 34, 34, 1);
   }
+
   .authorMutationSelected {
     color: #384bff;
   }
@@ -330,6 +328,7 @@ export const ImageBlock = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   img {
     width: 100%;
     height: 100%;
@@ -337,12 +336,8 @@ export const ImageBlock = styled.div`
   }
 `
 
-export const AvalibleMutations = styled.div<{
-  $enable?: string
-  $enableBefore?: string
-  isAccordeonExpanded?: boolean
-}>`
-  width: ${(props) => (props.isAccordeonExpanded ? 'calc(100% - 5px)' : '100%')};
+export const AvalibleMutations = styled.div`
+  width: 100%;
   background: rgba(248, 249, 255, 1);
   border-radius: 10px;
   gap: 10px;
@@ -351,12 +346,14 @@ export const AvalibleMutations = styled.div<{
   box-sizing: border-box;
   padding: 10px;
   z-index: 1;
+
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);
     width: 100%;
     border-radius: 4px;
     padding: 2px 4px;
     margin-bottom: 3px;
+
     &:hover {
       background: rgba(24, 121, 206, 0.08);
     }
@@ -412,7 +409,8 @@ export const InputMutation = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `
 
 export const AuthorMutation = styled.div`
@@ -423,5 +421,6 @@ export const AuthorMutation = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   width: 180px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 `

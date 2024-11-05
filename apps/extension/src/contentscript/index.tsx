@@ -74,7 +74,7 @@ async function main() {
     networkId,
     gatewayId: 'mutable-web-extension',
     selector,
-    storage: new ExtensionStorage('mutableweb'),
+    storage: new ExtensionStorage(`mweb:${networkId}`),
     bosElementStyleSrc: bootstrapCssUrl,
   }
 

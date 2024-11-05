@@ -16,6 +16,8 @@ import {
   DocumentMetadata,
   DocumentDto,
   utils,
+  EntitySourceType,
+  EntityId,
 } from '@mweb/backend'
 import { useEngine } from '../contexts/engine-context'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
@@ -59,7 +61,7 @@ interface WidgetProps {
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
-  getDocument: () => Promise<DocumentDto | null>
+  getDocument: (documentId?: EntityId) => Promise<DocumentDto | null>
 }
 
 interface LayoutManagerProps {
@@ -221,8 +223,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [engine, selectedMutation]
   )
 
-  const handleGetDocumentCurry = useCallback(
-    memoize((appInstanceId: string) => async () => {
+  const _getCurrentDocumentId = useCallback(
+    async (appInstanceId: string) => {
       if (!selectedMutation) throw new Error('No selected mutation')
       const appInstance = selectedMutation.apps.find(
         (app) => utils.constructAppInstanceId(app) === appInstanceId
@@ -231,11 +233,24 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
       if (!appInstance.documentId) return null
 
-      const document = await engine.documentService.getDocument(appInstance.documentId)
+      return appInstance.documentId
+    },
+    [selectedMutation]
+  )
+
+  const handleGetDocumentCurry = useCallback(
+    memoize((appInstanceId: string) => async (_documentId?: EntityId) => {
+      // allow for _documentId to be passed in to check existence of document before creation
+      const documentId = _documentId ?? (await _getCurrentDocumentId(appInstanceId))
+
+      if (!documentId) return null
+
+      // ToDo: local or remote?
+      const document = await engine.documentService.getDocument(documentId)
 
       return document
     }),
-    [engine, selectedMutation, refreshMutation]
+    [engine, _getCurrentDocumentId]
   )
 
   const handleCommitDocumentCurry = useCallback(
@@ -256,6 +271,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           // ToDo: replace with DocumentCreateDto
           const document: DocumentDto = {
             id: appDocId,
+            source: EntitySourceType.Origin,
             authorId: appDocId.split('/')[0],
             localId: appDocId.split('/')[2],
             blockNumber: 0,
@@ -395,7 +411,9 @@ const InsPointHandler: FC<{
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
-  onGetDocumentCurry: (appInstanceId: string) => () => Promise<DocumentDto | null>
+  onGetDocumentCurry: (
+    appInstanceId: string
+  ) => (documentId?: EntityId) => Promise<DocumentDto | null>
 }> = ({
   insPointName,
   element,
@@ -568,7 +586,9 @@ const ControllerHandler: FC<{
     ctx: TransferableContext,
     dataByAccount: LinkedDataByAccountDto
   ) => Promise<void>
-  onGetDocumentCurry: (appInstanceId: string) => () => Promise<DocumentDto | null>
+  onGetDocumentCurry: (
+    appInstanceId: string
+  ) => (documentId?: EntityId) => Promise<DocumentDto | null>
 }> = ({
   transferableContext,
   controller,

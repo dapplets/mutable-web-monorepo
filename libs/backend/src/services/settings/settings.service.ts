@@ -1,8 +1,10 @@
 import { AppInstanceId } from '../application/application.entity'
+import { EntitySourceType } from '../base/base.entity'
 import { LocalDbService } from '../local-db/local-db.service'
 
 // Local DB
 const FAVORITE_MUTATION = 'favorite-mutation'
+const PREFERRED_SOURCE = 'preferred-source'
 const MUTATION_LAST_USAGE = 'mutation-last-usage'
 const STOPPED_APPS = 'stopped-apps'
 
@@ -17,6 +19,16 @@ export class SettingsSerivce {
   async setFavoriteMutation(mutationId: string | null | undefined): Promise<void> {
     const key = LocalDbService.makeKey(FAVORITE_MUTATION, window.location.hostname)
     return this.localDb.setItem(key, mutationId)
+  }
+
+  async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
+    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, window.location.hostname)
+    return (await this.localDb.getItem(key)) ?? null
+  }
+
+  async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
+    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, window.location.hostname)
+    return this.localDb.setItem(key, source)
   }
 
   async getMutationLastUsage(mutationId: string, hostname: string): Promise<string | null> {

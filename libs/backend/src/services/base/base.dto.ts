@@ -1,9 +1,10 @@
-import { EntityId } from './base.entity'
+import { EntityId, EntitySourceType } from './base.entity'
 
 export type BaseDto = {
   id: EntityId
+  source: EntitySourceType
   localId: string
-  authorId: string
+  authorId: string | null
   blockNumber: number
   timestamp: number
 }
