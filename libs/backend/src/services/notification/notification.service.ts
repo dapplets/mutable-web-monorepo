@@ -39,6 +39,8 @@ export class NotificationService {
   // ToDo: move DTOs to controllers?
 
   async getMyNotifications(accountId: string): Promise<NotificationDto[]> {
+    if (!accountId) return [];
+    
     const incomingNotifications = await this.notificationRepository.getItemsByIndex({
       recipients: [accountId],
     })
