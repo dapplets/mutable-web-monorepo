@@ -91,7 +91,7 @@ export class MutationService {
   }
 
   async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
-    return this.settingsService.setPreferredSource(mutationId,source)
+    return this.settingsService.setPreferredSource(mutationId, source)
   }
 
   async createMutation(
@@ -167,7 +167,8 @@ export class MutationService {
     options: SaveMutationOptions = {
       applyChangesToOrigin: false,
       askOriginToApplyChanges: false,
-    }
+    },
+    tx?: Transaction
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
@@ -175,15 +176,21 @@ export class MutationService {
       'id' in dto ? Mutation.create(dto) : await this.mutationRepository.constructItem(dto)
 
     if (mutation.source === EntitySourceType.Origin) {
-      await this.unitOfWorkService.runInTransaction((tx) =>
+      const performTx = (tx: Transaction) =>
         Promise.all([
           this.mutationRepository.saveItem(mutation, tx),
           applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
           askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
         ])
-      )
+
+      // reuse transaction
+      if (tx) {
+        await performTx(tx)
+      } else {
+        await this.unitOfWorkService.runInTransaction(performTx)
+      }
     } else if (mutation.source === EntitySourceType.Local) {
-      await this.mutationRepository.saveItem(mutation)
+      await this.mutationRepository.saveItem(mutation, tx)
     } else {
       throw new Error('Invalid entity source')
     }

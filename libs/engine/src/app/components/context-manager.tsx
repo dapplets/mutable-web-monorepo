@@ -18,6 +18,7 @@ import {
   utils,
   EntitySourceType,
   EntityId,
+  DocumentCommitDto,
 } from '@mweb/backend'
 import { useEngine } from '../contexts/engine-context'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
@@ -55,12 +56,7 @@ interface WidgetProps {
       indexRules: LinkIndexRules
     ) => Promise<void>
   }
-  commitDocument: (
-    appDocId: DocumentId,
-    appDocMeta: DocumentMetadata,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) => Promise<void>
+  commitDocument: (document: DocumentCommitDto) => Promise<DocumentDto>
   getDocument: (documentId?: EntityId) => Promise<DocumentDto | null>
 }
 
@@ -256,42 +252,31 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const handleCommitDocumentCurry = useCallback(
     memoize(
       (appInstanceId: string) =>
-        async (
-          appDocId: DocumentId, // ToDo: remove
-          appDocMeta: DocumentMetadata,
-          ctx: TransferableContext,
-          dataByAccount: LinkedDataByAccountDto
-        ) => {
+        async (document: DocumentCommitDto): Promise<DocumentDto> => {
           if (!selectedMutation) throw new Error('No selected mutation')
           const appInstance = selectedMutation.apps.find(
             (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
 
-          // ToDo: replace with DocumentCreateDto
-          const document: DocumentDto = {
-            id: appDocId,
-            source: EntitySourceType.Origin,
-            authorId: appDocId.split('/')[0],
-            localId: appDocId.split('/')[2],
-            blockNumber: 0,
-            timestamp: 0,
-            metadata: appDocMeta,
-            openWith: [appInstance.appId],
+          // ToDo: show fork dialog
+
+          const { mutation, document: savedDocument } =
+            await engine.documentService.commitDocumentToMutation(
+              selectedMutation.id,
+              appInstance.appId,
+              document
+            )
+
+          // mutation changed
+          if (mutation) {
+            // ToDo: workaround to wait when blockchain changes will be propagated
+            await new Promise((resolve) => setTimeout(resolve, 3000))
+
+            await refreshMutation(mutation)
           }
 
-          const { mutation } = await engine.documentService.createDocumentWithData(
-            selectedMutation.id,
-            appInstance.appId,
-            document,
-            ctx,
-            dataByAccount
-          )
-
-          // ToDo: workaround to wait when blockchain changes will be propagated
-          await new Promise((resolve) => setTimeout(resolve, 3000))
-
-          await refreshMutation(mutation)
+          return savedDocument
         }
     ),
     [engine, selectedMutation, refreshMutation]
@@ -405,12 +390,7 @@ const InsPointHandler: FC<{
   ) => Promise<void>
   onCommitDocumentCurry: (
     appInstanceId: string
-  ) => (
-    appDocId: DocumentId,
-    appDocMetadata: DocumentMetadata,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) => Promise<void>
+  ) => (document: DocumentCommitDto) => Promise<DocumentDto>
   onGetDocumentCurry: (
     appInstanceId: string
   ) => (documentId?: EntityId) => Promise<DocumentDto | null>
@@ -580,12 +560,7 @@ const ControllerHandler: FC<{
   ) => Promise<void>
   onCommitDocumentCurry: (
     appInstanceId: string
-  ) => (
-    appDocId: DocumentId,
-    appDocMetadata: DocumentMetadata,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) => Promise<void>
+  ) => (document: DocumentCommitDto) => Promise<DocumentDto>
   onGetDocumentCurry: (
     appInstanceId: string
   ) => (documentId?: EntityId) => Promise<DocumentDto | null>

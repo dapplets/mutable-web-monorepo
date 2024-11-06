@@ -1,7 +1,6 @@
-import { TransferableContext } from '../../types/transferable-context'
 import { AppId } from '../application/application.entity'
 import { Transaction } from '../unit-of-work/transaction'
-import { LinkedDataByAccountDto } from '../link-db/link-db.entity'
+import { DocumentCommitDto } from './dtos/document-commit.dto'
 import { LinkDbService } from '../link-db/link-db.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { MutationService } from '../mutation/mutation.service'
@@ -10,13 +9,16 @@ import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { DocumentDto } from './dtos/document.dto'
 import { DocumentCreateDto } from './dtos/document-create.dto'
 import { IRepository } from '../base/repository.interface'
+import { NearSigner } from '../near-signer/near-signer.service'
+import { EntitySourceType } from '../base/base.entity'
+import { MutationDto } from '../mutation/dtos/mutation.dto'
 
 export class DocumentSerivce {
   constructor(
     private documentRepository: IRepository<Document>,
-    private linkDbService: LinkDbService,
     private mutationService: MutationService,
-    private unitOfWorkService: UnitOfWorkService
+    private unitOfWorkService: UnitOfWorkService,
+    private nearSigner: NearSigner
   ) {}
 
   async getDocument(globalDocumentId: DocumentId): Promise<DocumentDto | null> {
@@ -34,45 +36,115 @@ export class DocumentSerivce {
     return document.toDto()
   }
 
-  async createDocumentWithData(
+  async saveDocument(dto: DocumentDto, tx?: Transaction): Promise<DocumentDto> {
+    const document = await this.documentRepository.constructItem(dto)
+    await this.documentRepository.saveItem(document, tx)
+    return document.toDto()
+  }
+
+  async commitDocumentToMutation(
     mutationId: MutationId,
     appId: AppId,
-    dto: DocumentCreateDto,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) {
-    const document = await this.documentRepository.constructItem(dto)
+    dto: DocumentCommitDto
+  ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
+    // ToDo
+    dto.openWith = [appId]
 
-    if (await this.documentRepository.getItem(document.id)) {
-      throw new Error('Document with that ID already exists')
+    if (dto.source === EntitySourceType.Local) {
+      // ToDo: non-obvious API
+      const document =
+        'id' in dto ? Document.create(dto) : await this.documentRepository.constructItem(dto)
+      await this.documentRepository.saveItem(document)
+      return { document }
     }
 
-    // ToDo: move to mutation service?
+    const loggedInAccountId = await this.nearSigner.getAccountId()
+    if (!loggedInAccountId) {
+      throw new Error('Not logged in')
+    }
 
-    // ToDo: local or remote?
     const mutation = await this.mutationService.getMutation(mutationId)
 
     if (!mutation) {
       throw new Error('No mutation with that ID')
     }
 
-    // ToDo: handle multiple app instances
-    const app = mutation.apps.find((app) => app.appId === appId && app.documentId === null)
+    const appInstances = mutation.apps.filter((app) => app.appId === appId)
 
-    if (!app) {
-      throw new Error('No app in mutation with that ID and empty document')
+    if (!dto.id) {
+      // ^ create new document and replace empty document in the mutation with created one
+      const document = await this.documentRepository.constructItem({ ...dto, openWith: [appId] })
+
+      // ToDo: handle multiple app instances
+      const instance = appInstances.find((app) => app.documentId === null)
+
+      if (!instance) {
+        throw new Error('No app in mutation with that ID and empty document')
+      }
+
+      // replace empty document in the mutation
+      instance.documentId = document.id
+
+      const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
+        Promise.all([
+          this.documentRepository.createItem(document, tx),
+          this.mutationService.editMutation(mutation, undefined, tx), // ToDo: undefined
+        ])
+      )
+
+      return {
+        document: savedDocument.toDto(),
+        mutation: savedMutation,
+      }
     }
 
-    app.documentId = document.id
+    const document = Document.create(dto)
 
-    await this.unitOfWorkService.runInTransaction((tx) =>
-      Promise.all([
-        this.createDocument(document, tx),
-        this.mutationService.editMutation(mutation, undefined, tx), // ToDo: undefined
-        this.linkDbService.set(mutationId, appId, document.id, ctx, dataByAccount, undefined, tx),
-      ])
-    )
+    if (document.authorId === loggedInAccountId) {
+      // ^ edit document and don't touch the mutation
+      await this.documentRepository.saveItem(document)
 
-    return { mutation }
+      return {
+        document: document.toDto(),
+      }
+    } else if (document.authorId !== loggedInAccountId) {
+      // ^ fork document, remove local changes and replace original document in the mutation with created one
+      const originalDocumentId = dto.id
+
+      const documentFork = await this.documentRepository.constructItem({
+        ...dto,
+        metadata: {
+          ...dto.metadata,
+          fork_of: originalDocumentId,
+        },
+      })
+
+      // ToDo: handle multiple app instances
+      const instance = appInstances.find((app) => app.documentId === originalDocumentId)
+
+      if (!instance) {
+        throw new Error('No app in mutation with that ID and empty document')
+      }
+
+      // replace empty document in the mutation
+      instance.documentId = documentFork.id
+
+      // save mutation locally
+      mutation.source = EntitySourceType.Local
+
+      const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
+        Promise.all([
+          this.documentRepository.createItem(documentFork, tx),
+          this.mutationService.saveMutation(mutation, undefined, tx), // ToDo: undefined
+        ])
+      )
+
+      return {
+        document: savedDocument.toDto(),
+        mutation: savedMutation,
+      }
+    }
+
+    throw new Error('Unreachable code')
   }
 }

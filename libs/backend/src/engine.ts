@@ -133,9 +133,9 @@ export class Engine {
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
     this.documentService = new DocumentSerivce(
       documentRepository,
-      this.linkDbService,
       this.mutationService,
-      unitOfWorkService
+      unitOfWorkService,
+      nearSigner
     )
   }
 }
