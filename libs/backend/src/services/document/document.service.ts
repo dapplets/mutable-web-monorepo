@@ -21,8 +21,11 @@ export class DocumentSerivce {
     private nearSigner: NearSigner
   ) {}
 
-  async getDocument(globalDocumentId: DocumentId): Promise<DocumentDto | null> {
-    const document = await this.documentRepository.getItem(globalDocumentId)
+  async getDocument(
+    globalDocumentId: DocumentId,
+    source?: EntitySourceType
+  ): Promise<DocumentDto | null> {
+    const document = await this.documentRepository.getItem(globalDocumentId, source)
     return document?.toDto() ?? null
   }
 

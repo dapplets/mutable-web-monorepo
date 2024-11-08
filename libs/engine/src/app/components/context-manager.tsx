@@ -57,7 +57,10 @@ interface WidgetProps {
     ) => Promise<void>
   }
   commitDocument: (document: DocumentCommitDto) => Promise<DocumentDto>
-  getDocument: (documentId?: EntityId) => Promise<DocumentDto | null>
+  getDocument: (options?: {
+    id?: EntityId
+    source?: EntitySourceType
+  }) => Promise<DocumentDto | null>
 }
 
 interface LayoutManagerProps {
@@ -235,17 +238,19 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   )
 
   const handleGetDocumentCurry = useCallback(
-    memoize((appInstanceId: string) => async (_documentId?: EntityId) => {
-      // allow for _documentId to be passed in to check existence of document before creation
-      const documentId = _documentId ?? (await _getCurrentDocumentId(appInstanceId))
+    memoize(
+      (appInstanceId: string) => async (options?: { id?: EntityId; source?: EntitySourceType }) => {
+        // allow for _documentId to be passed in to check existence of document before creation
+        const documentId = options?.id ?? (await _getCurrentDocumentId(appInstanceId))
 
-      if (!documentId) return null
+        if (!documentId) return null
 
-      // ToDo: local or remote?
-      const document = await engine.documentService.getDocument(documentId)
+        // ToDo: local or remote?
+        const document = await engine.documentService.getDocument(documentId, options?.source)
 
-      return document
-    }),
+        return document
+      }
+    ),
     [engine, _getCurrentDocumentId]
   )
 
@@ -393,7 +398,7 @@ const InsPointHandler: FC<{
   ) => (document: DocumentCommitDto) => Promise<DocumentDto>
   onGetDocumentCurry: (
     appInstanceId: string
-  ) => (documentId?: EntityId) => Promise<DocumentDto | null>
+  ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
 }> = ({
   insPointName,
   element,
@@ -563,7 +568,7 @@ const ControllerHandler: FC<{
   ) => (document: DocumentCommitDto) => Promise<DocumentDto>
   onGetDocumentCurry: (
     appInstanceId: string
-  ) => (documentId?: EntityId) => Promise<DocumentDto | null>
+  ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
 }> = ({
   transferableContext,
   controller,

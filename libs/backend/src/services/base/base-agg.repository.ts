@@ -9,11 +9,17 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     private local: IRepository<T>
   ) {}
 
-  async getItem(id: EntityId): Promise<T | null> {
-    // ToDo: why local is preferred?
-    const localItem = await this.local.getItem(id)
-    if (localItem) return localItem
-    return this.remote.getItem(id)
+  async getItem(id: EntityId, source?: EntitySourceType): Promise<T | null> {
+    if (source === EntitySourceType.Local) {
+      return this.local.getItem(id)
+    } else if (source === EntitySourceType.Origin) {
+      return this.remote.getItem(id)
+    } else {
+      // ToDo: why local is preferred?
+      const localItem = await this.local.getItem(id)
+      if (localItem) return localItem
+      return this.remote.getItem(id)
+    }
   }
 
   async getItems(options?: { authorId?: EntityId; localId?: EntityId }): Promise<T[]> {
