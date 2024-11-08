@@ -132,15 +132,14 @@ export class DocumentSerivce {
       // replace empty document in the mutation
       instance.documentId = documentFork.id
 
+      const [savedDocument] = await this.unitOfWorkService.runInTransaction((tx) =>
+        Promise.all([this.documentRepository.createItem(documentFork, tx)])
+      )
+
       // save mutation locally
       mutation.source = EntitySourceType.Local
 
-      const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
-        Promise.all([
-          this.documentRepository.createItem(documentFork, tx),
-          this.mutationService.saveMutation(mutation, undefined, tx), // ToDo: undefined
-        ])
-      )
+      const savedMutation = await this.mutationService.saveMutation(mutation)
 
       return {
         document: savedDocument.toDto(),
