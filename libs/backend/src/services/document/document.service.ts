@@ -91,7 +91,7 @@ export class DocumentSerivce {
     // ToDo: null authorId is possible here
     const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
-    const savedMutation = await this.mutationService.editMutation({
+    const savedMutation = await this.mutationService.saveMutation({
       ...editingMutation,
       source: EntitySourceType.Local,
     })
@@ -137,7 +137,7 @@ export class DocumentSerivce {
       // ToDo: null authorId is possible here
       const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
-      const savedMutation = await this.mutationService.editMutation({
+      const savedMutation = await this.mutationService.saveMutation({
         ...editingMutation,
         source: EntitySourceType.Local,
       })
@@ -159,7 +159,7 @@ export class DocumentSerivce {
     if (!loggedInAccountId || loggedInAccountId !== document.authorId) {
       // edit document locally, make mutation local(yes?)
       const savedDocument = await this.documentRepository.saveItem(document)
-      const savedMutation = await this.mutationService.editMutation({
+      const savedMutation = await this.mutationService.saveMutation({
         ...mutation,
         source: EntitySourceType.Local,
       })
