@@ -1,40 +1,37 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ContextPortal } from '@mweb/react'
-import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import {
-  BosUserLinkWithInstance,
-  ControllerLink,
-  UserLinkId,
-  ApplicationDto,
   AppId,
+  ApplicationDto,
+  BosUserLinkWithInstance,
   BuiltInLayoutManagers,
-  TransferableContext,
+  ControllerLink,
+  DocumentCommitDto,
+  DocumentDto,
+  EntityId,
+  EntitySourceType,
   LinkedDataByAccountDto,
   LinkIndexRules,
   Target,
-  DocumentId,
-  DocumentMetadata,
-  DocumentDto,
+  TransferableContext,
+  UserLinkId,
   utils,
-  EntitySourceType,
-  EntityId,
-  DocumentCommitDto,
 } from '@mweb/backend'
-import { useEngine } from '../contexts/engine-context'
-import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
+import { IContextNode, InsertionPointWithElement } from '@mweb/core'
+import { ContextPortal, ContextTree } from '@mweb/react'
 import { Widget } from 'near-social-vm'
-import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
-import { ContextTree } from '@mweb/react'
-import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
-import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
-import { buildTransferableContext } from '../common/transferable-context'
-import { useModal } from '../contexts/modal-context'
-import { useMutableWeb } from '../contexts/mutable-web-context'
-import { memoize } from '../common/memoize'
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ModalProps } from '../contexts/modal-context/modal-context'
-import { Portal } from '../contexts/engine-context/engine-context'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
+import { memoize } from '../common/memoize'
+import { buildTransferableContext } from '../common/transferable-context'
+import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
+import { useEngine } from '../contexts/engine-context'
+import { Portal } from '../contexts/engine-context/engine-context'
+import { useModal } from '../contexts/modal-context'
+import { ModalProps } from '../contexts/modal-context/modal-context'
+import { useMutableWeb } from '../contexts/mutable-web-context'
+import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
+import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
+import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
 
 interface WidgetProps {
   context: TransferableContext
