@@ -159,15 +159,20 @@ export class DocumentSerivce {
     if (!loggedInAccountId || loggedInAccountId !== document.authorId) {
       // edit document locally, make mutation local(yes?)
       const savedDocument = await this.documentRepository.saveItem(document)
-      const savedMutation = await this.mutationService.saveMutation({
-        ...mutation,
-        source: EntitySourceType.Local,
-      })
 
-      return {
-        document: savedDocument.toDto(),
-        mutation: savedMutation,
+      if (mutation.source === EntitySourceType.Origin) {
+        const savedMutation = await this.mutationService.saveMutation({
+          ...mutation,
+          source: EntitySourceType.Local,
+        })
+
+        return {
+          document: savedDocument.toDto(),
+          mutation: savedMutation,
+        }
       }
+
+      return { document: savedDocument.toDto() }
     } else {
       // edit document locally
       const savedDocument = await this.documentRepository.saveItem(document)
