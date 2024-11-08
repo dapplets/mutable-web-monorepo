@@ -122,7 +122,8 @@ export class Engine {
       settingsService,
       this.notificationService,
       unitOfWorkService,
-      nearConfig
+      nearConfig,
+      nearSigner
     )
     this.applicationService = new ApplicationService(applicationRepository, settingsService)
     this.userLinkService = new UserLinkService(

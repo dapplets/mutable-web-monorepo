@@ -13,6 +13,7 @@ import { MutationCreateDto } from './dtos/mutation-create.dto'
 import { NotificationCreateDto } from '../notification/dtos/notification-create.dto'
 import { IRepository } from '../base/repository.interface'
 import { SettingsSerivce } from '../settings/settings.service'
+import { NearSigner } from '../near-signer/near-signer.service'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
@@ -25,7 +26,8 @@ export class MutationService {
     private settingsService: SettingsSerivce,
     private notificationService: NotificationService,
     private unitOfWorkService: UnitOfWorkService,
-    private nearConfig: { defaultMutationId: string }
+    private nearConfig: { defaultMutationId: string },
+    private nearSigner: NearSigner
   ) {}
 
   async getMutation(mutationId: string): Promise<MutationDto | null> {
@@ -103,7 +105,7 @@ export class MutationService {
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
-    const mutation = await this.mutationRepository.constructItem(dto)
+    const mutation = await this._fixMutationErrors(await this.mutationRepository.constructItem(dto))
 
     if (mutation.source === EntitySourceType.Origin) {
       await this.unitOfWorkService.runInTransaction((tx) =>
@@ -132,7 +134,7 @@ export class MutationService {
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
-    const mutation = Mutation.create(dto)
+    const mutation = await this._fixMutationErrors(Mutation.create(dto))
 
     // ToDo: move to provider?
     if (!(await this.mutationRepository.getItem(mutation.id))) {
@@ -172,8 +174,9 @@ export class MutationService {
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
-    const mutation =
+    const mutation = await this._fixMutationErrors(
       'id' in dto ? Mutation.create(dto) : await this.mutationRepository.constructItem(dto)
+    )
 
     if (mutation.source === EntitySourceType.Origin) {
       const performTx = (tx: Transaction) =>
@@ -319,5 +322,28 @@ export class MutationService {
     }
 
     await this.notificationService.createNotification(notification, tx)
+  }
+
+  private async _fixMutationErrors(mutation: Mutation): Promise<Mutation> {
+    if (mutation.source === EntitySourceType.Local) {
+      return mutation
+    }
+
+    const accountId = await this.nearSigner.getAccountId()
+
+    mutation.apps = mutation.apps.map((app) => {
+      if (!app.documentId) return app
+
+      const [docAuthorId, , localDocId] = app.documentId.split('/')
+
+      if (docAuthorId) return app
+
+      return {
+        appId: app.appId,
+        documentId: `${accountId}/document/${localDocId}`,
+      }
+    })
+
+    return mutation
   }
 }

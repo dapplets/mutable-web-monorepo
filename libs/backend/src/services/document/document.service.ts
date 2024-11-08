@@ -50,48 +50,78 @@ export class DocumentSerivce {
     appId: AppId,
     dto: DocumentCommitDto
   ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
-    // ToDo
-    dto.openWith = [appId]
-
-    if (dto.source === EntitySourceType.Local) {
-      // ToDo: non-obvious API
-      const document =
-        'id' in dto ? Document.create(dto) : await this.documentRepository.constructItem(dto)
-      await this.documentRepository.saveItem(document)
-      return { document }
-    }
-
-    const loggedInAccountId = await this.nearSigner.getAccountId()
-    if (!loggedInAccountId) {
-      throw new Error('Not logged in')
-    }
-
     const mutation = await this.mutationService.getMutation(mutationId)
 
     if (!mutation) {
       throw new Error('No mutation with that ID')
     }
 
-    const appInstances = mutation.apps.filter((app) => app.appId === appId)
+    // ToDo
+    dto.openWith = [appId]
 
-    if (!dto.id) {
-      // ^ create new document and replace empty document in the mutation with created one
-      const document = await this.documentRepository.constructItem({ ...dto, openWith: [appId] })
-
-      // ToDo: handle multiple app instances
-      const instance = appInstances.find((app) => app.documentId === null)
-
-      if (!instance) {
-        throw new Error('No app in mutation with that ID and empty document')
+    if (dto.id) {
+      if (dto.source === EntitySourceType.Local) {
+        return this._editLocalDocumentInMutation(mutation, dto)
+      } else {
+        return this._editRemoteDocumentInMutation(mutation, appId, dto)
       }
+    } else {
+      if (dto.source === EntitySourceType.Local) {
+        return this._createLocalDocumentInMutation(mutation, appId, dto)
+      } else {
+        return this._createRemoteDocumentInMutation(mutation, appId, dto)
+      }
+    }
+  }
 
-      // replace empty document in the mutation
-      instance.documentId = document.id
+  async deleteLocalDocument(documentId: DocumentId): Promise<void> {
+    await this.documentRepository.deleteItem(documentId)
+  }
+
+  private async _createLocalDocumentInMutation(
+    mutation: MutationDto,
+    appId: AppId,
+    dto: DocumentCreateDto
+  ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
+    // create document locally, make mutation local, add id to mutation
+
+    const document = await this.documentRepository.constructItem(dto)
+    await this.documentRepository.createItem(document) // ToDo: or saveItem?
+
+    // ToDo: null authorId is possible here
+    const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
+
+    const savedMutation = await this.mutationService.editMutation({
+      ...editingMutation,
+      source: EntitySourceType.Local,
+    })
+
+    return { document, mutation: savedMutation }
+  }
+
+  private async _createRemoteDocumentInMutation(
+    mutation: MutationDto,
+    appId: AppId,
+    dto: DocumentCreateDto
+  ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
+    const loggedInAccountId = await this.nearSigner.getAccountId()
+    if (!loggedInAccountId) throw new Error('Not logged in')
+
+    const document = await this.documentRepository.constructItem(dto)
+
+    if (mutation.authorId === loggedInAccountId) {
+      // create document remotely, add id to mutation remotely ? (need to be merged)
+
+      const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
       const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
         Promise.all([
           this.documentRepository.createItem(document, tx),
-          this.mutationService.editMutation(mutation, undefined, tx), // ToDo: undefined
+          this.mutationService.editMutation(
+            { ...editingMutation, source: EntitySourceType.Origin },
+            undefined,
+            tx
+          ), // ToDo: undefined
         ])
       )
 
@@ -99,32 +129,71 @@ export class DocumentSerivce {
         document: savedDocument.toDto(),
         mutation: savedMutation,
       }
-    }
+    } else {
+      // create document remotely, make mutation local, add id to mutation
 
-    const document = Document.create(dto)
+      const savedDocument = await this.documentRepository.createItem(document)
 
-    if (document.authorId === loggedInAccountId) {
-      // ^ edit document and don't touch the mutation
-      await this.documentRepository.saveItem(document)
+      // ToDo: null authorId is possible here
+      const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
-      if (mutation.source === EntitySourceType.Origin) {
-        //  make mutation local
-        mutation.source = EntitySourceType.Local
-        const savedMutation = await this.mutationService.saveMutation(mutation)
-        return {
-          document: document.toDto(),
-          mutation: savedMutation,
-        }
-      }
+      const savedMutation = await this.mutationService.editMutation({
+        ...editingMutation,
+        source: EntitySourceType.Local,
+      })
 
       return {
-        document: document.toDto(),
+        document: savedDocument.toDto(),
+        mutation: savedMutation,
       }
-    } else if (document.authorId !== loggedInAccountId) {
-      // ^ fork document, remove local changes and replace original document in the mutation with created one
+    }
+  }
+
+  private async _editLocalDocumentInMutation(
+    mutation: MutationDto,
+    dto: DocumentDto
+  ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
+    const document = Document.create(dto)
+    const loggedInAccountId = await this.nearSigner.getAccountId()
+
+    if (!loggedInAccountId || loggedInAccountId !== document.authorId) {
+      // edit document locally, make mutation local(yes?)
+      const savedDocument = await this.documentRepository.saveItem(document)
+      const savedMutation = await this.mutationService.editMutation({
+        ...mutation,
+        source: EntitySourceType.Local,
+      })
+
+      return {
+        document: savedDocument.toDto(),
+        mutation: savedMutation,
+      }
+    } else {
+      // edit document locally
+      const savedDocument = await this.documentRepository.saveItem(document)
+      return { document: savedDocument.toDto() }
+    }
+  }
+
+  private async _editRemoteDocumentInMutation(
+    mutation: MutationDto,
+    appId: AppId,
+    dto: DocumentDto
+  ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
+    const document = Document.create(dto)
+    const loggedInAccountId = await this.nearSigner.getAccountId()
+    if (!loggedInAccountId) throw new Error('Not logged in')
+
+    if (document.authorId === loggedInAccountId) {
+      // edit document remotely
+      const savedDocument = await this.documentRepository.saveItem(document)
+      return { document: savedDocument.toDto() }
+    } else {
+      // create document as fork remotely, make mutation local, replace document id with fork id
+
       const originalDocumentId = dto.id
 
-      const documentFork = await this.documentRepository.constructItem({
+      const documentFork = await this._constructDocumentWithUniqueId({
         ...dto,
         metadata: {
           ...dto.metadata,
@@ -132,35 +201,83 @@ export class DocumentSerivce {
         },
       })
 
-      // ToDo: handle multiple app instances
-      const instance = appInstances.find((app) => app.documentId === originalDocumentId)
+      // ToDo: generate new ID if exists
+      const savedDocument = await this.documentRepository.createItem(documentFork)
 
-      if (!instance) {
-        throw new Error('No app in mutation with that ID and empty document')
-      }
-
-      // replace empty document in the mutation
-      instance.documentId = documentFork.id
-
-      const [savedDocument] = await this.unitOfWorkService.runInTransaction((tx) =>
-        Promise.all([this.documentRepository.createItem(documentFork, tx)])
+      const editingMutation = this._replaceAppInstance(
+        mutation,
+        appId,
+        originalDocumentId,
+        savedDocument.id
       )
 
-      // save mutation locally
-      mutation.source = EntitySourceType.Local
-
-      const savedMutation = await this.mutationService.saveMutation(mutation)
+      const savedMutation = await this.mutationService.saveMutation({
+        ...editingMutation,
+        source: EntitySourceType.Local,
+      })
 
       return {
         document: savedDocument.toDto(),
         mutation: savedMutation,
       }
     }
-
-    throw new Error('Unreachable code')
   }
 
-  async deleteLocalDocument(documentId: DocumentId): Promise<void> {
-    await this.documentRepository.deleteItem(documentId)
+  private _replaceAppInstance(
+    mutation: MutationDto,
+    appId: AppId,
+    fromDocumentId: DocumentId | null,
+    toDocumentId: DocumentId
+  ): MutationDto {
+    const newMutation = { ...mutation }
+
+    const appInstance = newMutation.apps.find(
+      (app) => app.appId === appId && app.documentId === fromDocumentId
+    )
+
+    if (!appInstance) {
+      throw new Error('No app in mutation with that ID and empty document')
+    }
+
+    appInstance.documentId = toDocumentId
+
+    return newMutation
+  }
+
+  private async _constructDocumentWithUniqueId(dto: DocumentCreateDto): Promise<Document> {
+    let documentFork = await this.documentRepository.constructItem(dto)
+
+    while (!(await this.documentRepository.getItem(documentFork.id, EntitySourceType.Origin))) {
+      documentFork = await this.documentRepository.constructItem({
+        ...dto,
+        metadata: {
+          ...dto.metadata,
+          name: DocumentSerivce._incrementPostfix(documentFork.metadata.name!),
+        },
+      })
+    }
+
+    return documentFork
+  }
+
+  /**
+   * Increments the postfix number in a string, or adds " (1)" if none exists
+   *
+   * "asd" => "asd (1)"
+   * "asd (1)" => "asd (2)"
+   */
+  private static _incrementPostfix(str: string): string {
+    const regex = /(.*)\s\((\d+)\)$/
+    const match = str.match(regex)
+
+    if (match) {
+      // If a postfix exists, increment the number
+      const baseText = match[1]
+      const number = parseInt(match[2], 10)
+      return `${baseText} (${number + 1})`
+    } else {
+      // If no postfix, add " (1)"
+      return `${str} (1)`
+    }
   }
 }
