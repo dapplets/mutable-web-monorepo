@@ -185,9 +185,14 @@ export class DocumentSerivce {
     appId: AppId,
     dto: DocumentDto
   ): Promise<{ mutation?: MutationDto; document: DocumentDto }> {
-    const document = Document.create(dto)
     const loggedInAccountId = await this.nearSigner.getAccountId()
     if (!loggedInAccountId) throw new Error('Not logged in')
+
+    const document = Document.create(dto)
+
+    if (!document.authorId) {
+      document.authorId = loggedInAccountId
+    }
 
     if (document.authorId === loggedInAccountId) {
       // edit document remotely
@@ -251,8 +256,9 @@ export class DocumentSerivce {
 
   private async _constructDocumentWithUniqueId(dto: DocumentCreateDto): Promise<Document> {
     let documentFork = await this.documentRepository.constructItem(dto)
+    let done = false
 
-    while (!(await this.documentRepository.getItem(documentFork.id, EntitySourceType.Origin))) {
+    while (!done) {
       documentFork = await this.documentRepository.constructItem({
         ...dto,
         metadata: {
@@ -260,6 +266,7 @@ export class DocumentSerivce {
           name: DocumentSerivce._incrementPostfix(documentFork.metadata.name!),
         },
       })
+      done = !(await this.documentRepository.getItem(documentFork.id, EntitySourceType.Origin))
     }
 
     return documentFork

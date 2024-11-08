@@ -40,6 +40,7 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     } else if (item.source === EntitySourceType.Origin) {
       const result = await this.remote.createItem(item, tx)
       await this._deleteLocalItemIfExist(item.id)
+      await this._deleteLocalItemIfExist(`/${item.entityType}/${item.localId}`) // entities created without a wallet
       return result
     } else {
       throw new Error('Invalid source')

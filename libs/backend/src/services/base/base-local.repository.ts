@@ -60,8 +60,9 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
       for (const prop in entity) {
         if (!isDeepEqual(entity[prop], item[prop])) return false
       }
+      return true
     })
-
+    
     return filteredItems
   }
 
