@@ -58,6 +58,7 @@ interface WidgetProps {
     id?: EntityId
     source?: EntitySourceType
   }) => Promise<DocumentDto | null>
+  deleteLocalDocument: () => Promise<void>
 }
 
 interface LayoutManagerProps {
@@ -251,6 +252,20 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [engine, _getCurrentDocumentId]
   )
 
+  const handleDeleteDocumentCurry = useCallback(
+    memoize((appInstanceId: string) => async () => {
+      // allow for _documentId to be passed in to check existence of document before creation
+      const documentId = await _getCurrentDocumentId(appInstanceId)
+
+      if (!documentId) {
+        throw new Error('The running app does not contain a document')
+      }
+
+      await engine.documentService.deleteLocalDocument(documentId)
+    }),
+    [engine, _getCurrentDocumentId]
+  )
+
   const handleCommitDocumentCurry = useCallback(
     memoize(
       (appInstanceId: string) =>
@@ -310,6 +325,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onSetLinkDataCurry={handleSetLinkDataCurry}
           onCommitDocumentCurry={handleCommitDocumentCurry}
           onGetDocumentCurry={handleGetDocumentCurry}
+          onDeleteDocumentCurry={handleDeleteDocumentCurry}
         />
       ))}
 
@@ -332,6 +348,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         onSetLinkDataCurry={handleSetLinkDataCurry}
         onCommitDocumentCurry={handleCommitDocumentCurry}
         onGetDocumentCurry={handleGetDocumentCurry}
+        onDeleteDocumentCurry={handleDeleteDocumentCurry}
       />
 
       {controllers.map((c) => (
@@ -344,6 +361,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onSetLinkDataCurry={handleSetLinkDataCurry}
           onCommitDocumentCurry={handleCommitDocumentCurry}
           onGetDocumentCurry={handleGetDocumentCurry}
+          onDeleteDocumentCurry={handleDeleteDocumentCurry}
         />
       ))}
 
@@ -396,6 +414,7 @@ const InsPointHandler: FC<{
   onGetDocumentCurry: (
     appInstanceId: string
   ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
+  onDeleteDocumentCurry: (appInstanceId: string) => () => Promise<void>
 }> = ({
   insPointName,
   element,
@@ -416,6 +435,7 @@ const InsPointHandler: FC<{
   onSetLinkDataCurry,
   onCommitDocumentCurry,
   onGetDocumentCurry,
+  onDeleteDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { config, engine } = useMutableWeb()
@@ -497,6 +517,7 @@ const InsPointHandler: FC<{
         },
         commitDocument: onCommitDocumentCurry(link.appInstanceId),
         getDocument: onGetDocumentCurry(link.appInstanceId),
+        deleteLocalDocument: onDeleteDocumentCurry(link.appInstanceId),
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -566,6 +587,7 @@ const ControllerHandler: FC<{
   onGetDocumentCurry: (
     appInstanceId: string
   ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
+  onDeleteDocumentCurry: (appInstanceId: string) => () => Promise<void>
 }> = ({
   transferableContext,
   controller,
@@ -574,6 +596,7 @@ const ControllerHandler: FC<{
   onSetLinkDataCurry,
   onCommitDocumentCurry,
   onGetDocumentCurry,
+  onDeleteDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { notify } = useModal()
@@ -592,6 +615,7 @@ const ControllerHandler: FC<{
     },
     commitDocument: onCommitDocumentCurry(controller.appInstanceId),
     getDocument: onGetDocumentCurry(controller.appInstanceId),
+    deleteLocalDocument: onDeleteDocumentCurry(controller.appInstanceId),
   }
 
   return (

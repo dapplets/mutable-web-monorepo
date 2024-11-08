@@ -150,4 +150,8 @@ export class DocumentSerivce {
 
     throw new Error('Unreachable code')
   }
+
+  async deleteLocalDocument(documentId: DocumentId): Promise<void> {
+    await this.documentRepository.deleteItem(documentId)
+  }
 }
