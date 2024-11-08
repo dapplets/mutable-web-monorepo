@@ -107,6 +107,16 @@ export class DocumentSerivce {
       // ^ edit document and don't touch the mutation
       await this.documentRepository.saveItem(document)
 
+      if (mutation.source === EntitySourceType.Origin) {
+        //  make mutation local
+        mutation.source = EntitySourceType.Local
+        const savedMutation = await this.mutationService.saveMutation(mutation)
+        return {
+          document: document.toDto(),
+          mutation: savedMutation,
+        }
+      }
+
       return {
         document: document.toDto(),
       }
