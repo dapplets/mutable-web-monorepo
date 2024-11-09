@@ -41,10 +41,7 @@ const RegularNotification: FC<{
     error: errorHide,
   } = useHideNotification(notification.id)
 
-  const date = useMemo(
-    () => formatDate(new Date(notification.timestamp).toLocaleString()),
-    [notification.timestamp]
-  )
+  const date = useMemo(() => formatDate(new Date(notification.timestamp)), [notification.timestamp])
 
   return (
     <Space prefixCls="notifySingle" direction="vertical" style={{ transition: 'all 0.2s ease' }}>
