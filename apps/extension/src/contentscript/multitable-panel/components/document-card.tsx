@@ -179,7 +179,7 @@ export const DocumentCard: React.FC<Props> = ({
             {source === EntitySourceType.Local && (
               <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
             )}{' '}
-            {srcParts && `@${srcParts[0]}`}
+            {srcParts?.[0] && `@${srcParts[0]}`}
           </TextLink>
         </CardContent>
         <ButtonLink className={disabled ? 'disabled' : ''} disabled={disabled} onClick={onChange}>

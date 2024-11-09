@@ -122,7 +122,8 @@ export class Engine {
       settingsService,
       this.notificationService,
       unitOfWorkService,
-      nearConfig
+      nearConfig,
+      nearSigner
     )
     this.applicationService = new ApplicationService(applicationRepository, settingsService)
     this.userLinkService = new UserLinkService(
@@ -133,9 +134,9 @@ export class Engine {
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
     this.documentService = new DocumentSerivce(
       documentRepository,
-      this.linkDbService,
       this.mutationService,
-      unitOfWorkService
+      unitOfWorkService,
+      nearSigner
     )
   }
 }

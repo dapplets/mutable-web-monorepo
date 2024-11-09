@@ -159,7 +159,7 @@ export const DocumentsModal: FC<Props> = ({
   return (
     <Wrapper>
       <Header>
-        <Title>Select your guide</Title>
+        <Title>Select document</Title>
         <Close onClick={onClose}>
           <CloseIcon />
         </Close>
@@ -183,7 +183,7 @@ export const DocumentsModal: FC<Props> = ({
         {docs?.map((doc) => (
           <SimpleApplicationCard
             source={doc.source}
-            key={doc.id}
+            key={`${doc.id}/${doc.source}`}
             src={doc.id}
             metadata={doc.metadata}
             isChecked={chosenDocsIds.includes(doc.id)}
