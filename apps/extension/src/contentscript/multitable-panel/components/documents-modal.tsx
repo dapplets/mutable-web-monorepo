@@ -183,7 +183,7 @@ export const DocumentsModal: FC<Props> = ({
         {docs?.map((doc) => (
           <SimpleApplicationCard
             source={doc.source}
-            key={doc.id}
+            key={`${doc.id}/${doc.source}`}
             src={doc.id}
             metadata={doc.metadata}
             isChecked={chosenDocsIds.includes(doc.id)}
