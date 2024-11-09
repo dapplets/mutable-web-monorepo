@@ -262,6 +262,8 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
       }
 
       // ToDo: delete document from mutation
+
+      await engine.documentService.deleteLocalDocument(documentId)
     }),
     [engine, _getCurrentDocumentId]
   )
