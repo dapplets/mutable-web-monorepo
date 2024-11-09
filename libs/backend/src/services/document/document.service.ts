@@ -86,17 +86,22 @@ export class DocumentSerivce {
     // create document locally, make mutation local, add id to mutation
 
     const document = await this.documentRepository.constructItem(dto)
-    await this.documentRepository.createItem(document) // ToDo: or saveItem?
+    await this.documentRepository.saveItem(document) // ToDo: or createItem?
 
     // ToDo: null authorId is possible here
+    // can be null if mutation was locally edited before
     const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
-    const savedMutation = await this.mutationService.saveMutation({
-      ...editingMutation,
-      source: EntitySourceType.Local,
-    })
+    if (editingMutation || mutation.source === EntitySourceType.Origin) {
+      const savedMutation = await this.mutationService.saveMutation({
+        ...(editingMutation ?? mutation),
+        source: EntitySourceType.Local,
+      })
 
-    return { document, mutation: savedMutation }
+      return { document, mutation: savedMutation }
+    }
+
+    return { document }
   }
 
   private async _createRemoteDocumentInMutation(
@@ -112,7 +117,12 @@ export class DocumentSerivce {
     if (mutation.authorId === loggedInAccountId) {
       // create document remotely, add id to mutation remotely ? (need to be merged)
 
+      // can be null if mutation was locally edited before
       const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
+
+      if (!editingMutation) {
+        throw new Error('No app in mutation with that ID and empty document')
+      }
 
       const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
         Promise.all([
@@ -137,14 +147,20 @@ export class DocumentSerivce {
       // ToDo: null authorId is possible here
       const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
-      const savedMutation = await this.mutationService.saveMutation({
-        ...editingMutation,
-        source: EntitySourceType.Local,
-      })
+      if (editingMutation || mutation.source === EntitySourceType.Origin) {
+        const savedMutation = await this.mutationService.saveMutation({
+          ...(editingMutation ?? mutation),
+          source: EntitySourceType.Local,
+        })
+
+        return {
+          document: savedDocument.toDto(),
+          mutation: savedMutation,
+        }
+      }
 
       return {
         document: savedDocument.toDto(),
-        mutation: savedMutation,
       }
     }
   }
@@ -214,6 +230,7 @@ export class DocumentSerivce {
       // ToDo: generate new ID if exists
       const savedDocument = await this.documentRepository.createItem(documentFork)
 
+      // it can be null if mutation was locally edited before
       const editingMutation = this._replaceAppInstance(
         mutation,
         appId,
@@ -221,14 +238,20 @@ export class DocumentSerivce {
         savedDocument.id
       )
 
-      const savedMutation = await this.mutationService.saveMutation({
-        ...editingMutation,
-        source: EntitySourceType.Local,
-      })
+      if (editingMutation || mutation.source === EntitySourceType.Origin) {
+        const savedMutation = await this.mutationService.saveMutation({
+          ...(editingMutation ?? mutation),
+          source: EntitySourceType.Local,
+        })
+
+        return {
+          document: savedDocument.toDto(),
+          mutation: savedMutation,
+        }
+      }
 
       return {
         document: savedDocument.toDto(),
-        mutation: savedMutation,
       }
     }
   }
@@ -238,20 +261,19 @@ export class DocumentSerivce {
     appId: AppId,
     fromDocumentId: DocumentId | null,
     toDocumentId: DocumentId
-  ): MutationDto {
+  ): MutationDto | null {
     const newMutation = { ...mutation }
 
     const appInstance = newMutation.apps.find(
       (app) => app.appId === appId && app.documentId === fromDocumentId
     )
 
-    if (!appInstance) {
-      throw new Error('No app in mutation with that ID and empty document')
+    if (appInstance) {
+      appInstance.documentId = toDocumentId
+      return newMutation
+    } else {
+      return null
     }
-
-    appInstance.documentId = toDocumentId
-
-    return newMutation
   }
 
   private async _constructDocumentWithUniqueId(dto: DocumentCreateDto): Promise<Document> {

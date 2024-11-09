@@ -261,7 +261,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         throw new Error('The running app does not contain a document')
       }
 
-      await engine.documentService.deleteLocalDocument(documentId)
+      // ToDo: delete document from mutation
     }),
     [engine, _getCurrentDocumentId]
   )
