@@ -159,7 +159,7 @@ export const DocumentsModal: FC<Props> = ({
   return (
     <Wrapper>
       <Header>
-        <Title>Select your guide</Title>
+        <Title>Select document</Title>
         <Close onClick={onClose}>
           <CloseIcon />
         </Close>

@@ -249,7 +249,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
             {source === EntitySourceType.Local && (
               <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
             )}{' '}
-            @{accountId}
+            {accountId ? `@${accountId}` : null}
           </TextLink>
         </CardContent>
 
@@ -268,7 +268,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           <DocumentCardList>
             {usingDocs.map((doc) => (
               <DocumentCard
-                key={doc?.id ?? 'empty'}
+                key={doc?.id ? `${doc.id}/${doc.source}` : 'empty'}
                 src={doc?.id ?? null}
                 metadata={doc?.metadata ?? null}
                 onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}
