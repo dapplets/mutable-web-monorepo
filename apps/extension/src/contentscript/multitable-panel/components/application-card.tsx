@@ -268,7 +268,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           <DocumentCardList>
             {usingDocs.map((doc) => (
               <DocumentCard
-                key={doc?.id || 'empty'}
+                key={doc?.id ?? 'empty'}
                 src={doc?.id ?? null}
                 metadata={doc?.metadata ?? null}
                 onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}

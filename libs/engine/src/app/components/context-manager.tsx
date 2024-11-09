@@ -254,7 +254,6 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
   const handleDeleteDocumentCurry = useCallback(
     memoize((appInstanceId: string) => async () => {
-      console.log('deleting')
       // allow for _documentId to be passed in to check existence of document before creation
       const documentId = await _getCurrentDocumentId(appInstanceId)
 
