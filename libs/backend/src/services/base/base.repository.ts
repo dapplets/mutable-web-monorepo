@@ -32,7 +32,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
     this._entityKey = getEntity(EntityType).name
   }
 
-  async getItem(id: EntityId): Promise<T | null> {
+  async getItem({ id }: { id: EntityId }): Promise<T | null> {
     const { authorId, localId } = this._parseGlobalId(id)
 
     if (authorId === WildcardKey || localId === WildcardKey) {
@@ -125,7 +125,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       return [authorId, this._entityKey, localId].join(KeyDelimiter)
     })
 
-    const documents = await Promise.all(documentIds.map((id) => this.getItem(id))).then(
+    const documents = await Promise.all(documentIds.map((id) => this.getItem({ id }))).then(
       (documents) => documents.filter((x) => x !== null)
     )
 
@@ -133,7 +133,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
   }
 
   async createItem(item: T, tx?: Transaction): Promise<T> {
-    if (await this.getItem(item.id)) {
+    if (await this.getItem({ id: item.id })) {
       throw new Error('Item with that ID already exists')
     }
 
@@ -141,7 +141,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
   }
 
   async editItem(item: T, tx?: Transaction): Promise<T> {
-    if (!(await this.getItem(item.id))) {
+    if (!(await this.getItem({ id: item.id }))) {
       throw new Error('Item with that ID does not exist')
     }
 

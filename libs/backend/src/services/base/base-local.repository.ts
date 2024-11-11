@@ -17,7 +17,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
     this._entityKey = getEntity(EntityType).name
   }
 
-  async getItem(id: EntityId): Promise<T | null> {
+  async getItem({ id }: { id: EntityId }): Promise<T | null> {
     const parsedId = BaseLocalRepository._parseGlobalId(id)
     if (!parsedId) return null
 
@@ -48,7 +48,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
       return true
     })
 
-    const items = await Promise.all(filteredKeys.map((id) => this.getItem(id)))
+    const items = await Promise.all(filteredKeys.map((id) => this.getItem({ id })))
 
     return items.filter((x) => x !== null)
   }
@@ -62,12 +62,12 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
       }
       return true
     })
-    
+
     return filteredItems
   }
 
   async createItem(item: T): Promise<T> {
-    if (await this.getItem(item.id)) {
+    if (await this.getItem({ id: item.id })) {
       throw new Error('Item with that ID already exists')
     }
 
@@ -79,7 +79,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
   }
 
   async editItem(item: T): Promise<T> {
-    if (!(await this.getItem(item.id))) {
+    if (!(await this.getItem({ id: item.id }))) {
       throw new Error('Item with that ID does not exist')
     }
 

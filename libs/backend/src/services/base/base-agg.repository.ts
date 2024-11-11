@@ -9,16 +9,16 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     private local: IRepository<T>
   ) {}
 
-  async getItem(id: EntityId, source?: EntitySourceType): Promise<T | null> {
+  async getItem({ id, source }: { id: EntityId; source?: EntitySourceType }): Promise<T | null> {
     if (source === EntitySourceType.Local) {
-      return this.local.getItem(id)
+      return this.local.getItem({ id })
     } else if (source === EntitySourceType.Origin) {
-      return this.remote.getItem(id)
+      return this.remote.getItem({ id })
     } else {
       // ToDo: why local is preferred?
-      const localItem = await this.local.getItem(id)
+      const localItem = await this.local.getItem({ id })
       if (localItem) return localItem
-      return this.remote.getItem(id)
+      return this.remote.getItem({ id })
     }
   }
 
@@ -89,7 +89,7 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
   }
 
   private async _deleteLocalItemIfExist(id: EntityId) {
-    if (await this.local.getItem(id)) {
+    if (await this.local.getItem({ id })) {
       await this.local.deleteItem(id)
     }
   }
