@@ -25,7 +25,7 @@ export class DocumentSerivce {
     globalDocumentId: DocumentId,
     source?: EntitySourceType
   ): Promise<DocumentDto | null> {
-    const document = await this.documentRepository.getItem(globalDocumentId, source)
+    const document = await this.documentRepository.getItem({ id: globalDocumentId, source })
     return document?.toDto() ?? null
   }
 
@@ -288,7 +288,10 @@ export class DocumentSerivce {
           name: DocumentSerivce._incrementPostfix(documentFork.metadata.name!),
         },
       })
-      done = !(await this.documentRepository.getItem(documentFork.id, EntitySourceType.Origin))
+      done = !(await this.documentRepository.getItem({
+        id: documentFork.id,
+        source: EntitySourceType.Origin,
+      }))
     }
 
     return documentFork

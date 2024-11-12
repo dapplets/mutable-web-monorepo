@@ -21,7 +21,7 @@ export class NotificationService {
 
   // ToDo: return dto
   async getNotification(notificationId: string): Promise<Notification | null> {
-    return this.notificationRepository.getItem(notificationId)
+    return this.notificationRepository.getItem({ id: notificationId })
   }
 
   async createNotification(dto: NotificationCreateDto, tx?: Transaction): Promise<void> {
@@ -164,7 +164,7 @@ export class NotificationService {
     callback: (resolution: Resolution, notification: Notification) => void,
     tx?: Transaction
   ) {
-    const notification = await this.notificationRepository.getItem(notificationId)
+    const notification = await this.notificationRepository.getItem({ id: notificationId })
 
     if (!notification) {
       throw new Error('Notification not found')
@@ -210,7 +210,7 @@ export class NotificationService {
     const hash = UserLinkService._hashString(notificationId)
     const resolutionId = `${accountId}/resolution/${hash}`
 
-    const resolution = await this.resolutionRepository.getItem(resolutionId)
+    const resolution = await this.resolutionRepository.getItem({ id: resolutionId })
 
     if (resolution) return resolution
 

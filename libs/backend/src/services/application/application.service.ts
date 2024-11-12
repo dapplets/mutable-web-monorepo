@@ -29,7 +29,7 @@ export class ApplicationService {
   }
 
   public async getApplication(appId: AppId): Promise<ApplicationDto | null> {
-    const app = await this.applicationRepository.getItem(appId)
+    const app = await this.applicationRepository.getItem({ id: appId })
     return app?.toDto() ?? null
   }
 
