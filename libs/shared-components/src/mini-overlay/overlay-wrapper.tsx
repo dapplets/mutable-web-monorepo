@@ -2,6 +2,7 @@ import React, { FC, useRef } from 'react'
 import styled from 'styled-components'
 import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
+import MultitablePanel from '../multitable-panel'
 import NotificationFeed from '../notifications/notification-feed'
 import { Close as CloseIcon } from './assets/icons'
 const { Title } = Typography
@@ -180,13 +181,19 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
           width={360}
           data-testid="overlay-notify"
           children={
-            <Body ref={overlayRef}>
-              <NotificationFeed
+            <>
+              <MultitablePanel
                 connectWallet={connectWallet}
                 loggedInAccountId={loggedInAccountId}
-                modalContainerRef={modalContainerRef}
               />
-            </Body>
+              <Body ref={overlayRef}>
+                <NotificationFeed
+                  connectWallet={connectWallet}
+                  loggedInAccountId={loggedInAccountId}
+                  modalContainerRef={modalContainerRef}
+                />
+              </Body>
+            </>
           }
         ></Drawer>
       </OverlayContent>
