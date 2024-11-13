@@ -14,9 +14,10 @@ import SidePanel from './side-panel'
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;
   position: relative;
+  border: none;
+  z-index: 5000;
 
   .sideWrapper {
-    z-index: 6000;
     box-shadow: none;
     width: min-content !important;
     top: 10px;
@@ -214,9 +215,9 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
             content: 'sideContent',
           }}
           open
-          style={{ boxShadow: 'none', background: 'none' }}
+          style={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
           mask={false}
-          rootStyle={{ boxShadow: 'none', background: 'none' }}
+          rootStyle={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
           getContainer={() => {
             if (!overlayRef.current) return
             return overlayRef.current as any

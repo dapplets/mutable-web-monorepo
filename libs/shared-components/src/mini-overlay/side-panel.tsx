@@ -2,18 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from 'antd'
 import { useNotifications } from '@mweb/engine'
-import { AppWithSettings, MutationDto } from '@mweb/backend'
+import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
 import { Image } from '../common/image'
 
 import { IWalletConnect } from './types'
-import {
-  MutationFallbackIcon,
-  ArrowIcon,
-  BellIcon,
-  BellWithCircle,
-  OpenOverlay,
-  OpenOverlayWithCircle,
-} from './assets/icons'
+import { MutationFallbackIcon, ArrowIcon, OpenOverlay, OpenOverlayWithCircle } from './assets/icons'
+import { Badge } from '../common/Badge'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
@@ -29,6 +23,12 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
   font-family: sans-serif;
   box-sizing: border-box;
+`
+
+const BadgeWrapper = styled.span`
+  position: absolute;
+  left: 0;
+  bottom: -5px;
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
@@ -242,6 +242,11 @@ const SidePanel: React.FC<ISidePanelProps> = ({
             <Image image={baseMutation?.metadata.image} />
           ) : (
             <MutationFallbackIcon />
+          )}
+          {baseMutation?.source === EntitySourceType.Local && (
+            <BadgeWrapper>
+              <Badge text={baseMutation.source} theme={'blue'} />
+            </BadgeWrapper>
           )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>

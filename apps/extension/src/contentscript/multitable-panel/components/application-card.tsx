@@ -1,11 +1,12 @@
 import { useAppDocuments } from '@mweb/engine'
-import { ApplicationDto, DocumentDto } from '@mweb/backend'
+import { ApplicationDto, DocumentDto, EntitySourceType } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
 import { Image } from './image'
 import { DocumentCard } from './document-card'
 import { AppInMutation } from '@mweb/backend'
 import { Spin } from 'antd'
+import { Badge } from './badge'
 
 const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;
@@ -184,6 +185,7 @@ const CheckedIcon = () => (
 export interface ISimpleApplicationCardProps {
   src: string
   metadata: ApplicationDto['metadata']
+  source: ApplicationDto['source']
   disabled: boolean
   isChecked: boolean
   onChange: (isChecked: boolean) => void
@@ -195,6 +197,7 @@ export interface ISimpleApplicationCardProps {
 export interface IApplicationCardWithDocsProps {
   src: string
   metadata: ApplicationDto['metadata']
+  source: ApplicationDto['source']
   disabled: boolean
   docsIds: AppInMutation['documentId'][]
   onDocCheckboxChange: (docId: string | null, isChecked: boolean) => void
@@ -220,6 +223,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
   isChecked,
   usingDocs,
   allDocs,
+  source,
   onChange,
   onDocCheckboxChange,
   onOpenDocumentsModal,
@@ -242,7 +246,10 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           </TextLink>
 
           <TextLink small ellipsis>
-            @{accountId}
+            {source === EntitySourceType.Local && (
+              <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
+            )}{' '}
+            {accountId ? `@${accountId}` : null}
           </TextLink>
         </CardContent>
 
@@ -261,12 +268,13 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           <DocumentCardList>
             {usingDocs.map((doc) => (
               <DocumentCard
-                key={doc?.id || 'empty'}
+                key={doc?.id ? `${doc.id}/${doc.source}` : 'empty'}
                 src={doc?.id ?? null}
                 metadata={doc?.metadata ?? null}
                 onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}
                 disabled={disabled}
                 appMetadata={metadata}
+                source={doc?.source}
               />
             ))}
           </DocumentCardList>

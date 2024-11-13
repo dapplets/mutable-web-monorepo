@@ -92,10 +92,7 @@ const PullRequestNotification: FC<{
     error: errorReject,
   } = useRejectPullRequest(notification.id)
 
-  const date = useMemo(
-    () => formatDate(new Date(notification.timestamp).toLocaleString()),
-    [notification.timestamp]
-  )
+  const date = useMemo(() => formatDate(new Date(notification.timestamp)), [notification.timestamp])
 
   const [isReviewing, setIsReviewing] = React.useState(false)
 
