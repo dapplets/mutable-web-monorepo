@@ -60,6 +60,7 @@ export class Base {
       source: this.source,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
+      version: this.version,
     }
   }
 }

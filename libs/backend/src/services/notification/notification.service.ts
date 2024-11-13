@@ -247,6 +247,7 @@ export class NotificationService {
       recipients: notification.recipients,
       result: resolution.result,
       status: resolution.status,
+      version: notification.version,
     }
   }
 }

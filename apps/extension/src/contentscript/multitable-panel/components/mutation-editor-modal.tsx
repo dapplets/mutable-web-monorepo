@@ -197,6 +197,7 @@ const EMPTY_MUTATION_ID = '/mutation/NewMutation'
 const createEmptyMutation = (): MutationDto => ({
   authorId: null,
   blockNumber: 0,
+  version: '0',
   id: EMPTY_MUTATION_ID,
   localId: 'NewMutation',
   timestamp: 0,
@@ -378,7 +379,9 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{baseMutation.metadata.name}</p>
+              <p>
+                {baseMutation.metadata.name} (v{baseMutation.version})
+              </p>
               <span>
                 by{' '}
                 {!baseMutation.authorId && !loggedInAccountId
