@@ -150,7 +150,7 @@ export class DocumentSerivce {
       mutation.source === EntitySourceType.Origin
     ) {
       // ToDo: navie implementation
-      mutation.apps
+      mutation.apps = mutation.apps
         .filter((app) => app.documentId !== null) // remove apps without documents
         .concat({ appId, documentId: document.id }) // add new document
 
