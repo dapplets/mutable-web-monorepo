@@ -146,7 +146,7 @@ export class DocumentSerivce {
     const savedDocument = await this.documentRepository.createItem(document)
 
     if (
-      mutation.apps.some((app) => app.appId === appId && app.documentId === document.id) ||
+      !mutation.apps.some((app) => app.appId === appId && app.documentId === document.id) ||
       mutation.source === EntitySourceType.Origin
     ) {
       // ToDo: navie implementation
