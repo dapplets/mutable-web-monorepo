@@ -114,55 +114,61 @@ export class DocumentSerivce {
 
     const document = await this.documentRepository.constructItem(dto)
 
-    if (mutation.authorId === loggedInAccountId) {
-      // create document remotely, add id to mutation remotely ? (need to be merged)
+    // ToDo: should mutation be saved locally or remote?
+    // if (mutation.authorId === loggedInAccountId) {
+    //   // create document remotely, add id to mutation remotely ? (need to be merged)
 
-      // can be null if mutation was locally edited before
-      const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
+    //   // can be null if mutation was locally edited before
+    //   const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
 
-      if (!editingMutation) {
-        throw new Error('No app in mutation with that ID and empty document')
-      }
+    //   if (!editingMutation) {
+    //     throw new Error('No app in mutation with that ID and empty document')
+    //   }
 
-      const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
-        Promise.all([
-          this.documentRepository.createItem(document, tx),
-          this.mutationService.editMutation(
-            { ...editingMutation, source: EntitySourceType.Origin },
-            undefined,
-            tx
-          ), // ToDo: undefined
-        ])
-      )
+    //   const [savedDocument, savedMutation] = await this.unitOfWorkService.runInTransaction((tx) =>
+    //     Promise.all([
+    //       this.documentRepository.createItem(document, tx),
+    //       this.mutationService.editMutation(
+    //         { ...editingMutation, source: EntitySourceType.Origin },
+    //         undefined,
+    //         tx
+    //       ), // ToDo: undefined
+    //     ])
+    //   )
+
+    //   return {
+    //     document: savedDocument.toDto(),
+    //     mutation: savedMutation,
+    //   }
+    // } else {
+    // create document remotely, make mutation local, add id to mutation
+
+    const savedDocument = await this.documentRepository.createItem(document)
+
+    if (
+      mutation.apps.some((app) => app.appId === appId && app.documentId === document.id) ||
+      mutation.source === EntitySourceType.Origin
+    ) {
+      // ToDo: navie implementation
+      mutation.apps
+        .filter((app) => app.documentId !== null) // remove apps without documents
+        .concat({ appId, documentId: document.id }) // add new document
+
+      const savedMutation = await this.mutationService.saveMutation({
+        ...mutation,
+        source: EntitySourceType.Local,
+      })
 
       return {
         document: savedDocument.toDto(),
         mutation: savedMutation,
       }
-    } else {
-      // create document remotely, make mutation local, add id to mutation
-
-      const savedDocument = await this.documentRepository.createItem(document)
-
-      // ToDo: null authorId is possible here
-      const editingMutation = this._replaceAppInstance(mutation, appId, null, document.id)
-
-      if (editingMutation || mutation.source === EntitySourceType.Origin) {
-        const savedMutation = await this.mutationService.saveMutation({
-          ...(editingMutation ?? mutation),
-          source: EntitySourceType.Local,
-        })
-
-        return {
-          document: savedDocument.toDto(),
-          mutation: savedMutation,
-        }
-      }
-
-      return {
-        document: savedDocument.toDto(),
-      }
     }
+
+    return {
+      document: savedDocument.toDto(),
+    }
+    // }
   }
 
   private async _editLocalDocumentInMutation(
