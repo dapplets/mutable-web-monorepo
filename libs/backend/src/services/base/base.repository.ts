@@ -211,10 +211,13 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
     const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
 
+    if (this._isVersionedEntity) {
+      // increment version
+      item.version = item.version ? (parseInt(item.version) + 1).toString() : '1'
+    }
+
     const convertedItem = this._makeItemToSocialDb(item)
-
     const dataToSave = SocialDbService.buildNestedData(keys, convertedItem)
-
     await this._commitOrQueue(dataToSave, tx)
 
     // ToDo: add timestamp and blockNumber
@@ -391,7 +394,12 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
   }
 
   private _makeItemToSocialDb(entity: T): Value {
-    const raw: Value = {}
+    const raw: Value = this._isVersionedEntity
+      ? {
+          [VersionsKey]: { [entity.version]: {} },
+          [TagsKey]: { [LatestTagName]: entity.version },
+        }
+      : {}
 
     for (const entityKey in entity) {
       // ToDo: why prototype?
@@ -399,7 +407,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
       if (!column) continue
 
-      const { type, transformer, name } = column
+      const { type, transformer, name, versioned } = column
 
       const rawKey = name ?? entityKey
 
@@ -407,12 +415,20 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
         ? transformer.to(entity[entityKey])
         : entity[entityKey]
 
+      let rawValue: any = null
+
       if (type === ColumnType.AsIs) {
-        raw[rawKey] = transformedValue
+        rawValue = transformedValue
       } else if (type === ColumnType.Json) {
-        raw[rawKey] = serializeToDeterministicJson(transformedValue)
+        rawValue = serializeToDeterministicJson(transformedValue)
       } else if (type === ColumnType.Set) {
-        raw[rawKey] = BaseRepository._makeSetToSocialDb(transformedValue)
+        rawValue = BaseRepository._makeSetToSocialDb(transformedValue)
+      }
+
+      if (versioned) {
+        raw[VersionsKey][entity.version][rawKey] = rawValue
+      } else {
+        raw[rawKey] = rawValue
       }
     }
 
@@ -420,6 +436,10 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
   }
 
   private _parseGlobalId(globalId: EntityId): { authorId: string; localId: string } {
+    if (!globalId) {
+      throw new Error(`Invalid entity ID: ${globalId}`)
+    }
+
     const [authorId, entityType, localId] = globalId.split(KeyDelimiter)
 
     if (entityType !== this._entityKey) {
