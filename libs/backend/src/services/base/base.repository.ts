@@ -65,7 +65,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
       // Scalar types should be queried without wildcard
       if (type === ColumnType.Json || type === ColumnType.AsIs) {
-        if (versioned) {
+        if (versioned && version) {
           allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, columnName]))
           allKeysForFetching.push(baseKeys.concat([columnName])) // backward compatibility
         } else {
@@ -75,11 +75,13 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
       // Non-scalar types should be queried with wildcard
       if (type === ColumnType.Set || type === ColumnType.AsIs) {
-        if (versioned) {
-          allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, columnName, WildcardKey]))
-          allKeysForFetching.push(baseKeys.concat([columnName])) // backward compatibility
+        if (versioned && version) {
+          allKeysForFetching.push(
+            baseKeys.concat([VersionsKey, version!, columnName, RecursiveWildcardKey])
+          )
+          allKeysForFetching.push(baseKeys.concat([columnName, RecursiveWildcardKey])) // backward compatibility
         } else {
-          allKeysForFetching.push(baseKeys.concat([columnName, WildcardKey]))
+          allKeysForFetching.push(baseKeys.concat([columnName, RecursiveWildcardKey]))
         }
       }
     }
@@ -103,6 +105,17 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       ...versionedData, // it overrides backward compatible props
       version,
     })
+
+    console.log(
+      item,
+      {
+        nonVersionedData,
+        versionedData,
+      },
+      {
+        allKeysForFetching,
+      }
+    )
 
     return item
   }
