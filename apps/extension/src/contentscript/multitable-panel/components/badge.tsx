@@ -59,9 +59,18 @@ export interface IBadgeProps {
   size?: keyof typeof SizeMap
   icon?: React.JSX.Element
   onClick?: React.MouseEventHandler<HTMLSpanElement>
+  style?: React.CSSProperties
 }
 
-export const Badge: FC<IBadgeProps> = ({ text, theme, margin, icon, onClick, size = 'tiny' }) => {
+export const Badge: FC<IBadgeProps> = ({
+  text,
+  theme,
+  margin,
+  icon,
+  onClick,
+  size = 'tiny',
+  style,
+}) => {
   return (
     <Wrapper
       $margin={margin}
@@ -69,6 +78,7 @@ export const Badge: FC<IBadgeProps> = ({ text, theme, margin, icon, onClick, siz
       onClick={onClick}
       $isClickable={!!onClick}
       $size={size}
+      style={style}
     >
       {icon ? <span style={{ fontSize: SizeMap[size].iconSize }}>{icon}</span> : null}
       <span>{text}</span>
