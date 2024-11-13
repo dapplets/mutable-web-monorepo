@@ -61,15 +61,16 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
       if (!column) continue
 
-      const { type, versioned } = column
+      const { type, versioned, name } = column
+      const rawColumnName = name ?? columnName
 
       // Scalar types should be queried without wildcard
       if (type === ColumnType.Json || type === ColumnType.AsIs) {
         if (versioned && version) {
-          allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, columnName]))
-          allKeysForFetching.push(baseKeys.concat([columnName])) // backward compatibility
+          allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, rawColumnName]))
+          allKeysForFetching.push(baseKeys.concat([rawColumnName])) // backward compatibility
         } else {
-          allKeysForFetching.push(baseKeys.concat([columnName]))
+          allKeysForFetching.push(baseKeys.concat([rawColumnName]))
         }
       }
 
@@ -77,11 +78,11 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       if (type === ColumnType.Set || type === ColumnType.AsIs) {
         if (versioned && version) {
           allKeysForFetching.push(
-            baseKeys.concat([VersionsKey, version!, columnName, RecursiveWildcardKey])
+            baseKeys.concat([VersionsKey, version!, rawColumnName, RecursiveWildcardKey])
           )
-          allKeysForFetching.push(baseKeys.concat([columnName, RecursiveWildcardKey])) // backward compatibility
+          allKeysForFetching.push(baseKeys.concat([rawColumnName, RecursiveWildcardKey])) // backward compatibility
         } else {
-          allKeysForFetching.push(baseKeys.concat([columnName, RecursiveWildcardKey]))
+          allKeysForFetching.push(baseKeys.concat([rawColumnName, RecursiveWildcardKey]))
         }
       }
     }
@@ -105,17 +106,6 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       ...versionedData, // it overrides backward compatible props
       version,
     })
-
-    console.log(
-      item,
-      {
-        nonVersionedData,
-        versionedData,
-      },
-      {
-        allKeysForFetching,
-      }
-    )
 
     return item
   }
