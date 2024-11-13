@@ -17,7 +17,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
     this._entityKey = getEntity(EntityType).name
   }
 
-  async getItem({ id }: { id: EntityId }): Promise<T | null> {
+  async getItem({ id, version }: { id: EntityId; version?: string }): Promise<T | null> {
     const parsedId = BaseLocalRepository._parseGlobalId(id)
     if (!parsedId) return null
 
@@ -127,6 +127,18 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
     })
 
     return entity
+  }
+
+  async getVersions(options: { id: EntityId }): Promise<string[]> {
+    throw new Error('Method not implemented.')
+  }
+
+  async getTagValue(options: { id: EntityId; tag: string }): Promise<string | null> {
+    throw new Error('Method not implemented.')
+  }
+
+  async getTags(options: { id: EntityId }): Promise<string[]> {
+    throw new Error('Method not implemented.')
   }
 
   private static _parseGlobalId(globalId: EntityId): {

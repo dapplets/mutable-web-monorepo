@@ -15,6 +15,7 @@ export class Base {
   source: EntitySourceType = EntitySourceType.Local
   blockNumber: number = 0 // ToDo: fake block number
   timestamp: number = 0 // ToDo: fake timestamp
+  version: string = '0' // ToDo: fake version?
 
   get authorId(): string | null {
     return this.id.split(KeyDelimiter)[0] ?? null

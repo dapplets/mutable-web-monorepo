@@ -9,16 +9,24 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     private local: IRepository<T>
   ) {}
 
-  async getItem({ id, source }: { id: EntityId; source?: EntitySourceType }): Promise<T | null> {
+  async getItem({
+    id,
+    source,
+    version,
+  }: {
+    id: EntityId
+    source?: EntitySourceType
+    version?: string
+  }): Promise<T | null> {
     if (source === EntitySourceType.Local) {
-      return this.local.getItem({ id })
+      return this.local.getItem({ id, version })
     } else if (source === EntitySourceType.Origin) {
-      return this.remote.getItem({ id })
+      return this.remote.getItem({ id, version })
     } else {
       // ToDo: why local is preferred?
-      const localItem = await this.local.getItem({ id })
+      const localItem = await this.local.getItem({ id, version })
       if (localItem) return localItem
-      return this.remote.getItem({ id })
+      return this.remote.getItem({ id, version })
     }
   }
 
@@ -83,6 +91,50 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
       return this.local.constructItem(item)
     } else if (item.source === EntitySourceType.Origin) {
       return this.remote.constructItem(item)
+    } else {
+      throw new Error('Invalid source')
+    }
+  }
+
+  async getTagValue({
+    id,
+    source,
+    tag,
+  }: {
+    id: EntityId
+    source?: EntitySourceType
+    tag: string
+  }): Promise<string | null> {
+    if (source === EntitySourceType.Local) {
+      return this.local.getTagValue({ id, tag })
+    } else if (source === EntitySourceType.Origin) {
+      return this.remote.getTagValue({ id, tag })
+    } else {
+      throw new Error('Invalid source')
+    }
+  }
+
+  async getTags({ id, source }: { id: EntityId; source?: EntitySourceType }): Promise<string[]> {
+    if (source === EntitySourceType.Local) {
+      return this.local.getTags({ id })
+    } else if (source === EntitySourceType.Origin) {
+      return this.remote.getTags({ id })
+    } else {
+      throw new Error('Invalid source')
+    }
+  }
+
+  async getVersions({
+    id,
+    source,
+  }: {
+    id: EntityId
+    source?: EntitySourceType
+  }): Promise<string[]> {
+    if (source === EntitySourceType.Local) {
+      return this.local.getVersions({ id })
+    } else if (source === EntitySourceType.Origin) {
+      return this.remote.getVersions({ id })
     } else {
       throw new Error('Invalid source')
     }

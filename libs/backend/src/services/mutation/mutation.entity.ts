@@ -14,15 +14,19 @@ export type AppInMutation = {
   documentId: DocumentId | null
 }
 
-@Entity({ name: 'mutation' })
+@Entity({ name: 'mutation', versioned: true })
 export class Mutation extends Base {
   @Column()
   metadata: EntityMetadata<MutationId> = {}
 
-  @Column({ type: ColumnType.Json, transformer: { from: normalizeApps, to: denormalizeApps } })
+  @Column({
+    type: ColumnType.Json,
+    versioned: true,
+    transformer: { from: normalizeApps, to: denormalizeApps },
+  })
   apps: AppInMutation[] = []
 
-  @Column({ type: ColumnType.Json })
+  @Column({ type: ColumnType.Json, versioned: true })
   targets: Target[] = []
 
   toDto(): MutationDto {
