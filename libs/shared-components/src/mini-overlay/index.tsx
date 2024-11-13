@@ -243,9 +243,13 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           apps={mutationApps.length > 0}
           onClose={() => setOpen(false)}
           open={open}
-          connectWallet={connectWallet}
+          connectWallet={connectWallet!}
+          openCloseNotificationPage={setOpen}
           loggedInAccountId={loggedInAccountId}
           modalContainerRef={overlayRef}
+          disconnectWallet={disconnectWallet!}
+          nearNetwork={nearNetwork!}
+          trackingRefs={trackingRefs}
         />
       </NotificationProvider>
     </WrapperDriver>
