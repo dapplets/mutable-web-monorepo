@@ -2,162 +2,35 @@ import styled from 'styled-components'
 
 export const WrapperDropdown = styled.div`
   position: relative;
-
   display: flex;
   align-items: center;
-
-  width: 266px;
-  background: rgba(255, 255, 255, 0.2);
+  width: calc(100% - 2px);
   border-radius: 4px;
-`
-
-export const SelectedMutationBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding: 2px 6px;
-  cursor: pointer;
-  align-items: center;
-  height: 100%;
-`
-
-export const SelectedMutationInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 181px;
-`
-export const SelectedMutationDescription = styled.div`
-  font-size: 12px;
-  line-height: 150%;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 180px;
-  display: inline-flex;
-  align-items: center;
-`
-
-export const SelectedMutationId = styled.div`
-  font-size: 10px;
-  line-height: 150%;
-  color: rgba(255, 255, 255, 0.6);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 180px;
-  display: inline-block;
-`
-
-export const OpenListDefault = styled.span`
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  @keyframes rotateIsClose {
-    0% {
-      transform: rotate(180deg);
-    }
-
-    50% {
-      transform: rotate(90deg);
-    }
-
-    100% {
-      transform: rotate(0deg);
-    }
-  }
-  animation: rotateIsClose 0.2s ease forwards;
-  transition: all 0.3s;
-  &:hover {
-    svg {
-      transform: scale(1.2);
-    }
-  }
-`
-
-export const OpenList = styled.span`
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  @keyframes rotateIsOpen {
-    0% {
-      transform: rotate(0deg);
-    }
-
-    50% {
-      transform: rotate(90deg);
-    }
-
-    100% {
-      transform: rotate(180deg);
-    }
-  }
-  animation: rotateIsOpen 0.2s ease forwards;
-  transition: all 0.3s;
-  &:hover {
-    svg {
-      transform: scale(1.2);
-    }
-  }
-`
-
-export const StarSelectedMutationWrapper = styled.div`
-  cursor: pointer;
-  display: flex;
-  transition: all 0.2s ease;
-  &:hover {
-    transform: scale(1.2);
-  }
-  & > svg {
-    vertical-align: initial;
-  }
+  border: 1px solid #e2e2e5;
+  box-sizing: border-box;
+  margin: 8px 0;
 `
 
 export const MutationsList = styled.div`
-  position: absolute;
   outline: none;
   display: flex;
   flex-direction: column;
-  background: #fff;
-  box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
-  width: 318px;
-  left: -26px;
-  top: 42px;
+  width: 100%;
   padding: 0;
   border-radius: 0px 0px 10px 10px;
-
-  @keyframes listVisible {
-    0% {
-      opacity: 0;
-    }
-
-    50% {
-      opacity: 0.5;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
-
-  animation: listVisible 0.2s ease forwards;
-  transition: all 0.3s;
+  opacity: 1;
 `
 
 export const MutationsListWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 98%;
+  width: 100%;
   padding: 6px;
   overflow: hidden;
   overflow-y: auto;
-  max-height: 500px;
+  max-height: 322px;
   gap: 10px;
   position: relative;
-  margin-left: 1%;
 
   &::-webkit-scrollbar {
     cursor: pointer;
@@ -181,7 +54,9 @@ export const MutationsListWrapper = styled.div`
     height: 2px;
     background: #384bff;
     border-radius: 2px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 export const ButtonListBlock = styled.div`
@@ -263,15 +138,28 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
   align-items: center;
   width: 100%;
 
-  background: ${(props) => (props.isActive ? 'rgba(56, 75, 255, 0.1)' : '#fff')};
+  color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   border-radius: 4px;
 
   .inputMutation {
-    background: ${(props) => (props.isActive ? 'rgba(56, 75, 255, 0.1)' : '#fff')};
+    color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   }
 
   &:hover {
-    background: rgba(248, 249, 255, 1);
+    background: #384bff;
+
+    div,
+    span {
+      color: #fff;
+    }
+
+    svg {
+      fill: #fff;
+
+      path {
+        stroke: #fff;
+      }
+    }
   }
 `
 export const InputIconWrapper = styled.div`
@@ -338,7 +226,8 @@ export const ImageBlock = styled.div`
 
 export const AvalibleMutations = styled.div`
   width: 100%;
-  background: rgba(248, 249, 255, 1);
+  box-shadow: 0px 4px 5px 0px #2d343c1a;
+  background: #f8f9ff;
   border-radius: 10px;
   gap: 10px;
   display: flex;
@@ -355,7 +244,7 @@ export const AvalibleMutations = styled.div`
     margin-bottom: 3px;
 
     &:hover {
-      background: rgba(24, 121, 206, 0.08);
+      background: #384bff;
     }
   }
 `

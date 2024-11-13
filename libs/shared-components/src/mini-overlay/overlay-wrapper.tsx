@@ -305,38 +305,34 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
           width={360}
           data-testid="overlay-notify"
           children={
-            <>
-              <MultitablePanel
-                connectWallet={connectWallet}
-                loggedInAccountId={loggedInAccountId}
-              />
-
-              <Body ref={overlayRef}>
-                {loggedInAccountId ? (
-                  <>
-                    {' '}
-                    <Profile
-                      accountId={loggedInAccountId ?? null}
-                      closeProfile={() => {
-                        openCloseProfile(false)
-                      }}
-                      connectWallet={connectWallet!}
-                      disconnectWallet={disconnectWallet}
-                      nearNetwork={nearNetwork}
-                      trackingRefs={trackingRefs!}
-                      openCloseWalletPopupRef={openCloseWalletPopupRef}
-                    />
-                    <NotificationFeed
-                      connectWallet={connectWallet}
-                      loggedInAccountId={loggedInAccountId}
-                      modalContainerRef={modalContainerRef}
-                    />
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Body>
-            </>
+            <Body ref={overlayRef}>
+              {loggedInAccountId ? (
+                <>
+                  <Profile
+                    accountId={loggedInAccountId ?? null}
+                    closeProfile={() => {
+                      openCloseProfile(false)
+                    }}
+                    connectWallet={connectWallet!}
+                    disconnectWallet={disconnectWallet}
+                    nearNetwork={nearNetwork}
+                    trackingRefs={trackingRefs!}
+                    openCloseWalletPopupRef={openCloseWalletPopupRef}
+                  />
+                  <MultitablePanel
+                    connectWallet={connectWallet}
+                    loggedInAccountId={loggedInAccountId}
+                  />
+                  <NotificationFeed
+                    connectWallet={connectWallet}
+                    loggedInAccountId={loggedInAccountId}
+                    modalContainerRef={modalContainerRef}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+            </Body>
           }
         ></Drawer>
       </OverlayContent>

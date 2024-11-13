@@ -1,6 +1,6 @@
 import { useNotifications, useViewAllNotifications } from '@mweb/engine'
 import React, { FC, useMemo, useRef, useState } from 'react'
-import { Space, Typography, Button, Spin, Flex } from 'antd'
+import { Space, Typography, Spin, Flex } from 'antd'
 import styled from 'styled-components'
 
 import { Dropdown } from './components/dropdown'
@@ -37,7 +37,6 @@ const MultitablePanel: FC<{
   connectWallet: (() => Promise<void>) | undefined
 }> = ({ loggedInAccountId, connectWallet }) => {
   const [isWaiting, setWaiting] = useState(false)
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -53,7 +52,6 @@ const MultitablePanel: FC<{
 
   const handleMutateButtonClick = () => {
     setIsModalOpen(true)
-    setIsDropdownVisible(false)
   }
 
   return (
@@ -76,11 +74,7 @@ const MultitablePanel: FC<{
       
         </>
       )} */}
-      <Dropdown
-        isVisible={isDropdownVisible}
-        onVisibilityChange={setIsDropdownVisible}
-        onMutateButtonClick={handleMutateButtonClick}
-      />
+      <Dropdown onMutateButtonClick={handleMutateButtonClick} />
     </FeedContainer>
   )
 }

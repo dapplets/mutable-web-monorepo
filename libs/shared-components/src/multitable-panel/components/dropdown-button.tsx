@@ -12,7 +12,7 @@ const LeftButton = styled.button`
   align-items: center;
   border: none;
   background: rgba(56, 75, 255, 1);
-  color: #fff;
+  color: #7a818b;
   font-size: 14px;
   font-weight: 400;
   line-height: 20.86px;
