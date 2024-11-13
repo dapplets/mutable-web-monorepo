@@ -47,8 +47,6 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
     if (this._isVersionedEntity) {
       version = version ?? (await this.getTagValue({ id, tag: LatestTagName })) ?? undefined
-
-      if (!version) return null
     }
 
     const baseKeys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
@@ -63,18 +61,26 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
       if (!column) continue
 
-      const columnKeys = baseKeys.concat(
-        column.versioned ? [VersionsKey, version!, columnName] : [columnName]
-      )
+      const { type, versioned } = column
 
-      if (column.type === ColumnType.Set) {
-        allKeysForFetching.push(columnKeys.concat(RecursiveWildcardKey))
-      } else if (column.type === ColumnType.Json) {
-        allKeysForFetching.push(columnKeys)
-      } else if (column.type === ColumnType.AsIs) {
-        // ToDo: introduce new ColumnType?
-        allKeysForFetching.push(columnKeys)
-        allKeysForFetching.push(columnKeys.concat(RecursiveWildcardKey))
+      // Scalar types should be queried without wildcard
+      if (type === ColumnType.Json || type === ColumnType.AsIs) {
+        if (versioned) {
+          allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, columnName]))
+          allKeysForFetching.push(baseKeys.concat([columnName])) // backward compatibility
+        } else {
+          allKeysForFetching.push(baseKeys.concat([columnName]))
+        }
+      }
+
+      // Non-scalar types should be queried with wildcard
+      if (type === ColumnType.Set || type === ColumnType.AsIs) {
+        if (versioned) {
+          allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, columnName, WildcardKey]))
+          allKeysForFetching.push(baseKeys.concat([columnName])) // backward compatibility
+        } else {
+          allKeysForFetching.push(baseKeys.concat([columnName, WildcardKey]))
+        }
       }
     }
 
@@ -94,7 +100,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
     const item = this._makeItemFromSocialDb(id, {
       ...nonVersionedData,
       [VersionsKey]: undefined, // remove key from nonVersionedData
-      ...versionedData,
+      ...versionedData, // it overrides backward compatible props
       version,
     })
 
