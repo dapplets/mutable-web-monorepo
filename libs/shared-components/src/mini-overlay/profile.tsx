@@ -20,6 +20,9 @@ const ProfileWrapper = styled.div`
   padding: 4px 10px;
   background: #fff;
   font-family: sans-serif;
+  box-shadow:
+    0px 4px 20px 0px #0b576f26,
+    0px 4px 5px 0px #2d343c1a;
 `
 
 const ButtonConnectWrapper = styled.button`
