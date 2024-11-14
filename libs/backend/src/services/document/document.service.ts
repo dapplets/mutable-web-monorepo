@@ -151,7 +151,7 @@ export class DocumentSerivce {
     ) {
       // ToDo: navie implementation
       mutation.apps = mutation.apps
-        .filter((app) => app.documentId !== null) // remove apps without documents
+        .filter((app) => !(app.appId === appId && app.documentId === null)) // remove apps without documents
         .concat({ appId, documentId: document.id }) // add new document
 
       const savedMutation = await this.mutationService.saveMutation({
