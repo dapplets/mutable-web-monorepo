@@ -187,7 +187,7 @@ export const Dropdown: FC<DropdownProps> = ({
                 ) : selectedMutation.source === EntitySourceType.Local ? (
                   <Badge margin="0 4px 0 0" text={selectedMutation.source} theme="white" />
                 ) : null}
-                {selectedMutation.metadata.name}
+                {selectedMutation.metadata.name} (v{selectedMutation.version})
               </SelectedMutationDescription>
               {selectedMutation.authorId ? (
                 <SelectedMutationId>by {selectedMutation.authorId}</SelectedMutationId>

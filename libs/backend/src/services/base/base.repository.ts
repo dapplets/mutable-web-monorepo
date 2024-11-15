@@ -299,7 +299,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
     const foundKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])
 
-    return foundKeys
+    return foundKeys.map((key: string) => key.split(KeyDelimiter).pop()!)
   }
 
   async getTagValue({ id, tag }: { id: EntityId; tag: string }): Promise<string | null> {

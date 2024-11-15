@@ -30,9 +30,21 @@ export class MutationService {
     private nearSigner: NearSigner
   ) {}
 
-  async getMutation(mutationId: string): Promise<MutationDto | null> {
-    const mutation = await this.mutationRepository.getItem({ id: mutationId })
+  async getMutation(
+    mutationId: string,
+    source?: EntitySourceType,
+    version?: string
+  ): Promise<MutationDto | null> {
+    const mutation = await this.mutationRepository.getItem({ id: mutationId, source, version })
     return mutation?.toDto() ?? null
+  }
+
+  async getMutationVersions(mutationId: string): Promise<{ version: string }[]> {
+    const versions = await this.mutationRepository.getVersions({
+      id: mutationId,
+      source: EntitySourceType.Origin,
+    })
+    return versions.map((v) => ({ version: v }))
   }
 
   async getMutationsForContext(context: IContextNode): Promise<MutationDto[]> {
@@ -90,6 +102,15 @@ export class MutationService {
   async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
     const value = await this.settingsService.getPreferredSource(mutationId)
     return value ?? null
+  }
+
+  async getMutationVersion(mutationId: string): Promise<string | null> {
+    const value = await this.settingsService.getMutationVersion(mutationId)
+    return value ?? null
+  }
+
+  async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
+    return this.settingsService.setMutationVersion(mutationId, version)
   }
 
   async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
@@ -251,6 +272,15 @@ export class MutationService {
     const currentDate = new Date().toISOString()
     await this.settingsService.setMutationLastUsage(mutationId, currentDate, hostname)
     return currentDate
+  }
+
+  async getMutationWithSettings(
+    mutationId: string,
+    source?: EntitySourceType,
+    version?: string
+  ): Promise<MutationWithSettings | null> {
+    const mutation = await this.getMutation(mutationId, source, version)
+    return mutation ? this.populateMutationWithSettings(mutation) : null
   }
 
   public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {

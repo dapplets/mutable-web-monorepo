@@ -13,6 +13,8 @@ import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
 import { useSaveMutation, useMutableWeb } from '@mweb/engine'
 import { ButtonsGroup } from './buttons-group'
+import { useMutationVersions } from '@mweb/engine'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -380,7 +382,8 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
             </ImgWrapper>
             <TextWrapper>
               <p>
-                {baseMutation.metadata.name} (v{baseMutation.version})
+                {baseMutation.metadata.name}{' '}
+                <MutationVersionDropdown mutationId={baseMutation?.id ?? null} />
               </p>
               <span>
                 by{' '}
