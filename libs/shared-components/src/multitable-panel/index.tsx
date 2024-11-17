@@ -1,9 +1,10 @@
-import { useNotifications, useViewAllNotifications } from '@mweb/engine'
 import React, { FC, useMemo, useRef, useState } from 'react'
 import { Space, Typography, Spin, Flex } from 'antd'
 import styled from 'styled-components'
-
+import { MutationEditorModal } from './components/mutation-editor-modal'
+import { useMutableWeb } from '@mweb/engine'
 import { Dropdown } from './components/dropdown'
+import { EntitySourceType } from '@mweb/backend'
 
 const { Text } = Typography
 
@@ -36,6 +37,7 @@ const MultitablePanel: FC<{
   loggedInAccountId: string
   connectWallet: (() => Promise<void>) | undefined
 }> = ({ loggedInAccountId, connectWallet }) => {
+  const { mutations, allApps, selectedMutation, config } = useMutableWeb()
   const [isWaiting, setWaiting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
@@ -52,6 +54,9 @@ const MultitablePanel: FC<{
 
   const handleMutateButtonClick = () => {
     setIsModalOpen(true)
+  }
+  const handleModalClose = () => {
+    setIsModalOpen(false)
   }
 
   return (
@@ -74,7 +79,18 @@ const MultitablePanel: FC<{
       
         </>
       )} */}
-      <Dropdown onMutateButtonClick={handleMutateButtonClick} />
+      {isModalOpen ? (
+        <></>
+      ) : (
+        // <MutationEditorModal
+        //   loggedInAccountId={loggedInAccountId}
+        //   apps={allApps}
+        //   baseMutation={selectedMutation}
+        //   localMutations={mutations.filter((m) => m.source === EntitySourceType.Local)}
+        //   onClose={handleModalClose}
+        // />
+        <Dropdown onMutateButtonClick={handleMutateButtonClick} />
+      )}
     </FeedContainer>
   )
 }
