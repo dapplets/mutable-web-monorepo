@@ -257,7 +257,7 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
-  const { switchMutation, switchPreferredSource } = useMutableWeb()
+  const { switchMutation, switchPreferredSource, isLoading } = useMutableWeb()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
@@ -277,8 +277,12 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
   const [editingMutation, setEditingMutation] = useState<MutationDto>(chooseEditingMutation())
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-
   const [alert, setAlert] = useState<IAlert | null>(null)
+
+  // Reload the base mutation if it changed (e.g. if a mutation version was updated)
+  useEffect(() => {
+    setEditingMutation(chooseEditingMutation())
+  }, [isLoading])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
