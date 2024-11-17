@@ -37,6 +37,23 @@ export class SettingsSerivce {
     return (await this.localDb.getItem(key)) ?? null
   }
 
+  async getAllMutationsLastUsage(
+    hostname: string
+  ): Promise<{ mutationId: string; lastUsage: string | null }[]> {
+    const keys = await this.localDb.getAllKeys()
+
+    const prefixKey = LocalDbService.makeKey(MUTATION_LAST_USAGE)
+    const filteredKeys = keys.filter((key) => key.includes(prefixKey) && key.includes(hostname))
+
+    const items = await Promise.all(filteredKeys.map((id) => this.localDb.getItem(id)))
+
+    return filteredKeys.map((key, index) => {
+      const keys = key.split(':') // ToDo: this is a hack
+      const mutationId = keys[keys.length - 2]
+      return { mutationId, lastUsage: items[index] as string | null }
+    })
+  }
+
   async setMutationLastUsage(
     mutationId: string,
     value: string | null,

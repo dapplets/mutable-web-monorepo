@@ -5,11 +5,7 @@ import { FC } from 'react'
 const LatestKey = 'latest'
 
 export const MutationVersionDropdown: FC<{ mutationId: string | null }> = ({ mutationId }) => {
-  const {
-    switchMutationVersion,
-    selectedMutation,
-    mutationVersions: currentMutationVersions,
-  } = useMutableWeb()
+  const { switchMutationVersion, selectedMutation, mutationVersion } = useMutableWeb()
   const { mutationVersions, areMutationVersionsLoading } = useMutationVersions(mutationId)
 
   if (!mutationId) {
@@ -22,15 +18,12 @@ export const MutationVersionDropdown: FC<{ mutationId: string | null }> = ({ mut
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (mutationId) {
-      switchMutationVersion(
-        mutationId,
-        e.target.value === LatestKey ? null : e.target.value?.toString()
-      )
+      switchMutationVersion(e.target.value === LatestKey ? null : e.target.value?.toString())
     }
   }
 
   return (
-    <select onChange={handleChange} value={currentMutationVersions[mutationId] ?? LatestKey}>
+    <select onChange={handleChange} value={mutationVersion ?? LatestKey}>
       {mutationVersions.map((version) => (
         <option key={version.version} value={version.version}>
           v{version.version}

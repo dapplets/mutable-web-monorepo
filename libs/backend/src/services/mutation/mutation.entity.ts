@@ -2,7 +2,7 @@ import { AppId } from '../application/application.entity'
 import { DocumentId } from '../document/document.entity'
 import { Target } from '../target/target.entity'
 import { EntityMetadata } from '../../common/entity-metadata'
-import { Base } from '../base/base.entity'
+import { Base, EntitySourceType } from '../base/base.entity'
 import { Column, ColumnType } from '../base/decorators/column'
 import { Entity } from '../base/decorators/entity'
 import { MutationDto } from './dtos/mutation.dto'
@@ -42,6 +42,8 @@ export class Mutation extends Base {
 export type MutationWithSettings = MutationDto & {
   settings: {
     lastUsage: string | null
+    preferredSource: EntitySourceType | null
+    selectedVersion: string | null
   }
 }
 

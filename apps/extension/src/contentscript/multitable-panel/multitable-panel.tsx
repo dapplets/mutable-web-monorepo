@@ -1,5 +1,5 @@
 import { EventEmitter as NEventEmitter } from 'events'
-import { useMutableWeb } from '@mweb/engine'
+import { useMutableWeb, MutationsProvider } from '@mweb/engine'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
@@ -134,7 +134,7 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
-  const { mutations, allApps, selectedMutation, config } = useMutableWeb()
+  const { allApps, selectedMutation, config, isLoading } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
@@ -187,19 +187,20 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   }
 
   // The notch can be opened from the extension's context menu on websites without any mutation
-  if (!isModalOpen && mutations.length === 0) return null
+  // if (!isModalOpen && mutations.length === 0) return null
 
   return (
     <>
       <MutableOverlayContainer notchRef={notchRef} networkId={config.networkId as NearNetworkId} />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
-          <MutationEditorModal
-            apps={allApps}
-            baseMutation={selectedMutation}
-            localMutations={mutations.filter((m) => m.source === EntitySourceType.Local)}
-            onClose={handleModalClose}
-          />
+          <MutationsProvider>
+            <MutationEditorModal
+              apps={allApps}
+              baseMutation={selectedMutation}
+              onClose={handleModalClose}
+            />
+          </MutationsProvider>
         ) : (
           <Draggable
             axis="x"

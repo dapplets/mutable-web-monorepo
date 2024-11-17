@@ -1,9 +1,9 @@
-import { MutableWebContext } from './mutable-web-context'
 import { EntityId } from '@mweb/backend'
-import { useContext, useMemo } from 'react'
+import { useMemo } from 'react'
+import { useMutations } from '../mutations-context'
 
 export const useMutation = (mutationId: EntityId | undefined | null) => {
-  const { mutations } = useContext(MutableWebContext)
+  const { mutations } = useMutations()
 
   const mutation = useMemo(
     () => (mutationId ? mutations.find((mutation) => mutation.id === mutationId) ?? null : null),

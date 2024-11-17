@@ -1,10 +1,12 @@
-import { useContext, useState } from 'react'
-import { MutableWebContext } from './mutable-web-context'
+import { useState } from 'react'
 import { SaveMutationOptions } from '@mweb/backend'
 import { MutationCreateDto } from '@mweb/backend'
+import { useMutableWeb } from '../mutable-web-context'
+import { useMutations } from './use-mutations'
 
 export function useCreateMutation() {
-  const { engine, setMutations } = useContext(MutableWebContext)
+  const { engine } = useMutableWeb()
+  const { setMutations } = useMutations()
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

@@ -63,17 +63,12 @@ export class MutationService {
   }
 
   getLastUsedMutation = async (context: IContextNode): Promise<string | null> => {
-    const allMutations = await this.getMutationsWithSettings(context)
     const hostname = window.location.hostname
-    const lastUsedData = await Promise.all(
-      allMutations.map(async (m) => ({
-        id: m.id,
-        lastUsage: await this.settingsService.getMutationLastUsage(m.id, hostname),
-      }))
-    )
-    const usedMutationsData = lastUsedData
+    const mutationsUsage = await this.settingsService.getAllMutationsLastUsage(hostname)
+
+    const usedMutationsData = mutationsUsage
       .filter((m) => m.lastUsage)
-      .map((m) => ({ id: m.id, lastUsage: new Date(m.lastUsage!).getTime() }))
+      .map((m) => ({ id: m.mutationId, lastUsage: new Date(m.lastUsage!).getTime() }))
 
     if (usedMutationsData?.length) {
       if (usedMutationsData.length === 1) return usedMutationsData[0].id
@@ -288,9 +283,11 @@ export class MutationService {
       mutation.id,
       window.location.hostname
     )
+    const preferredSource = await this.settingsService.getPreferredSource(mutation.id)
+    const selectedVersion = await this.settingsService.getMutationVersion(mutation.id)
 
     // ToDo: do not mix MutationWithSettings and Mutation
-    return { ...mutation, settings: { lastUsage } }
+    return { ...mutation, settings: { lastUsage, preferredSource, selectedVersion } }
   }
 
   private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {
