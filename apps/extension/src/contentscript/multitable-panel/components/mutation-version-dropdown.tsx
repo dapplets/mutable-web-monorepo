@@ -17,7 +17,7 @@ export const MutationVersionDropdown: FC<{ mutationId: string | null }> = ({ mut
   }
 
   if (!selectedMutation || areMutationVersionsLoading) {
-    return <div>Loading...</div>
+    return <span>Loading...</span>
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

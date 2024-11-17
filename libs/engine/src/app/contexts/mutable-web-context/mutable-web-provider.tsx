@@ -69,20 +69,22 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     const fn = async () => {
       const localMutations = mutations.filter((mut) => mut.source === EntitySourceType.Local)
       const newPreferredSources: { [key: string]: EntitySourceType | null } = {}
-      for (const mut of localMutations) {
-        newPreferredSources[mut.id] = await engine.mutationService.getPreferredSource(mut.id)
-      }
-      setPreferredSources(newPreferredSources)
-    }
-    fn()
-  }, [engine, mutations])
-
-  useEffect(() => {
-    const fn = async () => {
       const newMutationVersions: { [key: string]: string | null } = {}
-      for (const mut of mutations) {
-        newMutationVersions[mut.id] = await engine.mutationService.getMutationVersion(mut.id)
-      }
+
+      await Promise.all([
+        ...localMutations.map((mut) =>
+          engine.mutationService
+            .getPreferredSource(mut.id)
+            .then((source) => (newPreferredSources[mut.id] = source))
+        ),
+        ...mutations.map((mut) =>
+          engine.mutationService
+            .getMutationVersion(mut.id)
+            .then((version) => (newMutationVersions[mut.id] = version))
+        ),
+      ])
+
+      setPreferredSources(newPreferredSources)
       setMutationVersions(newMutationVersions)
     }
     fn()
@@ -111,7 +113,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   //   }
   // }, [mutations, selectedMutationId, preferredSources, mutationVersions])
 
-  const { selectedMutation } = useSelectedMutation(
+  const { selectedMutation, isSelectedMutationLoading } = useSelectedMutation(
     engine,
     selectedMutationId,
     selectedMutationId ? preferredSources[selectedMutationId] : undefined,
@@ -306,7 +308,11 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   )
 
   const isLoading =
-    isMutationsLoading || isAppsLoading || isMutationAppsLoading || isMutationParsersLoading
+    isMutationsLoading ||
+    isAppsLoading ||
+    isMutationAppsLoading ||
+    isMutationParsersLoading ||
+    isSelectedMutationLoading
 
   const state: MutableWebContextState = {
     config: nearConfig,
