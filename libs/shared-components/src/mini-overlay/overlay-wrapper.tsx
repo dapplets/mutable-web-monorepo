@@ -193,6 +193,7 @@ export interface IOverlayWrapperProps extends IWalletConnect {
   modalContainerRef: React.RefObject<HTMLElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
+  handleMutateButtonClick: () => void
 }
 
 const OverlayWrapper: FC<IOverlayWrapperProps> = ({
@@ -205,6 +206,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
   nearNetwork,
   modalContainerRef,
   trackingRefs,
+  handleMutateButtonClick,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
   const [waiting, setWaiting] = useState(false)
@@ -322,6 +324,7 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                   <MultitablePanel
                     connectWallet={connectWallet}
                     loggedInAccountId={loggedInAccountId}
+                    handleMutateButtonClick={handleMutateButtonClick}
                   />
                   <NotificationFeed
                     connectWallet={connectWallet}

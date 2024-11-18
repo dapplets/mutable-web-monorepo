@@ -264,6 +264,7 @@ export const MutationEditorModal: FC<Props> = ({
   loggedInAccountId,
 }) => {
   const { switchMutation, switchPreferredSource } = useMutableWeb()
+  // const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)

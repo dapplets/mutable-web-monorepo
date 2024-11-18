@@ -4,7 +4,6 @@ import { Button } from 'antd'
 import { useNotifications } from '@mweb/engine'
 import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
 import { Image } from '../common/image'
-
 import { IWalletConnect } from './types'
 import {
   MutationFallbackIcon,
@@ -199,7 +198,6 @@ const SidePanel: React.FC<ISidePanelProps> = ({
   nearNetwork,
   connectWallet,
   disconnectWallet,
-  loggedInAccountId,
   baseMutation,
   mutationApps,
   overlayRef,
@@ -257,6 +255,13 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
+        <ActionLikeButton
+          block
+          type={isNotificationPageOpen ? 'primary' : 'default'}
+          onClick={() => openCloseNotificationPage((val) => !val)}
+        >
+          {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
+        </ActionLikeButton>
 
         <ActionLikeButton
           block
@@ -264,13 +269,6 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           onClick={() => openCloseNotificationPage((val) => !val)}
         >
           {haveUnreadNotifications ? <OpenOverlayWithCircle /> : <OpenOverlay />}
-        </ActionLikeButton>
-        <ActionLikeButton
-          block
-          type={isNotificationPageOpen ? 'primary' : 'default'}
-          onClick={() => openCloseNotificationPage((val) => !val)}
-        >
-          {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
         </ActionLikeButton>
       </TopBlock>
 
