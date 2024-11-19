@@ -1,5 +1,5 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
-import { useMutableWeb, useMutations, useSaveMutation } from '@mweb/engine'
+import { useApplications, useMutableWeb, useMutations, useSaveMutation } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -216,7 +216,6 @@ const createEmptyMutation = (): MutationDto => ({
 })
 
 export interface Props {
-  apps: ApplicationDto[]
   baseMutation: MutationDto | null
   onClose: () => void
 }
@@ -253,9 +252,10 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, onClose }) => {
+export const MutationEditorModal: FC<Props> = ({ baseMutation, onClose }) => {
   const { switchMutation, switchPreferredSource, isLoading } = useMutableWeb()
   const { mutations } = useMutations()
+  const { applications: apps, isLoading: isLoadingApps } = useApplications()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
@@ -407,6 +407,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, onClose }) 
 
       <AppsList>
         <Label>Applications List</Label>
+        {isLoadingApps ? <span>Loading...</span> : null}
         {apps.map((app) =>
           app.permissions.documents ? (
             <ApplicationCardWithDocs

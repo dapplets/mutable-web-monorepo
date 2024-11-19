@@ -9,7 +9,6 @@ import { NearConfig } from '@mweb/backend'
 export type MutableWebContextState = {
   config: NearConfig
   engine: Engine
-  allApps: ApplicationDto[]
   mutationApps: AppInstanceWithSettings[]
   activeApps: AppInstanceWithSettings[]
   selectedMutation: MutationWithSettings | null
@@ -28,7 +27,6 @@ export type MutableWebContextState = {
 export const contextDefaultValues: MutableWebContextState = {
   config: null as any as NearConfig, // ToDo
   engine: null as any as Engine, // ToDo
-  allApps: [],
   mutationApps: [],
   activeApps: [],
   isLoading: false,

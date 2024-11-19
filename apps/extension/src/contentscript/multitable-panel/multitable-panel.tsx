@@ -1,15 +1,14 @@
+import { ApplicationsProvider, MutationsProvider, useMutableWeb } from '@mweb/engine'
 import { EventEmitter as NEventEmitter } from 'events'
-import { useMutableWeb, MutationsProvider } from '@mweb/engine'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
+import { NearNetworkId } from '../../common/networks'
 import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } from '../storage'
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
-import { NearNetworkId } from '../../common/networks'
-import { EntitySourceType } from '@mweb/backend'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -134,7 +133,7 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
-  const { allApps, selectedMutation, config, isLoading } = useMutableWeb()
+  const { selectedMutation, config, isLoading } = useMutableWeb()
   const [isDropdownVisible, setIsDropdownVisible] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
@@ -194,13 +193,9 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
       <MutableOverlayContainer notchRef={notchRef} networkId={config.networkId as NearNetworkId} />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
-          <MutationsProvider>
-            <MutationEditorModal
-              apps={allApps}
-              baseMutation={selectedMutation}
-              onClose={handleModalClose}
-            />
-          </MutationsProvider>
+          <ApplicationsProvider>
+            <MutationEditorModal baseMutation={selectedMutation} onClose={handleModalClose} />
+          </ApplicationsProvider>
         ) : (
           <Draggable
             axis="x"

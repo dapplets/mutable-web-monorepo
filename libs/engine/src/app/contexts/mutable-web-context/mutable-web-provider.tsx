@@ -5,7 +5,6 @@ import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState
 import { ModalContextState } from '../modal-context/modal-context'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
 import { mutationDisabled, mutationSwitched } from './notifications'
-import { useApplications } from './use-applications'
 import { useMutationApps } from './use-mutation-apps'
 import { useMutationParsers } from './use-mutation-parsers'
 import { useSelectedMutation } from './use-selected-mutation'
@@ -42,8 +41,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const nearConfig = useMemo(() => getNearConfig(config.networkId), [config.networkId])
 
   const engine = engineRef.current
-
-  const { applications: allApps, isLoading: isAppsLoading } = useApplications(engine)
 
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const [preferredSource, setPreferredSource] = useState<EntitySourceType | null>(null)
@@ -221,13 +218,11 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     [engine, selectedMutationId]
   )
 
-  const isLoading =
-    isAppsLoading || isMutationAppsLoading || isMutationParsersLoading || isSelectedMutationLoading
+  const isLoading = isMutationAppsLoading || isMutationParsersLoading || isSelectedMutationLoading
 
   const state: MutableWebContextState = {
     config: nearConfig,
     engine,
-    allApps,
     mutationApps,
     activeApps,
     selectedMutation,

@@ -7,6 +7,7 @@ export {
   useMutationApp,
   useMutationVersions,
 } from './app/contexts/mutable-web-context'
+export { useApplications, ApplicationsProvider } from './app/contexts/applications-context'
 export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper'
 export { App as MutableWebProvider } from './app/app'
 export { useAppDocuments } from './app/contexts/mutable-web-context/use-app-documents'
