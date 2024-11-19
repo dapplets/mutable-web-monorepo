@@ -26,7 +26,7 @@ export const useSelectedMutation = (
     data: selectedMutation,
     isLoading: isSelectedMutationLoading,
     error: selectedMutationError,
-    setData: setMutation,
+    setData: setSelectedMutation,
   } = useQuery<MutationWithSettings | null>({
     query: fetch,
     deps: [mutationId, source, version],
@@ -40,7 +40,7 @@ export const useSelectedMutation = (
       if (selectedMutation.id === mutation.id && selectedMutation.source === mutation.source) {
         const mutationWithSettings =
           await engine.mutationService.populateMutationWithSettings(mutation)
-        setMutation(mutationWithSettings)
+        setSelectedMutation(mutationWithSettings)
 
         onSourceChange?.(mutation.source)
       }

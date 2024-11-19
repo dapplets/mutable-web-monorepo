@@ -5,7 +5,7 @@ import { useMutableWeb } from '../mutable-web-context'
 import { useMutations } from './use-mutations'
 
 export function useEditMutation() {
-  const { engine } = useMutableWeb()
+  const { engine, refreshSelectedMutation } = useMutableWeb()
   const { setMutations } = useMutations()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -24,6 +24,8 @@ export function useEditMutation() {
             : mut
         )
       )
+
+      refreshSelectedMutation(editedMutation)
     } catch (err) {
       console.error(err)
       if (err instanceof Error) {

@@ -157,6 +157,8 @@ export class MutationService {
       throw new Error('Mutation with that ID does not exist')
     }
 
+    let editedMutation: Mutation
+
     if (mutation.source === EntitySourceType.Origin) {
       const performTx = (tx: Transaction) =>
         Promise.all([
@@ -167,17 +169,19 @@ export class MutationService {
 
       // reuse transaction
       if (tx) {
-        await performTx(tx)
+        const result = await performTx(tx)
+        editedMutation = result[0]
       } else {
-        await this.unitOfWorkService.runInTransaction(performTx)
+        const result = await this.unitOfWorkService.runInTransaction(performTx)
+        editedMutation = result[0]
       }
     } else if (mutation.source === EntitySourceType.Local) {
-      await this.mutationRepository.editItem(mutation, tx)
+      editedMutation = await this.mutationRepository.editItem(mutation, tx)
     } else {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(mutation.toDto())
+    return this.populateMutationWithSettings(editedMutation.toDto())
   }
 
   async saveMutation(

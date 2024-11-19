@@ -213,7 +213,8 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
 
     if (this._isVersionedEntity) {
       // increment version
-      item.version = item.version ? (parseInt(item.version) + 1).toString() : '1'
+      const lastVersion = await this.getTagValue({ id: item.id, tag: LatestTagName })
+      item.version = lastVersion ? (parseInt(lastVersion) + 1).toString() : '1'
     }
 
     const convertedItem = this._makeItemToSocialDb(item)
