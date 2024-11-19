@@ -11,6 +11,7 @@ export const useSelectedMutation = (
     data: selectedMutation,
     isLoading: isSelectedMutationLoading,
     error: selectedMutationError,
+    setData: setSelectedMutation,
   } = useQuery<MutationWithSettings | null>({
     query: () =>
       mutationId
@@ -24,5 +25,5 @@ export const useSelectedMutation = (
     initialData: null,
   })
 
-  return { selectedMutation, isSelectedMutationLoading, selectedMutationError }
+  return { selectedMutation, isSelectedMutationLoading, selectedMutationError, setSelectedMutation }
 }

@@ -113,7 +113,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   //   }
   // }, [mutations, selectedMutationId, preferredSources, mutationVersions])
 
-  const { selectedMutation, isSelectedMutationLoading } = useSelectedMutation(
+  const { selectedMutation, isSelectedMutationLoading, setSelectedMutation } = useSelectedMutation(
     engine,
     selectedMutationId,
     selectedMutationId ? preferredSources[selectedMutationId] : undefined,
@@ -232,8 +232,9 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
     if (mutation.id === selectedMutationId) {
       switchPreferredSource(mutation.id, mutation.source)
+      setSelectedMutation(mutationWithSettings)
     }
-  }, [])
+  }, [selectedMutationId])
 
   // ToDo: move to separate hook
   const setFavoriteMutation = useCallback(
