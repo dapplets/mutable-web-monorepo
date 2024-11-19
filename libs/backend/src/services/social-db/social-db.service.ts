@@ -111,7 +111,6 @@ export class SocialDbService {
   ) {}
 
   async get(keys: string[], options: { withBlockHeight?: boolean } = {}): Promise<Value> {
-    console.log(`get: ${keys.join(', ')}`)
     return await this.signer.view(this._contractName, 'get', {
       keys,
       options: {
@@ -121,7 +120,6 @@ export class SocialDbService {
   }
 
   async keys(keys: string[]): Promise<string[]> {
-    console.log(`keys: ${keys.join(', ')}`)
     const response = await this.signer.view(this._contractName, 'keys', {
       keys,
     })

@@ -13,8 +13,6 @@ const MutationsProvider: FC<Props> = ({ children }) => {
   const { core } = useCore()
   const { engine } = useMutableWeb()
 
-  console.log('mutations loading...')
-
   const {
     data: mutations,
     setData: setMutations,
