@@ -424,3 +424,60 @@ export const AuthorMutation = styled.div`
   display: inline-flex;
   align-items: center;
 `
+
+// version
+
+export const DropdownContainer = styled.div<{ expanded?: boolean }>`
+  position: absolute;
+  width: 100%;
+  max-width: 44px;
+  height: auto;
+  top: 24px;
+  left: 2px;
+  padding: 2px;
+  border-radius: 4px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: ${({ expanded }) =>
+    expanded
+      ? `0px 3px 7px 0px #2222221A, 
+         0px 12px 12px 0px #22222217, 
+         0px 27px 16px 0px #2222220D, 
+         0px 48px 19px 0px #22222203, 
+         0px 76px 21px 0px #22222200`
+      : 'none'};
+
+  cursor: pointer;
+`
+
+export const SpanStyled = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  top: -6px;
+  left: 2px;
+  justify-content: center;
+  padding: 2px 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  text-align: left;
+  color: white;
+  background: #384bff;
+`
+
+export const DropdownItem = styled.div`
+  font-size: 10px;
+  font-weight: 400;
+  text-align: center;
+  color: #7a818b;
+  padding: 4px;
+
+  &:hover {
+    background: #1879ce1a;
+  }
+`

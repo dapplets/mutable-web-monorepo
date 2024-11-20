@@ -25,6 +25,9 @@ import {
   SelectedMutationInfo,
   StarSelectedMutationWrapper,
   WrapperDropdown,
+  DropdownContainer,
+  DropdownItem,
+  SpanStyled,
 } from '../assets/styles-dropdown'
 import {
   AvailableIcon,
@@ -37,7 +40,7 @@ import {
   StarSelectMutationDefault,
 } from '../assets/vectors'
 
-import { useDeleteLocalMutation, useMutableWeb } from '@mweb/engine'
+import { useDeleteLocalMutation, useMutableWeb, useMutationVersions } from '@mweb/engine'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import defaultIcon from '../assets/images/default.svg'
 import { Image } from './image'
@@ -45,6 +48,8 @@ import { Badge } from './badge'
 import { ArrowDownOutlined, DeleteOutlined, EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
 import styled from 'styled-components'
 import { ModalDelete } from './modal-delete'
+
+const LatestKey = 'latest'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -84,6 +89,18 @@ export const Dropdown: FC<DropdownProps> = ({
   } = useMutableWeb()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const { mutationVersions, areMutationVersionsLoading } = useMutationVersions(
+    selectedMutation?.id ?? null
+  )
+  const { switchMutationVersion, mutationVersions: currentMutationVersions } = useMutableWeb()
+  const [expanded, setExpanded] = useState(false)
+
+  const toggleDropdown = () => setExpanded(!expanded)
+  const handleChange = (key: string) => {
+    if (selectedMutation?.id) {
+      switchMutationVersion(selectedMutation?.id, key === LatestKey ? null : key?.toString())
+    }
+  }
 
   const recentlyUsedMutations = useMemo(
     () =>
@@ -161,6 +178,33 @@ export const Dropdown: FC<DropdownProps> = ({
 
   return (
     <WrapperDropdown>
+      {selectedMutation && selectedMutation.metadata && mutationVersions.length > 0
+        ? mutationVersions.map((version) => (
+            <>
+              <SpanStyled>
+                v{selectedMutation.version}{' '}
+                {expanded ? (
+                  <OpenList onClick={toggleDropdown}>
+                    <IconDropdown />
+                  </OpenList>
+                ) : (
+                  <OpenListDefault onClick={toggleDropdown}>
+                    <IconDropdown />
+                  </OpenListDefault>
+                )}
+              </SpanStyled>
+              {expanded && (
+                <DropdownContainer expanded={expanded}>
+                  <DropdownItem onClick={() => handleChange(version.version)} key={version.version}>
+                    v{version.version}
+                  </DropdownItem>{' '}
+                </DropdownContainer>
+              )}
+            </>
+          ))
+        : selectedMutation &&
+          selectedMutation.metadata && <SpanStyled>v{selectedMutation.version}</SpanStyled>}
+
       <SelectedMutationBlock
         onClick={() => onVisibilityChange(!isVisible)}
         data-testid="selected-mutation-block"
@@ -187,7 +231,8 @@ export const Dropdown: FC<DropdownProps> = ({
                 ) : selectedMutation.source === EntitySourceType.Local ? (
                   <Badge margin="0 4px 0 0" text={selectedMutation.source} theme="white" />
                 ) : null}
-                {selectedMutation.metadata.name} (v{selectedMutation.version})
+
+                {selectedMutation.metadata.name}
               </SelectedMutationDescription>
               {selectedMutation.authorId ? (
                 <SelectedMutationId>by {selectedMutation.authorId}</SelectedMutationId>
