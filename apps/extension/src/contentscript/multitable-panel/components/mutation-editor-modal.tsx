@@ -1,18 +1,18 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
+import { useApplications, useMutableWeb, useMutations, useSaveMutation } from '@mweb/engine'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { cloneDeep, mergeDeep } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
-import { DocumentsModal } from './documents-modal'
-import { ModalConfirm } from './modals-confirm'
-import { AppInMutation } from '@mweb/backend'
-import { Image } from './image'
-import { useSaveMutation, useMutableWeb } from '@mweb/engine'
 import { ButtonsGroup } from './buttons-group'
+import { DocumentsModal } from './documents-modal'
+import { Image } from './image'
+import { ModalConfirm } from './modals-confirm'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -197,6 +197,7 @@ const EMPTY_MUTATION_ID = '/mutation/NewMutation'
 const createEmptyMutation = (): MutationDto => ({
   authorId: null,
   blockNumber: 0,
+  version: '0',
   id: EMPTY_MUTATION_ID,
   localId: 'NewMutation',
   timestamp: 0,
@@ -215,9 +216,7 @@ const createEmptyMutation = (): MutationDto => ({
 })
 
 export interface Props {
-  apps: ApplicationDto[]
   baseMutation: MutationDto | null
-  localMutations: MutationDto[]
   onClose: () => void
 }
 
@@ -253,8 +252,10 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
-  const { switchMutation, switchPreferredSource } = useMutableWeb()
+export const MutationEditorModal: FC<Props> = ({ baseMutation, onClose }) => {
+  const { switchMutation, switchPreferredSource, isLoading } = useMutableWeb()
+  const { mutations } = useMutations()
+  const { applications: apps, isLoading: isLoadingApps } = useApplications()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
@@ -263,6 +264,10 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
   const { saveMutation, isLoading: isSaving } = useSaveMutation()
 
   useEscape(onClose)
+
+  const localMutations = useMemo(() => {
+    return mutations.filter((mut) => mut.source === EntitySourceType.Local)
+  }, [mutations])
 
   // Call `setEditingMutation(chooseEditingMutation())` if you want to revert changes
   const chooseEditingMutation = (): MutationDto =>
@@ -274,8 +279,12 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
   const [editingMutation, setEditingMutation] = useState<MutationDto>(chooseEditingMutation())
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-
   const [alert, setAlert] = useState<IAlert | null>(null)
+
+  // Reload the base mutation if it changed (e.g. if a mutation version was updated)
+  useEffect(() => {
+    setEditingMutation(chooseEditingMutation())
+  }, [isLoading])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
@@ -341,7 +350,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
     saveMutation(localMutation)
       .then(({ id }) => {
         switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Local)
+        switchPreferredSource(EntitySourceType.Local)
       })
       .then(onClose)
   }
@@ -378,7 +387,10 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{baseMutation.metadata.name}</p>
+              <p>
+                {baseMutation.metadata.name}{' '}
+                <MutationVersionDropdown mutationId={baseMutation?.id ?? null} />
+              </p>
               <span>
                 by{' '}
                 {!baseMutation.authorId && !loggedInAccountId
@@ -395,6 +407,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
       <AppsList>
         <Label>Applications List</Label>
+        {isLoadingApps ? <span>Loading...</span> : null}
         {apps.map((app) =>
           app.permissions.documents ? (
             <ApplicationCardWithDocs

@@ -103,7 +103,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { controllers } = useAppControllers(context)
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
-  const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
+  const { engine, selectedMutation, refreshSelectedMutation, activeApps } = useMutableWeb()
   const { portals } = useEngine()
 
   const portalComponents = useMemo(() => {
@@ -292,13 +292,13 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
             // ToDo: workaround to wait when blockchain changes will be propagated
             await new Promise((resolve) => setTimeout(resolve, 3000))
 
-            await refreshMutation(mutation)
+            await refreshSelectedMutation(mutation)
           }
 
           return savedDocument
         }
     ),
-    [engine, selectedMutation, refreshMutation]
+    [engine, selectedMutation, refreshSelectedMutation]
   )
 
   // ToDo: check context.element

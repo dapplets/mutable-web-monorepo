@@ -17,6 +17,11 @@ export class LocalDbService {
     return typeof item === 'string' ? (JSON.parse(item) as Value) : undefined
   }
 
+  async getAllKeys(): Promise<string[]> {
+    const keys = await this.storage.getAllKeys()
+    return keys
+  }
+
   async setItem<Value>(key: string, value: Value | null | undefined): Promise<void> {
     const serializedValue = JSON.stringify(value)
 

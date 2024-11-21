@@ -1,9 +1,11 @@
 import { EntityId, EntitySourceType } from '@mweb/backend'
-import { useContext, useState } from 'react'
-import { MutableWebContext } from './mutable-web-context'
+import { useState } from 'react'
+import { useMutableWeb } from '../mutable-web-context'
+import { useMutations } from './use-mutations'
 
 export function useDeleteLocalMutation() {
-  const { engine, setMutations } = useContext(MutableWebContext)
+  const { engine } = useMutableWeb()
+  const { setMutations } = useMutations()
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

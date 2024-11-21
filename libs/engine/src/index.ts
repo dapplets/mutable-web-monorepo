@@ -3,14 +3,11 @@ export { App } from './app/app'
 export { useEngine } from './app/contexts/engine-context'
 export {
   useMutation,
-  useMutations,
   useMutableWeb,
-  useCreateMutation,
-  useSaveMutation,
-  useEditMutation,
   useMutationApp,
-  useDeleteLocalMutation,
+  useMutationVersions,
 } from './app/contexts/mutable-web-context'
+export { useApplications, ApplicationsProvider } from './app/contexts/applications-context'
 export { ShadowDomWrapper } from './app/components/shadow-dom-wrapper'
 export { App as MutableWebProvider } from './app/app'
 export { useAppDocuments } from './app/contexts/mutable-web-context/use-app-documents'
@@ -23,3 +20,12 @@ export {
   useViewNotification,
   useHideNotification,
 } from './app/contexts/notification-context'
+export {
+  MutationsProvider,
+  useDeleteLocalMutation,
+  useSaveMutation,
+  useEditMutation,
+  useCreateMutation,
+  useRemoveMutationFromRecents,
+  useMutations,
+} from './app/contexts/mutations-context'

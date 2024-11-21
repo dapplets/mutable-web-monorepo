@@ -7,6 +7,7 @@ const FAVORITE_MUTATION = 'favorite-mutation'
 const PREFERRED_SOURCE = 'preferred-source'
 const MUTATION_LAST_USAGE = 'mutation-last-usage'
 const STOPPED_APPS = 'stopped-apps'
+const MUTATION_VERSION = 'mutation-version'
 
 export class SettingsSerivce {
   constructor(private localDb: LocalDbService) {}
@@ -36,6 +37,23 @@ export class SettingsSerivce {
     return (await this.localDb.getItem(key)) ?? null
   }
 
+  async getAllMutationsLastUsage(
+    hostname: string
+  ): Promise<{ mutationId: string; lastUsage: string | null }[]> {
+    const keys = await this.localDb.getAllKeys()
+
+    const prefixKey = LocalDbService.makeKey(MUTATION_LAST_USAGE)
+    const filteredKeys = keys.filter((key) => key.includes(prefixKey) && key.includes(hostname))
+
+    const items = await Promise.all(filteredKeys.map((id) => this.localDb.getItem(id)))
+
+    return filteredKeys.map((key, index) => {
+      const keys = key.split(':') // ToDo: this is a hack
+      const mutationId = keys[keys.length - 2]
+      return { mutationId, lastUsage: items[index] as string | null }
+    })
+  }
+
   async setMutationLastUsage(
     mutationId: string,
     value: string | null,
@@ -57,5 +75,15 @@ export class SettingsSerivce {
   ): Promise<void> {
     const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appInstanceId)
     return this.localDb.setItem(key, isEnabled)
+  }
+
+  async getMutationVersion(mutationId: string): Promise<string | null> {
+    const key = LocalDbService.makeKey(MUTATION_VERSION, mutationId)
+    return (await this.localDb.getItem(key)) ?? null
+  }
+
+  async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
+    const key = LocalDbService.makeKey(MUTATION_VERSION, mutationId)
+    return this.localDb.setItem(key, version)
   }
 }

@@ -1,17 +1,13 @@
+import { Engine, EngineConfig, EntitySourceType, getNearConfig, utils } from '@mweb/backend'
+import { ParserConfig, ParserType } from '@mweb/core'
+import { useCore } from '@mweb/react'
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { ModalContextState } from '../modal-context/modal-context'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
-import { Engine, EngineConfig, EntitySourceType } from '@mweb/backend'
+import { mutationDisabled, mutationSwitched } from './notifications'
 import { useMutationApps } from './use-mutation-apps'
 import { useMutationParsers } from './use-mutation-parsers'
-import { useCore } from '@mweb/react'
-import { useMutations } from './use-mutations'
-import { useApplications } from './use-applications'
-import { utils } from '@mweb/backend'
-import { mutationDisabled, mutationSwitched } from './notifications'
-import { getNearConfig } from '@mweb/backend'
-import { ModalContextState } from '../modal-context/modal-context'
-import { MutationDto } from '@mweb/backend'
-import { ParserType, ParserConfig } from '@mweb/core'
+import { useSelectedMutation } from './use-selected-mutation'
 
 type Props = {
   config: EngineConfig
@@ -46,13 +42,9 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   const engine = engineRef.current
 
-  const { mutations, setMutations, isLoading: isMutationsLoading } = useMutations(engine)
-  const { applications: allApps, isLoading: isAppsLoading } = useApplications(engine)
-
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
-  const [preferredSources, setPreferredSources] = useState<{
-    [key: string]: EntitySourceType | null
-  }>({})
+  const [preferredSource, setPreferredSource] = useState<EntitySourceType | null>(null)
+  const [mutationVersion, setMutationVersion] = useState<string | null>(null)
   const [favoriteMutationId, setFavoriteMutationId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -61,67 +53,63 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     })
   }, [engine])
 
+  // const selectedMutation = useMemo(() => {
+  //   if (!selectedMutationId) return null
+
+  //   const [localMut, remoteMut] = mutations
+  //     .filter((m) => m.id === selectedMutationId)
+  //     .sort((a) => (a.source === EntitySourceType.Local ? -1 : 1))
+
+  //   if (preferredSources[selectedMutationId] === EntitySourceType.Local) {
+  //     return localMut ?? remoteMut ?? null
+  //   } else if (preferredSources[selectedMutationId] === EntitySourceType.Origin) {
+  //     return remoteMut ?? localMut ?? null
+  //   } else {
+  //     return localMut ?? remoteMut ?? null
+  //   }
+  // }, [mutations, selectedMutationId, preferredSources, mutationVersions])
+
+  const { selectedMutation, isSelectedMutationLoading, refreshSelectedMutation } =
+    useSelectedMutation(
+      engine,
+      selectedMutationId,
+      selectedMutationId ? preferredSource : undefined,
+      selectedMutationId ? mutationVersion : undefined,
+      (source) => setPreferredSource(source) // ToDo: workaround
+    )
+
   useEffect(() => {
     const fn = async () => {
-      const localMutations = mutations.filter((mut) => mut.source === EntitySourceType.Local)
-      const newPreferredSources: { [key: string]: EntitySourceType | null } = {}
-      for (const mut of localMutations) {
-        newPreferredSources[mut.id] = await engine.mutationService.getPreferredSource(mut.id)
-      }
-      setPreferredSources(newPreferredSources)
-    }
-    fn()
-  }, [engine, mutations])
+      const favoriteMutation = await engine.mutationService.getFavoriteMutation()
+      const lastUsedMutation = tree ? await engine.mutationService.getLastUsedMutation(tree) : null
+      const _favoriteMutationId = lastUsedMutation ?? favoriteMutation
 
-  const getMutationToBeLoaded = useCallback(async () => {
-    const favoriteMutation = await engine.mutationService.getFavoriteMutation()
-    const lastUsedMutation = tree ? await engine.mutationService.getLastUsedMutation(tree) : null
-
-    return lastUsedMutation ?? favoriteMutation
-  }, [engine, tree])
-
-  const selectedMutation = useMemo(() => {
-    if (!selectedMutationId) return null
-
-    const [localMut, remoteMut] = mutations
-      .filter((m) => m.id === selectedMutationId)
-      .sort((a) => (a.source === EntitySourceType.Local ? -1 : 1))
-
-    if (preferredSources[selectedMutationId] === EntitySourceType.Local) {
-      return localMut ?? remoteMut ?? null
-    } else if (preferredSources[selectedMutationId] === EntitySourceType.Origin) {
-      return remoteMut ?? localMut ?? null
-    } else {
-      return localMut ?? remoteMut ?? null
-    }
-  }, [mutations, selectedMutationId, preferredSources])
-
-  useEffect(() => {
-    getMutationToBeLoaded().then((favoriteMutationId) => {
       // ToDo: move it to the separate useEffect ?
-      if (defaultMutationId && favoriteMutationId && defaultMutationId !== favoriteMutationId) {
-        const hasMutation = mutations.some((mutation) => mutation.id === defaultMutationId)
+      if (defaultMutationId && _favoriteMutationId && defaultMutationId !== _favoriteMutationId) {
+        const hasMutation = !!(await engine.mutationService.getMutation(_favoriteMutationId)) // ToDo: redundant request
 
         if (hasMutation) {
           modalApi.notify(
             mutationSwitched({
-              fromMutationId: favoriteMutationId,
+              fromMutationId: _favoriteMutationId,
               toMutationId: defaultMutationId,
-              onBack: () => switchMutation(favoriteMutationId),
+              onBack: () => switchMutation(_favoriteMutationId),
             })
           )
         } else {
           modalApi.notify(
             mutationDisabled({
-              onBack: () => switchMutation(favoriteMutationId),
+              onBack: () => switchMutation(_favoriteMutationId),
             })
           )
         }
       }
 
-      switchMutation(defaultMutationId ?? favoriteMutationId)
-    })
-  }, [getMutationToBeLoaded, defaultMutationId, modalApi])
+      switchMutation(defaultMutationId ?? _favoriteMutationId)
+    }
+
+    fn()
+  }, [engine, tree, defaultMutationId, modalApi])
 
   const {
     mutationApps,
@@ -174,42 +162,20 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
       if (selectedMutationId === mutationId) return
 
       if (mutationId) {
-        const lastUsage = await engine.mutationService.updateMutationLastUsage(
-          mutationId,
-          window.location.hostname
-        )
+        const preferredSource = await engine.mutationService.getPreferredSource(mutationId)
+        const mutationVersion = await engine.mutationService.getMutationVersion(mutationId)
 
-        // Update last usage for selected mutation
-        setMutations((prev) =>
-          prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage } } : mut
-          )
-        )
+        setPreferredSource(preferredSource)
+        setMutationVersion(mutationVersion)
+      } else {
+        setPreferredSource(null)
+        setMutationVersion(null)
       }
 
       setSelectedMutationId(mutationId)
     },
     [selectedMutationId]
   )
-
-  const refreshMutation = useCallback(async (mutation: MutationDto) => {
-    const mutationWithSettings = await engine.mutationService.populateMutationWithSettings(mutation)
-
-    setMutations((prev) => {
-      const index = prev.findIndex(
-        (m) => m.id === mutationWithSettings.id && m.source === mutationWithSettings.source
-      )
-      if (index === -1) {
-        return [...prev, mutationWithSettings]
-      } else {
-        return prev.map((m, i) => (i === index ? mutationWithSettings : m))
-      }
-    })
-
-    if (mutation.id === selectedMutationId) {
-      switchPreferredSource(mutation.id, mutation.source)
-    }
-  }, [])
 
   // ToDo: move to separate hook
   const setFavoriteMutation = useCallback(
@@ -226,66 +192,50 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   // ToDo: move to separate hook
   const switchPreferredSource = useCallback(
-    async (mutationId: string, source: EntitySourceType | null) => {
+    async (source: EntitySourceType | null) => {
+      if (!selectedMutationId) return
       try {
-        const mut = mutations.find(
-          (m) => m.id === mutationId && m.source === EntitySourceType.Local
-        )
-        if (!mut) return
-        setPreferredSources((oldPrefferedSources) => ({
-          ...oldPrefferedSources,
-          [mutationId]: source,
-        }))
-        await engine.mutationService.setPreferredSource(mutationId, source)
+        setPreferredSource(source)
+        await engine.mutationService.setPreferredSource(selectedMutationId, source)
       } catch (err) {
         console.error(err)
       }
     },
-    [engine, mutations]
+    [engine, selectedMutationId]
   )
-
-  const getPreferredSource = (mutationId: string): EntitySourceType | null =>
-    preferredSources[mutationId]
 
   // ToDo: move to separate hook
-  const removeMutationFromRecents = useCallback(
-    async (mutationId: string) => {
+  const switchMutationVersion = useCallback(
+    async (version: string | null) => {
       try {
-        await engine.mutationService.removeMutationFromRecents(mutationId)
-
-        setMutations((prev) =>
-          prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage: null } } : mut
-          )
-        )
+        if (!selectedMutationId) return
+        setMutationVersion(version)
+        await engine.mutationService.setMutationVersion(selectedMutationId, version)
       } catch (err) {
         console.error(err)
       }
     },
-    [engine]
+    [engine, selectedMutationId]
   )
 
-  const isLoading =
-    isMutationsLoading || isAppsLoading || isMutationAppsLoading || isMutationParsersLoading
+  const isLoading = isMutationAppsLoading || isMutationParsersLoading || isSelectedMutationLoading
 
   const state: MutableWebContextState = {
     config: nearConfig,
     engine,
-    mutations,
-    allApps,
     mutationApps,
     activeApps,
     selectedMutation,
     isLoading,
     switchMutation,
     switchPreferredSource,
-    getPreferredSource,
-    refreshMutation,
+    refreshSelectedMutation,
     setFavoriteMutation,
-    removeMutationFromRecents,
     favoriteMutationId,
-    setMutations,
     setMutationApps,
+    switchMutationVersion,
+    preferredSource,
+    mutationVersion,
   }
 
   return (
