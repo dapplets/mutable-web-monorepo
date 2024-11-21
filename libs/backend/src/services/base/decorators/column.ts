@@ -11,6 +11,7 @@ export enum ColumnType {
 export type TargetMetadata = {
   type?: ColumnType
   name?: string
+  versioned?: boolean
   transformer?: {
     from?: (item: any) => any
     to?: (item: any) => any
