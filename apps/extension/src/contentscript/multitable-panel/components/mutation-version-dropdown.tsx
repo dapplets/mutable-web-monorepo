@@ -1,42 +1,79 @@
 import { useMutableWeb, useMutationVersions } from '@mweb/engine'
-import React from 'react'
+import React, { useState } from 'react'
 import { FC } from 'react'
+import {
+  DropdownContainer,
+  DropdownItem,
+  OpenList,
+  OpenListDefault,
+  SpanStyled,
+} from '../assets/styles-dropdown'
+import { IconDropdown } from '../assets/vectors'
 
 const LatestKey = 'latest'
 
-export const MutationVersionDropdown: FC<{ mutationId: string | null }> = ({ mutationId }) => {
+export const MutationVersionDropdown: FC<{
+  mutationId: string | null
+  isWhite?: boolean
+}> = ({ mutationId, isWhite }) => {
   const {
     switchMutationVersion,
     selectedMutation,
     mutationVersions: currentMutationVersions,
   } = useMutableWeb()
   const { mutationVersions, areMutationVersionsLoading } = useMutationVersions(mutationId)
-
+  const [expanded, setExpanded] = useState(false)
+  const toggleDropdown = () => setExpanded(!expanded)
   if (!mutationId) {
     return null
   }
 
   if (!selectedMutation || areMutationVersionsLoading) {
-    return <span>Loading...</span>
+    return <span></span>
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (mutationId) {
-      switchMutationVersion(
-        mutationId,
-        e.target.value === LatestKey ? null : e.target.value?.toString()
-      )
+  const handleChange = (key: string) => {
+    if (selectedMutation?.id) {
+      switchMutationVersion(selectedMutation?.id, key === LatestKey ? null : key?.toString())
     }
   }
 
   return (
-    <select onChange={handleChange} value={currentMutationVersions[mutationId] ?? LatestKey}>
+    <>
       {mutationVersions.map((version) => (
-        <option key={version.version} value={version.version}>
-          v{version.version}
-        </option>
+        <span
+          style={{
+            maxWidth: '50px',
+            display: 'inline-flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}
+        >
+          <SpanStyled $isWhite={isWhite}>
+            {currentMutationVersions[mutationId]
+              ? `v${currentMutationVersions[mutationId]}`
+              : LatestKey}
+            {expanded ? (
+              <OpenList onClick={toggleDropdown}>
+                <IconDropdown />
+              </OpenList>
+            ) : (
+              <OpenListDefault onClick={toggleDropdown}>
+                <IconDropdown />
+              </OpenListDefault>
+            )}
+          </SpanStyled>
+          {expanded && (
+            <DropdownContainer $expanded={expanded}>
+              <DropdownItem onClick={() => handleChange(version.version)} key={version.version}>
+                v{version.version}
+              </DropdownItem>{' '}
+            </DropdownContainer>
+          )}
+        </span>
       ))}
-      <option value={LatestKey}>latest</option>
-    </select>
+    </>
   )
 }

@@ -427,10 +427,10 @@ export const AuthorMutation = styled.div`
 
 // version
 
-export const DropdownContainer = styled.div<{ expanded?: boolean }>`
+export const DropdownContainer = styled.div<{ $expanded?: boolean }>`
   position: absolute;
   width: 100%;
-  max-width: 44px;
+  max-width: 50px;
   height: auto;
   top: 24px;
   left: 2px;
@@ -439,8 +439,9 @@ export const DropdownContainer = styled.div<{ expanded?: boolean }>`
   background: #fff;
   display: flex;
   flex-direction: column;
-  box-shadow: ${({ expanded }) =>
-    expanded
+
+  box-shadow: ${({ $expanded }) =>
+    $expanded
       ? `0px 3px 7px 0px #2222221A, 
          0px 12px 12px 0px #22222217, 
          0px 27px 16px 0px #2222220D, 
@@ -451,23 +452,27 @@ export const DropdownContainer = styled.div<{ expanded?: boolean }>`
   cursor: pointer;
 `
 
-export const SpanStyled = styled.span`
+export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   display: flex;
   align-items: center;
   gap: 2px;
   position: relative;
-  top: -6px;
+  top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
   left: 2px;
   justify-content: center;
   padding: 2px 0;
+  padding-left: 4px;
   width: 100%;
   height: 100%;
   border-radius: 4px;
   font-size: 10px;
   font-weight: 400;
   text-align: left;
-  color: white;
-  background: #384bff;
+  color: #ffffff;
+  background: ${({ $isWhite }) => ($isWhite ? `#FFFFFF` : '#384bff')};
+  svg path {
+    stroke: ${({ $isWhite }) => ($isWhite ? ` #7a818b` : '#FFFFFF')};
+  }
 `
 
 export const DropdownItem = styled.div`

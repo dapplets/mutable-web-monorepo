@@ -385,10 +385,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>
-                {baseMutation.metadata.name}{' '}
-                <MutationVersionDropdown mutationId={baseMutation?.id ?? null} />
-              </p>
+              <p>{baseMutation.metadata.name} </p>
               <span>
                 by{' '}
                 {!baseMutation.authorId && !loggedInAccountId
@@ -397,6 +394,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
                     baseMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
                   : baseMutation.authorId}
+                <MutationVersionDropdown isWhite mutationId={baseMutation?.id ?? null} />
               </span>
             </TextWrapper>
           </CardWrapper>
