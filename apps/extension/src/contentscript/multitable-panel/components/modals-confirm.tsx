@@ -379,7 +379,12 @@ export const ModalConfirm: FC<Props> = ({
             </FloatingLabelContainer>
           </CardWrapper>
           <FloatingLabelContainer>
-            <StyledInput id={'version'} type={'text'} value={version} readOnly />
+            <StyledInput
+              id={'version'}
+              type={'text'}
+              value={version.toLowerCase() === 'latest' ? version : `${+version + 1}`}
+              readOnly
+            />
             <StyledLabel htmlFor={'version'}>Version</StyledLabel>
           </FloatingLabelContainer>
           <FloatingLabelContainerArea>
@@ -448,7 +453,12 @@ export const ModalConfirm: FC<Props> = ({
             </FloatingLabelContainer>
           </CardWrapper>
           <FloatingLabelContainer>
-            <StyledInput id={'version'} type={'text'} value={version} readOnly />
+            <StyledInput
+              id={'version'}
+              type={'text'}
+              value={version.toLowerCase() === 'latest' ? version : `${+version + 1}`}
+              readOnly
+            />
             <StyledLabel htmlFor={'version'}>Version</StyledLabel>
           </FloatingLabelContainer>
           <FloatingLabelContainerArea>
@@ -479,7 +489,12 @@ export const ModalConfirm: FC<Props> = ({
             </TextWrapper>
           </CardWrapper>
           <FloatingLabelContainer>
-            <StyledInput id={'version'} type={'text'} value={version} readOnly />
+            <StyledInput
+              id={'version'}
+              type={'text'}
+              value={version.toLowerCase() === 'latest' ? version : `${+version + 1}`}
+              readOnly
+            />
             <StyledLabel htmlFor={'version'}>Version</StyledLabel>
           </FloatingLabelContainer>
           {forkedMutation ? (

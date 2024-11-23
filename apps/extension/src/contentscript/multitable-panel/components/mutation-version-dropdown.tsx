@@ -50,17 +50,18 @@ export const MutationVersionDropdown: FC<{
             justifyContent: 'center',
             position: 'relative',
           }}
+          onClick={toggleDropdown}
         >
           <SpanStyled $isWhite={isWhite}>
             {currentMutationVersions[mutationId]
               ? `v${currentMutationVersions[mutationId]}`
               : LatestKey}
             {expanded ? (
-              <OpenList onClick={toggleDropdown}>
+              <OpenList>
                 <IconDropdown />
               </OpenList>
             ) : (
-              <OpenListDefault onClick={toggleDropdown}>
+              <OpenListDefault>
                 <IconDropdown />
               </OpenListDefault>
             )}

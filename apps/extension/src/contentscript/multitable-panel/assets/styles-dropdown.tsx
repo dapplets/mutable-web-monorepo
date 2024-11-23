@@ -430,7 +430,7 @@ export const AuthorMutation = styled.div`
 export const DropdownContainer = styled.div<{ $expanded?: boolean }>`
   position: absolute;
   width: 100%;
-  max-width: 50px;
+  width: 50px;
   height: auto;
   top: 24px;
   left: 2px;
