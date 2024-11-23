@@ -262,14 +262,6 @@ const SidePanel: React.FC<ISidePanelProps> = ({
         >
           {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
         </ActionLikeButton>
-
-        <ActionLikeButton
-          block
-          type={isNotificationPageOpen ? 'primary' : 'default'}
-          onClick={() => openCloseNotificationPage((val) => !val)}
-        >
-          {haveUnreadNotifications ? <OpenOverlayWithCircle /> : <OpenOverlay />}
-        </ActionLikeButton>
       </TopBlock>
 
       {mutationApps.length ? (

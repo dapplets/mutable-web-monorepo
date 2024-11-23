@@ -4,7 +4,7 @@ import { Drawer, Space, Button } from 'antd'
 import { Typography } from 'antd'
 import MultitablePanel from '../multitable-panel'
 import NotificationFeed from '../notifications/notification-feed'
-import { Close as CloseIcon } from './assets/icons'
+import { Close as CloseIcon, Logo as LogoIcon } from './assets/icons'
 import Profile from './profile'
 import { IWalletConnect } from './types'
 const { Title, Text } = Typography
@@ -107,16 +107,24 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
 
     .ant-drawer-header {
       border-bottom: none;
+      background: #2b2a33;
       padding: 10px;
-      padding-bottom: 0;
 
       h3 {
         margin-bottom: 0;
+        color: #fff;
+        align-items: center;
+        display: inline-flex;
+        gap: 10px;
       }
 
       .ant-space {
         width: 100%;
         justify-content: space-between;
+      }
+
+      button {
+        padding: 5px;
       }
     }
 
@@ -130,10 +138,7 @@ const Body = styled.div`
   height: 100%;
   position: relative;
   overflow: hidden;
-
-  &::-webkit-scrollbar {
-    width: 0;
-  }
+  overflow-y: auto;
 `
 
 const ButtonConnectWrapper = styled.button`
@@ -229,70 +234,15 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
         <Drawer
           title={
             <Space direction="vertical">
-              {loggedInAccountId ? (
-                <Space direction="horizontal">
-                  <Title style={{ userSelect: 'none' }} level={3}>
-                    Mutable Web
-                  </Title>
+              <Space direction="horizontal">
+                <Title style={{ userSelect: 'none' }} level={3}>
+                  <LogoIcon /> Mutable Web
+                </Title>
 
-                  <Button type="text" onClick={onClose}>
-                    <CloseIcon />
-                  </Button>
-                </Space>
-              ) : (
-                <Space
-                  direction="vertical"
-                  style={{
-                    width: '100%',
-                    borderRadius: '20px',
-                    background: '#fff',
-                    padding: '8px 8px 20px',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
-                    <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
-                      Sign in
-                    </Title>
-
-                    <Button
-                      type="text"
-                      style={{ marginLeft: 'auto', position: 'absolute', right: '8px', top: '8px' }}
-                      onClick={onClose}
-                    >
-                      <CloseIcon />
-                    </Button>
-                  </Space>
-
-                  <Text
-                    type="secondary"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '5px',
-                      textAlign: 'center',
-                      fontSize: '12px',
-                    }}
-                  >
-                    To see personalized notifications, you must sign in by connecting your wallet.
-                  </Text>
-                  <Space style={{ marginBottom: '16px' }}>
-                    {' '}
-                    <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
-                      {waiting ? (
-                        <div className="loading"></div>
-                      ) : (
-                        <>
-                          <ConnectIcon />
-                          Connect
-                        </>
-                      )}
-                    </ButtonConnectWrapper>
-                  </Space>
-                </Space>
-              )}
+                <Button type="text" onClick={onClose}>
+                  <CloseIcon />
+                </Button>
+              </Space>
             </Space>
           }
           placement="right"
@@ -333,7 +283,70 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                   />
                 </>
               ) : (
-                <></>
+                <>
+                  <MultitablePanel
+                    connectWallet={connectWallet}
+                    loggedInAccountId={loggedInAccountId}
+                    handleMutateButtonClick={handleMutateButtonClick}
+                  />
+                  <Space
+                    direction="vertical"
+                    style={{
+                      width: '100%',
+                      borderRadius: '20px',
+                      background: '#fff',
+                      padding: '8px 8px 20px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
+                      <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
+                        Sign in
+                      </Title>
+
+                      <Button
+                        type="text"
+                        style={{
+                          marginLeft: 'auto',
+                          position: 'absolute',
+                          right: '8px',
+                          top: '8px',
+                        }}
+                        onClick={onClose}
+                      >
+                        <CloseIcon />
+                      </Button>
+                    </Space>
+
+                    <Text
+                      type="secondary"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '5px',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                      }}
+                    >
+                      To see personalized notifications, you must sign in by connecting your wallet.
+                    </Text>
+                    <Space style={{ marginBottom: '16px' }}>
+                      {' '}
+                      <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
+                        {waiting ? (
+                          <div className="loading"></div>
+                        ) : (
+                          <>
+                            <ConnectIcon />
+                            Connect
+                          </>
+                        )}
+                      </ButtonConnectWrapper>
+                    </Space>
+                  </Space>
+                </>
               )}
             </Body>
           }
