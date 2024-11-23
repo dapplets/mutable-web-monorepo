@@ -159,39 +159,46 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }
 
-export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp, isLoading }) => (
-  <>
-    {isLoading ? (
-      <Loading>
-        <Spinner animation="border" variant="primary"></Spinner>
-      </Loading>
-    ) : (
-      <MutationIconWrapper
-        title={app.localId}
-        $isStopped={!app.settings.isEnabled}
-        $isButton={true}
-      >
-        {app?.metadata.image ? <Image image={app?.metadata.image} /> : <MutationFallbackIcon />}
+export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp, isLoading }) => {
+  const docMeta = (app as any).documentId?.split('/')
+  return (
+    <>
+      {isLoading ? (
+        <Loading>
+          <Spinner animation="border" variant="primary"></Spinner>
+        </Loading>
+      ) : (
+        <MutationIconWrapper
+          title={
+            (app as any).documentId
+              ? `${app.localId}:\n${docMeta?.[2]}\nby ${docMeta?.[0]}`
+              : app.localId
+          }
+          $isStopped={!app.settings.isEnabled}
+          $isButton={true}
+        >
+          {app?.metadata.image ? <Image image={app?.metadata.image} /> : <MutationFallbackIcon />}
 
-        {!app.settings.isEnabled ? (
-          <LabelAppTop className="labelAppTop">
-            <StopTopIcon />
-          </LabelAppTop>
-        ) : null}
+          {!app.settings.isEnabled ? (
+            <LabelAppTop className="labelAppTop">
+              <StopTopIcon />
+            </LabelAppTop>
+          ) : null}
 
-        {app.settings.isEnabled ? (
-          <LabelAppCenter className="labelAppCenter" onClick={disableApp}>
-            <StopCenterIcon />
-          </LabelAppCenter>
-        ) : (
-          <LabelAppCenter className="labelAppCenter" onClick={enableApp}>
-            <PlayCenterIcon />
-          </LabelAppCenter>
-        )}
-      </MutationIconWrapper>
-    )}
-  </>
-)
+          {app.settings.isEnabled ? (
+            <LabelAppCenter className="labelAppCenter" onClick={disableApp}>
+              <StopCenterIcon />
+            </LabelAppCenter>
+          ) : (
+            <LabelAppCenter className="labelAppCenter" onClick={enableApp}>
+              <PlayCenterIcon />
+            </LabelAppCenter>
+          )}
+        </MutationIconWrapper>
+      )}
+    </>
+  )
+}
 
 export const MiniOverlay: FC<IMiniOverlayProps> = ({
   baseMutation,
@@ -243,9 +250,13 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           apps={mutationApps.length > 0}
           onClose={() => setOpen(false)}
           open={open}
-          connectWallet={connectWallet}
+          connectWallet={connectWallet!}
+          openCloseNotificationPage={setOpen}
           loggedInAccountId={loggedInAccountId}
           modalContainerRef={overlayRef}
+          disconnectWallet={disconnectWallet!}
+          nearNetwork={nearNetwork!}
+          trackingRefs={trackingRefs}
         />
       </NotificationProvider>
     </WrapperDriver>

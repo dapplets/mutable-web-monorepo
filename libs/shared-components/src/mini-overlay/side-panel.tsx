@@ -4,9 +4,9 @@ import { Button } from 'antd'
 import { useNotifications } from '@mweb/engine'
 import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
 import { Image } from '../common/image'
-import Profile from './profile'
+
 import { IWalletConnect } from './types'
-import { MutationFallbackIcon, ArrowIcon, BellIcon, BellWithCircle } from './assets/icons'
+import { MutationFallbackIcon, ArrowIcon, OpenOverlay, OpenOverlayWithCircle } from './assets/icons'
 import { Badge } from '../common/Badge'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
@@ -115,6 +115,10 @@ const ActionLikeButton = styled(Button)<{ type: string }>`
   display: flex;
   justify-content: flex-start;
 
+  svg path {
+    fill: ${(props) => (props.type === 'primary' ? 'white' : '#7A818B')};
+  }
+
   circle {
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     stroke: ${(props) => (props.type === 'primary' ? '#1677ff' : 'white')};
@@ -201,7 +205,6 @@ const SidePanel: React.FC<ISidePanelProps> = ({
     !!notifications.filter((not) => not.status === 'new').length
   )
   const [isOpenAppsPane, openCloseAppsPane] = useState(false)
-  const [isProfileOpen, openCloseProfile] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
   const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
@@ -225,9 +228,9 @@ const SidePanel: React.FC<ISidePanelProps> = ({
     >
       <TopBlock $open={isOpenAppsPane || !!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
+          onClick={() => openCloseNotificationPage((val) => !val)}
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
-          onClick={() => openCloseProfile((val) => !val)}
           ref={openCloseWalletPopupRef}
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
@@ -247,12 +250,13 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
+
         <ActionLikeButton
           block
           type={isNotificationPageOpen ? 'primary' : 'default'}
           onClick={() => openCloseNotificationPage((val) => !val)}
         >
-          {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
+          {haveUnreadNotifications ? <OpenOverlayWithCircle /> : <OpenOverlay />}
         </ActionLikeButton>
       </TopBlock>
 
@@ -281,20 +285,6 @@ const SidePanel: React.FC<ISidePanelProps> = ({
             <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
           </ButtonOpenWrapper>
         </>
-      ) : null}
-
-      {isProfileOpen && isMutationIconButton ? (
-        <Profile
-          accountId={loggedInAccountId ?? null}
-          closeProfile={() => {
-            openCloseProfile(false)
-          }}
-          connectWallet={connectWallet}
-          disconnectWallet={disconnectWallet}
-          nearNetwork={nearNetwork}
-          trackingRefs={trackingRefs}
-          openCloseWalletPopupRef={openCloseWalletPopupRef}
-        />
       ) : null}
     </SidePanelWrapper>
   )
