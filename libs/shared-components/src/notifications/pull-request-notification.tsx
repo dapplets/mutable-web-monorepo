@@ -121,6 +121,7 @@ const PullRequestNotification: FC<{
       console.error(e)
     }
   }
+  console.log(notification)
 
   return (
     <>
@@ -144,18 +145,14 @@ const PullRequestNotification: FC<{
           ) : (
             <BlueBadge />
           )}
-          {loggedInAccountId === notification.authorId ? (
+          {loggedInAccountId === notification.authorId ||
+          notification.type === NotificationType.PullRequest ? (
             <Text type="secondary" style={{ fontSize: '12px' }}>
               #{notification.localId.substring(0, 7)}&ensp;{loggedInAccountId}&ensp;sent a commit
               to&ensp;
-              {notification.recipients}&ensp;on&ensp;
-              {date}
-            </Text>
-          ) : notification.type === NotificationType.PullRequestAccepted ||
-            notification.type === NotificationType.PullRequestRejected ? (
-            <Text type="secondary" style={{ fontSize: '12px' }}>
-              #{notification.localId.substring(0, 7)}&ensp;{loggedInAccountId}&ensp;commited commit
-              from&ensp;{notification.authorId}
+              {notification.type === NotificationType.PullRequest
+                ? notification.authorId
+                : notification.recipients}
               &ensp;on&ensp;
               {date}
             </Text>
