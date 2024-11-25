@@ -11,7 +11,7 @@ import Copy from './copy'
 import Disconnect from './disconnect'
 import OpenOverlay from './open-overlay'
 import OpenOverlayWithCircle from './open-overlay-with-circle'
-import Logo from './Logo'
+import Logo from './logo'
 
 export {
   MutationFallbackIcon,
