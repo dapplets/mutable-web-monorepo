@@ -26,7 +26,6 @@ import {
   StarMutationList,
   StarMutationListDefault,
 } from '../assets/vectors'
-
 import { useDeleteLocalMutation, useMutableWeb } from '@mweb/engine'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import { Image } from './image'
