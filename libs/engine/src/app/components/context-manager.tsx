@@ -1,39 +1,37 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ContextPortal } from '@mweb/react'
-import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import {
-  BosUserLinkWithInstance,
-  ControllerLink,
-  UserLinkId,
-  ApplicationDto,
   AppId,
+  ApplicationDto,
+  BosUserLinkWithInstance,
   BuiltInLayoutManagers,
-  TransferableContext,
+  ControllerLink,
+  DocumentCommitDto,
+  DocumentDto,
+  EntityId,
+  EntitySourceType,
   LinkedDataByAccountDto,
   LinkIndexRules,
   Target,
-  DocumentId,
-  DocumentMetadata,
-  DocumentDto,
+  TransferableContext,
+  UserLinkId,
   utils,
-  EntitySourceType,
-  EntityId,
 } from '@mweb/backend'
-import { useEngine } from '../contexts/engine-context'
-import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
+import { IContextNode, InsertionPointWithElement } from '@mweb/core'
+import { ContextPortal, ContextTree } from '@mweb/react'
 import { Widget } from 'near-social-vm'
-import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
-import { ContextTree } from '@mweb/react'
-import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
-import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
-import { buildTransferableContext } from '../common/transferable-context'
-import { useModal } from '../contexts/modal-context'
-import { useMutableWeb } from '../contexts/mutable-web-context'
-import { memoize } from '../common/memoize'
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { ModalProps } from '../contexts/modal-context/modal-context'
-import { Portal } from '../contexts/engine-context/engine-context'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
+import { memoize } from '../common/memoize'
+import { buildTransferableContext } from '../common/transferable-context'
+import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
+import { useEngine } from '../contexts/engine-context'
+import { Portal } from '../contexts/engine-context/engine-context'
+import { useModal } from '../contexts/modal-context'
+import { ModalProps } from '../contexts/modal-context/modal-context'
+import { useMutableWeb } from '../contexts/mutable-web-context'
+import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
+import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
+import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
 
 interface WidgetProps {
   context: TransferableContext
@@ -55,13 +53,12 @@ interface WidgetProps {
       indexRules: LinkIndexRules
     ) => Promise<void>
   }
-  commitDocument: (
-    appDocId: DocumentId,
-    appDocMeta: DocumentMetadata,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) => Promise<void>
-  getDocument: (documentId?: EntityId) => Promise<DocumentDto | null>
+  commitDocument: (document: DocumentCommitDto) => Promise<DocumentDto>
+  getDocument: (options?: {
+    id?: EntityId
+    source?: EntitySourceType
+  }) => Promise<DocumentDto | null>
+  deleteLocalDocument: () => Promise<void>
 }
 
 interface LayoutManagerProps {
@@ -239,16 +236,34 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   )
 
   const handleGetDocumentCurry = useCallback(
-    memoize((appInstanceId: string) => async (_documentId?: EntityId) => {
+    memoize(
+      (appInstanceId: string) => async (options?: { id?: EntityId; source?: EntitySourceType }) => {
+        // allow for _documentId to be passed in to check existence of document before creation
+        const documentId = options?.id ?? (await _getCurrentDocumentId(appInstanceId))
+
+        if (!documentId) return null
+
+        // ToDo: local or remote?
+        const document = await engine.documentService.getDocument(documentId, options?.source)
+
+        return document
+      }
+    ),
+    [engine, _getCurrentDocumentId]
+  )
+
+  const handleDeleteDocumentCurry = useCallback(
+    memoize((appInstanceId: string) => async () => {
       // allow for _documentId to be passed in to check existence of document before creation
-      const documentId = _documentId ?? (await _getCurrentDocumentId(appInstanceId))
+      const documentId = await _getCurrentDocumentId(appInstanceId)
 
-      if (!documentId) return null
+      if (!documentId) {
+        throw new Error('The running app does not contain a document')
+      }
 
-      // ToDo: local or remote?
-      const document = await engine.documentService.getDocument(documentId)
+      // ToDo: delete document from mutation
 
-      return document
+      await engine.documentService.deleteLocalDocument(documentId)
     }),
     [engine, _getCurrentDocumentId]
   )
@@ -256,42 +271,31 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const handleCommitDocumentCurry = useCallback(
     memoize(
       (appInstanceId: string) =>
-        async (
-          appDocId: DocumentId, // ToDo: remove
-          appDocMeta: DocumentMetadata,
-          ctx: TransferableContext,
-          dataByAccount: LinkedDataByAccountDto
-        ) => {
+        async (document: DocumentCommitDto): Promise<DocumentDto> => {
           if (!selectedMutation) throw new Error('No selected mutation')
           const appInstance = selectedMutation.apps.find(
             (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
 
-          // ToDo: replace with DocumentCreateDto
-          const document: DocumentDto = {
-            id: appDocId,
-            source: EntitySourceType.Origin,
-            authorId: appDocId.split('/')[0],
-            localId: appDocId.split('/')[2],
-            blockNumber: 0,
-            timestamp: 0,
-            metadata: appDocMeta,
-            openWith: [appInstance.appId],
+          // ToDo: show fork dialog
+
+          const { mutation, document: savedDocument } =
+            await engine.documentService.commitDocumentToMutation(
+              selectedMutation.id,
+              appInstance.appId,
+              document
+            )
+
+          // mutation changed
+          if (mutation) {
+            // ToDo: workaround to wait when blockchain changes will be propagated
+            await new Promise((resolve) => setTimeout(resolve, 3000))
+
+            await refreshMutation(mutation)
           }
 
-          const { mutation } = await engine.documentService.createDocumentWithData(
-            selectedMutation.id,
-            appInstance.appId,
-            document,
-            ctx,
-            dataByAccount
-          )
-
-          // ToDo: workaround to wait when blockchain changes will be propagated
-          await new Promise((resolve) => setTimeout(resolve, 3000))
-
-          await refreshMutation(mutation)
+          return savedDocument
         }
     ),
     [engine, selectedMutation, refreshMutation]
@@ -323,6 +327,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onSetLinkDataCurry={handleSetLinkDataCurry}
           onCommitDocumentCurry={handleCommitDocumentCurry}
           onGetDocumentCurry={handleGetDocumentCurry}
+          onDeleteDocumentCurry={handleDeleteDocumentCurry}
         />
       ))}
 
@@ -345,6 +350,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         onSetLinkDataCurry={handleSetLinkDataCurry}
         onCommitDocumentCurry={handleCommitDocumentCurry}
         onGetDocumentCurry={handleGetDocumentCurry}
+        onDeleteDocumentCurry={handleDeleteDocumentCurry}
       />
 
       {controllers.map((c) => (
@@ -357,6 +363,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onSetLinkDataCurry={handleSetLinkDataCurry}
           onCommitDocumentCurry={handleCommitDocumentCurry}
           onGetDocumentCurry={handleGetDocumentCurry}
+          onDeleteDocumentCurry={handleDeleteDocumentCurry}
         />
       ))}
 
@@ -405,15 +412,11 @@ const InsPointHandler: FC<{
   ) => Promise<void>
   onCommitDocumentCurry: (
     appInstanceId: string
-  ) => (
-    appDocId: DocumentId,
-    appDocMetadata: DocumentMetadata,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) => Promise<void>
+  ) => (document: DocumentCommitDto) => Promise<DocumentDto>
   onGetDocumentCurry: (
     appInstanceId: string
-  ) => (documentId?: EntityId) => Promise<DocumentDto | null>
+  ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
+  onDeleteDocumentCurry: (appInstanceId: string) => () => Promise<void>
 }> = ({
   insPointName,
   element,
@@ -434,6 +437,7 @@ const InsPointHandler: FC<{
   onSetLinkDataCurry,
   onCommitDocumentCurry,
   onGetDocumentCurry,
+  onDeleteDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { config, engine } = useMutableWeb()
@@ -515,6 +519,7 @@ const InsPointHandler: FC<{
         },
         commitDocument: onCommitDocumentCurry(link.appInstanceId),
         getDocument: onGetDocumentCurry(link.appInstanceId),
+        deleteLocalDocument: onDeleteDocumentCurry(link.appInstanceId),
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -580,15 +585,11 @@ const ControllerHandler: FC<{
   ) => Promise<void>
   onCommitDocumentCurry: (
     appInstanceId: string
-  ) => (
-    appDocId: DocumentId,
-    appDocMetadata: DocumentMetadata,
-    ctx: TransferableContext,
-    dataByAccount: LinkedDataByAccountDto
-  ) => Promise<void>
+  ) => (document: DocumentCommitDto) => Promise<DocumentDto>
   onGetDocumentCurry: (
     appInstanceId: string
-  ) => (documentId?: EntityId) => Promise<DocumentDto | null>
+  ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
+  onDeleteDocumentCurry: (appInstanceId: string) => () => Promise<void>
 }> = ({
   transferableContext,
   controller,
@@ -597,6 +598,7 @@ const ControllerHandler: FC<{
   onSetLinkDataCurry,
   onCommitDocumentCurry,
   onGetDocumentCurry,
+  onDeleteDocumentCurry,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { notify } = useModal()
@@ -615,6 +617,7 @@ const ControllerHandler: FC<{
     },
     commitDocument: onCommitDocumentCurry(controller.appInstanceId),
     getDocument: onGetDocumentCurry(controller.appInstanceId),
+    deleteLocalDocument: onDeleteDocumentCurry(controller.appInstanceId),
   }
 
   return (

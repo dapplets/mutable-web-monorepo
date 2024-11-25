@@ -195,7 +195,20 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const refreshMutation = useCallback(async (mutation: MutationDto) => {
     const mutationWithSettings = await engine.mutationService.populateMutationWithSettings(mutation)
 
-    setMutations((prev) => prev.map((mut) => (mut.id === mutation.id ? mutationWithSettings : mut)))
+    setMutations((prev) => {
+      const index = prev.findIndex(
+        (m) => m.id === mutationWithSettings.id && m.source === mutationWithSettings.source
+      )
+      if (index === -1) {
+        return [...prev, mutationWithSettings]
+      } else {
+        return prev.map((m, i) => (i === index ? mutationWithSettings : m))
+      }
+    })
+
+    if (mutation.id === selectedMutationId) {
+      switchPreferredSource(mutation.id, mutation.source)
+    }
   }, [])
 
   // ToDo: move to separate hook

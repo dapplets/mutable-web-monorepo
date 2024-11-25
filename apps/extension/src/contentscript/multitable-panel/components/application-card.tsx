@@ -42,14 +42,14 @@ const CardContent = styled.div`
   width: 100%;
 `
 
-type TTextLink = {
+type TText = {
   bold?: boolean
   small?: boolean
   ellipsis?: boolean
   $color?: string
 }
 
-const TextLink = styled.div<TTextLink>`
+const Text = styled.div<TText>`
   display: block;
   margin: 0;
   font-size: 14px;
@@ -117,7 +117,7 @@ const SideLine = styled.div`
 `
 
 const DocumentCardList = styled.div`
-  width: 100%;
+  width: calc(100% - 32px);
   margin-right: 10px;
   display: flex;
   flex-direction: column;
@@ -241,16 +241,27 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
         </Thumbnail>
 
         <CardContent>
-          <TextLink $color={textColor} bold ellipsis>
+          <Text $color={textColor} bold ellipsis>
             {metadata.name || appId}
-          </TextLink>
+          </Text>
 
-          <TextLink small ellipsis>
+          <Text small ellipsis>
             {source === EntitySourceType.Local && (
-              <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
+              <Badge
+                margin="0 8px 0 0"
+                text={source}
+                theme={'yellow'}
+                style={{ transform: 'translate(0px, -1px)' }}
+              />
             )}{' '}
-            @{accountId}
-          </TextLink>
+            {accountId ? `@${accountId}` : null}
+          </Text>
+
+          {src ? (
+            <Text small ellipsis title={src}>
+              {`ID: ${src}`}
+            </Text>
+          ) : null}
         </CardContent>
 
         <ButtonLink
@@ -268,7 +279,7 @@ const ApplicationCard: React.FC<IApplicationCard> = ({
           <DocumentCardList>
             {usingDocs.map((doc) => (
               <DocumentCard
-                key={doc?.id || 'empty'}
+                key={doc?.id ? `${doc.id}/${doc.source}` : 'empty'}
                 src={doc?.id ?? null}
                 metadata={doc?.metadata ?? null}
                 onChange={() => onDocCheckboxChange(doc?.id ?? null, false)}

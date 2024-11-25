@@ -9,11 +9,17 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     private local: IRepository<T>
   ) {}
 
-  async getItem(id: EntityId): Promise<T | null> {
-    // ToDo: why local is preferred?
-    const localItem = await this.local.getItem(id)
-    if (localItem) return localItem
-    return this.remote.getItem(id)
+  async getItem(id: EntityId, source?: EntitySourceType): Promise<T | null> {
+    if (source === EntitySourceType.Local) {
+      return this.local.getItem(id)
+    } else if (source === EntitySourceType.Origin) {
+      return this.remote.getItem(id)
+    } else {
+      // ToDo: why local is preferred?
+      const localItem = await this.local.getItem(id)
+      if (localItem) return localItem
+      return this.remote.getItem(id)
+    }
   }
 
   async getItems(options?: { authorId?: EntityId; localId?: EntityId }): Promise<T[]> {
@@ -32,7 +38,10 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     if (item.source === EntitySourceType.Local) {
       return this.local.createItem(item)
     } else if (item.source === EntitySourceType.Origin) {
-      return this.remote.createItem(item, tx)
+      const result = await this.remote.createItem(item, tx)
+      await this._deleteLocalItemIfExist(item.id)
+      await this._deleteLocalItemIfExist(`/${item.entityType}/${item.localId}`) // entities created without a wallet
+      return result
     } else {
       throw new Error('Invalid source')
     }
@@ -42,7 +51,9 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     if (item.source === EntitySourceType.Local) {
       return this.local.editItem(item)
     } else if (item.source === EntitySourceType.Origin) {
-      return this.remote.editItem(item, tx)
+      const result = await this.remote.editItem(item, tx)
+      await this._deleteLocalItemIfExist(item.id)
+      return result
     } else {
       throw new Error('Invalid source')
     }
@@ -52,7 +63,9 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
     if (item.source === EntitySourceType.Local) {
       return this.local.saveItem(item)
     } else if (item.source === EntitySourceType.Origin) {
-      return this.remote.saveItem(item, tx)
+      const result = await this.remote.saveItem(item, tx)
+      await this._deleteLocalItemIfExist(item.id)
+      return result
     } else {
       throw new Error('Invalid source')
     }
@@ -72,6 +85,12 @@ export class BaseAggRepository<T extends Base> implements IRepository<T> {
       return this.remote.constructItem(item)
     } else {
       throw new Error('Invalid source')
+    }
+  }
+
+  private async _deleteLocalItemIfExist(id: EntityId) {
+    if (await this.local.getItem(id)) {
+      await this.local.deleteItem(id)
     }
   }
 }

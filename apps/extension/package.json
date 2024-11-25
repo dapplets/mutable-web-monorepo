@@ -1,6 +1,6 @@
 {
   "name": "@mweb/extension",
-  "version": "1.5.0-alpha.1",
+  "version": "1.5.0-alpha.4",
   "description": "Bridge to the Mutable Web",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=6144 webpack --config webpack.prod.js",
