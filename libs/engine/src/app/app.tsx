@@ -12,6 +12,7 @@ import { PickerProvider } from './contexts/picker-context'
 import { ContextHighlighter } from './components/context-highlighter'
 import { HighlighterProvider } from './contexts/highlighter-context'
 import { ModalContextState } from './contexts/modal-context/modal-context'
+import { DocumentProvider } from './contexts/document-context'
 
 export const App: FC<{
   config: EngineConfig
@@ -28,24 +29,26 @@ export const App: FC<{
   return (
     <CoreProvider>
       <EngineProvider devServerUrl={devServerUrl}>
-        <PickerProvider>
-          <HighlighterProvider>
-            <MutableWebProvider
-              config={config}
-              defaultMutationId={defaultMutationId}
-              modalApi={modalApi}
-            >
-              <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
-                <ModalProvider onModalApiReady={setModalApi}>
-                  <ContextPicker />
-                  <ContextManager />
-                  <ContextHighlighter />
-                </ModalProvider>
-              </ViewportProvider>
-              <Fragment>{children}</Fragment>
-            </MutableWebProvider>
-          </HighlighterProvider>
-        </PickerProvider>
+        <DocumentProvider>
+          <PickerProvider>
+            <HighlighterProvider>
+              <MutableWebProvider
+                config={config}
+                defaultMutationId={defaultMutationId}
+                modalApi={modalApi}
+              >
+                <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
+                  <ModalProvider onModalApiReady={setModalApi}>
+                    <ContextPicker />
+                    <ContextManager />
+                    <ContextHighlighter />
+                  </ModalProvider>
+                </ViewportProvider>
+                <Fragment>{children}</Fragment>
+              </MutableWebProvider>
+            </HighlighterProvider>
+          </PickerProvider>
+        </DocumentProvider>
       </EngineProvider>
     </CoreProvider>
   )

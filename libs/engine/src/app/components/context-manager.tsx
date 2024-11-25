@@ -32,6 +32,7 @@ import { useMutableWeb } from '../contexts/mutable-web-context'
 import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
+import { useDocument, DocumentTaskStatus } from '../contexts/document-context'
 
 interface WidgetProps {
   context: TransferableContext
@@ -105,6 +106,39 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { apps } = useContextApps(context)
   const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
   const { portals } = useEngine()
+
+  const { documentTask, setDocumentTask } = useDocument()
+  // console.log('documentTask', documentTask)
+
+  const fn = useCallback(async () => {
+    console.log('documentTask in fn', documentTask)
+    if (!documentTask) return
+    if (!selectedMutation) throw new Error('No selected mutation')
+    const appInstance = selectedMutation.apps.find(
+      (app) => utils.constructAppInstanceId(app) === documentTask.appInstanceId
+    )
+    if (!appInstance) throw new Error('The app is not active')
+    const { mutation, document: savedDocument } =
+      await engine.documentService.commitDocumentToMutation(
+        selectedMutation.id,
+        appInstance.appId,
+        documentTask.document
+      )
+
+    // mutation changed
+    if (mutation) {
+      // ToDo: workaround to wait when blockchain changes will be propagated
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+
+      await refreshMutation(mutation)
+    }
+    setDocumentTask(null)
+    return savedDocument
+  }, [engine, selectedMutation, refreshMutation, documentTask])
+
+  useEffect(() => {
+    if (documentTask?.status === DocumentTaskStatus.SUBMITTED) fn()
+  }, [documentTask, fn])
 
   const portalComponents = useMemo(() => {
     return Array.from(portals.values())
@@ -280,22 +314,27 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
           // ToDo: show fork dialog
 
-          const { mutation, document: savedDocument } =
-            await engine.documentService.commitDocumentToMutation(
-              selectedMutation.id,
-              appInstance.appId,
-              document
-            )
+          if (document.source === 'local') {
+            const { mutation, document: savedDocument } =
+              await engine.documentService.commitDocumentToMutation(
+                selectedMutation.id,
+                appInstance.appId,
+                document
+              )
 
-          // mutation changed
-          if (mutation) {
-            // ToDo: workaround to wait when blockchain changes will be propagated
-            await new Promise((resolve) => setTimeout(resolve, 3000))
+            // mutation changed
+            if (mutation) {
+              // ToDo: workaround to wait when blockchain changes will be propagated
+              await new Promise((resolve) => setTimeout(resolve, 3000))
 
-            await refreshMutation(mutation)
+              await refreshMutation(mutation)
+            }
+
+            return savedDocument
           }
-
-          return savedDocument
+          setDocumentTask({ document, appInstanceId, status: DocumentTaskStatus.RECEIVED })
+          console.log('end')
+          return document // ToDo: think of it -- not wait for a result
         }
     ),
     [engine, selectedMutation, refreshMutation]

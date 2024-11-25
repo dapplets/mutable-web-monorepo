@@ -1,15 +1,18 @@
+import { EntitySourceType } from '@mweb/backend'
+import { useMutableWeb, useDocument } from '@mweb/engine'
 import { EventEmitter as NEventEmitter } from 'events'
-import { useMutableWeb } from '@mweb/engine'
+import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
+import { NearNetworkId } from '../../common/networks'
 import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } from '../storage'
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
-import { NearNetworkId } from '../../common/networks'
-import { EntitySourceType } from '@mweb/backend'
+import { ModalConfirmDocument } from './components/modals-confirm-document'
+import { DocumentTaskStatus } from '@mweb/engine/lib/app/contexts/document-context'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -121,6 +124,19 @@ const DragIconWrapper = styled.div`
   height: 8px;
 `
 
+const WhiteBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgb(255 255 255 / 75%);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 const DragIcon = () => (
   <svg width="8" height="10" viewBox="0 0 8 10" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect y="0.75" width="8" height="1.5" rx="0.75" fill="white" />
@@ -141,6 +157,9 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const notchRef = useRef<HTMLDivElement>(null)
+  const loggedInAccountId = useAccountId()
+  const { documentTask, setDocumentTask } = useDocument()
+  console.log('documentTask', documentTask)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -241,6 +260,23 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
             </Notch>
           </Draggable>
         )}
+
+        {documentTask?.status === DocumentTaskStatus.RECEIVED &&
+        !!selectedMutation &&
+        !!loggedInAccountId ? (
+          <WhiteBackground>
+            <ModalConfirmDocument
+              editingDocument={documentTask.document}
+              loggedInAccountId={loggedInAccountId}
+              onCloseCurrent={() => {
+                setDocumentTask(null)
+              }}
+              onCloseAll={() => {
+                setDocumentTask(null)
+              }}
+            />
+          </WhiteBackground>
+        ) : null}
       </WrapperPanel>
     </>
   )
