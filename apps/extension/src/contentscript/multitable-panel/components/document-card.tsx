@@ -10,7 +10,6 @@ const Card = styled.div`
   border-radius: 10px;
   background: #f8f9ff;
   border: 1px solid #eceef0;
-  font-family: sans-serif;
   &:hover {
     background: rgba(24, 121, 206, 0.1);
   }
@@ -90,7 +89,7 @@ const CardContent = styled.div`
   width: 100%;
 `
 
-const TextLink = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
+const Text = styled.div<{ bold?: boolean; small?: boolean; ellipsis?: boolean }>`
   display: block;
   margin: 0;
   font-size: 14px;
@@ -171,16 +170,22 @@ export const DocumentCard: React.FC<Props> = ({
         </ThumbnailGroup>
 
         <CardContent>
-          <TextLink bold ellipsis>
+          <Text bold ellipsis>
             {metadata?.name || (srcParts && srcParts[2]) || 'New Document'}
-          </TextLink>
+          </Text>
 
-          <TextLink small ellipsis>
+          <Text small ellipsis>
             {source === EntitySourceType.Local && (
               <Badge margin="0 8px 0 0" text={source} theme={'yellow'} />
             )}{' '}
             {srcParts?.[0] && `@${srcParts[0]}`}
-          </TextLink>
+          </Text>
+
+          {src ? (
+            <Text small ellipsis title={src}>
+              {`ID: ${src}`}
+            </Text>
+          ) : null}
         </CardContent>
         <ButtonLink className={disabled ? 'disabled' : ''} disabled={disabled} onClick={onChange}>
           <CheckedIcon />
