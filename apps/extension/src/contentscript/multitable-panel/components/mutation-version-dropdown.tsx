@@ -40,41 +40,42 @@ export const MutationVersionDropdown: FC<{
 
   return (
     <>
-      {mutationVersions.map((version) => (
-        <span
-          style={{
-            maxWidth: '50px',
-            display: 'inline-flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-          }}
-          onClick={toggleDropdown}
-        >
-          <SpanStyled $isWhite={isWhite}>
-            {currentMutationVersions[mutationId]
-              ? `v${currentMutationVersions[mutationId]}`
-              : LatestKey}
-            {expanded ? (
-              <OpenList>
-                <IconDropdown />
-              </OpenList>
-            ) : (
-              <OpenListDefault>
-                <IconDropdown />
-              </OpenListDefault>
-            )}
-          </SpanStyled>
-          {expanded && (
-            <DropdownContainer $expanded={expanded}>
+      <span
+        style={{
+          maxWidth: '50px',
+          display: 'inline-flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        }}
+        onClick={toggleDropdown}
+      >
+        <SpanStyled $isWhite={isWhite}>
+          {currentMutationVersions[mutationId]
+            ? `v${currentMutationVersions[mutationId]}`
+            : LatestKey}
+          {expanded ? (
+            <OpenList>
+              <IconDropdown />
+            </OpenList>
+          ) : (
+            <OpenListDefault>
+              <IconDropdown />
+            </OpenListDefault>
+          )}
+        </SpanStyled>
+
+        {expanded && (
+          <DropdownContainer $expanded={expanded}>
+            {mutationVersions.map((version) => (
               <DropdownItem onClick={() => handleChange(version.version)} key={version.version}>
                 v{version.version}
-              </DropdownItem>{' '}
-            </DropdownContainer>
-          )}
-        </span>
-      ))}
+              </DropdownItem>
+            ))}
+          </DropdownContainer>
+        )}
+      </span>
     </>
   )
 }

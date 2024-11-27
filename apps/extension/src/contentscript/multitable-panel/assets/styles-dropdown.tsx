@@ -458,6 +458,7 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   gap: 2px;
   position: relative;
   top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
+  cursor: pointer;
   left: 2px;
   justify-content: center;
   padding: 2px 0;
@@ -478,7 +479,7 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
 export const DropdownItem = styled.div`
   font-size: 10px;
   font-weight: 400;
-  text-align: center;
+ text-align: right
   color: #7a818b;
   padding: 4px;
 
