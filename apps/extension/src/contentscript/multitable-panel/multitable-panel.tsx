@@ -54,7 +54,7 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   }
 `
 
-const Notch = styled.div<{ $isAnimated?: boolean }>`
+const Notch = styled.div<{ $isAnimated?: boolean; $isOpen?: boolean }>`
   position: relative;
   display: flex;
   align-items: stretch;
@@ -69,7 +69,7 @@ const Notch = styled.div<{ $isAnimated?: boolean }>`
 
   width: 318px;
   height: 45px;
-  border-radius: 0 0 6px 6px;
+  border-radius: ${(props) => (props.$isOpen ? '0' : '0 0 6px 6px')};
   background: #384bff;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   opacity: 0;
@@ -204,6 +204,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
                   : 'visible-notch'
               }
               $isAnimated={!isDragging}
+              $isOpen={isDropdownVisible}
               ref={notchRef}
             >
               <NotchButtonWrapper className="dragWrapper">
@@ -217,9 +218,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
                 onMutateButtonClick={handleMutateButtonClick}
               />
               <NotchButtonWrapper onClick={handlePin}>
-                <IconWrapper>
-                  {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-                </IconWrapper>
+                <IconWrapper>{isPin ? <PinSolidIcon /> : <PinOutlineIcon />}</IconWrapper>
               </NotchButtonWrapper>
             </Notch>
           </Draggable>
