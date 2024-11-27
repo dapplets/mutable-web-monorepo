@@ -9,6 +9,10 @@ export const WrapperDropdown = styled.div`
   border: 1px solid #e2e2e5;
   box-sizing: border-box;
   margin: 8px 0;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 `
 
 export const MutationsList = styled.div`
@@ -19,6 +23,10 @@ export const MutationsList = styled.div`
   padding: 0;
   border-radius: 0px 0px 10px 10px;
   opacity: 1;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
 `
 
 export const MutationsListWrapper = styled.div`
@@ -26,37 +34,14 @@ export const MutationsListWrapper = styled.div`
   flex-direction: column;
   width: 100%;
   padding: 6px;
-  overflow: hidden;
-  overflow-y: auto;
+  // overflow: hidden;
+  // overflow-y: auto;
   max-height: 322px;
   gap: 10px;
   position: relative;
 
   &::-webkit-scrollbar {
-    cursor: pointer;
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    margin-bottom: 10px;
-    margin-top: 40px;
-    background: rgb(244 244 244);
-    background: linear-gradient(
-      90deg,
-      rgb(244 244 244 / 0%) 10%,
-      rgb(227 227 227 / 100%) 50%,
-      rgb(244 244 244 / 0%) 90%
-    );
-  }
-
-  &::-webkit-scrollbar-thumb {
-    width: 4px;
-    height: 2px;
-    background: #384bff;
-    border-radius: 2px;
-    box-shadow:
-      0 2px 6px rgb(0 0 0 / 9%),
-      0 2px 2px rgb(38 117 209 / 4%);
+    width: 0;
   }
 `
 export const ButtonListBlock = styled.div`
@@ -226,7 +211,6 @@ export const ImageBlock = styled.div`
 
 export const AvalibleMutations = styled.div`
   width: 100%;
-  box-shadow: 0px 4px 5px 0px #2d343c1a;
   background: #f8f9ff;
   border-radius: 10px;
   gap: 10px;

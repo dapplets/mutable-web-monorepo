@@ -62,6 +62,12 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
       justify-content: space-between;
     }
   }
+
+  .notifyWrapper {
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+  }
 `
 
 const OverlayContent = styled.div<{ $isOpen: boolean }>`
@@ -139,6 +145,33 @@ const Body = styled.div`
   position: relative;
   overflow: hidden;
   overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    cursor: pointer;
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    margin-bottom: 10px;
+    margin-top: 40px;
+    background: rgb(244 244 244);
+    background: linear-gradient(
+      90deg,
+      rgb(244 244 244 / 0%) 10%,
+      rgb(227 227 227 / 100%) 50%,
+      rgb(244 244 244 / 0%) 90%
+    );
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 4px;
+    height: 2px;
+    background: #384bff;
+    border-radius: 2px;
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
+  }
 `
 
 const ButtonConnectWrapper = styled.button`
@@ -284,6 +317,17 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                 </>
               ) : (
                 <>
+                  <Profile
+                    accountId={loggedInAccountId ?? null}
+                    closeProfile={() => {
+                      openCloseProfile(false)
+                    }}
+                    connectWallet={connectWallet!}
+                    disconnectWallet={disconnectWallet}
+                    nearNetwork={nearNetwork}
+                    trackingRefs={trackingRefs!}
+                    openCloseWalletPopupRef={openCloseWalletPopupRef}
+                  />
                   <MultitablePanel
                     connectWallet={connectWallet}
                     loggedInAccountId={loggedInAccountId}
