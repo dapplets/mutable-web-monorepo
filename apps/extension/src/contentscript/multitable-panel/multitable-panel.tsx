@@ -57,7 +57,7 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
 const Notch = styled.div<{ $isAnimated?: boolean }>`
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -78,47 +78,28 @@ const Notch = styled.div<{ $isAnimated?: boolean }>`
     props.$isAnimated ? 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out' : 'initial'};
 
   justify-content: space-between;
-  padding: 4px;
+  padding: 4px 5px;
   padding-top: 0;
 `
 
-const PinWrapper = styled.div`
+const NotchButtonWrapper = styled.div`
   width: 16px;
-  height: 16px;
-  cursor: pointer;
-
-  &:hover,
-  &:focus {
-    opacity: 0.5;
-  }
-
-  & > svg {
-    vertical-align: initial;
-  }
-`
-
-const DragWrapper = styled.div`
-  width: 16px;
-  height: 37px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-  border-radius: 2px;
+
   &:hover,
   &:focus {
     opacity: 0.5;
   }
 `
 
-const DragIconWrapper = styled.div`
+const IconWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 8px;
-  height: 8px;
 `
 
 const DragIcon = () => (
@@ -225,19 +206,21 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
               $isAnimated={!isDragging}
               ref={notchRef}
             >
-              <DragWrapper className="dragWrapper">
-                <DragIconWrapper>
+              <NotchButtonWrapper className="dragWrapper">
+                <IconWrapper>
                   <DragIcon />
-                </DragIconWrapper>
-              </DragWrapper>
+                </IconWrapper>
+              </NotchButtonWrapper>
               <Dropdown
                 isVisible={isDropdownVisible}
                 onVisibilityChange={setIsDropdownVisible}
                 onMutateButtonClick={handleMutateButtonClick}
               />
-              <PinWrapper onClick={handlePin}>
-                {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-              </PinWrapper>
+              <NotchButtonWrapper onClick={handlePin}>
+                <IconWrapper>
+                  {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
+                </IconWrapper>
+              </NotchButtonWrapper>
             </Notch>
           </Draggable>
         )}
