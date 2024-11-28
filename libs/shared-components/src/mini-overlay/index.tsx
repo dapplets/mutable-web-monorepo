@@ -33,12 +33,12 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
     position: relative;
     overflow: visible;
     padding: 0;
-    width: 58px;
 
     .ant-drawer-body {
       overflow: visible;
       padding: 0;
       width: 58px;
+      direction: rtl;
     }
   }
 `
