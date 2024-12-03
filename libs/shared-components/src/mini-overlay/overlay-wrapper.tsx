@@ -333,63 +333,6 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                     loggedInAccountId={loggedInAccountId}
                     handleMutateButtonClick={handleMutateButtonClick}
                   />
-                  <Space
-                    direction="vertical"
-                    style={{
-                      width: '100%',
-                      borderRadius: '20px',
-                      background: '#fff',
-                      padding: '8px 8px 20px',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
-                      <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
-                        Sign in
-                      </Title>
-
-                      <Button
-                        type="text"
-                        style={{
-                          marginLeft: 'auto',
-                          position: 'absolute',
-                          right: '8px',
-                          top: '8px',
-                        }}
-                        onClick={onClose}
-                      >
-                        <CloseIcon />
-                      </Button>
-                    </Space>
-
-                    <Text
-                      type="secondary"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '5px',
-                        textAlign: 'center',
-                        fontSize: '12px',
-                      }}
-                    >
-                      To see personalized notifications, you must sign in by connecting your wallet.
-                    </Text>
-                    <Space style={{ marginBottom: '16px' }}>
-                      {' '}
-                      <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
-                        {waiting ? (
-                          <div className="loading"></div>
-                        ) : (
-                          <>
-                            <ConnectIcon />
-                            Connect
-                          </>
-                        )}
-                      </ButtonConnectWrapper>
-                    </Space>
-                  </Space>
                 </>
               )}
             </Body>
