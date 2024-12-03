@@ -48,6 +48,10 @@ export const MutationVersionDropdown: FC<{
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
+          border: isWhite ? '1px solid #384BFF' : '',
+          boxSizing: isWhite ? 'border-box' : undefined,
+          marginLeft: isWhite ? '10px' : '',
+          borderRadius: isWhite ? '4px' : '',
         }}
         onClick={toggleDropdown}
       >

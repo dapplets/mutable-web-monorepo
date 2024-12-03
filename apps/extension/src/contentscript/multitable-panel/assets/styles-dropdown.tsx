@@ -439,6 +439,7 @@ export const DropdownContainer = styled.div<{ $expanded?: boolean }>`
   background: #fff;
   display: flex;
   flex-direction: column;
+  z-index: 2;
 
   box-shadow: ${({ $expanded }) =>
     $expanded
@@ -459,7 +460,7 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   position: relative;
   top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
   cursor: pointer;
-  left: 2px;
+  left: ${({ $isWhite }) => ($isWhite ? `0` : '2px')};
   justify-content: center;
   padding: 2px 0;
   padding-left: 4px;
@@ -471,6 +472,7 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   text-align: left;
   color: #ffffff;
   background: ${({ $isWhite }) => ($isWhite ? `#FFFFFF` : '#384bff')};
+
   svg path {
     stroke: ${({ $isWhite }) => ($isWhite ? ` #7a818b` : '#FFFFFF')};
   }
@@ -479,11 +481,12 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
 export const DropdownItem = styled.div`
   font-size: 10px;
   font-weight: 400;
- text-align: right
+  text-align: right;
   color: #7a818b;
   padding: 4px;
 
   &:hover {
     background: #1879ce1a;
+    color: #384bff;
   }
 `
