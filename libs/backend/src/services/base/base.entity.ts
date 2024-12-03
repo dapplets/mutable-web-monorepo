@@ -43,6 +43,7 @@ export class Base {
   ): T {
     const instance = new this()
     Object.assign(instance, data)
+    if (data.authorId) instance.authorId = data.authorId // ToDo: hit fix: think of it
     return instance
   }
 

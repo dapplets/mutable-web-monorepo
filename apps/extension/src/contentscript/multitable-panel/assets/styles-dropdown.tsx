@@ -125,7 +125,7 @@ export const MutationsList = styled.div`
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   width: 318px;
   left: -26px;
-  top: 42px;
+  top: 45px;
   padding: 0;
   border-radius: 0px 0px 10px 10px;
 
