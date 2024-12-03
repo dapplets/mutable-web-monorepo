@@ -34,9 +34,6 @@ export const MutationsListWrapper = styled.div`
   flex-direction: column;
   width: 100%;
   padding: 6px;
-  // overflow: hidden;
-  // overflow-y: auto;
-  max-height: 322px;
   gap: 10px;
   position: relative;
 
