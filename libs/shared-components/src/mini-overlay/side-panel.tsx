@@ -23,7 +23,7 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   user-select: none;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   border-radius: 4px 0px 0px 4px;
   background: ${(props) => (props.$isApps ? '#EEEFF5' : '#F8F9FF')};
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
@@ -38,6 +38,7 @@ const BadgeWrapper = styled.span`
 `
 
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
+  direction: ltr;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -157,9 +158,39 @@ const AppsWrapper = styled.div`
   width: 100%;
   padding: 5px 6px 5px 7px;
   gap: 10px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #1879ce70;
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #1879ced8;
+  }
+
+  & button {
+    direction: ltr;
+  }
 `
 
 const ButtonOpenWrapper = styled.div`
+  direction: ltr;
   display: flex;
   box-sizing: border-box;
   justify-content: center;
@@ -272,7 +303,9 @@ const SidePanel: React.FC<ISidePanelProps> = ({
               data-mweb-layout-manager="vertical"
             />
           ) : (
-            <AppsWrapper>{children}</AppsWrapper>
+            <div style={{ display: 'flex', direction: 'rtl' }}>
+              <AppsWrapper>{children}</AppsWrapper>
+            </div>
           )}
           <ButtonOpenWrapper
             data-mweb-context-type="mweb-overlay"

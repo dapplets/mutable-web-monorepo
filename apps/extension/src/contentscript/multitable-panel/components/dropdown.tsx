@@ -18,6 +18,7 @@ import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
   onVisibilityChange: (visible: boolean) => void
+  onMutateButtonClick: () => void
 }
 
 export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: DropdownProps) => {
