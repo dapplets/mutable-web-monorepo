@@ -1,27 +1,25 @@
 import { DocumentCommitDto } from '@mweb/backend'
 import { createContext } from 'react'
 
-export enum DocumentTaskStatus {
-  RECEIVED,
-  WAITING,
-  SUBMITTED,
-  ERROR,
-}
-
 export type DocumentTask = {
   document: DocumentCommitDto
   appInstanceId: string
-  status: DocumentTaskStatus
+  onReject: () => void
+  onResolve: (document: DocumentCommitDto) => void
 }
 
 export type DocumentContextState = {
   documentTask: DocumentTask | null
   setDocumentTask: (newTask: DocumentTask | null) => void
+  rejectDocumentTask: () => void
+  resolveDocumentTask: (document: DocumentCommitDto) => void
 }
 
 const contextDefaultValues: DocumentContextState = {
   documentTask: null,
-  setDocumentTask: (newTask: DocumentTask | null) => {},
+  setDocumentTask: () => undefined,
+  rejectDocumentTask: () => undefined,
+  resolveDocumentTask: () => undefined,
 }
 
 export const DocumentContext = createContext<DocumentContextState>(contextDefaultValues)

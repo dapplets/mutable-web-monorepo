@@ -32,7 +32,7 @@ import { useMutableWeb } from '../contexts/mutable-web-context'
 import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
-import { useDocument, DocumentTaskStatus } from '../contexts/document-context'
+import { useDocument } from '../contexts/document-context'
 
 interface WidgetProps {
   context: TransferableContext
@@ -104,41 +104,10 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { controllers } = useAppControllers(context)
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
-  const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
+  const { engine, selectedMutation, refreshMutation } = useMutableWeb()
   const { portals } = useEngine()
 
-  const { documentTask, setDocumentTask } = useDocument()
-  // console.log('documentTask', documentTask)
-
-  const fn = useCallback(async () => {
-    console.log('documentTask in fn', documentTask)
-    if (!documentTask) return
-    if (!selectedMutation) throw new Error('No selected mutation')
-    const appInstance = selectedMutation.apps.find(
-      (app) => utils.constructAppInstanceId(app) === documentTask.appInstanceId
-    )
-    if (!appInstance) throw new Error('The app is not active')
-    const { mutation, document: savedDocument } =
-      await engine.documentService.commitDocumentToMutation(
-        selectedMutation.id,
-        appInstance.appId,
-        documentTask.document
-      )
-
-    // mutation changed
-    if (mutation) {
-      // ToDo: workaround to wait when blockchain changes will be propagated
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      await refreshMutation(mutation)
-    }
-    setDocumentTask(null)
-    return savedDocument
-  }, [engine, selectedMutation, refreshMutation, documentTask])
-
-  useEffect(() => {
-    if (documentTask?.status === DocumentTaskStatus.SUBMITTED) fn()
-  }, [documentTask, fn])
+  const { setDocumentTask } = useDocument()
 
   const portalComponents = useMemo(() => {
     return Array.from(portals.values())
@@ -312,29 +281,30 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
           if (!appInstance) throw new Error('The app is not active')
 
-          // ToDo: show fork dialog
-
-          if (document.source === 'local') {
-            const { mutation, document: savedDocument } =
-              await engine.documentService.commitDocumentToMutation(
-                selectedMutation.id,
-                appInstance.appId,
-                document
-              )
-
-            // mutation changed
-            if (mutation) {
-              // ToDo: workaround to wait when blockchain changes will be propagated
-              await new Promise((resolve) => setTimeout(resolve, 3000))
-
-              await refreshMutation(mutation)
-            }
-
-            return savedDocument
+          // Show fork dialog for documents committing to the origin
+          // Fork dialog is able to edit a name, description and image
+          if (document.source === EntitySourceType.Origin) {
+            document = await new Promise<DocumentCommitDto>((onResolve, onReject) =>
+              setDocumentTask({ document, appInstanceId, onResolve, onReject })
+            )
           }
-          setDocumentTask({ document, appInstanceId, status: DocumentTaskStatus.RECEIVED })
-          console.log('end')
-          return document // ToDo: think of it -- not wait for a result
+
+          const { mutation, document: savedDocument } =
+            await engine.documentService.commitDocumentToMutation(
+              selectedMutation.id,
+              appInstance.appId,
+              document
+            )
+
+          // mutation changed
+          if (mutation) {
+            // ToDo: workaround to wait when blockchain changes will be propagated
+            await new Promise((resolve) => setTimeout(resolve, 3000))
+
+            await refreshMutation(mutation)
+          }
+
+          return savedDocument
         }
     ),
     [engine, selectedMutation, refreshMutation]

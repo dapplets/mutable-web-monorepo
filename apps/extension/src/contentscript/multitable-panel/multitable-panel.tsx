@@ -12,7 +12,6 @@ import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
 import { ModalConfirmDocument } from './components/modals-confirm-document'
-import { DocumentTaskStatus } from '@mweb/engine/lib/app/contexts/document-context'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -139,8 +138,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const notchRef = useRef<HTMLDivElement>(null)
   const loggedInAccountId = useAccountId()
-  const { documentTask, setDocumentTask } = useDocument()
-  console.log('documentTask', documentTask)
+  const { documentTask, rejectDocumentTask } = useDocument()
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -243,19 +241,13 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
           </Draggable>
         )}
 
-        {documentTask?.status === DocumentTaskStatus.RECEIVED &&
-        !!selectedMutation &&
-        !!loggedInAccountId ? (
+        {documentTask && !!selectedMutation && !!loggedInAccountId ? (
           <WhiteBackground>
             <ModalConfirmDocument
               editingDocument={documentTask.document}
               loggedInAccountId={loggedInAccountId}
-              onCloseCurrent={() => {
-                setDocumentTask(null)
-              }}
-              onCloseAll={() => {
-                setDocumentTask(null)
-              }}
+              onCloseCurrent={rejectDocumentTask}
+              onCloseAll={rejectDocumentTask}
             />
           </WhiteBackground>
         ) : null}

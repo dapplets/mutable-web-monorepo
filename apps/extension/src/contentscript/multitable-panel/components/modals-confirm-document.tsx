@@ -1,25 +1,16 @@
-import {
-  AppId,
-  BaseDto,
-  DocumentMetadata,
-  EntitySourceType,
-  MutationCreateDto,
-  MutationDto,
-} from '@mweb/backend'
+import { AppId, BaseDto, DocumentMetadata, MutationCreateDto, MutationDto } from '@mweb/backend'
 import {
   useAppDocuments,
   useCreateMutation,
   useDeleteLocalMutation,
   useDocument,
   useEditMutation,
-  useMutableWeb,
 } from '@mweb/engine'
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { cloneDeep } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { AlertProps } from './alert'
 import { ModalsConfirm, ModalMode } from './modals-confirm'
-import { DocumentTaskStatus } from '@mweb/engine/lib/app/contexts/document-context'
 
 export interface Props {
   editingDocument: BaseDto & {
@@ -104,7 +95,7 @@ export const ModalConfirmDocument: FC<Props> = ({
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
   const { deleteLocalMutation } = useDeleteLocalMutation()
-  const { documentTask, setDocumentTask } = useDocument()
+  const { documentTask, resolveDocumentTask } = useDocument()
 
   const isFormDisabled = isCreating || isEditing
 
@@ -138,7 +129,7 @@ export const ModalConfirmDocument: FC<Props> = ({
     documentToPublish.metadata.name = newName.trim()
     documentToPublish.metadata.image = newImage
     documentToPublish.metadata.description = newDescription.trim()
-    setDocumentTask({ document: documentToPublish, appInstanceId: documentTask.appInstanceId, status: DocumentTaskStatus.SUBMITTED })
+    resolveDocumentTask(documentToPublish)
     // mutationToPublish.source = EntitySourceType.Origin // save to the contract
     // if (mode === ModalMode.Forking) {
     //   mutationToPublish.metadata.fork_of = mutationToPublish.id
