@@ -32,6 +32,7 @@ import { useMutableWeb } from '../contexts/mutable-web-context'
 import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
 import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
 import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
+import { useDocument } from '../contexts/document-context'
 
 interface WidgetProps {
   context: TransferableContext
@@ -103,8 +104,10 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   const { controllers } = useAppControllers(context)
   const { links, createUserLink, deleteUserLink } = useUserLinks(context)
   const { apps } = useContextApps(context)
-  const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
+  const { engine, selectedMutation, refreshMutation } = useMutableWeb()
   const { portals } = useEngine()
+
+  const { setDocumentTask } = useDocument()
 
   const portalComponents = useMemo(() => {
     return Array.from(portals.values())
@@ -278,7 +281,13 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
           if (!appInstance) throw new Error('The app is not active')
 
-          // ToDo: show fork dialog
+          // Show fork dialog for documents committing to the origin
+          // Fork dialog is able to edit a name, description and image
+          if (document.source === EntitySourceType.Origin) {
+            document = await new Promise<DocumentCommitDto>((onResolve, onReject) =>
+              setDocumentTask({ document, appInstanceId, onResolve, onReject })
+            )
+          }
 
           const { mutation, document: savedDocument } =
             await engine.documentService.commitDocumentToMutation(

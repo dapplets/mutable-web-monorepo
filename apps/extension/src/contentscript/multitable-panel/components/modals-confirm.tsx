@@ -1,26 +1,13 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import { BaseDto } from '@mweb/backend'
+import { EntityMetadata } from '@mweb/backend/lib/common/entity-metadata'
+import React, { FC } from 'react'
 import styled from 'styled-components'
-import {
-  useCreateMutation,
-  useEditMutation,
-  useMutableWeb,
-  useDeleteLocalMutation,
-} from '@mweb/engine'
-import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
-import { Image } from './image'
-import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
-import { InputImage } from './upload-image'
-import { cloneDeep } from '../../helpers'
-import { DropdownButton } from './dropdown-button'
 import { ButtonsGroup } from './buttons-group'
-
-enum MutationModalMode {
-  Editing = 'editing',
-  Creating = 'creating',
-  Forking = 'forking',
-}
+import { DropdownButton } from './dropdown-button'
+import { Image } from './image'
+import { InputImage } from './upload-image'
 
 const ModalConfirmWrapper = styled.div`
   display: flex;
@@ -177,185 +164,68 @@ const CheckboxInput = styled.input`
   border: 1px solid #384bff;
 `
 
-export interface Props {
-  itemType: 'mutation' | 'document'
-  onCloseCurrent: () => void
-  onCloseAll: () => void
-  editingMutation: MutationDto
+export enum ModalMode {
+  Editing = 'editing',
+  Creating = 'creating',
+  Forking = 'forking',
+}
+
+export type ModalsConfirmProps = {
+  entityType: string
+  editingEntity: BaseDto & { metadata: EntityMetadata<string> }
   loggedInAccountId: string
+  mode: ModalMode
+  alert: AlertProps | null
+  isFormDisabled: boolean
+  isApplyToOriginChecked: boolean
+  newName: string
+  newImage?: { ipfs_cid?: string }
+  newDescription: string
+  forkedEntity?: BaseDto & { metadata: EntityMetadata<string> }
+  onChangeModalMode: (itemId: string) => void
+  setIsApplyToOriginChecked: React.Dispatch<React.SetStateAction<boolean>>
+  setName: (name: string) => void
+  setImage: (image: { ipfs_cid?: string }) => void
+  setDescription: (description: string) => void
+  onSaveClick: () => void
+  onCloseCurrent: () => void
 }
 
-interface IAlert extends AlertProps {
-  id: string
-}
-
-// ToDo: duplication -- move somewhere
-const alerts: { [name: string]: IAlert } = {
-  noWallet: {
-    id: 'noWallet',
-    text: 'Connect the NEAR wallet to create the mutation.',
-    severity: 'warning',
-  },
-  emptyMutation: {
-    id: 'emptyMutation',
-    text: 'A mutation cannot be empty.',
-    severity: 'warning',
-  },
-  notEditedMutation: {
-    id: 'notEditedMutation',
-    text: 'No changes found!',
-    severity: 'warning',
-  },
-  idIsNotUnique: {
-    id: 'idIsNotUnique',
-    text: 'This mutation ID already exists.',
-    severity: 'warning',
-  },
-  noName: {
-    id: 'noName',
-    text: 'Name must be specified.',
-    severity: 'error',
-  },
-  noImage: {
-    id: 'noImage',
-    text: 'Image must be specified.',
-    severity: 'error',
-  },
-}
-
-export const ModalConfirm: FC<Props> = ({
-  itemType,
-  onCloseCurrent,
-  onCloseAll,
-  editingMutation,
+export const ModalsConfirm: FC<ModalsConfirmProps> = ({
+  entityType,
+  editingEntity,
   loggedInAccountId,
+  mode,
+  alert,
+  isFormDisabled,
+  isApplyToOriginChecked,
+  newName,
+  newImage,
+  newDescription,
+  forkedEntity,
+  onChangeModalMode,
+  setIsApplyToOriginChecked,
+  setName,
+  setImage,
+  setDescription,
+  onSaveClick,
+  onCloseCurrent,
 }) => {
-  const { name, image, description, fork_of } = editingMutation.metadata
-
-  // Close modal with escape key
-  useEscape(onCloseCurrent) // ToDo -- does not work
-
-  const [newName, setName] = useState<string>(name ?? '')
-  const [newImage, setImage] = useState<{ ipfs_cid?: string } | undefined>(image)
-  const [newDescription, setDescription] = useState<string>(description ?? '')
-  const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
-  const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations, switchMutation, switchPreferredSource } = useMutableWeb()
-
-  const [mode, setMode] = useState(
-    !editingMutation.authorId // Newly created local mutation doesn't have author
-      ? MutationModalMode.Creating
-      : editingMutation.authorId === loggedInAccountId
-      ? MutationModalMode.Editing
-      : MutationModalMode.Forking
-  )
-
-  const forkedMutation = useMemo(() => {
-    if (mode !== MutationModalMode.Editing || !fork_of) return null
-    return mutations.find((mutation) => mutation.id === fork_of)
-  }, [fork_of, mutations, mode])
-
-  const { createMutation, isLoading: isCreating } = useCreateMutation()
-  const { editMutation, isLoading: isEditing } = useEditMutation()
-  const { deleteLocalMutation } = useDeleteLocalMutation()
-
-  const isFormDisabled = isCreating || isEditing
-
-  useEffect(() => setAlert(null), [newName, newImage, newDescription, isApplyToOriginChecked])
-
-  // const checkIfModified = useCallback(
-  //   (mutationToPublish: MutationDto) =>
-  //     baseMutation ? !compareMutations(baseMutation, mutationToPublish) : true,
-  //   [baseMutation]
-  // )
-
-  const doChecksForAlerts = useCallback(
-    (mutationToPublish: MutationCreateDto | MutationDto, isEditing: boolean): IAlert | null => {
-      if (!mutationToPublish.metadata.name) return alerts.noName
-      if (!mutationToPublish.metadata.image) return alerts.noImage
-      // if (
-      //   isEditing &&
-      //   !isApplyToOriginChecked &&
-      //   !checkIfModified(mutationToPublish as MutationDto)
-      // )
-      //   return alerts.notEditedMutation
-      return null
-    },
-    [newName, newImage, isApplyToOriginChecked] // checkIfModified
-  )
-
-  const handleSaveClick = async () => {
-    const mutationToPublish = cloneDeep(editingMutation)
-    mutationToPublish.metadata.name = newName.trim()
-    mutationToPublish.metadata.image = newImage
-    mutationToPublish.metadata.description = newDescription.trim()
-    mutationToPublish.source = EntitySourceType.Origin // save to the contract
-
-    if (mode === MutationModalMode.Forking) {
-      mutationToPublish.metadata.fork_of = mutationToPublish.id
-    }
-
-    const newAlert = doChecksForAlerts(mutationToPublish, mode === MutationModalMode.Editing)
-    if (newAlert) {
-      setAlert(newAlert)
-      return
-    }
-
-    if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
-      try {
-        const id = await createMutation(
-          mutationToPublish,
-          mode === MutationModalMode.Forking
-            ? { askOriginToApplyChanges: isApplyToOriginChecked }
-            : undefined
-        )
-        switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Origin)
-        await deleteLocalMutation(mutationToPublish.id)
-        onCloseAll()
-      } catch (error: any) {
-        if (error?.message === 'Mutation with that ID already exists') {
-          setAlert(alerts.idIsNotUnique)
-        }
-      }
-    } else if (mode === MutationModalMode.Editing) {
-      try {
-        await editMutation(
-          mutationToPublish as MutationDto,
-          forkedMutation && isApplyToOriginChecked
-            ? forkedMutation.authorId === loggedInAccountId
-              ? { applyChangesToOrigin: true }
-              : { askOriginToApplyChanges: true }
-            : undefined
-        )
-        switchPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
-        await deleteLocalMutation(mutationToPublish.id)
-        onCloseAll()
-      } catch (error: any) {
-        console.error(error)
-      }
-    }
-  }
-
-  const handleSaveDropdownChange = (itemId: string) => {
-    setMode(itemId as MutationModalMode)
-  }
-
   return (
     <ModalConfirmWrapper data-testid="popup-confirm">
       <HeaderTitle>
-        {mode === MutationModalMode.Creating
-          ? `Create your ${itemType}`
-          : mode === MutationModalMode.Editing
-          ? `Publish your ${itemType}`
-          : mode === MutationModalMode.Forking
+        {mode === ModalMode.Creating
+          ? `Create your ${entityType}`
+          : mode === ModalMode.Editing
+          ? `Publish your ${entityType}`
+          : mode === ModalMode.Forking
           ? 'Publish as a fork'
           : null}
       </HeaderTitle>
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
 
-      {mode === MutationModalMode.Creating ? (
+      {mode === ModalMode.Creating ? (
         <>
           <Label>My item ({loggedInAccountId})</Label>
           <CardWrapper>
@@ -369,7 +239,7 @@ export const ModalConfirm: FC<Props> = ({
                 id={'name'}
                 type={'text'}
                 value={newName}
-                placeholder={`Enter your ${itemType} name`}
+                placeholder={`Enter your ${entityType} name`}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isFormDisabled}
               />
@@ -383,36 +253,36 @@ export const ModalConfirm: FC<Props> = ({
             <StyledTextarea
               id={'description'}
               value={newDescription}
-              placeholder={`Describe your ${itemType} here`}
+              placeholder={`Describe your ${entityType} here`}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isFormDisabled}
             />
             <StyledLabel htmlFor={'description'}>Description</StyledLabel>
           </FloatingLabelContainerArea>
         </>
-      ) : mode === MutationModalMode.Forking ? (
+      ) : mode === ModalMode.Forking ? (
         <>
           <Label>from</Label>
           <CardWrapper>
             <ImgWrapper>
               <Image
-                image={editingMutation.metadata.image}
+                image={editingEntity.metadata.image}
                 fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                alt={editingMutation.metadata.name}
+                alt={editingEntity.metadata.name}
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{editingMutation.metadata.name}</p>
+              <p>{editingEntity.metadata.name}</p>
               <span>
                 by{' '}
-                {editingMutation.authorId === loggedInAccountId
+                {editingEntity.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
-                  : editingMutation.authorId}
+                  : editingEntity.authorId}
               </span>
             </TextWrapper>
           </CardWrapper>
 
-          {editingMutation.authorId === loggedInAccountId ? null : (
+          {editingEntity.authorId === loggedInAccountId ? null : (
             <CheckboxBlock>
               <span>Ask Origin to apply changes</span>
               <CheckboxInput
@@ -435,7 +305,7 @@ export const ModalConfirm: FC<Props> = ({
                 id={'name'}
                 type={'text'}
                 value={newName}
-                placeholder={`Enter your ${itemType} name`}
+                placeholder={`Enter your ${entityType} name`}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isFormDisabled}
               />
@@ -449,14 +319,14 @@ export const ModalConfirm: FC<Props> = ({
             <StyledTextarea
               id={'description'}
               value={newDescription}
-              placeholder={`Describe your ${itemType} here`}
+              placeholder={`Describe your ${entityType} here`}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isFormDisabled}
             />
             <StyledLabel htmlFor={'description'}>Description</StyledLabel>
           </FloatingLabelContainerArea>
         </>
-      ) : mode === MutationModalMode.Editing ? (
+      ) : mode === ModalMode.Editing ? (
         <>
           <Label>My item</Label>
           <CardWrapper>
@@ -473,31 +343,31 @@ export const ModalConfirm: FC<Props> = ({
             </TextWrapper>
           </CardWrapper>
 
-          {forkedMutation ? (
+          {forkedEntity ? (
             <>
               <Label>Originally Forked from</Label>
               <CardWrapper>
                 <ImgWrapper>
                   <Image
-                    image={forkedMutation.metadata.image}
+                    image={forkedEntity.metadata.image}
                     fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
-                    alt={forkedMutation.metadata.name}
+                    alt={forkedEntity.metadata.name}
                   />
                 </ImgWrapper>
                 <TextWrapper>
-                  <p>{forkedMutation.metadata.name}</p>
+                  <p>{forkedEntity.metadata.name}</p>
                   <span>
                     by{' '}
-                    {forkedMutation.authorId === loggedInAccountId
+                    {forkedEntity.authorId === loggedInAccountId
                       ? `me (${loggedInAccountId})`
-                      : forkedMutation.authorId}
+                      : forkedEntity.authorId}
                   </span>
                 </TextWrapper>
               </CardWrapper>
 
               <CheckboxBlock>
                 <span>
-                  {forkedMutation.authorId === loggedInAccountId
+                  {forkedEntity.authorId === loggedInAccountId
                     ? 'Apply changes to Origin'
                     : 'Ask Origin to apply changes'}
                 </span>
@@ -515,7 +385,7 @@ export const ModalConfirm: FC<Props> = ({
             <StyledTextarea
               id={'description'}
               value={newDescription}
-              placeholder={`Describe your ${itemType} here`}
+              placeholder={`Describe your ${entityType} here`}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isFormDisabled}
             />
@@ -530,23 +400,23 @@ export const ModalConfirm: FC<Props> = ({
           value={mode}
           items={[
             {
-              value: MutationModalMode.Forking,
+              value: ModalMode.Forking,
               title: 'Fork',
-              visible: !!editingMutation.authorId,
+              visible: !!editingEntity.authorId,
             },
             {
-              value: MutationModalMode.Editing,
+              value: ModalMode.Editing,
               title: 'Save',
-              visible: !!editingMutation.authorId && editingMutation.authorId === loggedInAccountId,
+              visible: !!editingEntity.authorId && editingEntity.authorId === loggedInAccountId,
             },
             {
-              value: MutationModalMode.Creating,
+              value: ModalMode.Creating,
               title: 'Create',
-              visible: !editingMutation.authorId,
+              visible: !editingEntity.authorId,
             },
           ]}
-          onClick={handleSaveClick}
-          onChange={handleSaveDropdownChange}
+          onClick={onSaveClick}
+          onChange={onChangeModalMode}
           disabled={isFormDisabled}
           disabledAll={isFormDisabled}
         />
