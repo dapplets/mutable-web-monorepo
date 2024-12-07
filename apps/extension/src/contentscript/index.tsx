@@ -97,6 +97,9 @@ async function main() {
     } else if (message.type === 'OPEN_NEW_MUTATION_POPUP') {
       // ToDo: eventEmitter is intended for near-wallet-selector
       eventEmitter.emit('openMutationPopup')
+    } else if (message.type === 'TOGGLE_OVERLAY') {
+      // ToDo: eventEmitter is intended for near-wallet-selector
+      eventEmitter.emit('toggleOverlay')
     }
   })
 
