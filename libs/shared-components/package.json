@@ -33,6 +33,7 @@
     "@uiw/codemirror-extensions-langs": "^4.23.3",
     "@uiw/react-codemirror": "^4.23.3",
     "antd": "^5.18.3",
+    "@ant-design/icons": "5.5.1",
     "codemirror": "^6.0.1",
     "ethereum-blockies-base64": "^1.0.2",
     "json-stringify-deterministic": "^1.0.12",
