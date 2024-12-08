@@ -8,8 +8,6 @@ import { Dropdown } from './components/dropdown'
 const { Text } = Typography
 
 const FeedContainer = styled(Space)`
-  overflow: hidden;
-  overflow-y: auto;
   height: auto;
   transition: all 0.2s ease;
   width: 100%;

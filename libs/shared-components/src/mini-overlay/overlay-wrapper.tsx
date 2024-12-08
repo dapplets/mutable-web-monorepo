@@ -148,12 +148,12 @@ const Body = styled.div`
 
   &::-webkit-scrollbar {
     cursor: pointer;
-    width: 4px;
+    width: 3px;
   }
 
   &::-webkit-scrollbar-track {
     margin-bottom: 10px;
-    margin-top: 40px;
+    margin-top: 65px;
     background: rgb(244 244 244);
     background: linear-gradient(
       90deg,
@@ -164,9 +164,9 @@ const Body = styled.div`
   }
 
   &::-webkit-scrollbar-thumb {
-    width: 4px;
+    width: 2px;
     height: 2px;
-    background: #384bff;
+    background: #7a818b;
     border-radius: 2px;
     box-shadow:
       0 2px 6px rgb(0 0 0 / 9%),
