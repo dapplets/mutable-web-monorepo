@@ -478,11 +478,11 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   }
 `
 
-export const DropdownItem = styled.div`
+export const DropdownItem = styled.div<{ $isActiveVersion?: boolean }>`
   font-size: 10px;
   font-weight: 400;
   text-align: right;
-  color: #7a818b;
+  color: ${({ $isActiveVersion }) => ($isActiveVersion ? `#384BFF` : '#7a818b')};
   padding: 4px;
 
   &:hover {

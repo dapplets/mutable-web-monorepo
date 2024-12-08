@@ -43,12 +43,12 @@ export const MutationVersionDropdown: FC<{
       <span
         style={{
           maxWidth: '50px',
+          width: '100%',
           display: 'inline-flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
-          border: isWhite ? '1px solid #384BFF' : '',
           boxSizing: isWhite ? 'border-box' : undefined,
           marginLeft: isWhite ? '10px' : '',
           borderRadius: isWhite ? '4px' : '',
@@ -59,26 +59,34 @@ export const MutationVersionDropdown: FC<{
           {currentMutationVersions[mutationId]
             ? `v${currentMutationVersions[mutationId]}`
             : LatestKey}
-          {expanded ? (
-            <OpenList>
-              <IconDropdown />
-            </OpenList>
-          ) : (
-            <OpenListDefault>
-              <IconDropdown />
-            </OpenListDefault>
-          )}
+          {mutationVersions && mutationVersions.length > 0 ? (
+            expanded ? (
+              <OpenList>
+                <IconDropdown />
+              </OpenList>
+            ) : (
+              <OpenListDefault>
+                <IconDropdown />
+              </OpenListDefault>
+            )
+          ) : null}
         </SpanStyled>
 
-        {expanded && (
-          <DropdownContainer $expanded={expanded}>
-            {mutationVersions.map((version) => (
-              <DropdownItem onClick={() => handleChange(version.version)} key={version.version}>
-                v{version.version}
-              </DropdownItem>
-            ))}
-          </DropdownContainer>
-        )}
+        {mutationVersions && mutationVersions.length > 0
+          ? expanded && (
+              <DropdownContainer $expanded={expanded}>
+                {mutationVersions.map((version) => (
+                  <DropdownItem
+                    $isActiveVersion={currentMutationVersions[mutationId] == version.version}
+                    onClick={() => handleChange(version.version)}
+                    key={version.version}
+                  >
+                    v{version.version}
+                  </DropdownItem>
+                ))}
+              </DropdownContainer>
+            )
+          : null}
       </span>
     </>
   )
