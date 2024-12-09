@@ -8,7 +8,7 @@ import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { DocumentsModal } from './documents-modal'
-import { ModalConfirm } from './modals-confirm'
+import { ModalConfirmMutation } from './modals-confirm-mutation'
 import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
 import { useSaveMutation, useMutableWeb } from '@mweb/engine'
@@ -452,8 +452,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
       {isConfirmModalOpen && loggedInAccountId && (
         <ModalConfirmBackground>
-          <ModalConfirm
-            itemType="mutation"
+          <ModalConfirmMutation
             onCloseCurrent={() => setIsConfirmModalOpen(false)}
             onCloseAll={onClose}
             editingMutation={editingMutation}
