@@ -17,7 +17,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
     this._entityKey = getEntity(EntityType).name
   }
 
-  async getItem(id: EntityId): Promise<T | null> {
+  async getItem({ id, version }: { id: EntityId; version?: string }): Promise<T | null> {
     const parsedId = BaseLocalRepository._parseGlobalId(id)
     if (!parsedId) return null
 
@@ -48,7 +48,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
       return true
     })
 
-    const items = await Promise.all(filteredKeys.map((id) => this.getItem(id)))
+    const items = await Promise.all(filteredKeys.map((id) => this.getItem({ id })))
 
     return items.filter((x) => x !== null)
   }
@@ -62,12 +62,12 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
       }
       return true
     })
-    
+
     return filteredItems
   }
 
   async createItem(item: T): Promise<T> {
-    if (await this.getItem(item.id)) {
+    if (await this.getItem({ id: item.id })) {
       throw new Error('Item with that ID already exists')
     }
 
@@ -79,7 +79,7 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
   }
 
   async editItem(item: T): Promise<T> {
-    if (!(await this.getItem(item.id))) {
+    if (!(await this.getItem({ id: item.id }))) {
       throw new Error('Item with that ID does not exist')
     }
 
@@ -127,6 +127,18 @@ export class BaseLocalRepository<T extends Base> implements IRepository<T> {
     })
 
     return entity
+  }
+
+  async getVersions(options: { id: EntityId }): Promise<string[]> {
+    throw new Error('Method not implemented.')
+  }
+
+  async getTagValue(options: { id: EntityId; tag: string }): Promise<string | null> {
+    throw new Error('Method not implemented.')
+  }
+
+  async getTags(options: { id: EntityId }): Promise<string[]> {
+    throw new Error('Method not implemented.')
   }
 
   private static _parseGlobalId(globalId: EntityId): {

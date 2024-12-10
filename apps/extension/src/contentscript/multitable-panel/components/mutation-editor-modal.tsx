@@ -13,6 +13,8 @@ import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
 import { useSaveMutation, useMutableWeb } from '@mweb/engine'
 import { ButtonsGroup } from './buttons-group'
+import { useMutationVersions } from '@mweb/engine'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -197,6 +199,7 @@ const EMPTY_MUTATION_ID = '/mutation/NewMutation'
 const createEmptyMutation = (): MutationDto => ({
   authorId: null,
   blockNumber: 0,
+  version: '0',
   id: EMPTY_MUTATION_ID,
   localId: 'NewMutation',
   timestamp: 0,
@@ -254,12 +257,13 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
-  const { switchMutation, switchPreferredSource } = useMutableWeb()
+  const { switchMutation, switchPreferredSource, isLoading } = useMutableWeb()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
-
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
   const { saveMutation, isLoading: isSaving } = useSaveMutation()
 
   useEscape(onClose)
@@ -274,8 +278,12 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
   const [editingMutation, setEditingMutation] = useState<MutationDto>(chooseEditingMutation())
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
-
   const [alert, setAlert] = useState<IAlert | null>(null)
+
+  // Reload the base mutation if it changed (e.g. if a mutation version was updated)
+  useEffect(() => {
+    setEditingMutation(chooseEditingMutation())
+  }, [isLoading])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
@@ -378,7 +386,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{baseMutation.metadata.name}</p>
+              <p>{baseMutation.metadata.name} </p>
               <span>
                 by{' '}
                 {!baseMutation.authorId && !loggedInAccountId
@@ -387,6 +395,12 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
                     baseMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
                   : baseMutation.authorId}
+                <MutationVersionDropdown
+                  toggleDropdown={toggleDropdown}
+                  expanded={expandedVersion}
+                  isWhite
+                  mutationId={baseMutation?.id ?? null}
+                />
               </span>
             </TextWrapper>
           </CardWrapper>

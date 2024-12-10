@@ -231,7 +231,7 @@ export const ModalConfirm: FC<Props> = ({
   loggedInAccountId,
 }) => {
   const { name, image, description, fork_of } = editingMutation.metadata
-
+  const { version } = editingMutation
   // Close modal with escape key
   useEscape(onCloseCurrent) // ToDo -- does not work
 
@@ -378,7 +378,15 @@ export const ModalConfirm: FC<Props> = ({
               </StyledLabel>
             </FloatingLabelContainer>
           </CardWrapper>
-
+          <FloatingLabelContainer>
+            <StyledInput
+              id={'version'}
+              type={'text'}
+              value={version.toLowerCase() === 'latest' ? version : `${+version + 1}`}
+              readOnly
+            />
+            <StyledLabel htmlFor={'version'}>Version</StyledLabel>
+          </FloatingLabelContainer>
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
@@ -444,7 +452,15 @@ export const ModalConfirm: FC<Props> = ({
               </StyledLabel>
             </FloatingLabelContainer>
           </CardWrapper>
-
+          <FloatingLabelContainer>
+            <StyledInput
+              id={'version'}
+              type={'text'}
+              value={version.toLowerCase() === 'latest' ? version : `${+version + 1}`}
+              readOnly
+            />
+            <StyledLabel htmlFor={'version'}>Version</StyledLabel>
+          </FloatingLabelContainer>
           <FloatingLabelContainerArea>
             <StyledTextarea
               id={'description'}
@@ -472,7 +488,15 @@ export const ModalConfirm: FC<Props> = ({
               <span>by me ({loggedInAccountId})</span>
             </TextWrapper>
           </CardWrapper>
-
+          <FloatingLabelContainer>
+            <StyledInput
+              id={'version'}
+              type={'text'}
+              value={version.toLowerCase() === 'latest' ? version : `${+version + 1}`}
+              readOnly
+            />
+            <StyledLabel htmlFor={'version'}>Version</StyledLabel>
+          </FloatingLabelContainer>
           {forkedMutation ? (
             <>
               <Label>Originally Forked from</Label>
