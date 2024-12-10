@@ -172,7 +172,13 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   return (
     <>
-      <MutableOverlayContainer notchRef={notchRef} networkId={config.networkId as NearNetworkId} />
+      <MutableOverlayContainer
+        notchRef={notchRef}
+        networkId={config.networkId as NearNetworkId}
+        setOpen={setIsDropdownVisible}
+        open={isDropdownVisible}
+        handleMutateButtonClick={handleMutateButtonClick}
+      />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal
