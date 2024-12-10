@@ -290,6 +290,7 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       if (type === ColumnType.AsIs) {
         raw[rawKey] = transformedValue
       } else if (type === ColumnType.Json) {
+        // ToDo: null will be serialized as "null"
         raw[rawKey] = serializeToDeterministicJson(transformedValue)
       } else if (type === ColumnType.Set) {
         raw[rawKey] = BaseRepository._makeSetToSocialDb(transformedValue)
