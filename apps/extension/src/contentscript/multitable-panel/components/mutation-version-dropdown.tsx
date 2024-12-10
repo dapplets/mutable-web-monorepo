@@ -14,16 +14,17 @@ const LatestKey = 'latest'
 
 export const MutationVersionDropdown: FC<{
   mutationId: string | null
+  toggleDropdown: () => void
+  expanded: boolean
   isWhite?: boolean
-}> = ({ mutationId, isWhite }) => {
+}> = ({ mutationId, isWhite, toggleDropdown, expanded }) => {
   const {
     switchMutationVersion,
     selectedMutation,
     mutationVersions: currentMutationVersions,
   } = useMutableWeb()
   const { mutationVersions, areMutationVersionsLoading } = useMutationVersions(mutationId)
-  const [expanded, setExpanded] = useState(false)
-  const toggleDropdown = () => setExpanded(!expanded)
+
   if (!mutationId) {
     return null
   }

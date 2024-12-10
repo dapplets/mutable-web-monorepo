@@ -87,6 +87,9 @@ export const Dropdown: FC<DropdownProps> = ({
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
 
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
+
   const recentlyUsedMutations = useMemo(
     () =>
       Object.groupBy(
@@ -122,6 +125,7 @@ export const Dropdown: FC<DropdownProps> = ({
 
   const handleMutationClick = (mutationId: string) => {
     onVisibilityChange(false)
+    setExpandedVersion(false)
     switchMutation(mutationId)
   }
 
@@ -144,6 +148,7 @@ export const Dropdown: FC<DropdownProps> = ({
   }
 
   const handleMutateButtonClick = () => {
+    setExpandedVersion(false)
     onVisibilityChange(false)
     onMutateButtonClick()
   }
@@ -153,6 +158,7 @@ export const Dropdown: FC<DropdownProps> = ({
   }
 
   const handleOriginalButtonClick = async () => {
+    setExpandedVersion(false)
     onVisibilityChange(false)
     switchMutation(null)
   }
@@ -164,7 +170,11 @@ export const Dropdown: FC<DropdownProps> = ({
   return (
     <WrapperDropdown>
       {selectedMutation && selectedMutation.metadata ? (
-        <MutationVersionDropdown mutationId={selectedMutation.id} />
+        <MutationVersionDropdown
+          expanded={expandedVersion}
+          toggleDropdown={toggleDropdown}
+          mutationId={selectedMutation.id}
+        />
       ) : (
         selectedMutation &&
         selectedMutation.metadata && <SpanStyled>v{selectedMutation.version}</SpanStyled>
