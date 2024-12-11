@@ -424,3 +424,69 @@ export const AuthorMutation = styled.div`
   display: inline-flex;
   align-items: center;
 `
+
+// version
+
+export const DropdownContainer = styled.div<{ $expanded?: boolean }>`
+  position: absolute;
+  width: 100%;
+  width: 50px;
+  height: auto;
+  top: 24px;
+  left: 2px;
+  padding: 2px;
+  border-radius: 4px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+
+  box-shadow: ${({ $expanded }) =>
+    $expanded
+      ? `0px 3px 7px 0px #2222221A, 
+         0px 12px 12px 0px #22222217, 
+         0px 27px 16px 0px #2222220D, 
+         0px 48px 19px 0px #22222203, 
+         0px 76px 21px 0px #22222200`
+      : 'none'};
+
+  cursor: pointer;
+`
+
+export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
+  cursor: pointer;
+  left: ${({ $isWhite }) => ($isWhite ? `0` : '2px')};
+  justify-content: center;
+  padding: 2px 0;
+  padding-left: 4px;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  text-align: left;
+  color: #ffffff;
+  background: ${({ $isWhite }) => ($isWhite ? `#FFFFFF` : '#384bff')};
+
+  svg path {
+    stroke: ${({ $isWhite }) => ($isWhite ? ` #7a818b` : '#FFFFFF')};
+  }
+`
+
+export const DropdownItem = styled.div<{ $isActiveVersion?: boolean }>`
+  font-size: 10px;
+  font-weight: 400;
+  text-align: right;
+  color: ${({ $isActiveVersion }) => ($isActiveVersion ? `#384BFF` : '#7a818b')};
+  padding: 4px;
+
+  &:hover {
+    background: #1879ce1a;
+    color: #384bff;
+  }
+`

@@ -1,10 +1,23 @@
 import { useMutableWeb, useMutationVersions } from '@mweb/engine'
-import React from 'react'
+import React, { useState } from 'react'
 import { FC } from 'react'
+import {
+  DropdownContainer,
+  DropdownItem,
+  OpenList,
+  OpenListDefault,
+  SpanStyled,
+} from '../assets/styles-dropdown'
+import { IconDropdown } from '../assets/vectors'
 
 const LatestKey = 'latest'
 
-export const MutationVersionDropdown: FC<{ mutationId: string | null }> = ({ mutationId }) => {
+export const MutationVersionDropdown: FC<{
+  mutationId: string | null
+  toggleDropdown: () => void
+  expanded: boolean
+  isWhite?: boolean
+}> = ({ mutationId, isWhite, toggleDropdown, expanded }) => {
   const {
     switchMutationVersion,
     selectedMutation,
@@ -17,26 +30,65 @@ export const MutationVersionDropdown: FC<{ mutationId: string | null }> = ({ mut
   }
 
   if (!selectedMutation || areMutationVersionsLoading) {
-    return <span>Loading...</span>
+    return <span></span>
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    if (mutationId) {
-      switchMutationVersion(
-        mutationId,
-        e.target.value === LatestKey ? null : e.target.value?.toString()
-      )
+  const handleChange = (key: string) => {
+    if (selectedMutation?.id) {
+      switchMutationVersion(selectedMutation?.id, key === LatestKey ? null : key?.toString())
     }
   }
 
   return (
-    <select onChange={handleChange} value={currentMutationVersions[mutationId] ?? LatestKey}>
-      {mutationVersions.map((version) => (
-        <option key={version.version} value={version.version}>
-          v{version.version}
-        </option>
-      ))}
-      <option value={LatestKey}>latest</option>
-    </select>
+    <>
+      <span
+        style={{
+          maxWidth: '50px',
+          width: '100%',
+          display: 'inline-flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+          boxSizing: isWhite ? 'border-box' : undefined,
+          marginLeft: isWhite ? '10px' : '',
+          borderRadius: isWhite ? '4px' : '',
+        }}
+        onClick={toggleDropdown}
+      >
+        <SpanStyled $isWhite={isWhite}>
+          {currentMutationVersions[mutationId]
+            ? `v${currentMutationVersions[mutationId]}`
+            : LatestKey}
+          {mutationVersions && mutationVersions.length > 0 ? (
+            expanded ? (
+              <OpenList>
+                <IconDropdown />
+              </OpenList>
+            ) : (
+              <OpenListDefault>
+                <IconDropdown />
+              </OpenListDefault>
+            )
+          ) : null}
+        </SpanStyled>
+
+        {mutationVersions && mutationVersions.length > 0
+          ? expanded && (
+              <DropdownContainer $expanded={expanded}>
+                {mutationVersions.map((version) => (
+                  <DropdownItem
+                    $isActiveVersion={currentMutationVersions[mutationId] == version.version}
+                    onClick={() => handleChange(version.version)}
+                    key={version.version}
+                  >
+                    v{version.version}
+                  </DropdownItem>
+                ))}
+              </DropdownContainer>
+            )
+          : null}
+      </span>
+    </>
   )
 }

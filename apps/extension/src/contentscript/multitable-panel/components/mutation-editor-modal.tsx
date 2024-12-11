@@ -262,7 +262,8 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
-
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
   const { saveMutation, isLoading: isSaving } = useSaveMutation()
 
   useEscape(onClose)
@@ -385,10 +386,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>
-                {baseMutation.metadata.name}{' '}
-                <MutationVersionDropdown mutationId={baseMutation?.id ?? null} />
-              </p>
+              <p>{baseMutation.metadata.name} </p>
               <span>
                 by{' '}
                 {!baseMutation.authorId && !loggedInAccountId
@@ -397,6 +395,12 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
                     baseMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
                   : baseMutation.authorId}
+                <MutationVersionDropdown
+                  toggleDropdown={toggleDropdown}
+                  expanded={expandedVersion}
+                  isWhite
+                  mutationId={baseMutation?.id ?? null}
+                />
               </span>
             </TextWrapper>
           </CardWrapper>

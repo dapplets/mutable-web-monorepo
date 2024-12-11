@@ -25,6 +25,7 @@ import {
   SelectedMutationInfo,
   StarSelectedMutationWrapper,
   WrapperDropdown,
+  SpanStyled,
 } from '../assets/styles-dropdown'
 import {
   AvailableIcon,
@@ -45,6 +46,7 @@ import { Badge } from './badge'
 import { ArrowDownOutlined, DeleteOutlined, EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
 import styled from 'styled-components'
 import { ModalDelete } from './modal-delete'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -85,6 +87,9 @@ export const Dropdown: FC<DropdownProps> = ({
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
 
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
+
   const recentlyUsedMutations = useMemo(
     () =>
       Object.groupBy(
@@ -120,6 +125,7 @@ export const Dropdown: FC<DropdownProps> = ({
 
   const handleMutationClick = (mutationId: string) => {
     onVisibilityChange(false)
+    setExpandedVersion(false)
     switchMutation(mutationId)
   }
 
@@ -142,6 +148,7 @@ export const Dropdown: FC<DropdownProps> = ({
   }
 
   const handleMutateButtonClick = () => {
+    setExpandedVersion(false)
     onVisibilityChange(false)
     onMutateButtonClick()
   }
@@ -151,6 +158,7 @@ export const Dropdown: FC<DropdownProps> = ({
   }
 
   const handleOriginalButtonClick = async () => {
+    setExpandedVersion(false)
     onVisibilityChange(false)
     switchMutation(null)
   }
@@ -161,6 +169,17 @@ export const Dropdown: FC<DropdownProps> = ({
 
   return (
     <WrapperDropdown>
+      {selectedMutation && selectedMutation.metadata ? (
+        <MutationVersionDropdown
+          expanded={expandedVersion}
+          toggleDropdown={toggleDropdown}
+          mutationId={selectedMutation.id}
+        />
+      ) : (
+        selectedMutation &&
+        selectedMutation.metadata && <SpanStyled>v{selectedMutation.version}</SpanStyled>
+      )}
+
       <SelectedMutationBlock
         onClick={() => onVisibilityChange(!isVisible)}
         data-testid="selected-mutation-block"
@@ -187,7 +206,8 @@ export const Dropdown: FC<DropdownProps> = ({
                 ) : selectedMutation.source === EntitySourceType.Local ? (
                   <Badge margin="0 4px 0 0" text={selectedMutation.source} theme="white" />
                 ) : null}
-                {selectedMutation.metadata.name} (v{selectedMutation.version})
+
+                {selectedMutation.metadata.name}
               </SelectedMutationDescription>
               {selectedMutation.authorId ? (
                 <SelectedMutationId>by {selectedMutation.authorId}</SelectedMutationId>
