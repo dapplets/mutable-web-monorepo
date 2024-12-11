@@ -83,7 +83,7 @@ const NotificationFeed: FC<{
           <Flex vertical>
             <Space direction="horizontal">
               <Text type="secondary" style={{ textTransform: 'uppercase' }}>
-                New ({newNotifications.length - 1})
+                New ({newNotifications.length})
               </Text>
               {newNotifications.length ? (
                 <Button
