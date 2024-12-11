@@ -77,7 +77,7 @@ export class LinkDbService {
 
       // ToDo: too much data will be retrieved here, becuase it created by users
       const ctxLinksNullPossible = await Promise.all(
-        ctxLinkIds.map((id) => this._linkDbRepository.getItem(id))
+        ctxLinkIds.map((id) => this._linkDbRepository.getItem({ id }))
       )
       ctxLinks = ctxLinksNullPossible.filter((x) => x !== null)
     }

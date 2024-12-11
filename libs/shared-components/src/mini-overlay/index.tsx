@@ -1,6 +1,7 @@
+import { EventEmitter as NEventEmitter } from 'events'
 import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef } from 'react'
+import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
@@ -156,7 +157,11 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
   baseMutation: MutationDto | null
   mutationApps: AppWithSettings[]
   children: ReactElement
+  eventEmitter: NEventEmitter
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  open: boolean
+  handleMutateButtonClick: () => void
 }
 
 export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp, isLoading }) => {
@@ -208,10 +213,23 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   nearNetwork,
   children,
   trackingRefs,
+  eventEmitter,
+  setOpen,
+  open,
+  handleMutateButtonClick,
 }) => {
   const loggedInAccountId: string = useAccountId() // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const toggleOverlayListener = () => {
+      setOpen((prev) => !prev)
+    }
+    eventEmitter.on('toggleOverlay', toggleOverlayListener)
+    return () => {
+      eventEmitter.off('toggleOverlay', toggleOverlayListener)
+    }
+  }, [])
 
   return (
     <WrapperDriver $isOpen={open} ref={overlayRef}>
@@ -257,6 +275,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           disconnectWallet={disconnectWallet!}
           nearNetwork={nearNetwork!}
           trackingRefs={trackingRefs}
+          handleMutateButtonClick={handleMutateButtonClick}
         />
       </NotificationProvider>
     </WrapperDriver>

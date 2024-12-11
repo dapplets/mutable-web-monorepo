@@ -4,7 +4,7 @@ import { MutableWebContext } from './mutable-web-context'
 import { SaveMutationOptions } from '@mweb/backend'
 
 export function useEditMutation() {
-  const { engine, setMutations } = useContext(MutableWebContext)
+  const { engine, setMutations, refreshMutation } = useContext(MutableWebContext)
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,6 +22,8 @@ export function useEditMutation() {
             : mut
         )
       )
+
+      refreshMutation(editedMutation)
     } catch (err) {
       console.error(err)
       if (err instanceof Error) {

@@ -294,3 +294,38 @@ browser.runtime.onInstalled.addListener(async () => {
 
 browser.tabs.onActivated.addListener(({ tabId }) => mutationLinkListener(tabId))
 browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))
+
+const overlayPopupOpen = async (tab: browser.Tabs.Tab) => {
+  if (!tab.id) return
+  await browser.tabs.sendMessage(tab.id, { type: 'TOGGLE_OVERLAY' })
+}
+
+const updateAction = async (tabId: number) => {
+  const tab = await browser.tabs.get(tabId)
+
+  // A normal site where the extension can work
+  if (tab.id && (tab?.url?.startsWith('https://') || tab?.url?.startsWith('http://'))) {
+    // The script may not be injected if the extension was just installed
+    const isContentScriptInjected = await browser.tabs
+      .sendMessage(tab.id, { type: 'PING' }) // The CS must reply 'PONG'
+      .then(() => true)
+      .catch(() => false)
+
+    if (isContentScriptInjected) {
+      await browser.action.setPopup({ tabId, popup: '' })
+      browser.action.onClicked.addListener(overlayPopupOpen)
+    } else {
+      const popupUrl = browser.runtime.getURL('popup.html?page=no-cs-injected')
+      await browser.action.setPopup({ tabId, popup: popupUrl })
+      browser.action.onClicked.removeListener(overlayPopupOpen)
+    }
+  } else {
+    // If it's a system tab where the extension doesn't work
+    const popupUrl = browser.runtime.getURL('popup.html?page=unsupported-page')
+    await browser.action.setPopup({ tabId, popup: popupUrl })
+    browser.action.onClicked.removeListener(overlayPopupOpen)
+  }
+}
+
+browser.tabs.onActivated.addListener(({ tabId }) => updateAction(tabId))
+browser.tabs.onUpdated.addListener((tabId) => updateAction(tabId))

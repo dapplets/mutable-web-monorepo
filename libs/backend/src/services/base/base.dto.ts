@@ -7,4 +7,5 @@ export type BaseDto = {
   authorId: string | null
   blockNumber: number
   timestamp: number
+  version: string
 }
