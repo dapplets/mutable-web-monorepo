@@ -2,8 +2,8 @@ import { expect, test } from '../fixtures/browser'
 
 // ToDo: qase mw-1
 test('switch mutation', async ({ page }) => {
-  const sourceMutationId = 'bos.dapplets.near/mutation/Sandbox'
-  const targetMutationId = 'bos.dapplets.near/mutation/Zoo'
+  const sourceMutationId = 'Welcomeby bos.dapplets.near'
+  const targetMutationId = 'Zooby bos.dapplets.near'
   const url = 'https://github.com/dapplets/dapplet-extension/pull/217'
 
   await page.goto(url)
