@@ -17,7 +17,7 @@ export class Document extends Base {
   @Column({ name: 'open_with', type: ColumnType.Set })
   openWith: AppId[] = []
 
-  @Column({ name: 'content', type: ColumnType.Json })
+  @Column({ type: ColumnType.Json })
   content: any = null
 
   toDto(): DocumentDto {
