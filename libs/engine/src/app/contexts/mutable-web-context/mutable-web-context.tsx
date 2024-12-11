@@ -24,6 +24,8 @@ export type MutableWebContextState = {
   removeMutationFromRecents: (mutationId: string) => void
   setMutations: React.Dispatch<React.SetStateAction<MutationWithSettings[]>>
   setMutationApps: React.Dispatch<React.SetStateAction<AppInstanceWithSettings[]>>
+  switchMutationVersion: (mutationId: string, version?: string | null) => void
+  mutationVersions: { [key: string]: string | null }
 }
 
 export const contextDefaultValues: MutableWebContextState = {
@@ -44,6 +46,8 @@ export const contextDefaultValues: MutableWebContextState = {
   removeMutationFromRecents: () => undefined,
   setMutations: () => undefined,
   setMutationApps: () => undefined,
+  switchMutationVersion: () => undefined,
+  mutationVersions: {},
 }
 
 export const MutableWebContext = createContext<MutableWebContextState>(contextDefaultValues)

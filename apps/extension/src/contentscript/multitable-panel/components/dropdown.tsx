@@ -1,4 +1,4 @@
-import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo } from 'react'
+import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
 import {
   OpenList,
   OpenListDefault,
@@ -8,12 +8,14 @@ import {
   SelectedMutationInfo,
   StarSelectedMutationWrapper,
   WrapperDropdown,
+  SpanStyled,
 } from '../assets/styles-dropdown'
 import { IconDropdown, StarSelectMutation, StarSelectMutationDefault } from '../assets/vectors'
 import { useMutableWeb } from '@mweb/engine'
 import { EntitySourceType } from '@mweb/backend'
 import { Badge } from './badge'
 import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
@@ -29,6 +31,11 @@ export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: D
     setFavoriteMutation,
     switchPreferredSource,
   } = useMutableWeb()
+
+  // ToDo: think about this
+  // The state is here to prevent closing dropdown when mutation changed
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
 
   const recentlyUsedMutations = useMemo(
     () =>
@@ -68,6 +75,17 @@ export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: D
 
   return (
     <WrapperDropdown>
+      {selectedMutation && selectedMutation.metadata ? (
+        <MutationVersionDropdown
+          expanded={expandedVersion}
+          toggleDropdown={toggleDropdown}
+          mutationId={selectedMutation.id}
+        />
+      ) : (
+        selectedMutation &&
+        selectedMutation.metadata && <SpanStyled>v{selectedMutation.version}</SpanStyled>
+      )}
+
       <SelectedMutationBlock
         onClick={() => onVisibilityChange(!isVisible)}
         data-testid="selected-mutation-block"
@@ -94,6 +112,7 @@ export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: D
                 ) : selectedMutation.source === EntitySourceType.Local ? (
                   <Badge margin="0 4px 0 0" text={selectedMutation.source} theme="white" />
                 ) : null}
+
                 {selectedMutation.metadata.name}
               </SelectedMutationDescription>
               {selectedMutation.authorId ? (
