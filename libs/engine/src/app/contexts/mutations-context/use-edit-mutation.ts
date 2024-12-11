@@ -1,10 +1,12 @@
 import { MutationDto } from '@mweb/backend'
-import { useContext, useState } from 'react'
-import { MutableWebContext } from './mutable-web-context'
+import { useState } from 'react'
 import { SaveMutationOptions } from '@mweb/backend'
+import { useMutableWeb } from '../mutable-web-context'
+import { useMutations } from './use-mutations'
 
 export function useEditMutation() {
-  const { engine, setMutations } = useContext(MutableWebContext)
+  const { engine, refreshSelectedMutation } = useMutableWeb()
+  const { setMutations } = useMutations()
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -22,6 +24,8 @@ export function useEditMutation() {
             : mut
         )
       )
+
+      refreshSelectedMutation(editedMutation)
     } catch (err) {
       console.error(err)
       if (err instanceof Error) {

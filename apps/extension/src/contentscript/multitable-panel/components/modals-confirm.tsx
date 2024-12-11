@@ -5,6 +5,7 @@ import {
   useEditMutation,
   useMutableWeb,
   useDeleteLocalMutation,
+  useMutations,
 } from '@mweb/engine'
 import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
@@ -240,7 +241,8 @@ export const ModalConfirm: FC<Props> = ({
   const [newDescription, setDescription] = useState<string>(description ?? '')
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations, switchMutation, switchPreferredSource } = useMutableWeb()
+  const { switchMutation, switchPreferredSource } = useMutableWeb()
+  const { mutations } = useMutations()
 
   const [mode, setMode] = useState(
     !editingMutation.authorId // Newly created local mutation doesn't have author
@@ -310,7 +312,7 @@ export const ModalConfirm: FC<Props> = ({
             : undefined
         )
         switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Origin)
+        switchPreferredSource(EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
@@ -328,7 +330,7 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
-        switchPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
+        switchPreferredSource(EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
