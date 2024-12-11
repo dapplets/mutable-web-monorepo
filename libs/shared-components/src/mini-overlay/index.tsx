@@ -1,6 +1,7 @@
+import { EventEmitter as NEventEmitter } from 'events'
 import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef } from 'react'
+import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
@@ -156,6 +157,7 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
   baseMutation: MutationDto | null
   mutationApps: AppWithSettings[]
   children: ReactElement
+  eventEmitter: NEventEmitter
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   open: boolean
@@ -211,12 +213,23 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   nearNetwork,
   children,
   trackingRefs,
+  eventEmitter,
   setOpen,
   open,
   handleMutateButtonClick,
 }) => {
   const loggedInAccountId: string = useAccountId() // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const toggleOverlayListener = () => {
+      setOpen((prev) => !prev)
+    }
+    eventEmitter.on('toggleOverlay', toggleOverlayListener)
+    return () => {
+      eventEmitter.off('toggleOverlay', toggleOverlayListener)
+    }
+  }, [])
 
   return (
     <WrapperDriver $isOpen={open} ref={overlayRef}>

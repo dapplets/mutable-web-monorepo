@@ -175,6 +175,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
       <MutableOverlayContainer
         notchRef={notchRef}
         networkId={config.networkId as NearNetworkId}
+        eventEmitter={eventEmitter}
         setOpen={setIsDropdownVisible}
         open={isDropdownVisible}
         handleMutateButtonClick={handleMutateButtonClick}
