@@ -1,7 +1,13 @@
 import React, { FC } from 'react'
+import { NotificationDto, NotificationType } from '@mweb/backend'
 import RegularNotification, { RegularNotificationDto } from './regular-notification'
 import PullRequestNotification, { PullRequestNotificationDto } from './pull-request-notification'
-import { NotificationDto, NotificationType } from '@mweb/backend'
+import PullRequestAcceptedNotification, {
+  PullRequestAcceptedNotificationDto,
+} from './pull-request-accepted'
+import PullRequestRejectedNotification, {
+  PullRequestRejectedNotificationDto,
+} from './pull-request-rejected'
 
 const NotificationsResolver: FC<{
   notification: NotificationDto
@@ -26,18 +32,16 @@ const NotificationsResolver: FC<{
       )
     case NotificationType.PullRequestAccepted:
       return (
-        <PullRequestNotification
+        <PullRequestAcceptedNotification
           loggedInAccountId={loggedInAccountId}
-          notification={notification as PullRequestNotificationDto}
-          modalContainerRef={modalContainerRef}
+          notification={notification as PullRequestAcceptedNotificationDto}
         />
       )
     case NotificationType.PullRequestRejected:
       return (
-        <PullRequestNotification
+        <PullRequestRejectedNotification
           loggedInAccountId={loggedInAccountId}
-          notification={notification as PullRequestNotificationDto}
-          modalContainerRef={modalContainerRef}
+          notification={notification as PullRequestRejectedNotificationDto}
         />
       )
     default:

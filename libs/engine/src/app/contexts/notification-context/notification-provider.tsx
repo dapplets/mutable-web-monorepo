@@ -1,10 +1,8 @@
-import React, { FC, ReactNode, useCallback, useEffect, useRef } from 'react'
-import { NotificationContext, NotificationContextState } from './notification-context'
-import { Button, Space, notification } from 'antd'
-import { useViewport } from '../viewport-context'
-import { useQueryArray } from '../../hooks/use-query-array'
 import { NotificationDto } from '@mweb/backend'
+import React, { FC, ReactNode } from 'react'
+import { useQueryArray } from '../../hooks/use-query-array'
 import { useMutableWeb } from '../mutable-web-context'
+import { NotificationContext, NotificationContextState } from './notification-context'
 
 type Props = {
   children?: ReactNode

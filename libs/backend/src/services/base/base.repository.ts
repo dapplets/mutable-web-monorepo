@@ -208,9 +208,12 @@ export class BaseRepository<T extends Base> implements IRepository<T> {
       throw new Error('User is not logged in')
     }
 
+    const id = [authorId, this._entityKey, localId].join(KeyDelimiter)
+
     // @ts-ignore
     const entity: T = this.EntityType.create({
       ...item,
+      id,
       localId,
       authorId,
       source: EntitySourceType.Origin,

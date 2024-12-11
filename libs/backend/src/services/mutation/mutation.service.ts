@@ -232,6 +232,7 @@ export class MutationService {
       Promise.all([
         this._applyChangesToOrigin(sourceMutation, tx),
         this.notificationService.acceptNotification(notificationId, tx),
+        this._notifyAboutAcceptedPullRequest(sourceMutationId, targetMutationId, tx),
       ])
     )
 
@@ -239,7 +240,26 @@ export class MutationService {
   }
 
   async rejectPullRequest(notificationId: EntityId): Promise<NotificationDto> {
-    return this.notificationService.rejectNotification(notificationId)
+    const notification = await this.notificationService.getNotification(notificationId)
+
+    if (!notification) {
+      throw new Error('Notification not found')
+    }
+
+    if (notification.type !== NotificationType.PullRequest) {
+      throw new Error('Notification is not a pull request')
+    }
+
+    const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
+
+    const [freshNotification] = await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this.notificationService.rejectNotification(notificationId, tx),
+        this._notifyAboutRejectedPullRequest(sourceMutationId, targetMutationId, tx),
+      ])
+    )
+
+    return freshNotification
   }
 
   async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
@@ -345,5 +365,45 @@ export class MutationService {
     })
 
     return mutation
+  }
+
+  private async _notifyAboutAcceptedPullRequest(
+    sourceMutationId: string,
+    targetMutationId: string,
+    tx?: Transaction
+  ) {
+    const [sourceAuthorId] = sourceMutationId.split('/')
+
+    const notification: NotificationCreateDto = {
+      source: EntitySourceType.Origin,
+      type: NotificationType.PullRequestAccepted,
+      recipients: [sourceAuthorId],
+      payload: {
+        sourceMutationId: sourceMutationId,
+        targetMutationId: targetMutationId,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
+  }
+
+  private async _notifyAboutRejectedPullRequest(
+    sourceMutationId: string,
+    targetMutationId: string,
+    tx?: Transaction
+  ) {
+    const [sourceAuthorId] = sourceMutationId.split('/')
+
+    const notification: NotificationCreateDto = {
+      source: EntitySourceType.Origin,
+      type: NotificationType.PullRequestRejected,
+      recipients: [sourceAuthorId],
+      payload: {
+        sourceMutationId: sourceMutationId,
+        targetMutationId: targetMutationId,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
   }
 }
