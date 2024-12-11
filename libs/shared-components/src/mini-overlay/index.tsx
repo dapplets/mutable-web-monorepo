@@ -159,6 +159,9 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
   children: ReactElement
   eventEmitter: NEventEmitter
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  open: boolean
+  handleMutateButtonClick: () => void
 }
 
 export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp, isLoading }) => {
@@ -211,10 +214,12 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   children,
   trackingRefs,
   eventEmitter,
+  setOpen,
+  open,
+  handleMutateButtonClick,
 }) => {
   const loggedInAccountId: string = useAccountId() // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
 
   useEffect(() => {
     const toggleOverlayListener = () => {
@@ -270,6 +275,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           disconnectWallet={disconnectWallet!}
           nearNetwork={nearNetwork!}
           trackingRefs={trackingRefs}
+          handleMutateButtonClick={handleMutateButtonClick}
         />
       </NotificationProvider>
     </WrapperDriver>
