@@ -15,7 +15,7 @@ export default {
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], newHeadless: process.env.CI ? true : false },
+      use: { ...devices['Desktop Chrome'], channel: 'chromium' },
     },
   ],
   // webServer: [

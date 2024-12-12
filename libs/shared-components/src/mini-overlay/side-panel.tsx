@@ -258,6 +258,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
     <SidePanelWrapper
       ref={rootRef}
       $isApps={!!mutationApps.length}
+      data-testid="mweb-overlay"
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
       data-mweb-context-level="system"
@@ -268,6 +269,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
           ref={openCloseWalletPopupRef}
+          data-testid="mutation-button"
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
             id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',

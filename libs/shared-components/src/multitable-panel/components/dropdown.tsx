@@ -156,7 +156,12 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                     (mut) => mut.source === (recentlyUsedSource ?? EntitySourceType.Local)
                   ) ?? muts[0]
                 return (
-                  <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
+                  <InputBlock
+                    data-testid={mut.id}
+                    className={mut.id === selectedMutation?.id ? 'active-mutation' : ''}
+                    key={mut.id}
+                    isActive={mut.id === selectedMutation?.id}
+                  >
                     <ImageBlock>
                       <Image
                         image={mut.metadata.image}
@@ -229,6 +234,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
             <AvalibleMutations>
               <AvalibleLableBlock
                 onClick={handleAccordeonClick}
+                data-testid="unused-mutations-title"
                 data-mweb-context-type="notch"
                 data-mweb-context-parsed={JSON.stringify({ id: 'unused-mutations-title' })}
                 data-mweb-context-level="system"
@@ -253,6 +259,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                     return (
                       <InputBlock
                         key={mut.id}
+                        data-testid={mut.id}
                         isActive={mut.id === selectedMutation?.id}
                         onClick={() => handleMutationClick(mut.id)}
                         className="avalibleMutationsInput"
