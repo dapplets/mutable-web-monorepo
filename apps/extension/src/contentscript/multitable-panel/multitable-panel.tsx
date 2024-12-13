@@ -116,7 +116,7 @@ interface MultitablePanelProps {
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const { mutations, allApps, selectedMutation, config } = useMutableWeb()
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false)
+  const [isOverlayOpened, setIsOverlayOpened] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
@@ -160,7 +160,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   const handleMutateButtonClick = () => {
     setIsModalOpen(true)
-    setIsDropdownVisible(false)
+    setIsOverlayOpened(false)
   }
 
   const handleModalClose = () => {
@@ -176,8 +176,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
         notchRef={notchRef}
         networkId={config.networkId as NearNetworkId}
         eventEmitter={eventEmitter}
-        setOpen={setIsDropdownVisible}
-        open={isDropdownVisible}
+        setOpen={setIsOverlayOpened}
+        open={isOverlayOpened}
         handleMutateButtonClick={handleMutateButtonClick}
       />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
@@ -206,12 +206,12 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
               className={
                 isPin
                   ? 'visible-pin'
-                  : isNotchDisplayed || isDropdownVisible || isDragging
+                  : isNotchDisplayed || isOverlayOpened || isDragging
                   ? 'visible-default'
                   : 'visible-notch'
               }
               $isAnimated={!isDragging}
-              $isOpen={isDropdownVisible}
+              $isOpen={isOverlayOpened}
               ref={notchRef}
             >
               <NotchButtonWrapper className="dragWrapper">
@@ -220,8 +220,8 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
                 </IconWrapper>
               </NotchButtonWrapper>
               <Dropdown
-                isVisible={isDropdownVisible}
-                onVisibilityChange={setIsDropdownVisible}
+                isVisible={isOverlayOpened}
+                onVisibilityChange={setIsOverlayOpened}
                 onMutateButtonClick={handleMutateButtonClick}
               />
               <NotchButtonWrapper onClick={handlePin}>

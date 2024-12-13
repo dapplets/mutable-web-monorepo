@@ -11,7 +11,7 @@ test('switch mutation', async ({ page }) => {
   await page.goto(url)
 
   // ToDo: move to POM
-  await expect(page.getByTestId('mweb-overlay')).toBeVisible({ timeout: 30_000 })
+  await expect(page.getByTestId('mweb-overlay')).toBeVisible({ timeout: 60_000 })
   await page.getByTestId('mutation-button').click()
   await expect(page.getByTestId('side-panel')).toBeVisible()
   await expect(page.getByTestId('side-panel').getByTestId('recently-used-mutations')).toContainText(

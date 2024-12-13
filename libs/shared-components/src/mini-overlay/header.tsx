@@ -9,14 +9,16 @@ import {
 } from './assets/icons'
 import { IWalletConnect } from './types'
 
-const ProfileWrapper = styled.div`
+const HeaderWrapper = styled.div`
   display: flex;
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
-  width: calc(100% - 2px);
+  width: calc(100% - 20px);
   height: 56px;
   border-radius: 10px;
+  margin: 10px;
+  margin-bottom: 0;
   padding: 4px 10px;
   background: #fff;
   font-family: sans-serif;
@@ -240,14 +242,14 @@ const ButtonDisconnect = styled.button`
   }
 `
 
-export interface IProfileProps extends IWalletConnect {
+export interface IHeaderProps extends IWalletConnect {
   accountId: string | null
   closeProfile: () => void
   trackingRefs: Set<React.RefObject<HTMLDivElement>>
   openCloseWalletPopupRef: React.RefObject<HTMLButtonElement>
 }
 
-const Profile: FC<IProfileProps> = ({
+const Header: FC<IHeaderProps> = ({
   accountId,
   closeProfile,
   connectWallet,
@@ -280,7 +282,7 @@ const Profile: FC<IProfileProps> = ({
   }
 
   return (
-    <ProfileWrapper ref={wrapperRef}>
+    <HeaderWrapper ref={wrapperRef}>
       {accountId ? (
         <>
           <ProfileIcon>
@@ -314,8 +316,8 @@ const Profile: FC<IProfileProps> = ({
           </ButtonConnectWrapper>
         </>
       )}
-    </ProfileWrapper>
+    </HeaderWrapper>
   )
 }
 
-export default Profile
+export default Header
