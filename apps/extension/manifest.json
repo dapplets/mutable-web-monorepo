@@ -11,11 +11,6 @@
     "type": "module"
   },
   "minimum_chrome_version": "95",
-  "action": {
-    "default_icon": {
-      "128": "icons/icon128.png"
-    }
-  },
   "icons": {
     "128": "icons/icon128.png"
   },

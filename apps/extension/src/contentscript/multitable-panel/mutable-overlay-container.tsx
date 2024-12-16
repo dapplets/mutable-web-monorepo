@@ -1,4 +1,3 @@
-import { EventEmitter as NEventEmitter } from 'events'
 import { useMutableWeb, useMutationApp } from '@mweb/engine'
 import { AppInstanceWithSettings } from '@mweb/backend'
 import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
@@ -19,14 +18,12 @@ function MutableOverlayContainer({
   setOpen,
   open,
   handleMutateButtonClick,
-  eventEmitter,
 }: {
   notchRef: React.RefObject<HTMLDivElement>
   networkId: NearNetworkId
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   open: boolean
   handleMutateButtonClick: () => void
-  eventEmitter: NEventEmitter
 }) {
   const { selectedMutation, mutationApps } = useMutableWeb()
   const trackingRefs = new Set<React.RefObject<HTMLDivElement>>()
@@ -41,7 +38,6 @@ function MutableOverlayContainer({
       connectWallet={Background.connectWallet}
       disconnectWallet={Background.disconnectWallet}
       trackingRefs={trackingRefs}
-      eventEmitter={eventEmitter}
       handleMutateButtonClick={handleMutateButtonClick}
     >
       <>
