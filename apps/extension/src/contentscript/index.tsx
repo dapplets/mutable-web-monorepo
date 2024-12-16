@@ -1,13 +1,13 @@
-import { NetworkId, setupWalletSelector } from '@near-wallet-selector/core'
-import { EventEmitter as NEventEmitter } from 'events'
-import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
 import { EngineConfig } from '@mweb/backend'
+import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
+import { setupWalletSelector } from '@near-wallet-selector/core'
+import { EventEmitter as NEventEmitter } from 'events'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
-import { NearNetworkId, networkConfigs } from '../common/networks'
 import Background from '../common/background'
+import { NearNetworkId, networkConfigs } from '../common/networks'
 import { ExtensionStorage } from './extension-storage'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
 import { setupWallet } from './wallet'
@@ -97,6 +97,9 @@ async function main() {
     } else if (message.type === 'OPEN_NEW_MUTATION_POPUP') {
       // ToDo: eventEmitter is intended for near-wallet-selector
       eventEmitter.emit('openMutationPopup')
+    } else if (message.type === 'TOGGLE_OVERLAY') {
+      // ToDo: eventEmitter is intended for near-wallet-selector
+      eventEmitter.emit('toggleOverlay')
     }
   })
 

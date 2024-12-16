@@ -11,7 +11,7 @@ export type LinkIndex = string
 
 @Entity({ name: 'link' })
 export class IndexedLink extends Base {
-  @Column({ type: ColumnType.Set })
+  @Column({ type: ColumnType.Set, versioned: false })
   indexes: string[] = []
 }
 

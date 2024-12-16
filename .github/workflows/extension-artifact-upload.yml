@@ -27,7 +27,7 @@ jobs:
         run: pnpm build:extension
       - name: Upload a Build Artifact
         id: upload
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v4
         with:
           name: mutable-web-extension-${{ github.head_ref }}
           path: apps/extension/build/

@@ -7,6 +7,7 @@ const FAVORITE_MUTATION = 'favorite-mutation'
 const PREFERRED_SOURCE = 'preferred-source'
 const MUTATION_LAST_USAGE = 'mutation-last-usage'
 const STOPPED_APPS = 'stopped-apps'
+const MUTATION_VERSION = 'mutation-version'
 
 export class SettingsSerivce {
   constructor(private localDb: LocalDbService) {}
@@ -57,5 +58,15 @@ export class SettingsSerivce {
   ): Promise<void> {
     const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appInstanceId)
     return this.localDb.setItem(key, isEnabled)
+  }
+
+  async getMutationVersion(mutationId: string): Promise<string | null> {
+    const key = LocalDbService.makeKey(MUTATION_VERSION, mutationId)
+    return (await this.localDb.getItem(key)) ?? null
+  }
+
+  async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
+    const key = LocalDbService.makeKey(MUTATION_VERSION, mutationId)
+    return this.localDb.setItem(key, version)
   }
 }

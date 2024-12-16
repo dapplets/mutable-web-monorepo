@@ -1,15 +1,13 @@
 import { useNotifications, useViewAllNotifications } from '@mweb/engine'
+import { Button, Flex, Space, Spin, Typography } from 'antd'
 import React, { FC, useMemo, useRef, useState } from 'react'
-import NotificationsResolver from './notification-resolver'
-import { Space, Typography, Button, Spin, Flex } from 'antd'
 import styled from 'styled-components'
 import { sortNotificationsByTimestamp } from './utils'
+import { NotificationsResolver } from './notification-resolver'
 
 const { Text } = Typography
 
 const FeedContainer = styled(Space)`
-  overflow: hidden;
-  overflow-y: auto;
   height: 100%;
   transition: all 0.2s ease;
   width: 100%;
@@ -86,7 +84,7 @@ const NotificationFeed: FC<{
           <Flex vertical>
             <Space direction="horizontal">
               <Text type="secondary" style={{ textTransform: 'uppercase' }}>
-                New ({newNotifications.length})
+                New ({newNotifications.length - 1})
               </Text>
               {newNotifications.length ? (
                 <Button

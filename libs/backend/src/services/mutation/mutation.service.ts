@@ -30,9 +30,21 @@ export class MutationService {
     private nearSigner: NearSigner
   ) {}
 
-  async getMutation(mutationId: string): Promise<MutationDto | null> {
-    const mutation = await this.mutationRepository.getItem(mutationId)
+  async getMutation(
+    mutationId: string,
+    source?: EntitySourceType,
+    version?: string
+  ): Promise<MutationDto | null> {
+    const mutation = await this.mutationRepository.getItem({ id: mutationId, source, version })
     return mutation?.toDto() ?? null
+  }
+
+  async getMutationVersions(mutationId: string): Promise<{ version: string }[]> {
+    const versions = await this.mutationRepository.getVersions({
+      id: mutationId,
+      source: EntitySourceType.Origin,
+    })
+    return versions.map((v) => ({ version: v }))
   }
 
   async getMutationsForContext(context: IContextNode): Promise<MutationDto[]> {
@@ -92,6 +104,15 @@ export class MutationService {
     return value ?? null
   }
 
+  async getMutationVersion(mutationId: string): Promise<string | null> {
+    const value = await this.settingsService.getMutationVersion(mutationId)
+    return value ?? null
+  }
+
+  async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
+    return this.settingsService.setMutationVersion(mutationId, version)
+  }
+
   async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
     return this.settingsService.setPreferredSource(mutationId, source)
   }
@@ -137,9 +158,11 @@ export class MutationService {
     const mutation = await this._fixMutationErrors(Mutation.create(dto))
 
     // ToDo: move to provider?
-    if (!(await this.mutationRepository.getItem(mutation.id))) {
+    if (!(await this.mutationRepository.getItem({ id: mutation.id }))) {
       throw new Error('Mutation with that ID does not exist')
     }
+
+    let editedMutation: Mutation
 
     if (mutation.source === EntitySourceType.Origin) {
       const performTx = (tx: Transaction) =>
@@ -151,17 +174,19 @@ export class MutationService {
 
       // reuse transaction
       if (tx) {
-        await performTx(tx)
+        const result = await performTx(tx)
+        editedMutation = result[0]
       } else {
-        await this.unitOfWorkService.runInTransaction(performTx)
+        const result = await this.unitOfWorkService.runInTransaction(performTx)
+        editedMutation = result[0]
       }
     } else if (mutation.source === EntitySourceType.Local) {
-      await this.mutationRepository.editItem(mutation, tx)
+      editedMutation = await this.mutationRepository.editItem(mutation, tx)
     } else {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(mutation.toDto())
+    return this.populateMutationWithSettings(editedMutation.toDto())
   }
 
   async saveMutation(
@@ -218,7 +243,7 @@ export class MutationService {
 
     const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
 
-    const sourceMutation = await this.mutationRepository.getItem(sourceMutationId)
+    const sourceMutation = await this.mutationRepository.getItem({ id: sourceMutationId })
 
     if (!sourceMutation) {
       throw new Error('Source mutation not found')
@@ -273,6 +298,15 @@ export class MutationService {
     return currentDate
   }
 
+  async getMutationWithSettings(
+    mutationId: string,
+    source?: EntitySourceType,
+    version?: string
+  ): Promise<MutationWithSettings | null> {
+    const mutation = await this.getMutation(mutationId, source, version)
+    return mutation ? this.populateMutationWithSettings(mutation) : null
+  }
+
   public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {
     const lastUsage = await this.settingsService.getMutationLastUsage(
       mutation.id,
@@ -290,7 +324,7 @@ export class MutationService {
       throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
     }
 
-    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+    const originalMutation = await this.mutationRepository.getItem({ id: originalMutationId })
 
     if (!originalMutation) {
       throw new Error('The origin mutation does not exist')
@@ -313,7 +347,7 @@ export class MutationService {
       throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
     }
 
-    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+    const originalMutation = await this.mutationRepository.getItem({ id: originalMutationId })
 
     if (!originalMutation) {
       throw new Error('The origin mutation does not exist')

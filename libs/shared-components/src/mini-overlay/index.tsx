@@ -1,6 +1,7 @@
+import { EventEmitter as NEventEmitter } from 'events'
 import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef } from 'react'
+import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
@@ -10,6 +11,14 @@ import OverlayWrapper from './overlay-wrapper'
 import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
 import { NotificationProvider } from '@mweb/engine'
 import SidePanel from './side-panel'
+import {
+  MemoryRouter,
+  Navigate,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  Location,
+} from 'react-router'
 
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;
@@ -33,12 +42,12 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
     position: relative;
     overflow: visible;
     padding: 0;
-    width: 58px;
 
     .ant-drawer-body {
       overflow: visible;
       padding: 0;
       width: 58px;
+      direction: rtl;
     }
   }
 `
@@ -142,6 +151,17 @@ const LabelAppTop = styled.div`
   cursor: pointer;
 `
 
+const routes = [
+  {
+    id: 'main',
+    title: 'Home',
+  },
+  {
+    id: 'profile',
+    title: 'Profile',
+  },
+]
+
 interface IMutationAppsControl {
   enableApp: () => Promise<void>
   disableApp: () => Promise<void>
@@ -156,7 +176,11 @@ interface IMiniOverlayProps extends Partial<IWalletConnect> {
   baseMutation: MutationDto | null
   mutationApps: AppWithSettings[]
   children: ReactElement
+  eventEmitter: NEventEmitter
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  open: boolean
+  handleMutateButtonClick: () => void
 }
 
 export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp, isLoading }) => {
@@ -200,7 +224,11 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp,
   )
 }
 
-export const MiniOverlay: FC<IMiniOverlayProps> = ({
+const _MiniOverlay: FC<
+  IMiniOverlayProps & { navigate: NavigateFunction; location: Location<any> }
+> = ({
+  navigate,
+  location,
   baseMutation,
   mutationApps,
   connectWallet,
@@ -208,10 +236,23 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   nearNetwork,
   children,
   trackingRefs,
+  eventEmitter,
+  setOpen,
+  open,
+  handleMutateButtonClick,
 }) => {
   const loggedInAccountId: string = useAccountId() // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    const toggleOverlayListener = () => {
+      setOpen((prev) => !prev)
+    }
+    eventEmitter.on('toggleOverlay', toggleOverlayListener)
+    return () => {
+      eventEmitter.off('toggleOverlay', toggleOverlayListener)
+    }
+  }, [])
 
   return (
     <WrapperDriver $isOpen={open} ref={overlayRef}>
@@ -231,6 +272,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           }}
         >
           <SidePanel
+            navigate={navigate}
+            location={location}
             baseMutation={baseMutation}
             mutationApps={mutationApps}
             connectWallet={connectWallet}
@@ -239,26 +282,53 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
             overlayRef={overlayRef}
             loggedInAccountId={loggedInAccountId}
             trackingRefs={trackingRefs}
-            isNotificationPageOpen={open}
-            openCloseNotificationPage={setOpen}
+            isOverlayOpened={open}
+            openOverlay={setOpen}
           >
             {children}
           </SidePanel>
         </Drawer>
 
         <OverlayWrapper
+          navigate={navigate}
+          location={location}
           apps={mutationApps.length > 0}
           onClose={() => setOpen(false)}
           open={open}
           connectWallet={connectWallet!}
-          openCloseNotificationPage={setOpen}
           loggedInAccountId={loggedInAccountId}
           modalContainerRef={overlayRef}
           disconnectWallet={disconnectWallet!}
           nearNetwork={nearNetwork!}
           trackingRefs={trackingRefs}
+          handleMutateButtonClick={handleMutateButtonClick}
         />
       </NotificationProvider>
     </WrapperDriver>
   )
 }
+
+const withRouter = (
+  Component: FC<IMiniOverlayProps & { navigate: NavigateFunction; location: Location<any> }>
+) => {
+  const Wrapper = (props: IMiniOverlayProps) => {
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    if (location.pathname === '/') {
+      return <Navigate to={'/system/main'} replace />
+    }
+
+    return <Component navigate={navigate} location={location} {...props} />
+  }
+
+  return Wrapper
+}
+
+const __MiniOverlay = withRouter(_MiniOverlay)
+
+export const MiniOverlay = (props: IMiniOverlayProps) => (
+  <MemoryRouter>
+    <__MiniOverlay {...props} />
+  </MemoryRouter>
+)
