@@ -1,9 +1,9 @@
 import { Button, Space, Typography } from 'antd'
 import React, { FC } from 'react'
+import styled from 'styled-components'
 import MultitablePanel from '../../multitable-panel'
 import NotificationFeed from '../../notifications/notification-feed'
 import { Close as CloseIcon } from '../assets/icons'
-import styled from 'styled-components'
 const { Title, Text } = Typography
 
 const MainContainer = styled.div`
