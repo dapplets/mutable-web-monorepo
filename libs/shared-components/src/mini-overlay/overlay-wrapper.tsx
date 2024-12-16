@@ -263,7 +263,11 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
-      <OverlayContent $isOpen={open} data-mweb-insertion-point="mweb-overlay">
+      <OverlayContent
+        data-testid="side-panel"
+        $isOpen={open}
+        data-mweb-insertion-point="mweb-overlay"
+      >
         <Drawer
           title={
             <Space direction="vertical">

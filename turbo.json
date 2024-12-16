@@ -12,6 +12,9 @@
       "persistent": true,
       "cache": false
     },
+    "test": {
+      "dependsOn": ["^build"]
+    },
     "release": {
       "cache": false,
       "env": [

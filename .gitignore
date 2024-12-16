@@ -20,6 +20,7 @@ lib/
 
 # Generated test files
 test-keys/
+test-results
 
 .turbo
 
