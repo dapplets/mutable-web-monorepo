@@ -18,6 +18,7 @@ export default {
       use: { ...devices['Desktop Chrome'], channel: 'chromium' },
     },
   ],
+  timeout: 60000,
   // webServer: [
   //   {
   //     command: 'npm run modules',

@@ -11,9 +11,18 @@ import {
   OpenOverlay,
   OpenOverlayWithCircle,
   BellWithCircle,
+  PersonAddAlt,
   BellIcon,
 } from './assets/icons'
 import { Badge } from '../common/Badge'
+import {
+  MemoryRouter,
+  Navigate,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  Location,
+} from 'react-router'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
@@ -121,10 +130,7 @@ const ActionLikeButton = styled(Button)<{ type: string }>`
   border-radius: 4px;
   display: flex;
   justify-content: flex-start;
-
-  svg path {
-    fill: ${(props) => (props.type === 'primary' ? 'white' : '#7A818B')};
-  }
+  color: ${(props) => (props.type === 'primary' ? 'white' : 'rgba(2, 25, 58, 1)')};
 
   circle {
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -220,11 +226,15 @@ interface ISidePanelProps extends Partial<IWalletConnect> {
   loggedInAccountId?: string | null
   overlayRef: React.RefObject<HTMLDivElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  isNotificationPageOpen: boolean
-  openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
+  isOverlayOpened: boolean
+  openOverlay: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const SidePanel: React.FC<ISidePanelProps> = ({
+const SidePanel: React.FC<
+  ISidePanelProps & { navigate: NavigateFunction; location: Location<any> }
+> = ({
+  navigate,
+  location,
   children,
   nearNetwork,
   connectWallet,
@@ -233,8 +243,8 @@ const SidePanel: React.FC<ISidePanelProps> = ({
   mutationApps,
   overlayRef,
   trackingRefs = new Set(),
-  isNotificationPageOpen,
-  openCloseNotificationPage,
+  isOverlayOpened,
+  openOverlay,
 }) => {
   const { notifications } = useNotifications()
   const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
@@ -265,7 +275,7 @@ const SidePanel: React.FC<ISidePanelProps> = ({
     >
       <TopBlock $open={isOpenAppsPane || !!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
-          onClick={() => openCloseNotificationPage((val) => !val)}
+          onClick={() => openOverlay((val) => !val)}
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
           ref={openCloseWalletPopupRef}
@@ -290,10 +300,25 @@ const SidePanel: React.FC<ISidePanelProps> = ({
         </MutationIconWrapper>
         <ActionLikeButton
           block
-          type={isNotificationPageOpen ? 'primary' : 'default'}
-          onClick={() => openCloseNotificationPage((val) => !val)}
+          type={isOverlayOpened && location.pathname === '/system/main' ? 'primary' : 'default'}
+          onClick={() => {
+            openOverlay((val) => (location.pathname !== '/system/main' ? true : !val))
+            navigate!(`/system/main`)
+          }}
         >
           {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
+        </ActionLikeButton>
+        <ActionLikeButton
+          block
+          type={isOverlayOpened && location.pathname === '/system/profile' ? 'primary' : 'default'}
+          onClick={() => {
+            openOverlay((val) => (location.pathname !== '/system/profile' ? true : !val))
+            navigate!(`/system/profile`)
+          }}
+          style={{ paddingLeft: '14px' }}
+          data-testid="profile-action-button"
+        >
+          <PersonAddAlt />
         </ActionLikeButton>
       </TopBlock>
 

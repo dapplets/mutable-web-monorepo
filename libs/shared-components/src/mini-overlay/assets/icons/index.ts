@@ -12,6 +12,7 @@ import Disconnect from './disconnect'
 import OpenOverlay from './open-overlay'
 import OpenOverlayWithCircle from './open-overlay-with-circle'
 import Logo from './logo'
+import PersonAddAlt from './person-add-alt'
 
 export {
   MutationFallbackIcon,
@@ -28,4 +29,5 @@ export {
   OpenOverlay,
   OpenOverlayWithCircle,
   Logo,
+  PersonAddAlt,
 }
