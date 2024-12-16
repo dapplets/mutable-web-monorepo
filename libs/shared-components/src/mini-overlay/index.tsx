@@ -1,6 +1,6 @@
 import { AppWithSettings, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef } from 'react'
+import React, { FC, ReactElement, useRef } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
@@ -8,7 +8,7 @@ import { IWalletConnect } from './types'
 import { Drawer } from 'antd'
 import OverlayWrapper from './overlay-wrapper'
 import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
-import { NotificationProvider, useEngine, useMutableWeb } from '@mweb/engine'
+import { NotificationProvider, useMutableWeb } from '@mweb/engine'
 import SidePanel from './side-panel'
 import {
   MemoryRouter,
