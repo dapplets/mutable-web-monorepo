@@ -352,19 +352,20 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
                       <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
                         Sign in
                       </Title>
-
-                      <Button
-                        type="text"
-                        style={{
-                          marginLeft: 'auto',
-                          position: 'absolute',
-                          right: '8px',
-                          top: '8px',
-                        }}
-                        onClick={onClose}
-                      >
-                        <CloseIcon />
-                      </Button>
+                      {loggedInAccountId && (
+                        <Button
+                          type="text"
+                          style={{
+                            marginLeft: 'auto',
+                            position: 'absolute',
+                            right: '8px',
+                            top: '8px',
+                          }}
+                          onClick={onClose}
+                        >
+                          <CloseIcon />
+                        </Button>
+                      )}
                     </Space>
 
                     <Text
