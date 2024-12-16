@@ -8,7 +8,7 @@ import { IWalletConnect } from './types'
 import { Drawer } from 'antd'
 import OverlayWrapper from './overlay-wrapper'
 import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
-import { NotificationProvider } from '@mweb/engine'
+import { NotificationProvider, useEngine, useMutableWeb } from '@mweb/engine'
 import SidePanel from './side-panel'
 import {
   MemoryRouter,
@@ -240,10 +240,11 @@ const _MiniOverlay: FC<
 }) => {
   const loggedInAccountId: string = useAccountId() // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
+  const { engine } = useMutableWeb()
 
   return (
     <WrapperDriver $isOpen={open} ref={overlayRef}>
-      <NotificationProvider recipientId={loggedInAccountId}>
+      <NotificationProvider engine={engine} recipientId={loggedInAccountId}>
         <Drawer
           classNames={{
             wrapper: 'sideWrapper',

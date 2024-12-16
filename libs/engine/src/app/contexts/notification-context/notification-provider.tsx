@@ -1,17 +1,15 @@
-import { NotificationDto } from '@mweb/backend'
+import { Engine, NotificationDto } from '@mweb/backend'
 import React, { FC, ReactNode } from 'react'
 import { useQueryArray } from '../../hooks/use-query-array'
-import { useMutableWeb } from '../mutable-web-context'
 import { NotificationContext, NotificationContextState } from './notification-context'
 
 type Props = {
+  engine: Engine
   children?: ReactNode
   recipientId: string
 }
 
-const NotificationProvider: FC<Props> = ({ children, recipientId }) => {
-  const { engine } = useMutableWeb()
-
+const NotificationProvider: FC<Props> = ({ engine, children, recipientId }) => {
   const {
     data: notifications,
     setData: setNotifications,
