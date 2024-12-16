@@ -9,7 +9,7 @@ import PullRequestRejectedNotification, {
   PullRequestRejectedNotificationDto,
 } from './pull-request-rejected'
 
-const NotificationsResolver: FC<{
+export const NotificationsResolver: FC<{
   notification: NotificationDto
   modalContainerRef: React.RefObject<HTMLElement>
   loggedInAccountId: string
@@ -48,5 +48,3 @@ const NotificationsResolver: FC<{
       return null
   }
 }
-
-export default NotificationsResolver
