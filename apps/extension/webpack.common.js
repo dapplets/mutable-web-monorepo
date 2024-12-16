@@ -50,6 +50,7 @@ function handleInsertStyles(element) {
 
 module.exports = {
   entry: {
+    sidepanel: path.join(__dirname, 'src/sidepanel/index.tsx'),
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
     contentscript: path.join(__dirname, 'src/contentscript/index.tsx'),
     options: path.join(__dirname, 'src/options/index.tsx'),
@@ -138,6 +139,10 @@ module.exports = {
         {
           from: 'src/options/index.html',
           to: 'options.html',
+        },
+        {
+          from: 'src/sidepanel/index.html',
+          to: 'sidepanel.html',
         },
         {
           from: 'manifest.json',

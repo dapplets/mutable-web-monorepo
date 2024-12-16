@@ -82,7 +82,7 @@ async function main() {
 
   await selector.wallet()
 
-  browser.runtime.onMessage.addListener((message) => {
+  browser.runtime.onMessage.addListener((message: any) => {
     if (!message || !message.type) return
     if (message.type === 'PING') {
       // Used for background. When user clicks on the extension icon, content script may be not injected.

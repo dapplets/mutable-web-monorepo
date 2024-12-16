@@ -8,6 +8,7 @@ import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
 
 const getCurrentNetwork = async (): Promise<NearNetworkId> => {
+  // @ts-ignore
   return browser.storage.local
     .get('networkId')
     .then(({ networkId }) => networkId ?? DefaultNetworkId)
@@ -70,6 +71,7 @@ const disconnectWallet = async (): Promise<void> => {
 
 const getDevServerUrl = async (): Promise<string | null> => {
   const { devServerUrl } = await browser.storage.local.get('devServerUrl')
+  // @ts-ignore
   return devServerUrl ? devServerUrl : null
 }
 
@@ -294,3 +296,7 @@ browser.runtime.onInstalled.addListener(async () => {
 
 browser.tabs.onActivated.addListener(({ tabId }) => mutationLinkListener(tabId))
 browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))
+
+// Allows users to open the side panel by clicking on the action toolbar icon
+// @ts-ignore
+browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error)
