@@ -1,14 +1,20 @@
+import { Button, Drawer, Space, Typography } from 'antd'
 import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Drawer, Space, Button } from 'antd'
-import { Typography } from 'antd'
-import MultitablePanel from '../multitable-panel'
-import NotificationFeed from '../notifications/notification-feed'
 import { Close as CloseIcon, Logo as LogoIcon } from './assets/icons'
-import Profile from './profile'
+import Header from './header'
+import Main from './pages/main'
+import Profile from './pages/profile'
 import { IWalletConnect } from './types'
-const { Title, Text } = Typography
-import { Connect as ConnectIcon } from './assets/icons'
+import {
+  MemoryRouter,
+  Navigate,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  Location,
+} from 'react-router'
+const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
   position: fixed;
@@ -56,6 +62,11 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     }
   }
 
+  .notifyWrapper {
+    width: calc(100% - 20px);
+    margin: 0 10px;
+  }
+
   .notifyWrapper-item:first-of-type {
     .ant-space {
       width: 100%;
@@ -81,7 +92,6 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
   background: transparent;
   transform: translateX(-50%);
   box-sizing: border-box;
-  padding: 50px;
   box-shadow:
     0px 3px 6px 0px rgba(71, 65, 252, 0.05),
     0px 11px 11px 0px rgba(71, 65, 252, 0.04),
@@ -135,12 +145,15 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
     }
 
     .ant-drawer-body {
-      padding: 10px;
+      padding: 0;
     }
   }
 `
 
 const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   height: 100%;
   position: relative;
   overflow: hidden;
@@ -174,55 +187,6 @@ const Body = styled.div`
   }
 `
 
-const ButtonConnectWrapper = styled.button`
-  display: flex;
-  position: relative;
-  box-sizing: border-box;
-  overflow: hidden;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  width: 96px;
-  height: 38px;
-  gap: 4px;
-  outline: none;
-  border: none;
-  background: #384bff;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 14px;
-  padding: 0;
-  transition: all 0.2s ease;
-
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    opacity: 0.6;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-  }
-
-  .loading {
-    height: 0;
-    width: 0;
-    padding: 9px;
-    border: 3px solid #8893ff;
-    border-right-color: #0e1ebe;
-    border-radius: 15px;
-    animation: 1s infinite linear rotate;
-  }
-
-  @keyframes rotate {
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-`
-
 export interface IOverlayWrapperProps extends IWalletConnect {
   apps: boolean
   onClose: () => void
@@ -230,11 +194,14 @@ export interface IOverlayWrapperProps extends IWalletConnect {
   loggedInAccountId: string
   modalContainerRef: React.RefObject<HTMLElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
   handleMutateButtonClick: () => void
 }
 
-const OverlayWrapper: FC<IOverlayWrapperProps> = ({
+const OverlayWrapper: FC<
+  IOverlayWrapperProps & { navigate: NavigateFunction; location: Location<any> }
+> = ({
+  navigate,
+  location,
   apps,
   onClose,
   open,
@@ -263,7 +230,11 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
-      <OverlayContent $isOpen={open} data-mweb-insertion-point="mweb-overlay">
+      <OverlayContent
+        data-testid="side-panel"
+        $isOpen={open}
+        data-mweb-insertion-point="mweb-overlay"
+      >
         <Drawer
           title={
             <Space direction="vertical">
@@ -288,100 +259,33 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
             content: 'driwingContent',
           }}
           width={360}
-          data-testid="overlay-notify"
-          children={
-            <Body ref={overlayRef}>
-              {loggedInAccountId ? (
-                <>
-                  <Profile
-                    accountId={loggedInAccountId ?? null}
-                    closeProfile={() => {
-                      openCloseProfile(false)
-                    }}
-                    connectWallet={connectWallet!}
-                    disconnectWallet={disconnectWallet}
-                    nearNetwork={nearNetwork}
-                    trackingRefs={trackingRefs!}
-                    openCloseWalletPopupRef={openCloseWalletPopupRef}
-                  />
-                  <MultitablePanel
-                    connectWallet={connectWallet}
-                    loggedInAccountId={loggedInAccountId}
-                    handleMutateButtonClick={handleMutateButtonClick}
-                  />
-                  <NotificationFeed
-                    connectWallet={connectWallet}
-                    loggedInAccountId={loggedInAccountId}
-                    modalContainerRef={modalContainerRef}
-                  />
-                </>
-              ) : (
-                <>
-                  <Profile
-                    accountId={loggedInAccountId ?? null}
-                    closeProfile={() => {
-                      openCloseProfile(false)
-                    }}
-                    connectWallet={connectWallet!}
-                    disconnectWallet={disconnectWallet}
-                    nearNetwork={nearNetwork}
-                    trackingRefs={trackingRefs!}
-                    openCloseWalletPopupRef={openCloseWalletPopupRef}
-                  />
-                  <MultitablePanel
-                    connectWallet={connectWallet}
-                    loggedInAccountId={loggedInAccountId}
-                    handleMutateButtonClick={handleMutateButtonClick}
-                  />
-                  <Space
-                    direction="vertical"
-                    style={{
-                      width: '100%',
-                      borderRadius: '20px',
-                      background: '#fff',
-                      padding: '8px 8px 20px',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
-                      <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
-                        Sign in
-                      </Title>
-
-                      <Button
-                        type="text"
-                        style={{
-                          marginLeft: 'auto',
-                          position: 'absolute',
-                          right: '8px',
-                          top: '8px',
-                        }}
-                        onClick={onClose}
-                      >
-                        <CloseIcon />
-                      </Button>
-                    </Space>
-
-                    <Text
-                      type="secondary"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '5px',
-                        textAlign: 'center',
-                        fontSize: '12px',
-                      }}
-                    >
-                      To see personalized notifications, you must sign in by connecting your wallet.
-                    </Text>
-                  </Space>
-                </>
-              )}
-            </Body>
-          }
-        ></Drawer>
+        >
+          <Body ref={overlayRef}>
+            <Header
+              accountId={loggedInAccountId ?? null}
+              closeProfile={() => {
+                openCloseProfile(false)
+              }}
+              connectWallet={connectWallet!}
+              disconnectWallet={disconnectWallet}
+              nearNetwork={nearNetwork}
+              trackingRefs={trackingRefs!}
+              openCloseWalletPopupRef={openCloseWalletPopupRef}
+            />
+            {location.pathname === '/system/main' ? (
+              <Main
+                loggedInAccountId={loggedInAccountId}
+                modalContainerRef={modalContainerRef}
+                handleMutateButtonClick={handleMutateButtonClick}
+                onClose={onClose}
+                connectWallet={connectWallet}
+              />
+            ) : null}
+            {location.pathname === '/system/profile' ? (
+              <Profile navigate={navigate} location={location} />
+            ) : null}
+          </Body>
+        </Drawer>
       </OverlayContent>
     </OverlayWrapperBlock>
   )

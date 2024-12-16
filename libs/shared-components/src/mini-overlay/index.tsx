@@ -10,6 +10,14 @@ import OverlayWrapper from './overlay-wrapper'
 import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
 import { NotificationProvider } from '@mweb/engine'
 import SidePanel from './side-panel'
+import {
+  MemoryRouter,
+  Navigate,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  Location,
+} from 'react-router'
 
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;
@@ -142,6 +150,17 @@ const LabelAppTop = styled.div`
   cursor: pointer;
 `
 
+const routes = [
+  {
+    id: 'main',
+    title: 'Home',
+  },
+  {
+    id: 'profile',
+    title: 'Profile',
+  },
+]
+
 interface IMutationAppsControl {
   enableApp: () => Promise<void>
   disableApp: () => Promise<void>
@@ -203,7 +222,11 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ app, enableApp, disableApp,
   )
 }
 
-export const MiniOverlay: FC<IMiniOverlayProps> = ({
+const _MiniOverlay: FC<
+  IMiniOverlayProps & { navigate: NavigateFunction; location: Location<any> }
+> = ({
+  navigate,
+  location,
   baseMutation,
   mutationApps,
   connectWallet,
@@ -236,6 +259,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           }}
         >
           <SidePanel
+            navigate={navigate}
+            location={location}
             baseMutation={baseMutation}
             mutationApps={mutationApps}
             connectWallet={connectWallet}
@@ -244,19 +269,20 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
             overlayRef={overlayRef}
             loggedInAccountId={loggedInAccountId}
             trackingRefs={trackingRefs}
-            isNotificationPageOpen={open}
-            openCloseNotificationPage={setOpen}
+            isOverlayOpened={open}
+            openOverlay={setOpen}
           >
             {children}
           </SidePanel>
         </Drawer>
 
         <OverlayWrapper
+          navigate={navigate}
+          location={location}
           apps={mutationApps.length > 0}
           onClose={() => setOpen(false)}
           open={open}
           connectWallet={connectWallet!}
-          openCloseNotificationPage={setOpen}
           loggedInAccountId={loggedInAccountId}
           modalContainerRef={overlayRef}
           disconnectWallet={disconnectWallet!}
@@ -268,3 +294,28 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
     </WrapperDriver>
   )
 }
+
+const withRouter = (
+  Component: FC<IMiniOverlayProps & { navigate: NavigateFunction; location: Location<any> }>
+) => {
+  const Wrapper = (props: IMiniOverlayProps) => {
+    const navigate = useNavigate()
+    const location = useLocation()
+
+    if (location.pathname === '/') {
+      return <Navigate to={'/system/main'} replace />
+    }
+
+    return <Component navigate={navigate} location={location} {...props} />
+  }
+
+  return Wrapper
+}
+
+const __MiniOverlay = withRouter(_MiniOverlay)
+
+export const MiniOverlay = (props: IMiniOverlayProps) => (
+  <MemoryRouter>
+    <__MiniOverlay {...props} />
+  </MemoryRouter>
+)

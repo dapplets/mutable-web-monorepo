@@ -1,8 +1,8 @@
 import { useNotifications, useViewAllNotifications } from '@mweb/engine'
+import { Button, Flex, Space, Spin, Typography } from 'antd'
 import React, { FC, useMemo, useRef, useState } from 'react'
-import NotificationsResolver from './notification-resolver'
-import { Space, Typography, Button, Spin, Flex } from 'antd'
 import styled from 'styled-components'
+import NotificationsResolver from './notification-resolver'
 
 const { Text } = Typography
 
