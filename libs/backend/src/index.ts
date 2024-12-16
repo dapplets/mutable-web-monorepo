@@ -35,6 +35,8 @@ export {
   PullRequestResult,
   PullRequestStatus,
 } from './services/notification/types/pull-request'
+export { PullRequestAcceptedPayload } from './services/notification/types/pull-request-accepted'
+export { PullRequestRejectedPayload } from './services/notification/types/pull-request-rejected'
 export { RegularPayload } from './services/notification/types/regular'
 
 // ToDo: replace with DTO
