@@ -33,9 +33,9 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
       ear: 'bos.dapplets.near/widget/ContextActionsGroup',
     },
     timeReference: {
-      timestamp: 1731150806896,
-      height: 132297337,
-      avgBlockTime: 1122, // https://nearblocks.io/
+      timestamp: 1733844432230,
+      height: 134671239,
+      avgBlockTime: 1091, // https://nearblocks.io/
     },
   },
   testnet: {
@@ -50,8 +50,8 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
       ear: 'bos.dapplets.testnet/widget/ContextActionsGroup',
     },
     timeReference: {
-      timestamp: 1731150806896,
-      height: 179057513,
+      timestamp: 1733844492601,
+      height: 181770025,
       avgBlockTime: 1000, // https://testnet.nearblocks.io/
     },
   },
