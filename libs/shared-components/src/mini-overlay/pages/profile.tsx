@@ -1,19 +1,12 @@
-import React, { FC, useRef, useState } from 'react'
-import { ArrowIcon } from '../assets/icons'
+import React, { FC } from 'react'
+import { Location, NavigateFunction } from 'react-router'
 import styled from 'styled-components'
-import { Button } from 'antd'
-import {
-  MemoryRouter,
-  Navigate,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  Location,
-} from 'react-router'
+import { ArrowIcon } from '../assets/icons'
 
 const ProfileContainer = styled.div`
   width: calc(100% - 20px);
   display: flex;
+  flex-direction: column;
   margin: 0 10px;
   gap: 10px;
 `
@@ -69,6 +62,12 @@ const Profile: FC<{ navigate: NavigateFunction; location: Location<any> }> = ({
         </BackButton>
         <H1>Profile</H1>
       </Header>
+      <div>
+        <a href="https://github.com/dapplets/connecting-accounts-dapplet" target="_blank">
+          Connected Accounts
+        </a>{' '}
+        are coming back soon...
+      </div>
     </ProfileContainer>
   )
 }

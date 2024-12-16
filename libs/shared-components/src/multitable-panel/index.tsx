@@ -1,6 +1,5 @@
-import { useNotifications, useViewAllNotifications } from '@mweb/engine'
-import React, { FC, useMemo, useRef, useState } from 'react'
-import { Space, Typography, Spin, Flex } from 'antd'
+import { Flex, Space, Spin, Typography } from 'antd'
+import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 
 import { Dropdown } from './components/dropdown'

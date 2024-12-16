@@ -1,8 +1,8 @@
-import { EventEmitter as NEventEmitter } from 'events'
-import { useMutableWeb, useMutationApp } from '@mweb/engine'
 import { AppInstanceWithSettings } from '@mweb/backend'
+import { useMutableWeb, useMutationApp } from '@mweb/engine'
 import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
-import React, { useState } from 'react'
+import { EventEmitter as NEventEmitter } from 'events'
+import React from 'react'
 import Background from '../../common/background'
 import { NearNetworkId } from '../../common/networks'
 

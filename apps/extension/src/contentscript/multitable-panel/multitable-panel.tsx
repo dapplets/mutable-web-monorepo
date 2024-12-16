@@ -1,15 +1,15 @@
-import { EventEmitter as NEventEmitter } from 'events'
+import { EntitySourceType } from '@mweb/backend'
 import { useMutableWeb } from '@mweb/engine'
+import { EventEmitter as NEventEmitter } from 'events'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
+import { NearNetworkId } from '../../common/networks'
 import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } from '../storage'
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
-import { NearNetworkId } from '../../common/networks'
-import { EntitySourceType } from '@mweb/backend'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
