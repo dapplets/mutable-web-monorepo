@@ -1,0 +1,81 @@
+@import "../assets/styles/null";
+@import "../assets/styles/color.variables";
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+    
+}
+
+
+.title,
+.subtitle {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.title {
+  padding: 0 0 4px;
+
+    
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 26px;
+  color: $main-black;
+}
+
+.otherTitle{
+  width: 252px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.subtitle {
+  display: block;
+
+  padding: 0 20px 10px;
+
+    
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  color: $main-grey;
+  text-align: center;
+}
+
+.otherSubtitle{
+  padding-bottom: 20px;
+}
+
+.children{
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0 30px;
+}
+
+.link {
+  display: block;
+
+  margin-top: 9px;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 100%;
+  color: $primary;
+  text-align: center;
+
+  &:hover {
+    color: $primary-hover;
+  }
+
+  &:active {
+    color: $primary-pressed;
+  }
+}

@@ -1,0 +1,445 @@
+@import "../assets/styles/color.variables";
+@import "../assets/styles/null";
+
+.warningInfo {
+  display: block;
+
+  padding: 4px;
+
+  color: white;
+  text-align: center;
+
+  background-color: $primary;
+}
+
+.overlayPaddings {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 10px 15px 0 16px;
+
+  &.withWarning {
+    height: calc(100% - 28px);
+  }
+}
+
+.wrapper {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+}
+
+.caHeaderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.caHeaderTop > h3 {
+  margin: 5px 0;
+  color: rgb(145 145 145);
+}
+
+.header {
+  user-select: none;
+  display: flex;
+
+  // & > div:first-child {
+  //   width: 64%;
+  // }
+
+  & > div {
+    width: 100%;
+  }
+}
+
+.scrollContent {
+  direction: rtl;
+  overflow-y: auto;
+  height: calc(100vh - 162px);
+  padding-left: 7px;
+
+  &::-webkit-scrollbar {
+    cursor: pointer;
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(244 244 244);
+    background:
+      linear-gradient(
+        90deg,
+        rgb(244 244 244 / 0%) 10%,
+        rgb(227 227 227 / 100%) 50%,
+        rgb(244 244 244 / 0%) 90%
+      );
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 4px;
+    height: 2px;
+    margin-bottom: 15px;
+
+    background: $primary;
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
+  }
+
+  &.withWarning {
+    height: calc(100vh - 190px);
+  }
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.scrollContent > * {
+  direction: ltr;
+}
+
+.accountsWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin-top: 14px;
+}
+
+.mainBlock {
+  display: grid;
+  grid-template-columns: 333px 90px;
+  align-items: center;
+
+  width: 100%;
+  margin-top: 10px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.accountBlock {
+  display: flex;
+  width: 100%;
+  padding: 10px 14px 10px 9px;
+  background-color: $web-bg;
+}
+
+.accountBlockHorizontal {
+  flex-direction: row;
+}
+
+.accountBlockVertical {
+  flex-direction: column;
+}
+
+.account {
+  cursor: pointer;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: fit-content;
+  height: 44px;
+  margin: 3px;
+  padding: 0 5px 0 2px;
+
+  background: white;
+  border-radius: 200px 140px 140px 200px;
+}
+
+.imgUser {
+  display: inline-block;
+
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 10%));
+  border: 2px solid $web-bg;
+  border-radius: 50%;
+}
+
+.nameUser {
+  padding-right: 14px;
+
+    
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 100%;
+  color: $main-black;
+}
+
+.nameUserActive {
+  background: $primary;
+
+  .nameUser {
+    color: $pure-white;
+  }
+}
+
+.accountStatus {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  background-color: #dadada;
+}
+
+.statusLabel {
+  display: block;
+
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+  box-shadow: 0 2px 2px rgb(0 0 0 / 10%);
+}
+
+.accountStatus > div::before {
+  content: attr(data-title);
+
+  position: absolute;
+  z-index: 9998;
+  top: 47%;
+  right: 87%;
+
+  display: none;
+
+  width: max-content;
+  height: auto;
+  padding: 8px 10px;
+
+    
+  font-size: 10px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 100%;
+  color: $main-grey;
+  text-align: center;
+  text-transform: capitalize;
+
+  background: $pure-white;
+  border-radius: 10px 0 10px 10px;
+  box-shadow: 0 4px 4px rgb(0 0 0 / 10%);
+}
+
+.accountStatus > div:hover::before,
+.accountStatus > div:focus::before {
+  display: inline-block;
+}
+
+.statusName {
+  display: inline-block;
+
+  padding-left: 5px;
+
+    
+  font-size: 10px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 100%;
+  color: $main-black;
+  text-transform: capitalize;
+}
+
+.statusConnected {
+  margin: 3px;
+  padding: 4px 5px;
+  background: #5ec280;
+}
+
+.statusProcessing {
+  margin: 3px;
+  padding: 6px 5px;
+  background: #f5cf6c;
+}
+
+.statusError {
+  margin: 3px;
+  padding: 4px 2px 7px;
+  background: $primary;
+}
+
+.buttonDelete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  height: 30px;
+  margin: 3px;
+
+  background-color: $pure-white;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 4%));
+  border-radius: 50%;
+
+  fill: #919191;
+
+  &:hover {
+    background-color: $primary;
+    fill: #fff;
+  }
+
+  &:active {
+    background-color: $primary-pressed;
+    fill: #fff;
+  }
+
+  &:disabled {
+    cursor: default;
+    background-color: #e5e5e5;
+    fill: #919191;
+  }
+}
+
+.buttonDelete svg {
+  fill: inherit;
+}
+
+.messageDelete {
+  height: calc(100% - 120px);
+  padding: 0 110px;
+
+  h6 {
+    font-size: 22px;
+    font-weight: 700;
+    font-style: normal;
+    line-height: 26px;
+    color: $main-grey;
+    text-align: center;
+  }
+
+  p {
+    font-size: 14px;
+    font-weight: 500;
+    font-style: normal;
+    line-height: 16px;
+    color: #797979;
+    text-align: center;
+  }
+}
+
+.connectWalletsBtnModule {
+  display: flex;
+  align-items: center;
+  width: 44%;
+}
+
+.connectWalletsBtn {
+  display: block;
+
+  width: fit-content;
+  margin-left: 10px;
+  padding: 15px 20px;
+
+    
+  font-size: 14px;
+  line-height: 100%;
+  color: #fff;
+
+  background: $primary;
+  border-radius: 12px;
+
+  &:hover {
+    background: #c12f49;
+  }
+
+  &:active {
+    background: $primary-pressed;
+  }
+
+  &:disabled {
+    cursor: default;
+    background-color: $main-grey;
+  }
+}
+
+.connectWalletsBtnInfo {
+  display: block;
+
+  width: 20px;
+  height: 20px;
+  margin-left: 8px;
+
+  border-radius: 99px;
+}
+
+.connectWalletsBtnInfo svg {
+  fill: #C9C9C9;
+
+  &:hover,
+  &:focus {
+    fill: #adadad;
+  }
+
+  &:active {
+    fill: $main-grey;
+  }
+}
+
+.connectWalletsBtnInfo.active svg {
+  fill: $primary;
+
+  &:hover,
+  &:focus {
+    fill: #c12f49;
+  }
+
+  &:active {
+    fill: $primary-pressed
+  }
+}
+
+.connectWalletsInfoWrapper {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  height: 0;
+}
+
+.connectWalletsInfo {
+  transform: translateX(200%);
+
+  display: block;
+
+  width: 296px;
+  margin-top: 4px;
+  margin-right: 10px;
+  padding: 13px 16px;
+
+    
+  font-size: 14px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 149%;
+  color: $content-black;
+
+  opacity: 0;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 25%);
+
+  transition: transform 0.01s ease-out 0.2s, opacity 0.2s ease-out 0s;
+}
+
+.connectWalletsInfoVisible {
+  transform: translateX(0);
+  opacity: 1;
+  transition: transform 0.01s ease-in 0s, opacity 0.2s ease-in 0s;
+}
+
+.connectWalletsInfo p:first-child {
+  margin-bottom: 10px;
+}
