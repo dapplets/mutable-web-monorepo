@@ -31,7 +31,11 @@ export class CrawlerAgent {
   }
 
   async run() {
-    const browser = await puppeteer.launch({ headless: true })
+    const browser = await puppeteer.launch({
+      headless: true,
+      defaultViewport: null,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
+    })
 
     try {
       const coreScript = fs.readFileSync(path.join(__dirname, '../inpage/index.js'), 'utf-8')
