@@ -30,12 +30,17 @@ const Loader = () => (
 )
 
 const MultitablePanel: FC<{
-  loggedInAccountId: string
   connectWallet: (() => Promise<void>) | undefined
   handleMutateButtonClick: () => void
-}> = ({ loggedInAccountId, connectWallet, handleMutateButtonClick }) => {
+  setMutationIdToDelete: React.Dispatch<React.SetStateAction<string | null>>
+  handleFavoriteButtonClick: (mutationId: string) => void
+}> = ({
+  connectWallet,
+  handleMutateButtonClick,
+  setMutationIdToDelete,
+  handleFavoriteButtonClick,
+}) => {
   const [isWaiting, setWaiting] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -68,7 +73,11 @@ const MultitablePanel: FC<{
       
         </>
       )} */}
-      <Dropdown onMutateButtonClick={handleMutateButtonClick} />
+      <Dropdown
+        setMutationIdToDelete={setMutationIdToDelete}
+        handleFavoriteButtonClick={handleFavoriteButtonClick}
+        onMutateButtonClick={handleMutateButtonClick}
+      />
     </FeedContainer>
   )
 }

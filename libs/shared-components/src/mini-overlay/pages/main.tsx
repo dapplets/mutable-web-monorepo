@@ -18,6 +18,8 @@ export interface IMainProps {
   handleMutateButtonClick: () => void
   onClose: () => void
   connectWallet: () => Promise<void>
+  handleFavoriteButtonClick: (mutationId: string) => void
+  setMutationIdToDelete: React.Dispatch<React.SetStateAction<string | null>>
 }
 const Main: FC<IMainProps> = ({
   loggedInAccountId,
@@ -25,12 +27,15 @@ const Main: FC<IMainProps> = ({
   handleMutateButtonClick,
   onClose,
   connectWallet,
+  setMutationIdToDelete,
+  handleFavoriteButtonClick,
 }) => {
   return (
     <MainContainer data-testid="main-page">
       <MultitablePanel
         connectWallet={connectWallet}
-        loggedInAccountId={loggedInAccountId}
+        setMutationIdToDelete={setMutationIdToDelete}
+        handleFavoriteButtonClick={handleFavoriteButtonClick}
         handleMutateButtonClick={handleMutateButtonClick}
       />
       {loggedInAccountId ? (
