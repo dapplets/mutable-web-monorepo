@@ -1,4 +1,4 @@
-import { ApplicationDto, DocumentDto, MutationCreateDto, MutationDto } from '@mweb/backend'
+import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -7,12 +7,14 @@ import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
-import { DropdownButton } from './dropdown-button'
 import { DocumentsModal } from './documents-modal'
 import { ModalConfirm } from './modals-confirm'
-import { MutationModalMode } from './types'
 import { AppInMutation } from '@mweb/backend'
 import { Image } from './image'
+import { useSaveMutation, useMutableWeb } from '@mweb/engine'
+import { ButtonsGroup } from './buttons-group'
+import { useMutationVersions } from '@mweb/engine'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -95,12 +97,6 @@ const AppsList = styled.div`
     border-radius: 2px;
     box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
   }
-`
-
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `
 
 const BlurredBackground = styled.div`
@@ -198,10 +194,19 @@ const CloseIcon = () => (
   </svg>
 )
 
-const createEmptyMutation = (): MutationCreateDto => ({
+const EMPTY_MUTATION_ID = '/mutation/NewMutation'
+
+const createEmptyMutation = (): MutationDto => ({
+  authorId: null,
+  blockNumber: 0,
+  version: '0',
+  id: EMPTY_MUTATION_ID,
+  localId: 'NewMutation',
+  timestamp: 0,
+  source: EntitySourceType.Local, // ToDo: actually source will be changed in click handlers
   apps: [],
   metadata: {
-    name: '',
+    name: 'New Mutation',
   },
   targets: [
     {
@@ -215,6 +220,7 @@ const createEmptyMutation = (): MutationCreateDto => ({
 export interface Props {
   apps: ApplicationDto[]
   baseMutation: MutationDto | null
+  localMutations: MutationDto[]
   onClose: () => void
 }
 
@@ -225,7 +231,7 @@ interface IAlert extends AlertProps {
 const alerts: { [name: string]: IAlert } = {
   noWallet: {
     id: 'noWallet',
-    text: 'Connect the NEAR wallet to create the mutation.',
+    text: 'Connect the NEAR wallet to publish the mutation.',
     severity: 'warning',
   },
   emptyMutation: {
@@ -250,49 +256,34 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) => {
+export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
+  const { switchMutation, switchPreferredSource, isLoading } = useMutableWeb()
   const loggedInAccountId = useAccountId()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
+  const { saveMutation, isLoading: isSaving } = useSaveMutation()
 
   useEscape(onClose)
 
-  const [mode, setMode] = useState(
-    !baseMutation
-      ? MutationModalMode.Creating
-      : baseMutation.authorId === loggedInAccountId
-      ? MutationModalMode.Editing
-      : MutationModalMode.Forking
-  )
+  // Call `setEditingMutation(chooseEditingMutation())` if you want to revert changes
+  const chooseEditingMutation = (): MutationDto =>
+    baseMutation
+      ? baseMutation.source === EntitySourceType.Local
+        ? baseMutation
+        : localMutations.find((m) => m.id === baseMutation.id) ?? cloneDeep(baseMutation)
+      : localMutations.find((m) => m.id === EMPTY_MUTATION_ID) ?? createEmptyMutation()
 
-  const chooseEditingMutation = (
-    changedApps?: AppInMutation[]
-  ): MutationCreateDto | MutationDto => {
-    const mut =
-      mode === MutationModalMode.Forking && baseMutation
-        ? {
-            metadata: {
-              name: '',
-              fork_of: baseMutation.id,
-            },
-            apps: cloneDeep(baseMutation.apps),
-            targets: cloneDeep(baseMutation.targets),
-          }
-        : mode === MutationModalMode.Editing && baseMutation
-        ? cloneDeep(baseMutation)
-        : createEmptyMutation()
-    return changedApps ? mergeDeep(mut, { apps: changedApps }) : mut
-  }
-
-  const [editingMutation, setEditingMutation] = useState<MutationCreateDto | MutationDto>(
-    chooseEditingMutation()
-  )
-  const [openConfirm, setOpenConfirm] = useState(false)
-
+  const [editingMutation, setEditingMutation] = useState<MutationDto>(chooseEditingMutation())
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
   const [alert, setAlert] = useState<IAlert | null>(null)
 
-  useEffect(() => setEditingMutation(chooseEditingMutation(editingMutation.apps)), [mode])
+  // Reload the base mutation if it changed (e.g. if a mutation version was updated)
+  useEffect(() => {
+    setEditingMutation(chooseEditingMutation())
+  }, [isLoading])
 
   useEffect(() => {
     const doChecksForAlerts = (): IAlert | null => {
@@ -302,7 +293,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     }
     setIsModified(true)
     setAlert(doChecksForAlerts())
-  }, [loggedInAccountId, editingMutation, mode])
+  }, [loggedInAccountId, editingMutation])
 
   useEffect(() => {
     setAlert((val) => {
@@ -310,7 +301,9 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
       return !val || val?.id === 'notEditedMutation' ? null : val
     })
   }, [isModified])
-  const isSubmitDisabled = !isModified || !!alert
+
+  const isLocalSubmitDisabled = !isModified || (alert && alert.id !== 'noWallet') || isSaving
+  const isRemoteSubmitDisabled = !isModified || !!alert
 
   const handleAppCheckboxChange = (appId: string, checked: boolean) => {
     setEditingMutation((mut) => {
@@ -350,12 +343,19 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
     })
   }
 
-  const handleRevertClick = () => {
-    setEditingMutation(chooseEditingMutation())
+  const handleSaveLocallyClick = () => {
+    const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
+
+    saveMutation(localMutation)
+      .then(({ id }) => {
+        switchMutation(id)
+        switchPreferredSource(id, EntitySourceType.Local)
+      })
+      .then(onClose)
   }
 
-  const handleSaveDropdownChange = (itemId: string) => {
-    setMode(itemId as MutationModalMode)
+  const handlePublishClick = () => {
+    setIsConfirmModalOpen(true)
   }
 
   const handleOpenDocumentsModal = (appId: string, docs: DocumentDto[]) => {
@@ -366,11 +366,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
   return (
     <SelectedMutationEditorWrapper>
       <HeaderEditor>
-        <HeaderTitle>
-          {mode === MutationModalMode.Creating ? 'Create Mutation' : null}
-          {mode === MutationModalMode.Editing ? 'Edit Mutation' : null}
-          {mode === MutationModalMode.Forking ? 'Fork Mutation' : null}
-        </HeaderTitle>
+        <HeaderTitle>Edit Mutation</HeaderTitle>
         <Close onClick={onClose}>
           <CloseIcon />
         </Close>
@@ -378,8 +374,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
 
       {alert ? <Alert severity={alert.severity} text={alert.text} /> : null}
 
-      {(mode === MutationModalMode.Editing || mode === MutationModalMode.Forking) &&
-      baseMutation ? (
+      {baseMutation ? (
         <>
           <Label>Current Mutation</Label>
           <CardWrapper>
@@ -391,12 +386,21 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
               />
             </ImgWrapper>
             <TextWrapper>
-              <p>{baseMutation.metadata.name}</p>
+              <p>{baseMutation.metadata.name} </p>
               <span>
                 by{' '}
-                {baseMutation.authorId === loggedInAccountId
+                {!baseMutation.authorId && !loggedInAccountId
+                  ? 'me'
+                  : (!baseMutation.authorId && loggedInAccountId) ||
+                    baseMutation.authorId === loggedInAccountId
                   ? `me (${loggedInAccountId})`
                   : baseMutation.authorId}
+                <MutationVersionDropdown
+                  toggleDropdown={toggleDropdown}
+                  expanded={expandedVersion}
+                  isWhite
+                  mutationId={baseMutation?.id ?? null}
+                />
               </span>
             </TextWrapper>
           </CardWrapper>
@@ -410,6 +414,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             <ApplicationCardWithDocs
               key={app.id}
               src={app.id}
+              source={app.source}
               metadata={app.metadata}
               disabled={false}
               docsIds={editingMutation.apps
@@ -424,6 +429,7 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
             <SimpleApplicationCard
               key={app.id}
               src={app.id}
+              source={app.source}
               metadata={app.metadata}
               disabled={false}
               isChecked={editingMutation.apps.some((_app) => _app.appId === app.id)}
@@ -433,27 +439,14 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
         )}
       </AppsList>
 
-      <ButtonsBlock>
-        <Button disabled={isSubmitDisabled} onClick={handleRevertClick}>
-          Revert changes
+      <ButtonsGroup>
+        <Button disabled={isLocalSubmitDisabled} onClick={handleSaveLocallyClick}>
+          Save Locally
         </Button>
-        <DropdownButton
-          value={mode}
-          items={[
-            { value: MutationModalMode.Forking, title: 'Fork', visible: !!baseMutation },
-            {
-              value: MutationModalMode.Editing,
-              title: 'Save',
-              visible: !!baseMutation && baseMutation.authorId === loggedInAccountId,
-            },
-            { value: MutationModalMode.Creating, title: 'Create', visible: !baseMutation },
-          ]}
-          onClick={() => setOpenConfirm(true)}
-          onChange={handleSaveDropdownChange}
-          disabled={isSubmitDisabled}
-          disabledAll={false}
-        />
-      </ButtonsBlock>
+        <Button disabled={isRemoteSubmitDisabled} onClick={handlePublishClick} primary>
+          Publish
+        </Button>
+      </ButtonsGroup>
 
       {appIdToOpenDocsModal ? (
         <>
@@ -470,15 +463,14 @@ export const MutationEditorModal: FC<Props> = ({ baseMutation, apps, onClose }) 
           />
         </>
       ) : null}
-      {openConfirm && loggedInAccountId && (
+
+      {isConfirmModalOpen && loggedInAccountId && (
         <ModalConfirmBackground>
           <ModalConfirm
             itemType="mutation"
-            mode={mode}
-            onCloseCurrent={() => setOpenConfirm(false)}
+            onCloseCurrent={() => setIsConfirmModalOpen(false)}
             onCloseAll={onClose}
             editingMutation={editingMutation}
-            baseMutation={baseMutation}
             loggedInAccountId={loggedInAccountId}
           />
         </ModalConfirmBackground>

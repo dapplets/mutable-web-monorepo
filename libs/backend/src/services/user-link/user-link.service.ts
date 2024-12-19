@@ -18,9 +18,9 @@ import {
   LinkIndexObject,
   UserLinkId,
 } from './user-link.entity'
-import { UserLinkRepository } from './user-link.repository'
 import { NearSigner } from '../near-signer/near-signer.service'
 import { generateGuid } from '../../common/generate-guid'
+import { IRepository } from '../base/repository.interface'
 
 // ToDo: is in the entity
 const LinkKey = 'link'
@@ -28,7 +28,7 @@ const KeyDelimiter = '/'
 
 export class UserLinkService {
   constructor(
-    private userLinkRepository: UserLinkRepository,
+    private userLinkRepository: IRepository<IndexedLink>,
     private applicationService: ApplicationService,
     private _signer: NearSigner // ToDo: is it necessary dependency injection?
   ) {}
@@ -75,7 +75,7 @@ export class UserLinkService {
           namespace: target.namespace,
           insertionPoint: target.injectTo,
           bosWidgetId: target.componentId,
-          authorId: app.authorId,
+          authorId: app.authorId!, // ToDo: can be null?
           static: true,
           appInstanceId: app.instanceId,
         }))
@@ -109,6 +109,7 @@ export class UserLinkService {
 
     if (!accountId) throw new Error('User is not logged in')
 
+    // ToDo: local or remote?
     const app = await this.applicationService.getApplication(appGlobalId)
 
     if (!app) {
@@ -155,7 +156,7 @@ export class UserLinkService {
       id: indexedLink.id,
       appId: appGlobalId,
       namespace: target.namespace,
-      authorId: indexedLink.authorId,
+      authorId: indexedLink.authorId!, // ToDo: can be null?
       bosWidgetId: target.componentId,
       insertionPoint: target.injectTo,
       static: false,
@@ -183,7 +184,7 @@ export class UserLinkService {
     return indexedLinks.map((link) => ({
       id: link.id,
       appId: appId,
-      authorId: link.authorId,
+      authorId: link.authorId!, // ToDo: can be null?
       namespace: target.namespace,
       bosWidgetId: target.componentId, // ToDo: unify
       insertionPoint: target.injectTo, // ToDo: unify

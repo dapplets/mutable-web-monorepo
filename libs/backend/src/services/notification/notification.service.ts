@@ -1,28 +1,29 @@
-import { EntityId } from '../base/base.entity'
+import { EntityId, EntitySourceType } from '../base/base.entity'
 import { NearSigner } from '../near-signer/near-signer.service'
 import { Transaction } from '../unit-of-work/transaction'
 import { UserLinkService } from '../user-link/user-link.service'
 import { Notification, NotificationType } from './notification.entity'
-import { NotificationRepository } from './notification.repository'
 import { NotificationStatus, Resolution } from './resolution.entity'
-import { ResolutionRepository } from './resolution.repository'
 import { NotificationDto } from './dtos/notification.dto'
 import { NotificationCreateDto } from './dtos/notification-create.dto'
 import { PullRequestStatus } from './types/pull-request'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { generateGuid } from '../../common/generate-guid'
+import { IRepository } from '../base/repository.interface'
+
+const KeyDelimiter = '/'
 
 export class NotificationService {
   constructor(
-    private notificationRepository: NotificationRepository,
-    private resolutionRepository: ResolutionRepository,
+    private notificationRepository: IRepository<Notification>,
+    private resolutionRepository: IRepository<Resolution>,
     private unitOfWorkService: UnitOfWorkService,
     private nearSigner: NearSigner
   ) {}
 
   // ToDo: return dto
   async getNotification(notificationId: string): Promise<Notification | null> {
-    return this.notificationRepository.getItem(notificationId)
+    return this.notificationRepository.getItem({ id: notificationId })
   }
 
   async createNotification(dto: NotificationCreateDto, tx?: Transaction): Promise<void> {
@@ -39,18 +40,32 @@ export class NotificationService {
 
   // ToDo: move DTOs to controllers?
 
-  async getNotificationsByRecipient(recipientId: string): Promise<NotificationDto[]> {
-    const notifications = await this.notificationRepository.getItemsByIndex({
-      recipients: [recipientId],
+  async getMyNotifications(accountId: string): Promise<NotificationDto[]> {
+    if (!accountId) return []
+
+    const incomingNotifications = await this.notificationRepository.getItemsByIndex({
+      recipients: [accountId],
     })
 
+    const outgoingNotifications = await this.notificationRepository.getItems({
+      authorId: accountId,
+    })
+
+    const allNotifications = incomingNotifications
+
+    for (const outgoingNotification of outgoingNotifications) {
+      if (!allNotifications.some((n) => n.id === outgoingNotification.id)) {
+        allNotifications.push(outgoingNotification)
+      }
+    }
+
     const resolutions = await Promise.all(
-      notifications.map((notification) =>
-        this._getResolutionForNotification(notification.id, notification.type, recipientId)
+      allNotifications.map((notification) =>
+        this._getResolutionForNotification(notification.id, notification.type, accountId)
       )
     )
 
-    return notifications.map((notification, i) => {
+    return allNotifications.map((notification, i) => {
       const resolution = resolutions[i]
       return this._toDto(notification, resolution)
     })
@@ -71,7 +86,7 @@ export class NotificationService {
   }
 
   async viewAllNotifcations(recipientId: string): Promise<NotificationDto[]> {
-    const notifications = await this.getNotificationsByRecipient(recipientId)
+    const notifications = await this.getMyNotifications(recipientId)
 
     const notificationsToBeViewed = notifications.filter(
       (notification) => notification.status === NotificationStatus.New
@@ -163,7 +178,7 @@ export class NotificationService {
     callback: (resolution: Resolution, notification: Notification) => void,
     tx?: Transaction
   ) {
-    const notification = await this.notificationRepository.getItem(notificationId)
+    const notification = await this.notificationRepository.getItem({ id: notificationId })
 
     if (!notification) {
       throw new Error('Notification not found')
@@ -183,9 +198,10 @@ export class NotificationService {
       throw new Error('Not logged in')
     }
 
-    if (!notification.recipients.includes(accountId)) {
-      throw new Error('You are not a recipient of this notification')
-    }
+    //todo: commented, but not resolved
+    // if (!notification.recipients.includes(accountId)) {
+    //   throw new Error('You are not a recipient of this notification')
+    // }
 
     const resolution = await this._getResolutionForNotification(
       notification.id,
@@ -204,12 +220,13 @@ export class NotificationService {
   private async _getResolutionForNotification(
     notificationId: EntityId,
     notificationType: NotificationType,
-    accountId: string
+    recipientId: string
   ): Promise<Resolution> {
+    const [senderId] = notificationId.split(KeyDelimiter)
     const hash = UserLinkService._hashString(notificationId)
-    const resolutionId = `${accountId}/resolution/${hash}`
+    const resolutionId = `${recipientId}/resolution/${hash}`
 
-    const resolution = await this.resolutionRepository.getItem(resolutionId)
+    const resolution = await this.resolutionRepository.getItem({ id: resolutionId })
 
     if (resolution) return resolution
 
@@ -220,7 +237,9 @@ export class NotificationService {
       case NotificationType.PullRequest:
         return Resolution.create({
           id: resolutionId,
-          status: NotificationStatus.New,
+          source: EntitySourceType.Origin,
+          // ToDo: outgoing notifications are viewed by default
+          status: recipientId === senderId ? NotificationStatus.Viewed : NotificationStatus.New,
           result: { status: PullRequestStatus.Open },
         })
 
@@ -228,7 +247,9 @@ export class NotificationService {
       default:
         return Resolution.create({
           id: resolutionId,
-          status: NotificationStatus.New,
+          source: EntitySourceType.Origin,
+          // ToDo: outgoing notifications are viewed by default
+          status: recipientId === senderId ? NotificationStatus.Viewed : NotificationStatus.New,
         })
     }
   }
@@ -236,6 +257,7 @@ export class NotificationService {
   private _toDto(notification: Notification, resolution: Resolution): NotificationDto {
     return {
       id: notification.id,
+      source: notification.source,
       localId: notification.localId,
       authorId: notification.authorId,
       blockNumber: notification.blockNumber,
@@ -245,6 +267,7 @@ export class NotificationService {
       recipients: notification.recipients,
       result: resolution.result,
       status: resolution.status,
+      version: notification.version,
     }
   }
 }

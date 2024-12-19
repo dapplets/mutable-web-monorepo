@@ -1,65 +1,16 @@
-import React, { FC, useMemo } from 'react'
-import { Space, Typography, Card, Tag, Collapse, Button, ButtonProps } from 'antd'
-import {
-  useAcceptPullRequest,
-  useHideNotification,
-  useRejectPullRequest,
-  useViewNotification,
-} from '@mweb/engine'
+import React, { FC } from 'react'
+import { Tag } from 'antd'
 import {
   NotificationDto,
   NotificationType,
   PullRequestPayload,
   PullRequestResult,
+  PullRequestStatus,
 } from '@mweb/backend'
-import {
-  Collapse as CollapseIcon,
-  BlueBadge,
-  RedBadge,
-  GreenBadge,
-  NotificationMessage as NotificationMessageIcon,
-  NotificationClose as NotificationCloseIcon,
-  Decline,
-  Review,
-  Branch,
-} from './assets/icons'
-import { formatDate } from './utils'
-import styled from 'styled-components'
+import { useAcceptPullRequest, useRejectPullRequest } from '@mweb/engine'
+import { BlueBadge, Branch, Decline, GreenBadge, RedBadge, Review } from './assets/icons'
+import { GenericNotification } from './generic-notification'
 import { PrReviewerModal } from './pr-reviewer-modal'
-
-const { Text } = Typography
-
-const StyledCard = styled(Card)`
-  display: inline-flex;
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  background: #f8f9ff;
-`
-
-type TAction = {
-  label: string
-  type: Required<ButtonProps['type']>
-  icon: React.JSX.Element
-}
-
-const actions: TAction[] = [
-  {
-    label: 'Decline',
-    type: 'default',
-    icon: <Decline />,
-  },
-  {
-    label: 'Review',
-    type: 'default',
-    icon: <Review />,
-  },
-  {
-    label: 'Accept',
-    type: 'primary',
-    icon: <Branch />,
-  },
-]
 
 export interface PullRequestNotificationDto extends NotificationDto {
   type: NotificationType.PullRequest
@@ -70,17 +21,14 @@ export interface PullRequestNotificationDto extends NotificationDto {
 const PullRequestNotification: FC<{
   notification: PullRequestNotificationDto
   modalContainerRef: React.RefObject<HTMLElement>
-}> = ({ notification, modalContainerRef }) => {
-  const {
-    viewNotification,
-    isLoading: isLoadingView,
-    error: errorView,
-  } = useViewNotification(notification.id)
-  const {
-    hideNotification,
-    isLoading: isLoadingHide,
-    error: errorHide,
-  } = useHideNotification(notification.id)
+  loggedInAccountId: string
+}> = ({ notification, modalContainerRef, loggedInAccountId }) => {
+  const { sourceMutationId, targetMutationId } = notification.payload
+  const [sourceAuthorId, , sourceLocalMutationId] = sourceMutationId.split('/')
+  const [targetAuthorId, , targetLocalMutationId] = targetMutationId.split('/')
+
+  const isOutgoing = loggedInAccountId === notification.authorId
+
   const {
     acceptPullRequest,
     isLoading: isLoadingAccept,
@@ -92,11 +40,6 @@ const PullRequestNotification: FC<{
     error: errorReject,
   } = useRejectPullRequest(notification.id)
 
-  const date = useMemo(
-    () => formatDate(new Date(notification.timestamp).toLocaleString()),
-    [notification.timestamp]
-  )
-
   const [isReviewing, setIsReviewing] = React.useState(false)
 
   const handleModalClose = () => {
@@ -107,19 +50,7 @@ const PullRequestNotification: FC<{
     setIsReviewing(true)
   }
 
-  const handleActionClick = async (action: TAction) => {
-    try {
-      if (action.label === 'Accept') {
-        await acceptPullRequest()
-      } else if (action.label === 'Decline') {
-        await rejectPullRequest()
-      } else if (action.label === 'Review') {
-        await handleReviewClick()
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }
+  const status = notification.result?.status ?? PullRequestStatus.Open
 
   return (
     <>
@@ -130,120 +61,53 @@ const PullRequestNotification: FC<{
           onClose={handleModalClose}
         />
       ) : null}
-      <Space prefixCls="notifySingle" direction="vertical">
-        {(errorView || errorHide || errorAccept || errorReject) && (
-          <Text type="danger">Unknown error</Text>
-        )}
-
-        <Space size="large" direction="horizontal" style={{ alignItems: 'flex-start' }}>
-          {notification.result && notification.result.status === 'accepted' ? (
+      <GenericNotification
+        notification={notification}
+        loggedInAccountId={loggedInAccountId}
+        icon={
+          status === PullRequestStatus.Accepted ? (
             <GreenBadge />
-          ) : notification.result && notification.result.status === 'rejected' ? (
+          ) : status === PullRequestStatus.Rejected ? (
             <RedBadge />
           ) : (
             <BlueBadge />
-          )}
-
-          <Text type="secondary" style={{ fontSize: '12px' }}>
-            #{notification.localId.substring(0, 7)}&ensp;{notification.authorId}&ensp;committed
-            &ensp;on&ensp;
-            {date}
-          </Text>
-
-          <Button
-            loading={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-            onClick={notification.status === 'new' ? viewNotification : hideNotification}
-            style={{ marginLeft: 'auto' }}
-            type="text"
-            title={notification.status === 'new' ? 'Mark as read' : 'Delete'}
-            icon={
-              notification.status === 'new' ? (
-                <NotificationMessageIcon />
-              ) : (
-                <NotificationCloseIcon />
-              )
-            }
-          />
-        </Space>
-
-        <Collapse
-          expandIcon={() => <CollapseIcon />}
-          expandIconPosition={'end'}
-          ghost
-          items={[
-            {
-              key: notification.id,
-              label: (
-                <Space direction="horizontal">
-                  {notification.result && notification.result.status !== 'open' ? (
-                    <Tag
-                      color={
-                        notification.result && notification.result.status === 'rejected'
-                          ? ' #DB504A'
-                          : '#384BFF'
-                      }
-                    >
-                      {notification.result.status}
-                    </Tag>
-                  ) : null}
-                </Space>
-              ),
-              children: (
-                <Space direction="vertical">
-                  <StyledCard>
-                    <Text style={{ padding: '0' }} type="secondary">
-                      <Text type="secondary" underline>
-                        {notification.authorId}
-                      </Text>{' '}
-                      asks you to accept changes from{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.sourceMutationId}
-                      </Text>{' '}
-                      &ensp; ({notification.recipients[0]}) into your{' '}
-                      <Text type="secondary" underline>
-                        {notification.payload!.targetMutationId}
-                      </Text>{' '}
-                    </Text>
-                  </StyledCard>
-                </Space>
-              ),
-            },
-          ]}
-        />
-
-        {notification.result?.status !== 'accepted' &&
-        notification.result?.status !== 'rejected' ? (
-          <Space
-            key={notification.id}
-            direction="horizontal"
-            style={{ width: '100%', justifyContent: 'space-between' }}
-          >
-            {actions.map((action, i) => (
-              <Button
-                key={i}
-                disabled={isLoadingAccept || isLoadingHide || isLoadingReject || isLoadingView}
-                loading={
-                  action.label === 'Accept'
-                    ? isLoadingAccept
-                    : action.label === 'Decline'
-                      ? isLoadingReject
-                      : undefined
-                }
-                type={action.type as ButtonProps['type']}
-                size="middle"
-                onClick={() => handleActionClick(action)}
-              >
-                {(action.label !== 'Accept' && isLoadingAccept) ||
-                (action.label === 'Decline' && isLoadingReject)
-                  ? null
-                  : action.icon}
-
-                {action.label}
-              </Button>
-            ))}
-          </Space>
-        ) : null}
-      </Space>
+          )
+        }
+        title={`${sourceAuthorId} sent a commit to ${targetAuthorId}`} // ToDo: handle multiple recipients
+        disabled={isLoadingAccept || isLoadingReject}
+        error={errorAccept || errorReject}
+        message={
+          status === PullRequestStatus.Accepted ? (
+            <Tag color="#384BFF">Accepted</Tag>
+          ) : status === PullRequestStatus.Rejected ? (
+            <Tag color="#DB504A">Rejected</Tag>
+          ) : null
+        }
+        children={`${sourceAuthorId} asks ${targetAuthorId} to accept changes from ${sourceLocalMutationId} to ${targetLocalMutationId}`}
+        actions={[
+          {
+            label: 'Decline',
+            type: 'default',
+            icon: <Decline />,
+            onClick: rejectPullRequest,
+            hidden: isOutgoing || status !== PullRequestStatus.Open,
+          },
+          {
+            label: 'Review',
+            type: 'default',
+            icon: <Review />,
+            onClick: handleReviewClick,
+            hidden: isOutgoing || status !== PullRequestStatus.Open,
+          },
+          {
+            label: 'Accept',
+            type: 'primary',
+            icon: <Branch />,
+            onClick: acceptPullRequest,
+            hidden: isOutgoing || status !== PullRequestStatus.Open,
+          },
+        ]}
+      />
     </>
   )
 }

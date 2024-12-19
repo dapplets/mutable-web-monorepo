@@ -1,14 +1,15 @@
-import { EventEmitter as NEventEmitter } from 'events'
+import { EntitySourceType } from '@mweb/backend'
 import { useMutableWeb } from '@mweb/engine'
+import { EventEmitter as NEventEmitter } from 'events'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import Draggable from 'react-draggable'
 import styled from 'styled-components'
+import { NearNetworkId } from '../../common/networks'
 import { getIsPanelUnpinned, removePanelUnpinnedFlag, setPanelUnpinnedFlag } from '../storage'
 import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
-import { NearNetworkId } from '../../common/networks'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -53,10 +54,10 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   }
 `
 
-const Notch = styled.div<{ $isAnimated?: boolean }>`
+const Notch = styled.div<{ $isAnimated?: boolean; $isOpen?: boolean }>`
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -68,8 +69,7 @@ const Notch = styled.div<{ $isAnimated?: boolean }>`
 
   width: 318px;
   height: 45px;
-  z-index: 5000;
-  border-radius: 0 0 6px 6px;
+  border-radius: ${(props) => (props.$isOpen ? '0' : '0 0 6px 6px')};
   background: #384bff;
   box-shadow: 0 4px 5px rgb(45 52 60 / 10%), 0 4px 20px rgb(11 87 111 / 15%);
   opacity: 0;
@@ -78,47 +78,28 @@ const Notch = styled.div<{ $isAnimated?: boolean }>`
     props.$isAnimated ? 'opacity 0.3s ease-in-out, transform 0.3s ease-in-out' : 'initial'};
 
   justify-content: space-between;
-  padding: 4px;
+  padding: 4px 5px;
   padding-top: 0;
 `
 
-const PinWrapper = styled.div`
+const NotchButtonWrapper = styled.div`
   width: 16px;
-  height: 16px;
-  cursor: pointer;
-
-  &:hover,
-  &:focus {
-    opacity: 0.5;
-  }
-
-  & > svg {
-    vertical-align: initial;
-  }
-`
-
-const DragWrapper = styled.div`
-  width: 16px;
-  height: 37px;
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-  border-radius: 2px;
+
   &:hover,
   &:focus {
     opacity: 0.5;
   }
 `
 
-const DragIconWrapper = styled.div`
+const IconWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 8px;
-  height: 8px;
 `
 
 const DragIcon = () => (
@@ -135,7 +116,7 @@ interface MultitablePanelProps {
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
   const { mutations, allApps, selectedMutation, config } = useMutableWeb()
-  const [isDropdownVisible, setIsDropdownVisible] = useState(false)
+  const [isOverlayOpened, setIsOverlayOpened] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)
   const [isNotchDisplayed, setIsNotchDisplayed] = useState(true)
@@ -179,7 +160,7 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   const handleMutateButtonClick = () => {
     setIsModalOpen(true)
-    setIsDropdownVisible(false)
+    setIsOverlayOpened(false)
   }
 
   const handleModalClose = () => {
@@ -191,12 +172,20 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
 
   return (
     <>
-      <MutableOverlayContainer notchRef={notchRef} networkId={config.networkId as NearNetworkId} />
+      <MutableOverlayContainer
+        notchRef={notchRef}
+        networkId={config.networkId as NearNetworkId}
+        eventEmitter={eventEmitter}
+        setOpen={setIsOverlayOpened}
+        open={isOverlayOpened}
+        handleMutateButtonClick={handleMutateButtonClick}
+      />
       <WrapperPanel $isAnimated={!isDragging} data-testid="mutation-panel">
         {isModalOpen ? (
           <MutationEditorModal
             apps={allApps}
             baseMutation={selectedMutation}
+            localMutations={mutations.filter((m) => m.source === EntitySourceType.Local)}
             onClose={handleModalClose}
           />
         ) : (
@@ -217,26 +206,27 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
               className={
                 isPin
                   ? 'visible-pin'
-                  : isNotchDisplayed || isDropdownVisible || isDragging
+                  : isNotchDisplayed || isOverlayOpened || isDragging
                   ? 'visible-default'
                   : 'visible-notch'
               }
               $isAnimated={!isDragging}
+              $isOpen={isOverlayOpened}
               ref={notchRef}
             >
-              <DragWrapper className="dragWrapper">
-                <DragIconWrapper>
+              <NotchButtonWrapper className="dragWrapper">
+                <IconWrapper>
                   <DragIcon />
-                </DragIconWrapper>
-              </DragWrapper>
+                </IconWrapper>
+              </NotchButtonWrapper>
               <Dropdown
-                isVisible={isDropdownVisible}
-                onVisibilityChange={setIsDropdownVisible}
+                isVisible={isOverlayOpened}
+                onVisibilityChange={setIsOverlayOpened}
                 onMutateButtonClick={handleMutateButtonClick}
               />
-              <PinWrapper onClick={handlePin}>
-                {isPin ? <PinSolidIcon /> : <PinOutlineIcon />}
-              </PinWrapper>
+              <NotchButtonWrapper onClick={handlePin}>
+                <IconWrapper>{isPin ? <PinSolidIcon /> : <PinOutlineIcon />}</IconWrapper>
+              </NotchButtonWrapper>
             </Notch>
           </Draggable>
         )}

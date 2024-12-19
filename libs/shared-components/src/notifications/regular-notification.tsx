@@ -29,7 +29,8 @@ export interface RegularNotificationDto extends NotificationDto {
 
 const RegularNotification: FC<{
   notification: RegularNotificationDto
-}> = ({ notification }) => {
+  loggedInAccountId: string
+}> = ({ notification, loggedInAccountId }) => {
   const {
     viewNotification,
     isLoading: isLoadingView,
@@ -41,10 +42,7 @@ const RegularNotification: FC<{
     error: errorHide,
   } = useHideNotification(notification.id)
 
-  const date = useMemo(
-    () => formatDate(new Date(notification.timestamp).toLocaleString()),
-    [notification.timestamp]
-  )
+  const date = useMemo(() => formatDate(new Date(notification.timestamp)), [notification.timestamp])
 
   return (
     <Space prefixCls="notifySingle" direction="vertical" style={{ transition: 'all 0.2s ease' }}>
@@ -56,12 +54,16 @@ const RegularNotification: FC<{
           {date}
         </Text>
         <Button
-          loading={isLoadingHide || isLoadingView}
+          disabled={isLoadingHide || isLoadingView}
           onClick={notification.status === 'new' ? viewNotification : hideNotification}
           style={{ marginLeft: 'auto' }}
           type="text"
           icon={
-            notification.status === 'new' ? <NotificationMessageIcon /> : <NotificationCloseIcon />
+            notification.status === 'new' && notification.authorId !== loggedInAccountId ? (
+              <NotificationMessageIcon />
+            ) : (
+              <NotificationCloseIcon />
+            )
           }
         />
       </Space>

@@ -1,11 +1,12 @@
 import serializeToDeterministicJson from 'json-stringify-deterministic'
-import { Base } from './base.entity'
+import { Base, EntitySourceType } from './base.entity'
 import { SocialDbService, Value } from '../social-db/social-db.service'
 import { getEntity } from './decorators/entity'
 import { ColumnType, getColumn } from './decorators/column'
 import { mergeDeep } from '../../common/merge-deep'
 import { Transaction } from '../unit-of-work/transaction'
 import { EntityMetadata } from '../../common/entity-metadata'
+import { IRepository } from './repository.interface'
 
 // ToDo: parametrize?
 const ProjectIdKey = 'dapplets.near'
@@ -17,38 +18,96 @@ const KeyDelimiter = '/'
 const EmptyValue = ''
 const SelfKey = ''
 const BlockNumberKey = ':block'
+const TagsKey = 'tags'
+const VersionsKey = 'versions'
+const LatestTagName = 'latest'
 
 // ToDo:
 type EntityId = string
 
-export class BaseRepository<T extends Base> {
+export class BaseRepository<T extends Base> implements IRepository<T> {
   private _entityKey: string
+  private _isVersionedEntity: boolean
 
   constructor(
     private EntityType: { new (): T },
     public socialDb: SocialDbService
   ) {
-    this._entityKey = getEntity(EntityType).name
+    const { name, versioned } = getEntity(EntityType)
+    this._entityKey = name
+    this._isVersionedEntity = versioned ?? false // ToDo: move to the decorator
   }
 
-  async getItem(id: EntityId): Promise<T | null> {
+  async getItem({ id, version }: { id: EntityId; version?: string }): Promise<T | null> {
     const { authorId, localId } = this._parseGlobalId(id)
 
     if (authorId === WildcardKey || localId === WildcardKey) {
       throw new Error('Wildcard is not supported')
     }
 
-    const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
+    if (this._isVersionedEntity) {
+      version = version ?? (await this.getTagValue({ id, tag: LatestTagName })) ?? undefined
+    }
+
+    const baseKeys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
+
+    const allKeysForFetching: string[][] = []
+
+    const columnNames = Object.getOwnPropertyNames(new this.EntityType())
+
+    for (const columnName of columnNames) {
+      // ToDo: why prototype?
+      const column = getColumn(this.EntityType.prototype, columnName)
+
+      if (!column) continue
+
+      const { type, versioned, name } = column
+      const rawColumnName = name ?? columnName
+
+      // Scalar types should be queried without wildcard
+      if (type === ColumnType.Json || type === ColumnType.AsIs) {
+        if (versioned && version) {
+          allKeysForFetching.push(baseKeys.concat([VersionsKey, version!, rawColumnName]))
+          allKeysForFetching.push(baseKeys.concat([rawColumnName])) // backward compatibility
+        } else {
+          allKeysForFetching.push(baseKeys.concat([rawColumnName]))
+        }
+      }
+
+      // Non-scalar types should be queried with wildcard
+      if (type === ColumnType.Set || type === ColumnType.AsIs) {
+        if (versioned && version) {
+          allKeysForFetching.push(
+            baseKeys.concat([VersionsKey, version!, rawColumnName, RecursiveWildcardKey])
+          )
+          allKeysForFetching.push(baseKeys.concat([rawColumnName, RecursiveWildcardKey])) // backward compatibility
+        } else {
+          allKeysForFetching.push(baseKeys.concat([rawColumnName, RecursiveWildcardKey]))
+        }
+      }
+    }
+
     const queryResult = await this.socialDb.get(
-      [[...keys, RecursiveWildcardKey].join(KeyDelimiter)],
+      allKeysForFetching.map((keys) => keys.join(KeyDelimiter)),
       { withBlockHeight: true }
     )
 
-    const itemWithMeta = SocialDbService.getValueByKey(keys, queryResult)
+    const nonVersionedData = SocialDbService.getValueByKey(baseKeys, queryResult)
+    const versionedData = SocialDbService.getValueByKey(
+      baseKeys.concat(VersionsKey, version!),
+      queryResult
+    )
 
-    if (!itemWithMeta) return null
+    if (!nonVersionedData && !versionedData) return null
 
-    return this._makeItemFromSocialDb(id, itemWithMeta)
+    const item = this._makeItemFromSocialDb(id, {
+      ...nonVersionedData,
+      [VersionsKey]: undefined, // remove key from nonVersionedData
+      ...versionedData, // it overrides backward compatible props
+      version,
+    })
+
+    return item
   }
 
   async getItems(options?: { authorId?: EntityId; localId?: EntityId }): Promise<T[]> {
@@ -58,20 +117,16 @@ export class BaseRepository<T extends Base> {
     const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
 
     // ToDo: out of gas
-    const queryResult = await this.socialDb.get(
-      [[...keys, RecursiveWildcardKey].join(KeyDelimiter)],
-      { withBlockHeight: true }
-    )
+    const fetchedKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])
 
-    const mutationsByKey = SocialDbService.splitObjectByDepth(queryResult, keys.length)
-
-    const items = Object.entries(mutationsByKey).map(([key, itemWithMeta]: [string, any]) => {
-      const [accountId, , , , localMutationId] = key.split(KeyDelimiter)
-      const itemId = [accountId, this._entityKey, localMutationId].join(KeyDelimiter)
-      return this._makeItemFromSocialDb(itemId, itemWithMeta)
+    const itemKeys = fetchedKeys.map((key) => {
+      const [authorId, , , , localId] = key.split(KeyDelimiter)
+      return [authorId, this._entityKey, localId].join(KeyDelimiter)
     })
 
-    return items
+    const items = await Promise.all(itemKeys.map((id) => this.getItem({ id })))
+
+    return items.filter((x) => x !== null)
   }
 
   async getItemsByIndex(entity: Partial<T>): Promise<T[]> {
@@ -87,7 +142,11 @@ export class BaseRepository<T extends Base> {
       throw new Error('Column not found')
     }
 
-    const { name, type, transformer } = column
+    const { name, type, transformer, versioned } = column
+
+    if (versioned) {
+      throw new Error('Versioned columns are not supported for indexing')
+    }
 
     if (type !== ColumnType.Set) {
       throw new Error('Only Set columns can be indexed')
@@ -119,40 +178,32 @@ export class BaseRepository<T extends Base> {
 
     const foundKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])
 
-    const documentIds = foundKeys.map((key: string) => {
+    const itemIds = foundKeys.map((key: string) => {
       const [authorId, , , , localId] = key.split(KeyDelimiter)
       return [authorId, this._entityKey, localId].join(KeyDelimiter)
     })
 
-    const documents = await Promise.all(documentIds.map((id) => this.getItem(id))).then(
-      (documents) => documents.filter((x) => x !== null)
+    const items = await Promise.all(itemIds.map((id) => this.getItem({ id }))).then((items) =>
+      items.filter((x) => x !== null)
     )
 
-    return documents
+    return items
   }
 
   async createItem(item: T, tx?: Transaction): Promise<T> {
-    if (await this.getItem(item.id)) {
+    if (await this.getItem({ id: item.id })) {
       throw new Error('Item with that ID already exists')
     }
 
-    await this.saveItem(item, tx)
-
-    // ToDo: update timestamp and blockNumber
-
-    return item
+    return this.saveItem(item, tx)
   }
 
   async editItem(item: T, tx?: Transaction): Promise<T> {
-    if (!(await this.getItem(item.id))) {
+    if (!(await this.getItem({ id: item.id }))) {
       throw new Error('Item with that ID does not exist')
     }
 
-    await this.saveItem(item, tx)
-
-    // ToDo: update timestamp and blockNumber
-
-    return item
+    return this.saveItem(item, tx)
   }
 
   public async saveItem(item: T, tx?: Transaction): Promise<T> {
@@ -160,13 +211,27 @@ export class BaseRepository<T extends Base> {
 
     const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId]
 
+    if (this._isVersionedEntity) {
+      // increment version
+      const lastVersion = await this.getTagValue({ id: item.id, tag: LatestTagName })
+      item.version = lastVersion ? (parseInt(lastVersion) + 1).toString() : '1'
+    }
+
     const convertedItem = this._makeItemToSocialDb(item)
-
     const dataToSave = SocialDbService.buildNestedData(keys, convertedItem)
-
     await this._commitOrQueue(dataToSave, tx)
 
-    return item
+    // ToDo: add timestamp and blockNumber
+
+    // @ts-ignore
+    const entity: T = this.EntityType.create({
+      ...item,
+      localId,
+      authorId,
+      source: EntitySourceType.Origin,
+    })
+
+    return entity
   }
 
   async deleteItem(id: EntityId, tx?: Transaction): Promise<void> {
@@ -188,6 +253,7 @@ export class BaseRepository<T extends Base> {
     await this._commitOrQueue(nullData, tx)
   }
 
+  // ToDo: move to Entity contstructor?
   async constructItem(
     item: Omit<T, keyof Base> & { metadata: EntityMetadata<EntityId> }
   ): Promise<T> {
@@ -204,10 +270,79 @@ export class BaseRepository<T extends Base> {
       throw new Error('User is not logged in')
     }
 
+    const id = [authorId, this._entityKey, localId].join(KeyDelimiter)
+
     // @ts-ignore
-    const entity: T = this.EntityType.create({ ...item, localId, authorId })
+    const entity: T = this.EntityType.create({
+      ...item,
+      id,
+      localId,
+      authorId,
+      source: EntitySourceType.Origin,
+    })
 
     return entity
+  }
+
+  async getVersions({ id }: { id: EntityId }): Promise<string[]> {
+    const { authorId, localId } = this._parseGlobalId(id)
+
+    if (authorId === WildcardKey || localId === WildcardKey) {
+      throw new Error('Wildcard is not supported')
+    }
+
+    const keys = [
+      authorId,
+      SettingsKey,
+      ProjectIdKey,
+      this._entityKey,
+      localId,
+      VersionsKey,
+      WildcardKey,
+    ]
+
+    const foundKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])
+
+    return foundKeys.map((key: string) => key.split(KeyDelimiter).pop()!)
+  }
+
+  async getTagValue({ id, tag }: { id: EntityId; tag: string }): Promise<string | null> {
+    const { authorId, localId } = this._parseGlobalId(id)
+
+    if (authorId === WildcardKey || localId === WildcardKey) {
+      throw new Error('Wildcard is not supported')
+    }
+
+    const keys = [authorId, SettingsKey, ProjectIdKey, this._entityKey, localId, TagsKey, tag]
+    const queryResult = await this.socialDb.get([[...keys].join(KeyDelimiter)])
+
+    const itemWithMeta = SocialDbService.getValueByKey(keys, queryResult)
+
+    if (!itemWithMeta) return null
+
+    return itemWithMeta
+  }
+
+  async getTags({ id }: { id: EntityId }): Promise<string[]> {
+    const { authorId, localId } = this._parseGlobalId(id)
+
+    if (authorId === WildcardKey || localId === WildcardKey) {
+      throw new Error('Wildcard is not supported')
+    }
+
+    const keys = [
+      authorId,
+      SettingsKey,
+      ProjectIdKey,
+      this._entityKey,
+      localId,
+      TagsKey,
+      WildcardKey,
+    ]
+
+    const foundKeys = await this.socialDb.keys([keys.join(KeyDelimiter)])
+
+    return foundKeys
   }
 
   private async _commitOrQueue(dataToSave: Value, tx?: Transaction) {
@@ -224,6 +359,9 @@ export class BaseRepository<T extends Base> {
 
     entity.id = id
     entity.blockNumber = rawWithMeta[BlockNumberKey]
+    entity.source = EntitySourceType.Origin
+    entity.version = rawWithMeta.version ?? '0' // ToDo: fake version
+
     // ToDo: calculate it like localId and authorId?
     entity.timestamp = this.socialDb.getTimestampByBlockHeight(entity.blockNumber)
 
@@ -260,7 +398,12 @@ export class BaseRepository<T extends Base> {
   }
 
   private _makeItemToSocialDb(entity: T): Value {
-    const raw: Value = {}
+    const raw: Value = this._isVersionedEntity
+      ? {
+          [VersionsKey]: { [entity.version]: {} },
+          [TagsKey]: { [LatestTagName]: entity.version },
+        }
+      : {}
 
     for (const entityKey in entity) {
       // ToDo: why prototype?
@@ -268,7 +411,7 @@ export class BaseRepository<T extends Base> {
 
       if (!column) continue
 
-      const { type, transformer, name } = column
+      const { type, transformer, name, versioned } = column
 
       const rawKey = name ?? entityKey
 
@@ -276,12 +419,20 @@ export class BaseRepository<T extends Base> {
         ? transformer.to(entity[entityKey])
         : entity[entityKey]
 
+      let rawValue: any = null
+
       if (type === ColumnType.AsIs) {
-        raw[rawKey] = transformedValue
+        rawValue = transformedValue
       } else if (type === ColumnType.Json) {
-        raw[rawKey] = serializeToDeterministicJson(transformedValue)
+        rawValue = serializeToDeterministicJson(transformedValue)
       } else if (type === ColumnType.Set) {
-        raw[rawKey] = BaseRepository._makeSetToSocialDb(transformedValue)
+        rawValue = BaseRepository._makeSetToSocialDb(transformedValue)
+      }
+
+      if (versioned) {
+        raw[VersionsKey][entity.version][rawKey] = rawValue
+      } else {
+        raw[rawKey] = rawValue
       }
     }
 
@@ -289,11 +440,17 @@ export class BaseRepository<T extends Base> {
   }
 
   private _parseGlobalId(globalId: EntityId): { authorId: string; localId: string } {
+    if (!globalId) {
+      throw new Error(`Invalid entity ID: ${globalId}`)
+    }
+
     const [authorId, entityType, localId] = globalId.split(KeyDelimiter)
 
     if (entityType !== this._entityKey) {
       // ToDo: or null?
-      throw new Error(`Wrong entity type. Expected: ${this._entityKey}, received: ${entityType}`)
+      throw new Error(
+        `Wrong entity type. Expected: ${this._entityKey}, received: ${entityType}. Global ID: ${globalId}`
+      )
     }
 
     return { authorId, localId }

@@ -5,16 +5,23 @@ const KeyDelimiter = '/'
 
 export type EntityId = string
 
+export enum EntitySourceType {
+  Local = 'local',
+  Origin = 'origin',
+}
+
 export class Base {
   id: EntityId = ''
+  source: EntitySourceType = EntitySourceType.Local
   blockNumber: number = 0 // ToDo: fake block number
   timestamp: number = 0 // ToDo: fake timestamp
+  version: string = '0' // ToDo: fake version?
 
-  get authorId(): string {
-    return this.id.split(KeyDelimiter)[0]
+  get authorId(): string | null {
+    return this.id.split(KeyDelimiter)[0] ?? null
   }
 
-  set authorId(authorId: string) {
+  set authorId(authorId: string | null) {
     this.id = [authorId, this.entityType, this.localId].join(KeyDelimiter)
   }
 
@@ -36,6 +43,7 @@ export class Base {
   ): T {
     const instance = new this()
     Object.assign(instance, data)
+    if (data.authorId) instance.authorId = data.authorId // ToDo: hit fix: think of it
     return instance
   }
 
@@ -50,8 +58,10 @@ export class Base {
       id: this.id,
       localId: this.localId,
       authorId: this.authorId,
+      source: this.source,
       blockNumber: this.blockNumber,
       timestamp: this.timestamp,
+      version: this.version,
     }
   }
 }

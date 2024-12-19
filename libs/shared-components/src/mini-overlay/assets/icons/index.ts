@@ -9,6 +9,11 @@ import Close from './close'
 import Connect from './connect'
 import Copy from './copy'
 import Disconnect from './disconnect'
+import OpenOverlay from './open-overlay'
+import OpenOverlayWithCircle from './open-overlay-with-circle'
+import Logo from './logo'
+import PersonAddAlt from './person-add-alt'
+
 export {
   MutationFallbackIcon,
   ArrowIcon,
@@ -21,4 +26,8 @@ export {
   Connect,
   Copy,
   Disconnect,
+  OpenOverlay,
+  OpenOverlayWithCircle,
+  Logo,
+  PersonAddAlt,
 }

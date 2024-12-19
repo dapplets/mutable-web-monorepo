@@ -1,9 +1,19 @@
-import React, { FC, useRef } from 'react'
+import { Button, Drawer, Space, Typography } from 'antd'
+import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { Drawer, Space, Button } from 'antd'
-import { Typography } from 'antd'
-import NotificationFeed from '../notifications/notification-feed'
-import { Close as CloseIcon } from './assets/icons'
+import { Close as CloseIcon, Logo as LogoIcon } from './assets/icons'
+import Header from './header'
+import Main from './pages/main'
+import Profile from './pages/profile'
+import { IWalletConnect } from './types'
+import {
+  MemoryRouter,
+  Navigate,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  Location,
+} from 'react-router'
 const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
@@ -52,10 +62,21 @@ const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
     }
   }
 
+  .notifyWrapper {
+    width: calc(100% - 20px);
+    margin: 0 10px;
+  }
+
   .notifyWrapper-item:first-of-type {
     .ant-space {
       width: 100%;
       justify-content: space-between;
+    }
+  }
+
+  .notifyWrapper {
+    &::-webkit-scrollbar {
+      width: 0;
     }
   }
 `
@@ -71,7 +92,6 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
   background: transparent;
   transform: translateX(-50%);
   box-sizing: border-box;
-  padding: 50px;
   box-shadow:
     0px 3px 6px 0px rgba(71, 65, 252, 0.05),
     0px 11px 11px 0px rgba(71, 65, 252, 0.04),
@@ -103,63 +123,124 @@ const OverlayContent = styled.div<{ $isOpen: boolean }>`
 
     .ant-drawer-header {
       border-bottom: none;
+      background: #2b2a33;
       padding: 10px;
-      padding-bottom: 0;
 
       h3 {
         margin-bottom: 0;
+        color: #fff;
+        align-items: center;
+        display: inline-flex;
+        gap: 10px;
       }
 
       .ant-space {
         width: 100%;
         justify-content: space-between;
       }
+
+      button {
+        padding: 5px;
+      }
     }
 
     .ant-drawer-body {
-      padding: 10px;
+      padding: 0;
     }
   }
 `
 
 const Body = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   height: 100%;
   position: relative;
   overflow: hidden;
+  overflow-y: auto;
 
   &::-webkit-scrollbar {
-    width: 0;
+    cursor: pointer;
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    margin-bottom: 10px;
+    margin-top: 65px;
+    background: rgb(244 244 244);
+    background: linear-gradient(
+      90deg,
+      rgb(244 244 244 / 0%) 10%,
+      rgb(227 227 227 / 100%) 50%,
+      rgb(244 244 244 / 0%) 90%
+    );
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 2px;
+    height: 2px;
+    background: #7a818b;
+    border-radius: 2px;
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 
-export interface IOverlayWrapperProps {
+export interface IOverlayWrapperProps extends IWalletConnect {
   apps: boolean
   onClose: () => void
   open: boolean
   loggedInAccountId: string
-  connectWallet: (() => Promise<void>) | undefined
   modalContainerRef: React.RefObject<HTMLElement>
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  handleMutateButtonClick: () => void
 }
 
-const OverlayWrapper: FC<IOverlayWrapperProps> = ({
+const OverlayWrapper: FC<
+  IOverlayWrapperProps & { navigate: NavigateFunction; location: Location<any> }
+> = ({
+  navigate,
+  location,
   apps,
   onClose,
   open,
   loggedInAccountId,
   connectWallet,
+  disconnectWallet,
+  nearNetwork,
   modalContainerRef,
+  trackingRefs,
+  handleMutateButtonClick,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
+  const [waiting, setWaiting] = useState(false)
+  const [isProfileOpen, openCloseProfile] = useState(false)
+  const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
+  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
+
+  const handleSignIn = async () => {
+    setWaiting(true)
+    try {
+      await connectWallet()
+    } finally {
+      setWaiting(false)
+    }
+  }
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
-      <OverlayContent $isOpen={open} data-mweb-insertion-point="mweb-overlay">
+      <OverlayContent
+        data-testid="side-panel"
+        $isOpen={open}
+        data-mweb-insertion-point="mweb-overlay"
+      >
         <Drawer
           title={
             <Space direction="vertical">
               <Space direction="horizontal">
                 <Title style={{ userSelect: 'none' }} level={3}>
-                  Notifications
+                  <LogoIcon /> Mutable Web
                 </Title>
 
                 <Button type="text" onClick={onClose}>
@@ -178,17 +259,33 @@ const OverlayWrapper: FC<IOverlayWrapperProps> = ({
             content: 'driwingContent',
           }}
           width={360}
-          data-testid="overlay-notify"
-          children={
-            <Body ref={overlayRef}>
-              <NotificationFeed
-                connectWallet={connectWallet}
+        >
+          <Body ref={overlayRef}>
+            <Header
+              accountId={loggedInAccountId ?? null}
+              closeProfile={() => {
+                openCloseProfile(false)
+              }}
+              connectWallet={connectWallet!}
+              disconnectWallet={disconnectWallet}
+              nearNetwork={nearNetwork}
+              trackingRefs={trackingRefs!}
+              openCloseWalletPopupRef={openCloseWalletPopupRef}
+            />
+            {location.pathname === '/system/main' ? (
+              <Main
                 loggedInAccountId={loggedInAccountId}
                 modalContainerRef={modalContainerRef}
+                handleMutateButtonClick={handleMutateButtonClick}
+                onClose={onClose}
+                connectWallet={connectWallet}
               />
-            </Body>
-          }
-        ></Drawer>
+            ) : null}
+            {location.pathname === '/system/profile' ? (
+              <Profile navigate={navigate} location={location} />
+            ) : null}
+          </Body>
+        </Drawer>
       </OverlayContent>
     </OverlayWrapperBlock>
   )

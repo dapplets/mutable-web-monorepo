@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { MinusCircle, PlusCircle } from '../assets/vectors'
+import { ButtonsGroup } from './buttons-group'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -116,12 +117,6 @@ const InlineButton = styled.button`
   }
 `
 
-const ButtonsBlock = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
 const CloseIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
     <path
@@ -164,7 +159,7 @@ export const DocumentsModal: FC<Props> = ({
   return (
     <Wrapper>
       <Header>
-        <Title>Select your guide</Title>
+        <Title>Select document</Title>
         <Close onClick={onClose}>
           <CloseIcon />
         </Close>
@@ -187,7 +182,8 @@ export const DocumentsModal: FC<Props> = ({
       <AppsList>
         {docs?.map((doc) => (
           <SimpleApplicationCard
-            key={doc.id}
+            source={doc.source}
+            key={`${doc.id}/${doc.source}`}
             src={doc.id}
             metadata={doc.metadata}
             isChecked={chosenDocsIds.includes(doc.id)}
@@ -200,7 +196,7 @@ export const DocumentsModal: FC<Props> = ({
         ))}
       </AppsList>
 
-      <ButtonsBlock>
+      <ButtonsGroup>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           primary
@@ -212,7 +208,7 @@ export const DocumentsModal: FC<Props> = ({
         >
           Confirm
         </Button>
-      </ButtonsBlock>
+      </ButtonsGroup>
     </Wrapper>
   )
 }

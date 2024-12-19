@@ -3,9 +3,10 @@ import { AppId } from '../application/application.entity'
 import { MutationId } from '../mutation/mutation.entity'
 import { LinkIndexRules, IndexObject, LinkedDataByAccountDto, CtxLink } from './link-db.entity'
 import { DocumentId } from '../document/document.entity'
-import { LinkDbRepository } from './link-db.repository'
 import { Transaction } from '../unit-of-work/transaction'
 import { UserLinkService } from '../user-link/user-link.service'
+import { IRepository } from '../base/repository.interface'
+import { EntitySourceType } from '../base/base.entity'
 
 const DefaultIndexRules: LinkIndexRules = {
   namespace: true,
@@ -17,7 +18,7 @@ const ContextLinkKey = 'ctxlink'
 const KeyDelimiter = '/'
 
 export class LinkDbService {
-  constructor(private _linkDbRepository: LinkDbRepository) {}
+  constructor(private _linkDbRepository: IRepository<CtxLink>) {}
 
   async set(
     mutationId: MutationId,
@@ -46,6 +47,7 @@ export class LinkDbService {
       id: globalId,
       index: indexObject,
       data: dataByAccount[accountId],
+      source: EntitySourceType.Origin,
     })
 
     await this._linkDbRepository.saveItem(ctxLink, tx)
@@ -75,7 +77,7 @@ export class LinkDbService {
 
       // ToDo: too much data will be retrieved here, becuase it created by users
       const ctxLinksNullPossible = await Promise.all(
-        ctxLinkIds.map((id) => this._linkDbRepository.getItem(id))
+        ctxLinkIds.map((id) => this._linkDbRepository.getItem({ id }))
       )
       ctxLinks = ctxLinksNullPossible.filter((x) => x !== null)
     }

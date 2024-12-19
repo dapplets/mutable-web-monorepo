@@ -1,5 +1,5 @@
 import { IContextNode } from '@mweb/core'
-import { AppInMutation, Mutation, MutationId } from '../mutation/mutation.entity'
+import { AppInMutation, MutationId } from '../mutation/mutation.entity'
 import { TargetService } from '../target/target.service'
 import {
   AppId,
@@ -7,15 +7,20 @@ import {
   AppInstanceSettings,
   AppInstanceWithSettings,
   AppWithSettings,
+  AppMetadata,
 } from './application.entity'
-import { ApplicationRepository } from './application.repository'
 import { ApplicationDto } from './dtos/application.dto'
 import { MutationDto } from '../mutation/dtos/mutation.dto'
 import { ApplicationCreateDto } from './dtos/application-create.dto'
 import { Transaction } from '../unit-of-work/transaction'
+import { IRepository } from '../base/repository.interface'
+import { SettingsSerivce } from '../settings/settings.service'
 
 export class ApplicationService {
-  constructor(private applicationRepository: ApplicationRepository) {}
+  constructor(
+    private applicationRepository: IRepository<AppMetadata>,
+    private settingsService: SettingsSerivce
+  ) {}
 
   public async getApplications(): Promise<ApplicationDto[]> {
     // ToDo: out of gas
@@ -24,7 +29,7 @@ export class ApplicationService {
   }
 
   public async getApplication(appId: AppId): Promise<ApplicationDto | null> {
-    const app = await this.applicationRepository.getItem(appId)
+    const app = await this.applicationRepository.getItem({ id: appId })
     return app?.toDto() ?? null
   }
 
@@ -61,11 +66,11 @@ export class ApplicationService {
   }
 
   public async enableAppInstanceInMutation(mutationId: MutationId, appInstanceId: AppInstanceId) {
-    await this.applicationRepository.setAppEnabledStatus(mutationId, appInstanceId, true)
+    await this.settingsService.setAppEnabledStatus(mutationId, appInstanceId, true)
   }
 
   public async disableAppInstanceInMutation(mutationId: MutationId, appInstanceId: AppInstanceId) {
-    await this.applicationRepository.setAppEnabledStatus(mutationId, appInstanceId, false)
+    await this.settingsService.setAppEnabledStatus(mutationId, appInstanceId, false)
   }
 
   public static constructAppInstanceId({ appId, documentId }: AppInMutation): AppInstanceId {
@@ -76,6 +81,7 @@ export class ApplicationService {
   private async _getAppInstanceWithSettings(mutationId: MutationId, appInstance: AppInMutation) {
     const instanceId = ApplicationService.constructAppInstanceId(appInstance)
 
+    // ToDo: local or remote?
     const [app, settings] = await Promise.all([
       this.getApplication(appInstance.appId),
       this._getAppInstanceSettings(mutationId, instanceId),
@@ -98,7 +104,7 @@ export class ApplicationService {
     appInstanceId: AppInstanceId
   ): Promise<AppInstanceSettings> {
     return {
-      isEnabled: await this.applicationRepository.getAppEnabledStatus(mutationId, appInstanceId),
+      isEnabled: await this.settingsService.getAppEnabledStatus(mutationId, appInstanceId),
     }
   }
 }

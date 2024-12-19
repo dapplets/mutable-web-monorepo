@@ -1,47 +1,21 @@
+import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
+import { EntitySourceType } from '@mweb/backend'
+import { useMutableWeb } from '@mweb/engine'
 import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
 import {
-  AuthorMutation,
-  AvalibleArrowBlock,
-  AvalibleArrowLable,
-  AvalibleLable,
-  AvalibleLableBlock,
-  AvalibleMutations,
-  ButtonBack,
-  ButtonListBlock,
-  ButtonMutation,
-  ImageBlock,
-  InputBlock,
-  InputIconWrapper,
-  InputInfoWrapper,
-  InputMutation,
-  ListMutations,
-  MutationsList,
-  MutationsListWrapper,
   OpenList,
   OpenListDefault,
   SelectedMutationBlock,
   SelectedMutationDescription,
   SelectedMutationId,
   SelectedMutationInfo,
+  SpanStyled,
   StarSelectedMutationWrapper,
   WrapperDropdown,
 } from '../assets/styles-dropdown'
-import {
-  AvailableIcon,
-  Back,
-  IconDropdown,
-  Mutate,
-  StarMutationList,
-  StarMutationListDefault,
-  StarSelectMutation,
-  StarSelectMutationDefault,
-  Trash,
-} from '../assets/vectors'
-
-import { useMutableWeb } from '@mweb/engine'
-import { MutationWithSettings } from '@mweb/backend'
-import defaultIcon from '../assets/images/default.svg'
-import { Image } from './image'
+import { IconDropdown, StarSelectMutation, StarSelectMutationDefault } from '../assets/vectors'
+import { Badge } from './badge'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
@@ -49,73 +23,69 @@ export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HT
   onMutateButtonClick: () => void
 }
 
-export const Dropdown: FC<DropdownProps> = ({
-  isVisible,
-  onVisibilityChange,
-  onMutateButtonClick,
-}: DropdownProps) => {
+export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: DropdownProps) => {
   const {
     mutations,
     selectedMutation,
     favoriteMutationId,
     setFavoriteMutation,
-    switchMutation,
-    removeMutationFromRecents,
+    switchPreferredSource,
   } = useMutableWeb()
+
+  // ToDo: think about this
+  // The state is here to prevent closing dropdown when mutation changed
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
 
   const recentlyUsedMutations = useMemo(
     () =>
-      mutations
-        .filter((mut) => mut.settings.lastUsage)
-        .sort((a, b) => {
-          const dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
-          const dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
+      Object.groupBy(
+        mutations
+          .filter((mut) => mut.settings.lastUsage)
+          .sort((a, b) => {
+            const dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
+            const dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
 
-          if (!dateA) return 1
-          if (!dateB) return -1
+            if (!dateA) return 1
+            if (!dateB) return -1
 
-          return dateB - dateB
-        }),
+            return dateB - dateB
+          }),
+        (mut) => mut.id
+      ),
     [mutations]
   )
 
-  const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(recentlyUsedMutations.length === 0)
+  const handleSwitchSourceClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
+    e.stopPropagation() // do not open dropdown
 
-  const unusedMutations = useMemo(
-    () => mutations.filter((mut) => !mut.settings.lastUsage),
-    [mutations]
-  )
+    if (!selectedMutation) return
 
-  const handleMutationClick = (mutationId: string) => {
-    onVisibilityChange(false)
-    switchMutation(mutationId)
+    const source =
+      selectedMutation.source === EntitySourceType.Local
+        ? EntitySourceType.Origin
+        : EntitySourceType.Local
+
+    switchPreferredSource(selectedMutation.id, source)
   }
 
-  // todo: mock
-  const handleAccordeonClick = () => {
-    setIsAccordeonExpanded((val) => !val)
-  }
-
-  const handleMutateButtonClick = () => {
-    onVisibilityChange(false)
-    onMutateButtonClick()
-  }
-
-  const handleFavoriteButtonClick = (mutation: MutationWithSettings) => {
-    setFavoriteMutation(mutation.id === favoriteMutationId ? null : mutation.id)
-  }
-
-  const handleOriginalButtonClick = async () => {
-    onVisibilityChange(false)
-    switchMutation(null)
-  }
-
-  const handleRemoveFromRecentlyUsedClick = async (mut: MutationWithSettings) => {
-    removeMutationFromRecents(mut.id)
+  const handleFavoriteButtonClick = (mutationId: string) => {
+    setFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
   }
 
   return (
     <WrapperDropdown>
+      {selectedMutation && selectedMutation.metadata ? (
+        <MutationVersionDropdown
+          expanded={expandedVersion}
+          toggleDropdown={toggleDropdown}
+          mutationId={selectedMutation.id}
+        />
+      ) : (
+        selectedMutation &&
+        selectedMutation.metadata && <SpanStyled>v{selectedMutation.version}</SpanStyled>
+      )}
+
       <SelectedMutationBlock
         onClick={() => onVisibilityChange(!isVisible)}
         data-testid="selected-mutation-block"
@@ -124,9 +94,30 @@ export const Dropdown: FC<DropdownProps> = ({
           {selectedMutation && selectedMutation.metadata ? (
             <>
               <SelectedMutationDescription>
+                {recentlyUsedMutations[selectedMutation.id]?.length === 2 ? (
+                  <Badge
+                    margin="0 4px 0 0"
+                    icon={
+                      selectedMutation.source === EntitySourceType.Local ? (
+                        <EyeFilled />
+                      ) : (
+                        <EyeInvisibleFilled />
+                      )
+                    }
+                    size="small"
+                    text={selectedMutation.source}
+                    theme={selectedMutation.source === EntitySourceType.Local ? 'white' : 'blue'}
+                    onClick={handleSwitchSourceClick}
+                  />
+                ) : selectedMutation.source === EntitySourceType.Local ? (
+                  <Badge margin="0 4px 0 0" text={selectedMutation.source} theme="white" />
+                ) : null}
+
                 {selectedMutation.metadata.name}
               </SelectedMutationDescription>
-              <SelectedMutationId>{selectedMutation.id}</SelectedMutationId>
+              {selectedMutation.authorId ? (
+                <SelectedMutationId>by {selectedMutation.authorId}</SelectedMutationId>
+              ) : null}
             </>
           ) : (
             <SelectedMutationDescription>No mutations applied</SelectedMutationDescription>
@@ -134,7 +125,9 @@ export const Dropdown: FC<DropdownProps> = ({
         </SelectedMutationInfo>
 
         {selectedMutation ? (
-          <StarSelectedMutationWrapper onClick={() => handleFavoriteButtonClick(selectedMutation)}>
+          <StarSelectedMutationWrapper
+            onClick={() => handleFavoriteButtonClick(selectedMutation.id)}
+          >
             {selectedMutation.id === favoriteMutationId ? (
               <StarSelectMutation />
             ) : (
@@ -153,121 +146,6 @@ export const Dropdown: FC<DropdownProps> = ({
           </OpenListDefault>
         )}
       </SelectedMutationBlock>
-
-      {isVisible && (
-        <MutationsList>
-          <MutationsListWrapper>
-            <ButtonListBlock>
-              <ButtonBack onClick={handleOriginalButtonClick}>{<Back />} to Original</ButtonBack>
-              <ButtonMutation
-                onClick={handleMutateButtonClick}
-                data-testid="mutate-button"
-                data-mweb-context-type="notch"
-                data-mweb-context-parsed={JSON.stringify({ id: 'mutate-button' })}
-                data-mweb-context-level="system"
-              >
-                Mutate {<Mutate />}
-                <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-              </ButtonMutation>
-            </ButtonListBlock>
-
-            {recentlyUsedMutations.length > 0 ? (
-              <ListMutations
-                isAccordeonExpanded={isAccordeonExpanded}
-                data-testid="recently-used-mutations"
-                data-mweb-context-type="notch"
-                data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
-                data-mweb-context-level="system"
-              >
-                {recentlyUsedMutations.map((mut) => (
-                  <InputBlock key={mut.id} isActive={mut.id === selectedMutation?.id}>
-                    <ImageBlock>
-                      <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
-                    </ImageBlock>
-                    <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
-                      {/* todo: mocked classname */}
-                      <InputMutation
-                        className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
-                      >
-                        {mut.metadata ? mut.metadata.name : ''}
-                      </InputMutation>
-                      {/* todo: mocked classname */}
-                      <AuthorMutation
-                        className={
-                          mut.id === selectedMutation?.id && mut.id === favoriteMutationId
-                            ? 'authorMutationSelected'
-                            : ''
-                        }
-                      >
-                        {mut.id}
-                      </AuthorMutation>
-                    </InputInfoWrapper>
-                    {/* todo: mocked */}
-
-                    {mut.id === favoriteMutationId ? (
-                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
-                        <StarMutationList />
-                      </InputIconWrapper>
-                    ) : mut.id === selectedMutation?.id ? (
-                      <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut)}>
-                        <StarMutationListDefault />
-                      </InputIconWrapper>
-                    ) : (
-                      <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
-                        <Trash />
-                      </InputIconWrapper>
-                    )}
-                  </InputBlock>
-                ))}
-                <div
-                  data-mweb-insertion-point="recently-used-mutations"
-                  style={{ display: 'none' }}
-                ></div>
-              </ListMutations>
-            ) : null}
-
-            {unusedMutations.length > 0 ? (
-              <AvalibleMutations isAccordeonExpanded={isAccordeonExpanded}>
-                <AvalibleLableBlock
-                  onClick={handleAccordeonClick}
-                  data-mweb-context-type="notch"
-                  data-mweb-context-parsed={JSON.stringify({ id: 'unused-mutations-title' })}
-                  data-mweb-context-level="system"
-                >
-                  <AvalibleLable>available</AvalibleLable>
-                  {/* todo: mock */}
-                  <AvalibleArrowBlock className={isAccordeonExpanded ? 'iconRotate' : ''}>
-                    <AvalibleArrowLable>{unusedMutations.length} mutations</AvalibleArrowLable>
-                    <AvailableIcon />
-                  </AvalibleArrowBlock>
-                  <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-                </AvalibleLableBlock>
-
-                {isAccordeonExpanded ? (
-                  <div data-testid="unused-mutations">
-                    {unusedMutations.map((mut) => (
-                      <InputBlock
-                        key={mut.id}
-                        isActive={mut.id === selectedMutation?.id}
-                        onClick={() => handleMutationClick(mut.id)}
-                        className="avalibleMutationsInput"
-                      >
-                        <ImageBlock>
-                          <Image image={mut.metadata.image} fallbackUrl={defaultIcon} />
-                        </ImageBlock>
-                        <InputInfoWrapper>
-                          <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
-                          <AuthorMutation>{mut.id}</AuthorMutation>
-                        </InputInfoWrapper>
-                      </InputBlock>
-                    ))}
-                  </div>
-                ) : null}
-              </AvalibleMutations>
-            ) : null}
-          </MutationsListWrapper>
-        </MutationsList>
-      )}
     </WrapperDropdown>
   )
 }

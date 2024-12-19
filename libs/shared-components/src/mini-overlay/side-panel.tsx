@@ -2,11 +2,27 @@ import React, { useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from 'antd'
 import { useNotifications } from '@mweb/engine'
-import { AppWithSettings, MutationDto } from '@mweb/backend'
+import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
 import { Image } from '../common/image'
-import Profile from './profile'
 import { IWalletConnect } from './types'
-import { MutationFallbackIcon, ArrowIcon, BellIcon, BellWithCircle } from './assets/icons'
+import {
+  MutationFallbackIcon,
+  ArrowIcon,
+  OpenOverlay,
+  OpenOverlayWithCircle,
+  BellWithCircle,
+  PersonAddAlt,
+  BellIcon,
+} from './assets/icons'
+import { Badge } from '../common/Badge'
+import {
+  MemoryRouter,
+  Navigate,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  Location,
+} from 'react-router'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
@@ -16,7 +32,7 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   user-select: none;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   border-radius: 4px 0px 0px 4px;
   background: ${(props) => (props.$isApps ? '#EEEFF5' : '#F8F9FF')};
   box-shadow: 0 4px 20px 0 rgba(11, 87, 111, 0.15);
@@ -24,7 +40,14 @@ const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   box-sizing: border-box;
 `
 
+const BadgeWrapper = styled.span`
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+`
+
 const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
+  direction: ltr;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -107,6 +130,7 @@ const ActionLikeButton = styled(Button)<{ type: string }>`
   border-radius: 4px;
   display: flex;
   justify-content: flex-start;
+  color: ${(props) => (props.type === 'primary' ? 'white' : 'rgba(2, 25, 58, 1)')};
 
   circle {
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -140,9 +164,39 @@ const AppsWrapper = styled.div`
   width: 100%;
   padding: 5px 6px 5px 7px;
   gap: 10px;
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* width */
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  /* Track */
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+  }
+
+  /* Handle */
+  &::-webkit-scrollbar-thumb {
+    background: #1879ce70;
+    border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  &::-webkit-scrollbar-thumb:hover {
+    background: #1879ced8;
+  }
+
+  & button {
+    direction: ltr;
+  }
 `
 
 const ButtonOpenWrapper = styled.div`
+  direction: ltr;
   display: flex;
   box-sizing: border-box;
   justify-content: center;
@@ -172,29 +226,31 @@ interface ISidePanelProps extends Partial<IWalletConnect> {
   loggedInAccountId?: string | null
   overlayRef: React.RefObject<HTMLDivElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  isNotificationPageOpen: boolean
-  openCloseNotificationPage: React.Dispatch<React.SetStateAction<boolean>>
+  isOverlayOpened: boolean
+  openOverlay: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const SidePanel: React.FC<ISidePanelProps> = ({
+const SidePanel: React.FC<
+  ISidePanelProps & { navigate: NavigateFunction; location: Location<any> }
+> = ({
+  navigate,
+  location,
   children,
   nearNetwork,
   connectWallet,
   disconnectWallet,
-  loggedInAccountId,
   baseMutation,
   mutationApps,
   overlayRef,
   trackingRefs = new Set(),
-  isNotificationPageOpen,
-  openCloseNotificationPage,
+  isOverlayOpened,
+  openOverlay,
 }) => {
   const { notifications } = useNotifications()
   const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
     !!notifications.filter((not) => not.status === 'new').length
   )
   const [isOpenAppsPane, openCloseAppsPane] = useState(false)
-  const [isProfileOpen, openCloseProfile] = useState(false)
 
   const rootRef = useRef<HTMLDivElement>(null)
   const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
@@ -212,16 +268,18 @@ const SidePanel: React.FC<ISidePanelProps> = ({
     <SidePanelWrapper
       ref={rootRef}
       $isApps={!!mutationApps.length}
+      data-testid="mweb-overlay"
       data-mweb-context-type="mweb-overlay"
       data-mweb-context-parsed={JSON.stringify({ id: 'mweb-overlay' })}
       data-mweb-context-level="system"
     >
       <TopBlock $open={isOpenAppsPane || !!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
+          onClick={() => openOverlay((val) => !val)}
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
-          onClick={() => openCloseProfile((val) => !val)}
           ref={openCloseWalletPopupRef}
+          data-testid="mutation-button"
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
             id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
@@ -233,14 +291,34 @@ const SidePanel: React.FC<ISidePanelProps> = ({
           ) : (
             <MutationFallbackIcon />
           )}
+          {baseMutation?.source === EntitySourceType.Local && (
+            <BadgeWrapper>
+              <Badge text={baseMutation.source} theme={'blue'} />
+            </BadgeWrapper>
+          )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
         <ActionLikeButton
           block
-          type={isNotificationPageOpen ? 'primary' : 'default'}
-          onClick={() => openCloseNotificationPage((val) => !val)}
+          type={isOverlayOpened && location.pathname === '/system/main' ? 'primary' : 'default'}
+          onClick={() => {
+            openOverlay((val) => (location.pathname !== '/system/main' ? true : !val))
+            navigate!(`/system/main`)
+          }}
         >
           {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
+        </ActionLikeButton>
+        <ActionLikeButton
+          block
+          type={isOverlayOpened && location.pathname === '/system/profile' ? 'primary' : 'default'}
+          onClick={() => {
+            openOverlay((val) => (location.pathname !== '/system/profile' ? true : !val))
+            navigate!(`/system/profile`)
+          }}
+          style={{ paddingLeft: '14px' }}
+          data-testid="profile-action-button"
+        >
+          <PersonAddAlt />
         </ActionLikeButton>
       </TopBlock>
 
@@ -252,7 +330,9 @@ const SidePanel: React.FC<ISidePanelProps> = ({
               data-mweb-layout-manager="vertical"
             />
           ) : (
-            <AppsWrapper>{children}</AppsWrapper>
+            <div style={{ display: 'flex', direction: 'rtl' }}>
+              <AppsWrapper>{children}</AppsWrapper>
+            </div>
           )}
           <ButtonOpenWrapper
             data-mweb-context-type="mweb-overlay"
@@ -269,20 +349,6 @@ const SidePanel: React.FC<ISidePanelProps> = ({
             <div data-mweb-insertion-point="open-apps-button" style={{ display: 'none' }} />
           </ButtonOpenWrapper>
         </>
-      ) : null}
-
-      {isProfileOpen && isMutationIconButton ? (
-        <Profile
-          accountId={loggedInAccountId ?? null}
-          closeProfile={() => {
-            openCloseProfile(false)
-          }}
-          connectWallet={connectWallet}
-          disconnectWallet={disconnectWallet}
-          nearNetwork={nearNetwork}
-          trackingRefs={trackingRefs}
-          openCloseWalletPopupRef={openCloseWalletPopupRef}
-        />
       ) : null}
     </SidePanelWrapper>
   )

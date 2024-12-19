@@ -1,18 +1,19 @@
 import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
 import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
-import { MutationRepository } from './mutation.repository'
 import { Transaction } from '../unit-of-work/transaction'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { NotificationService } from '../notification/notification.service'
 import { NotificationType } from '../notification/notification.entity'
 import { PullRequestPayload } from '../notification/types/pull-request'
-import { generateGuid } from '../../common/generate-guid'
-import { EntityId } from '../base/base.entity'
+import { EntityId, EntitySourceType } from '../base/base.entity'
 import { NotificationDto } from '../notification/dtos/notification.dto'
 import { MutationDto } from './dtos/mutation.dto'
 import { MutationCreateDto } from './dtos/mutation-create.dto'
 import { NotificationCreateDto } from '../notification/dtos/notification-create.dto'
+import { IRepository } from '../base/repository.interface'
+import { SettingsSerivce } from '../settings/settings.service'
+import { NearSigner } from '../near-signer/near-signer.service'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
@@ -21,15 +22,29 @@ export type SaveMutationOptions = {
 
 export class MutationService {
   constructor(
-    private mutationRepository: MutationRepository,
+    private mutationRepository: IRepository<Mutation>,
+    private settingsService: SettingsSerivce,
     private notificationService: NotificationService,
     private unitOfWorkService: UnitOfWorkService,
-    private nearConfig: { defaultMutationId: string }
+    private nearConfig: { defaultMutationId: string },
+    private nearSigner: NearSigner
   ) {}
 
-  async getMutation(mutationId: string): Promise<MutationDto | null> {
-    const mutation = await this.mutationRepository.getItem(mutationId)
+  async getMutation(
+    mutationId: string,
+    source?: EntitySourceType,
+    version?: string
+  ): Promise<MutationDto | null> {
+    const mutation = await this.mutationRepository.getItem({ id: mutationId, source, version })
     return mutation?.toDto() ?? null
+  }
+
+  async getMutationVersions(mutationId: string): Promise<{ version: string }[]> {
+    const versions = await this.mutationRepository.getVersions({
+      id: mutationId,
+      source: EntitySourceType.Origin,
+    })
+    return versions.map((v) => ({ version: v }))
   }
 
   async getMutationsForContext(context: IContextNode): Promise<MutationDto[]> {
@@ -53,7 +68,7 @@ export class MutationService {
     const lastUsedData = await Promise.all(
       allMutations.map(async (m) => ({
         id: m.id,
-        lastUsage: await this.mutationRepository.getMutationLastUsage(m.id, hostname),
+        lastUsage: await this.settingsService.getMutationLastUsage(m.id, hostname),
       }))
     )
     const usedMutationsData = lastUsedData
@@ -76,12 +91,30 @@ export class MutationService {
   }
 
   async setFavoriteMutation(mutationId: string | null): Promise<void> {
-    return this.mutationRepository.setFavoriteMutation(mutationId)
+    return this.settingsService.setFavoriteMutation(mutationId)
   }
 
   async getFavoriteMutation(): Promise<string | null> {
-    const value = await this.mutationRepository.getFavoriteMutation()
+    const value = await this.settingsService.getFavoriteMutation()
     return value ?? null
+  }
+
+  async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
+    const value = await this.settingsService.getPreferredSource(mutationId)
+    return value ?? null
+  }
+
+  async getMutationVersion(mutationId: string): Promise<string | null> {
+    const value = await this.settingsService.getMutationVersion(mutationId)
+    return value ?? null
+  }
+
+  async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
+    return this.settingsService.setMutationVersion(mutationId, version)
+  }
+
+  async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
+    return this.settingsService.setPreferredSource(mutationId, source)
   }
 
   async createMutation(
@@ -93,20 +126,21 @@ export class MutationService {
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
-    const mutation = await this.mutationRepository.constructItem(dto)
+    const mutation = await this._fixMutationErrors(await this.mutationRepository.constructItem(dto))
 
-    // ToDo: move to provider?
-    if (await this.mutationRepository.getItem(mutation.id)) {
-      throw new Error('Mutation with that ID already exists')
+    if (mutation.source === EntitySourceType.Origin) {
+      await this.unitOfWorkService.runInTransaction((tx) =>
+        Promise.all([
+          this.mutationRepository.createItem(mutation, tx),
+          applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+          askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
+        ])
+      )
+    } else if (mutation.source === EntitySourceType.Local) {
+      await this.mutationRepository.createItem(mutation)
+    } else {
+      throw new Error('Invalid entity source')
     }
-
-    await this.unitOfWorkService.runInTransaction((tx) =>
-      Promise.all([
-        this.mutationRepository.createItem(mutation, tx),
-        applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
-        askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
-      ])
-    )
 
     return this.populateMutationWithSettings(mutation.toDto())
   }
@@ -121,28 +155,79 @@ export class MutationService {
   ): Promise<MutationWithSettings> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
-    const mutation = Mutation.create(dto)
+    const mutation = await this._fixMutationErrors(Mutation.create(dto))
 
     // ToDo: move to provider?
-    if (!(await this.mutationRepository.getItem(mutation.id))) {
+    if (!(await this.mutationRepository.getItem({ id: mutation.id }))) {
       throw new Error('Mutation with that ID does not exist')
     }
 
-    const performTx = (tx: Transaction) =>
-      Promise.all([
-        this.mutationRepository.editItem(mutation, tx),
-        applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
-        askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
-      ])
+    let editedMutation: Mutation
 
-    // reuse transaction
-    if (tx) {
-      await performTx(tx)
+    if (mutation.source === EntitySourceType.Origin) {
+      const performTx = (tx: Transaction) =>
+        Promise.all([
+          this.mutationRepository.editItem(mutation, tx),
+          applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+          askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
+        ])
+
+      // reuse transaction
+      if (tx) {
+        const result = await performTx(tx)
+        editedMutation = result[0]
+      } else {
+        const result = await this.unitOfWorkService.runInTransaction(performTx)
+        editedMutation = result[0]
+      }
+    } else if (mutation.source === EntitySourceType.Local) {
+      editedMutation = await this.mutationRepository.editItem(mutation, tx)
     } else {
-      await this.unitOfWorkService.runInTransaction(performTx)
+      throw new Error('Invalid entity source')
+    }
+
+    return this.populateMutationWithSettings(editedMutation.toDto())
+  }
+
+  async saveMutation(
+    dto: MutationCreateDto | MutationDto,
+    options: SaveMutationOptions = {
+      applyChangesToOrigin: false,
+      askOriginToApplyChanges: false,
+    },
+    tx?: Transaction
+  ): Promise<MutationWithSettings> {
+    const { applyChangesToOrigin, askOriginToApplyChanges } = options
+
+    const mutation = await this._fixMutationErrors(
+      'id' in dto ? Mutation.create(dto) : await this.mutationRepository.constructItem(dto)
+    )
+
+    if (mutation.source === EntitySourceType.Origin) {
+      const performTx = (tx: Transaction) =>
+        Promise.all([
+          this.mutationRepository.saveItem(mutation, tx),
+          applyChangesToOrigin && this._applyChangesToOrigin(mutation, tx),
+          askOriginToApplyChanges && this._askOriginToApplyChanges(mutation, tx),
+        ])
+
+      // reuse transaction
+      if (tx) {
+        await performTx(tx)
+      } else {
+        await this.unitOfWorkService.runInTransaction(performTx)
+      }
+    } else if (mutation.source === EntitySourceType.Local) {
+      await this.mutationRepository.saveItem(mutation, tx)
+    } else {
+      throw new Error('Invalid entity source')
     }
 
     return this.populateMutationWithSettings(mutation.toDto())
+  }
+
+  async deleteMutation(mutationId: EntityId): Promise<void> {
+    await this.mutationRepository.deleteItem(mutationId)
   }
 
   async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
@@ -158,7 +243,7 @@ export class MutationService {
 
     const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
 
-    const sourceMutation = await this.mutationRepository.getItem(sourceMutationId)
+    const sourceMutation = await this.mutationRepository.getItem({ id: sourceMutationId })
 
     if (!sourceMutation) {
       throw new Error('Source mutation not found')
@@ -172,6 +257,7 @@ export class MutationService {
       Promise.all([
         this._applyChangesToOrigin(sourceMutation, tx),
         this.notificationService.acceptNotification(notificationId, tx),
+        this._notifyAboutAcceptedPullRequest(sourceMutationId, targetMutationId, tx),
       ])
     )
 
@@ -179,22 +265,50 @@ export class MutationService {
   }
 
   async rejectPullRequest(notificationId: EntityId): Promise<NotificationDto> {
-    return this.notificationService.rejectNotification(notificationId)
+    const notification = await this.notificationService.getNotification(notificationId)
+
+    if (!notification) {
+      throw new Error('Notification not found')
+    }
+
+    if (notification.type !== NotificationType.PullRequest) {
+      throw new Error('Notification is not a pull request')
+    }
+
+    const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
+
+    const [freshNotification] = await this.unitOfWorkService.runInTransaction((tx) =>
+      Promise.all([
+        this.notificationService.rejectNotification(notificationId, tx),
+        this._notifyAboutRejectedPullRequest(sourceMutationId, targetMutationId, tx),
+      ])
+    )
+
+    return freshNotification
   }
 
   async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
-    await this.mutationRepository.setMutationLastUsage(mutationId, null, window.location.hostname)
+    await this.settingsService.setMutationLastUsage(mutationId, null, window.location.hostname)
   }
 
   public async updateMutationLastUsage(mutationId: MutationId, hostname: string): Promise<string> {
     // save last usage
     const currentDate = new Date().toISOString()
-    await this.mutationRepository.setMutationLastUsage(mutationId, currentDate, hostname)
+    await this.settingsService.setMutationLastUsage(mutationId, currentDate, hostname)
     return currentDate
   }
 
+  async getMutationWithSettings(
+    mutationId: string,
+    source?: EntitySourceType,
+    version?: string
+  ): Promise<MutationWithSettings | null> {
+    const mutation = await this.getMutation(mutationId, source, version)
+    return mutation ? this.populateMutationWithSettings(mutation) : null
+  }
+
   public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {
-    const lastUsage = await this.mutationRepository.getMutationLastUsage(
+    const lastUsage = await this.settingsService.getMutationLastUsage(
       mutation.id,
       window.location.hostname
     )
@@ -210,7 +324,7 @@ export class MutationService {
       throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
     }
 
-    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+    const originalMutation = await this.mutationRepository.getItem({ id: originalMutationId })
 
     if (!originalMutation) {
       throw new Error('The origin mutation does not exist')
@@ -233,7 +347,7 @@ export class MutationService {
       throw new Error('The mutation is not a fork and does not have an origin to apply changes to')
     }
 
-    const originalMutation = await this.mutationRepository.getItem(originalMutationId)
+    const originalMutation = await this.mutationRepository.getItem({ id: originalMutationId })
 
     if (!originalMutation) {
       throw new Error('The origin mutation does not exist')
@@ -242,17 +356,85 @@ export class MutationService {
     const { authorId: forkAuthorId } = forkedMutation
     const { authorId: originAuthorId } = originalMutation
 
+    if (!originAuthorId || !forkAuthorId) {
+      throw new Error('The mutation does not have an author')
+    }
+
     // ToDo: check logged in user id?
     if (forkAuthorId === originAuthorId) {
       throw new Error('You cannot ask yourself to apply changes')
     }
 
     const notification: NotificationCreateDto = {
+      source: EntitySourceType.Origin,
       type: NotificationType.PullRequest,
       recipients: [originAuthorId],
       payload: {
         sourceMutationId: forkedMutation.id,
         targetMutationId: originalMutation.id,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
+  }
+
+  private async _fixMutationErrors(mutation: Mutation): Promise<Mutation> {
+    if (mutation.source === EntitySourceType.Local) {
+      return mutation
+    }
+
+    const accountId = await this.nearSigner.getAccountId()
+
+    mutation.apps = mutation.apps.map((app) => {
+      if (!app.documentId) return app
+
+      const [docAuthorId, , localDocId] = app.documentId.split('/')
+
+      if (docAuthorId) return app
+
+      return {
+        appId: app.appId,
+        documentId: `${accountId}/document/${localDocId}`,
+      }
+    })
+
+    return mutation
+  }
+
+  private async _notifyAboutAcceptedPullRequest(
+    sourceMutationId: string,
+    targetMutationId: string,
+    tx?: Transaction
+  ) {
+    const [sourceAuthorId] = sourceMutationId.split('/')
+
+    const notification: NotificationCreateDto = {
+      source: EntitySourceType.Origin,
+      type: NotificationType.PullRequestAccepted,
+      recipients: [sourceAuthorId],
+      payload: {
+        sourceMutationId: sourceMutationId,
+        targetMutationId: targetMutationId,
+      },
+    }
+
+    await this.notificationService.createNotification(notification, tx)
+  }
+
+  private async _notifyAboutRejectedPullRequest(
+    sourceMutationId: string,
+    targetMutationId: string,
+    tx?: Transaction
+  ) {
+    const [sourceAuthorId] = sourceMutationId.split('/')
+
+    const notification: NotificationCreateDto = {
+      source: EntitySourceType.Origin,
+      type: NotificationType.PullRequestRejected,
+      recipients: [sourceAuthorId],
+      payload: {
+        sourceMutationId: sourceMutationId,
+        targetMutationId: targetMutationId,
       },
     }
 

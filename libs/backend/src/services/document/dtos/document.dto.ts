@@ -5,4 +5,5 @@ import { DocumentMetadata } from '../document.entity'
 export type DocumentDto = BaseDto & {
   metadata: DocumentMetadata
   openWith: AppId[]
+  content: any
 }
