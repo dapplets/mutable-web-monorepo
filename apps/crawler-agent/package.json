@@ -7,6 +7,7 @@
     "mweb-crawler-agent": "dist/node/cli.js"
   },
   "scripts": {
+    "start": "node dist/node/cli.js start",
     "build": "pnpm run clean && tsc -p tsconfig.json && chmod +x ./dist/node/cli.js && pnpm run build:inpage",
     "build:inpage": "webpack --mode production",
     "clean": "rm -rf dist",

@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler-agent
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: crawler-agent
+  template:
+    metadata:
+      labels:
+        app: crawler-agent
+    spec:
+      containers:
+        - name: container-name
+          image: ghcr.io/dapplets/crawler-agent:latest
