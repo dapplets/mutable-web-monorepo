@@ -4,11 +4,11 @@ export const WrapperDropdown = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  width: calc(100% - 2px);
-  border-radius: 4px;
+  width: 100%;
+  border-radius: 10px;
   border: 1px solid #e2e2e5;
+  overflow: hidden;
   box-sizing: border-box;
-  margin: 8px 0;
 
   &::-webkit-scrollbar {
     width: 0;

@@ -1,3 +1,6 @@
+import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
+import { EntitySourceType } from '@mweb/backend'
+import { useMutableWeb } from '@mweb/engine'
 import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
 import {
   OpenList,
@@ -6,15 +9,12 @@ import {
   SelectedMutationDescription,
   SelectedMutationId,
   SelectedMutationInfo,
+  SpanStyled,
   StarSelectedMutationWrapper,
   WrapperDropdown,
-  SpanStyled,
 } from '../assets/styles-dropdown'
 import { IconDropdown, StarSelectMutation, StarSelectMutationDefault } from '../assets/vectors'
-import { useMutableWeb } from '@mweb/engine'
-import { EntitySourceType } from '@mweb/backend'
 import { Badge } from './badge'
-import { EyeFilled, EyeInvisibleFilled } from '@ant-design/icons'
 import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {

@@ -1,0 +1,128 @@
+{
+  "id": "twitter",
+  "parserType": "json",
+  "targets": [
+    {
+      "namespace": "engine",
+      "contextType": "website",
+      "if": {
+        "id": {
+          "eq": "twitter.com"
+        }
+      }
+    },
+    {
+      "namespace": "engine",
+      "contextType": "website",
+      "if": {
+        "id": {
+          "eq": "x.com"
+        }
+      }
+    },
+    {
+      "namespace": "engine",
+      "contextType": "website",
+      "if": {
+        "id": {
+          "eq": "www.x.com"
+        }
+      }
+    },
+    {
+      "namespace": "engine",
+      "contextType": "website",
+      "if": {
+        "id": {
+          "eq": "www.twitter.com"
+        }
+      }
+    }
+  ],
+  "contexts": {
+    "root": {
+      "props": {
+        "id": "string('global')",
+        "websiteName": "string('X')",
+        "username": "substring-after(string(//header//a[@aria-label='Profile']/@href), '/')",
+        "fullname": "string(//*[@aria-label='Account menu']//img/@alt)",
+        "img": "string(//*[@aria-label='Account menu']//img/@src)",
+        "url": "string(//html/head/meta[@property='og:url']/@content)"
+      },
+      "children": ["timeline", "profile"]
+    },
+    "timeline": {
+      "selector": "main [data-testid=primaryColumn] section > div",
+      "props": {
+        "id": "string('timeline')",
+        "title": "string(./@aria-label)"
+      },
+      "children": ["post"]
+    },
+    "post": {
+      "selector": "div[data-testid=cellInnerDiv]",
+      "props": {
+        "id": "substring-after(string(.//time/../@href), 'status/')",
+        "text": "string(.//*[@data-testid='tweetText'])",
+        "authorFullname": "string(.//*[@data-testid='User-Name']//span)",
+        "authorUsername": "substring-before(substring-after(string(.//time/../@href), '/'), '/')",
+        "authorImg": "string(.//img/@src)",
+        "createdAt": "string(.//time/@datetime)",
+        "url": "concat('https://x.com/', substring-before(substring-after(string(.//time/../@href), '/'), '/'), '/status/', substring-after(string(.//time/../@href), 'status/'))"
+      },
+      "insertionPoints": {
+        "root": {
+          "selector": ":scope > div",
+          "bosLayoutManager": "${REPL_ACCOUNT}/widget/ContextActionsGroup",
+          "insertionType": "before"
+        },
+        "southPanel": {
+          "selector": "div[role=group] > *:last-child",
+          "insertionType": "after"
+        },
+        "avatar": {
+          "selector": "div.r-18kxxzh.r-1wbh5a2.r-13qz1uu > *:last-child",
+          "insertionType": "after"
+        },
+        "afterText": {
+          "selector": "[data-testid=tweetText]",
+          "bosLayoutManager": "${REPL_ACCOUNT}/widget/VerticalLayoutManager",
+          "insertionType": "end"
+        }
+      },
+      "children": ["postSouthButton", "postAvatar"]
+    },
+    "postSouthButton": {
+      "selector": "div[role='group'] > div.css-175oi2r",
+      "props": {
+        "id": "string(.//*/@data-testid)"
+      }
+    },
+    "profile": {
+      "selector": "[data-testid='primaryColumn'] div.r-13qz1uu.r-1ye8kvj > div",
+      "props": {
+        "id": "substring-after(string(.//*[@data-testid='UserName']), '@')",
+        "authorFullname": "string(.//*[@data-testid='UserName']//span[1])",
+        "authorUsername": "substring-after(string(.//*[@data-testid='UserName']), '@')",
+        "authorImg": "string(.//img[contains(@alt,'Opens profile photo')]/@src)",
+        "url": "concat('https://x.com/', substring-after(string(.//*[@data-testid='UserName']), '@'))"
+      },
+      "insertionPoints": {
+        "southPanel": {
+          "selector": "[data-testid=placementTracking]",
+          "insertionType": "after"
+        },
+        "avatar": {
+          "selector": "div.r-1ifxtd0.r-ymttw5.r-ttdzmv div.r-ggadg3.r-u8s1d.r-8jfcpp",
+          "insertionType": "begin"
+        }
+      }
+    },
+    "postAvatar": {
+      "selector": "[data-testid='Tweet-User-Avatar']",
+      "props": {
+        "id": "string('avatar')"
+      }
+    }
+  }
+}

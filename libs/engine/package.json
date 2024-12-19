@@ -38,9 +38,9 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.21.0",
+    "@mweb/backend": "workspace:*",
     "@mweb/core": "workspace:*",
     "@mweb/react": "workspace:*",
-    "@mweb/backend": "workspace:*",
     "antd": "^5.18.3",
     "big.js": "^6.2.1",
     "caching-decorator": "^1.0.3",

@@ -4,13 +4,16 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["src/**/*.ts", "test/**/*.js"],
-      "outputs": ["dist/**", "lib/**"],
+      "outputs": ["dist/**", "lib/**", "target/release/**"],
       "cache": false,
-      "env": ["NEAR_NETWORK"]
+      "env": ["NEAR_NETWORK", "DEFAULT_CRAWLER_API_URL", "REACT_APP_API_URL"]
     },
     "dev": {
       "persistent": true,
       "cache": false
+    },
+    "test": {
+      "dependsOn": ["^build"]
     },
     "release": {
       "cache": false,
