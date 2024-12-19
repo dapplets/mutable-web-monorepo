@@ -1,0 +1,54 @@
+{
+  "manifest_version": 3,
+  "name": "Mutable Web — AI Crawler",
+  "version": "",
+  "version_name": "",
+  "description": "",
+  "author": "",
+  "short_name": "AI Crawler",
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "minimum_chrome_version": "95",
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "side_panel": {
+    "default_title": "Mutable Web — AI Crawler",
+    "default_path": "sidepanel.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "exclude_globs": [
+        "https://social.dapplets.org/*",
+        "https://social.testnet.dapplets.org/*",
+        "https://*.social.testnet.apps.dapplets.org/*",
+        "http://localhost/*",
+        "http://127.0.0.1:3000/*",
+        "https://augm.link/*"
+      ],
+      "js": ["custom-elements.min.js", "contentscript.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://app.mynearwallet.com/*", "https://testnet.mynearwallet.com/*"],
+      "js": ["mnw-patch-inpage.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["callback.html", "bootstrap.min.css"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "permissions": ["storage", "tabs", "contextMenus", "sidePanel"],
+  "host_permissions": ["*://localhost/*", "http://*/*", "https://*/*"]
+}
