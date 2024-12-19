@@ -3,7 +3,9 @@ name: Crawler Agent
 on:
   push:
     branches:
-      - dap-4811
+      - develop
+    paths:
+      - 'apps/crawler-agent/**'
   workflow_dispatch:
 
 jobs:
