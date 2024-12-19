@@ -108,7 +108,6 @@ export const ListMutations = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
-  z-index: 1;
 `
 
 export const InputBlock = styled.div<{ isActive?: boolean }>`
@@ -215,7 +214,6 @@ export const AvalibleMutations = styled.div`
   flex-direction: column;
   box-sizing: border-box;
   padding: 10px;
-  z-index: 1;
 
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);

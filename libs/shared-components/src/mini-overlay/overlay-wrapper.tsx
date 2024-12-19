@@ -6,14 +6,10 @@ import Header from './header'
 import Main from './pages/main'
 import Profile from './pages/profile'
 import { IWalletConnect } from './types'
-import {
-  MemoryRouter,
-  Navigate,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  Location,
-} from 'react-router'
+import { NavigateFunction, Location } from 'react-router'
+import { ModalConfirmBackground } from '../multitable-panel/components/dropdown'
+import { ModalDelete } from '../multitable-panel/components/modal-delete'
+import { useDeleteLocalMutation, useMutableWeb } from '@mweb/engine'
 const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
@@ -218,14 +214,11 @@ const OverlayWrapper: FC<
   const [isProfileOpen, openCloseProfile] = useState(false)
   const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
   const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
-
-  const handleSignIn = async () => {
-    setWaiting(true)
-    try {
-      await connectWallet()
-    } finally {
-      setWaiting(false)
-    }
+  const { deleteLocalMutation } = useDeleteLocalMutation()
+  const { favoriteMutationId, setFavoriteMutation } = useMutableWeb()
+  const [mutationIdToDelete, setMutationIdToDelete] = useState<string | null>(null)
+  const handleFavoriteButtonClick = (mutationId: string) => {
+    setFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
   }
 
   return (
@@ -279,11 +272,27 @@ const OverlayWrapper: FC<
                 handleMutateButtonClick={handleMutateButtonClick}
                 onClose={onClose}
                 connectWallet={connectWallet}
+                handleFavoriteButtonClick={handleFavoriteButtonClick}
+                setMutationIdToDelete={setMutationIdToDelete}
               />
             ) : null}
             {location.pathname === '/system/profile' ? (
               <Profile navigate={navigate} location={location} />
             ) : null}
+
+            {mutationIdToDelete && (
+              <ModalConfirmBackground>
+                <ModalDelete
+                  onAction={async () => {
+                    await deleteLocalMutation(mutationIdToDelete)
+                    if (mutationIdToDelete === favoriteMutationId)
+                      handleFavoriteButtonClick(mutationIdToDelete)
+                    setMutationIdToDelete(null)
+                  }}
+                  onCloseCurrent={() => setMutationIdToDelete(null)}
+                />
+              </ModalConfirmBackground>
+            )}
           </Body>
         </Drawer>
       </OverlayContent>
