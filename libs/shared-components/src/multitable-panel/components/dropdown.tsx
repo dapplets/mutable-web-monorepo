@@ -22,6 +22,7 @@ import {
   MutationsList,
   MutationsListWrapper,
   WrapperDropdown,
+  SpanStyled,
 } from '../assets/styles-dropdown'
 import {
   AvailableIcon,
@@ -33,6 +34,7 @@ import {
 import { Badge } from './badge'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -65,6 +67,8 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   } = useMutableWeb()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
 
   const recentlyUsedMutations = useMemo(
     () =>
@@ -170,9 +174,22 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                     </ImageBlock>
                     <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
                       {/* todo: mocked classname */}
+
                       <InputMutation
                         className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
                       >
+                        {selectedMutation && selectedMutation.metadata ? (
+                          <MutationVersionDropdown
+                            expanded={expandedVersion}
+                            toggleDropdown={toggleDropdown}
+                            mutationId={selectedMutation.id}
+                          />
+                        ) : (
+                          selectedMutation &&
+                          selectedMutation.metadata && (
+                            <SpanStyled>v{selectedMutation.version}</SpanStyled>
+                          )
+                        )}{' '}
                         {mut.metadata ? mut.metadata.name : ''}{' '}
                         {recentlyUsedMutations[mut.id]?.length === 2 ? (
                           mut.source === EntitySourceType.Local ? (

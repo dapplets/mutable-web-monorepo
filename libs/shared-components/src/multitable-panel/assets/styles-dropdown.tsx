@@ -103,14 +103,6 @@ export const ButtonMutation = styled.div`
   }
 `
 
-export const ListMutations = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  z-index: 1;
-`
-
 export const InputBlock = styled.div<{ isActive?: boolean }>`
   display: flex;
 
@@ -206,6 +198,53 @@ export const ImageBlock = styled.div`
   }
 `
 
+export const ListMutations = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 1;
+
+  .active-mutation {
+    background: #384bff;
+
+    div,
+    span,
+    p {
+      color: #fff;
+    }
+
+    svg path {
+      fill: #fff;
+    }
+  }
+`
+
+export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
+  cursor: pointer;
+  left: ${({ $isWhite }) => ($isWhite ? `0` : '2px')};
+  justify-content: center;
+  padding: 2px 0;
+  padding-left: 4px;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  text-align: left;
+  color: #ffffff;
+  background: ${({ $isWhite }) => ($isWhite ? `#FFFFFF` : '#384bff')};
+
+  svg path {
+    stroke: ${({ $isWhite }) => ($isWhite ? ` #7a818b` : '#FFFFFF')};
+  }
+`
+
 export const AvalibleMutations = styled.div`
   width: 100%;
   background: #f8f9ff;
@@ -278,6 +317,7 @@ export const InputMutation = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  column-gap: 8px;
   width: 180px;
   display: inline-flex;
   align-items: center;

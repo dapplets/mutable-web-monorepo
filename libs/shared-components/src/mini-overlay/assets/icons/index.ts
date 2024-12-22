@@ -13,6 +13,7 @@ import OpenOverlay from './open-overlay'
 import OpenOverlayWithCircle from './open-overlay-with-circle'
 import Logo from './logo'
 import PersonAddAlt from './person-add-alt'
+import IconDropdown from './icon-dropdown'
 
 export {
   MutationFallbackIcon,
@@ -30,4 +31,5 @@ export {
   OpenOverlayWithCircle,
   Logo,
   PersonAddAlt,
+  IconDropdown,
 }
