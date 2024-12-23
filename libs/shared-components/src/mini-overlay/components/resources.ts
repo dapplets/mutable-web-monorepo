@@ -1,13 +1,11 @@
-import GITHUB_ICON from '../assets/resources/social/github.svg'
-import X_ICON from '../assets/resources/social/x.svg'
-import ETH_ICON from '../assets/resources/wallets/eth.svg'
-import NEAR_ICON from '../assets/resources/wallets/near-black.svg'
+import { GithubIcon, XIcon } from '../assets/resources/social'
+import { EthIcon, NearIcon } from '../assets/resources/wallets'
 
 export interface Resources {
   [name: string]: {
     title: string
     type: 'social' | 'wallet'
-    icon: string
+    icon: () => JSX.Element
     proofUrl: (name: string) => string | null
   }
 }
@@ -16,43 +14,43 @@ export const resources: Resources = {
   twitter: {
     title: 'X',
     type: 'social',
-    icon: X_ICON,
+    icon: XIcon,
     proofUrl: (name) => 'https://x.com/' + name,
   },
   github: {
     title: 'GitHub',
     type: 'social',
-    icon: GITHUB_ICON,
+    icon: GithubIcon,
     proofUrl: (name) => 'https://github.com/' + name,
   },
   'near/testnet': {
     title: 'NEAR Testnet',
     type: 'wallet',
-    icon: NEAR_ICON,
+    icon: NearIcon,
     proofUrl: () => null,
   },
   'near/mainnet': {
     title: 'NEAR Mainnet',
     type: 'wallet',
-    icon: NEAR_ICON,
+    icon: NearIcon,
     proofUrl: () => null,
   },
   ethereum: {
     title: 'Ethereum',
     type: 'wallet',
-    icon: ETH_ICON,
+    icon: EthIcon,
     proofUrl: () => null,
   },
   'ethereum/sepolia': {
     title: 'Ethereum',
     type: 'wallet',
-    icon: ETH_ICON,
+    icon: EthIcon,
     proofUrl: () => null,
   },
   'ethereum/xdai': {
     title: 'Ethereum',
     type: 'wallet',
-    icon: ETH_ICON,
+    icon: EthIcon,
     proofUrl: () => null,
   },
 }

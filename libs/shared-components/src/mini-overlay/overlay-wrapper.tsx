@@ -1,19 +1,12 @@
 import { Button, Drawer, Space, Typography } from 'antd'
-import React, { FC, useRef, useState } from 'react'
+import { FC, RefObject, useRef, useState } from 'react'
+import { Location, NavigateFunction } from 'react-router'
 import styled from 'styled-components'
 import { Close as CloseIcon, Logo as LogoIcon } from './assets/icons'
-import Header from './header'
+import Header from './components/header'
 import Main from './pages/main'
 import Profile from './pages/profile'
 import { IWalletConnect } from './types'
-import {
-  MemoryRouter,
-  Navigate,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  Location,
-} from 'react-router'
 const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
@@ -192,8 +185,8 @@ export interface IOverlayWrapperProps extends IWalletConnect {
   onClose: () => void
   open: boolean
   loggedInAccountId: string
-  modalContainerRef: React.RefObject<HTMLElement>
-  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  modalContainerRef: RefObject<HTMLElement>
+  trackingRefs?: Set<RefObject<HTMLDivElement>>
   handleMutateButtonClick: () => void
 }
 
@@ -242,7 +235,6 @@ const OverlayWrapper: FC<
                 <Title style={{ userSelect: 'none' }} level={3}>
                   <LogoIcon /> Mutable Web
                 </Title>
-
                 <Button type="text" onClick={onClose}>
                   <CloseIcon />
                 </Button>

@@ -1,7 +1,8 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { Location, NavigateFunction } from 'react-router'
 import styled from 'styled-components'
 import { ArrowIcon } from '../assets/icons'
+import { ConnectedAccount } from '../components/connected-accounts'
 
 const ProfileContainer = styled.div`
   width: calc(100% - 20px);
@@ -62,12 +63,7 @@ const Profile: FC<{ navigate: NavigateFunction; location: Location<any> }> = ({
         </BackButton>
         <H1>Profile</H1>
       </Header>
-      <div>
-        <a href="https://github.com/dapplets/connecting-accounts-dapplet" target="_blank">
-          Connected Accounts
-        </a>{' '}
-        are coming back soon...
-      </div>
+      <ConnectedAccount />
     </ProfileContainer>
   )
 }

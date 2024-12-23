@@ -190,7 +190,7 @@ export enum ConnectedAccountsPairStatus {
 }
 
 export interface IConnectedAccountUser {
-  img: string
+  img: () => JSX.Element
   name: string
   origin: string
   accountActive: boolean

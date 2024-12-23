@@ -1,9 +1,8 @@
-import { Button, Space, Typography } from 'antd'
+import { Space, Typography } from 'antd'
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import MultitablePanel from '../../multitable-panel'
 import NotificationFeed from '../../notifications/notification-feed'
-import { Close as CloseIcon } from '../assets/icons'
 const { Title, Text } = Typography
 
 const MainContainer = styled.div`
@@ -55,19 +54,6 @@ const Main: FC<IMainProps> = ({
             <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
               Sign in
             </Title>
-
-            <Button
-              type="text"
-              style={{
-                marginLeft: 'auto',
-                position: 'absolute',
-                right: '8px',
-                top: '8px',
-              }}
-              onClick={onClose}
-            >
-              <CloseIcon />
-            </Button>
           </Space>
 
           <Text

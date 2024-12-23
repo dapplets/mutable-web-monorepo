@@ -1,13 +1,13 @@
 import makeBlockie from 'ethereum-blockies-base64'
-import React, { FC, useRef, useState } from 'react'
+import { FC, RefObject, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { useOutside } from '../hooks/use-outside'
+import { useOutside } from '../../hooks/use-outside'
 import {
   Connect as ConnectIcon,
   Copy as CopyIcon,
   Disconnect as DisconnectIcon,
-} from './assets/icons'
-import { IWalletConnect } from './types'
+} from '../assets/icons'
+import { IWalletConnect } from '../types'
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -245,8 +245,8 @@ const ButtonDisconnect = styled.button`
 export interface IHeaderProps extends IWalletConnect {
   accountId: string | null
   closeProfile: () => void
-  trackingRefs: Set<React.RefObject<HTMLDivElement>>
-  openCloseWalletPopupRef: React.RefObject<HTMLButtonElement>
+  trackingRefs: Set<RefObject<HTMLDivElement>>
+  openCloseWalletPopupRef: RefObject<HTMLButtonElement>
 }
 
 const Header: FC<IHeaderProps> = ({

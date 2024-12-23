@@ -1,5 +1,6 @@
-import metamask from './metamask.svg'
-import near from './near.svg'
-import walletconnect from './walletconnect.svg'
+import MetamaskIcon from './metamask'
+import NearIcon from './near'
+import WalletconnectIcon from './walletconnect'
+import EthIcon from './eth'
 
-export { metamask, walletconnect, near }
+export { MetamaskIcon, WalletconnectIcon, NearIcon, EthIcon }

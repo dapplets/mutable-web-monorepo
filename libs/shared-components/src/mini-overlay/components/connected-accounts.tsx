@@ -1,26 +1,775 @@
 import cn from 'classnames'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 // import browser from 'webextension-polyfill'
 // import * as EventBus from '../../../../../common/global-event-bus'
+import styled from 'styled-components'
+import useAbortController from '../../hooks/use-abort-controller'
+import { Attention, Home, Ok, Time, Trash } from '../assets/icons'
+import { CAUserButton } from './connected-accounts-button'
+// import { DropdownCAListReceiver } from './dropdown-ca-list-receiver'
+import { Message } from './message'
 import { resources } from './resources'
+import { TabLoader } from './tab-loader'
 import {
-  ChainTypes,
   ConnectedAccountsPairStatus,
   IConnectedAccountsPair,
   IConnectedAccountUser,
   NearNetworks,
   TConnectedAccount,
-  WalletDescriptor,
   WalletDescriptorWithCAMainStatus,
   WalletTypes,
 } from './types'
-import { CAUserButton } from './connected-accounts-button'
-import { Message } from './message'
-import { TabLoader } from './tab-loader'
-import useAbortController from '../../hooks/use-abort-controller'
-import { DropdownCAListReceiver } from './../../../root/components/DropdownCAListReceiver'
-import { Attention, Info, Home, Ok, Time, Trash } from '../assets/icons'
-import styles from './connected-accounts.module.scss'
+
+// ToDo: remove mock data
+const MOCKED_DATA: {
+  getConnectedAccounts: TConnectedAccount[][]
+  pairs: IConnectedAccountsPair[]
+} = {
+  getConnectedAccounts: [
+    [
+      {
+        id: '0xa56494f979487e08f5e183013dc71d62eeae704b/ethereum',
+        status: {
+          isMain: false,
+        },
+      },
+      {
+        id: '0x9126d36880905fcb9e5f2a7f7c4f19703d52bc62/ethereum',
+        status: {
+          isMain: false,
+        },
+      },
+      {
+        id: '0xf64849376812667bda7d902666229f8b8dd90687/ethereum',
+        status: {
+          isMain: false,
+        },
+      },
+      {
+        id: '0x4cda54f321c2880f3b9a06b2aabc1b5080420fa7/ethereum',
+        status: {
+          isMain: false,
+        },
+      },
+      {
+        id: 'teremovskii/twitter',
+        status: {
+          isMain: true,
+        },
+      },
+    ],
+    [
+      {
+        id: 'nik4ter.testnet/near/testnet',
+        status: {
+          isMain: false,
+        },
+      },
+      {
+        id: 'nik2ter.testnet/near/testnet',
+        status: {
+          isMain: false,
+        },
+      },
+      {
+        id: 'nikter.testnet/near/testnet',
+        status: {
+          isMain: false,
+        },
+      },
+    ],
+    [
+      {
+        id: 'Ni-2/github',
+        status: {
+          isMain: false,
+        },
+      },
+    ],
+  ],
+  pairs: [
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: '0xa56494f979487e08f5e183013dc71d62eeae704b',
+        origin: 'ethereum',
+        accountActive: false,
+        walletType: WalletTypes.METAMASK,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: '0x9126d36880905fcb9e5f2a7f7c4f19703d52bc62',
+        origin: 'ethereum',
+        accountActive: false,
+        walletType: WalletTypes.METAMASK,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: 'teremovskii',
+        origin: 'twitter',
+        accountActive: false,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: 'Ni-2',
+        origin: 'github',
+        accountActive: true,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: 'nikter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: 'teremovskii',
+        origin: 'twitter',
+        accountActive: false,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: 'dapplets',
+        origin: 'github',
+        accountActive: false,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+    {
+      firstAccount: {
+        img: () => <></>,
+        name: 'nik3ter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      secondAccount: {
+        img: () => <></>,
+        name: 'nikter.testnet',
+        origin: 'near/testnet',
+        accountActive: false,
+        walletType: WalletTypes.NEAR,
+      },
+      statusName: ConnectedAccountsPairStatus.Connected,
+      statusMessage: '',
+      closeness: 1,
+      pendingRequestId: 1,
+    },
+  ],
+}
+
+const ConnectedAccountsContainer = styled.div`
+  --primary: rgba(56, 75, 255, 1);
+  --primary-pressed: rgba(56, 75, 255, 0.5);
+  --main-grey: #919191;
+  --web-bg: #eaf0f0;
+  --pure-white: #fff;
+  --main-black: #2a2a2a;
+  --content-black: #747376;
+
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :focus,
+  :active {
+    outline: none;
+  }
+
+  a:focus,
+  a:active {
+    outline: none;
+  }
+
+  nav,
+  footer,
+  header,
+  aside {
+    display: block;
+  }
+
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+
+    font-size: 100%;
+    font-size: 14px;
+    line-height: 1;
+    text-size-adjust: 100%;
+  }
+
+  input,
+  button,
+  textarea {
+    font-family: inherit;
+  }
+
+  input::-ms-clear {
+    display: none;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+  }
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  a,
+  a:visited {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  img {
+    vertical-align: top;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .warningInfo {
+    display: block;
+    padding: 4px;
+    color: white;
+    text-align: center;
+    background-color: var(--primary);
+    border-radius: 10px;
+  }
+
+  .wrapper {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+    height: 100%;
+  }
+
+  .caHeaderTop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .caHeaderTop > h3 {
+    margin: 5px 0;
+    color: rgb(145 145 145);
+  }
+
+  .header {
+    user-select: none;
+    display: flex;
+
+    // & > div:first-child {
+    //   width: 64%;
+    // }
+
+    & > div {
+      width: 100%;
+    }
+  }
+
+  .scrollContent {
+    direction: rtl;
+    overflow-y: auto;
+    height: calc(100vh - 187px);
+    padding-left: 7px;
+
+    &::-webkit-scrollbar {
+      cursor: pointer;
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgb(244 244 244);
+      background: linear-gradient(
+        90deg,
+        rgb(244 244 244 / 0%) 10%,
+        rgb(227 227 227 / 100%) 50%,
+        rgb(244 244 244 / 0%) 90%
+      );
+    }
+
+    &::-webkit-scrollbar-thumb {
+      width: 4px;
+      height: 2px;
+      margin-bottom: 15px;
+
+      background: var(--primary);
+      border-radius: 2px;
+      box-shadow:
+        0 2px 6px rgb(0 0 0 / 9%),
+        0 2px 2px rgb(38 117 209 / 4%);
+    }
+
+    &.withWarning {
+      height: calc(100vh - 215px);
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .scrollContent > * {
+    direction: ltr;
+  }
+
+  .accountsWrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .mainBlock {
+    display: grid;
+    grid-template-columns: 333px 90px;
+    align-items: center;
+    margin-top: 10px;
+
+    width: 100%;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .accountBlock {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--web-bg);
+    gap: 8px;
+    border-radius: 32px;
+  }
+
+  .accountBlockHorizontal {
+    flex-direction: row;
+  }
+
+  .accountBlockVertical {
+    flex-direction: column;
+  }
+
+  .account {
+    cursor: pointer;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: fit-content;
+    height: 44px;
+    margin: 3px;
+    padding: 0 5px 0 2px;
+
+    background: white;
+    border-radius: 200px 140px 140px 200px;
+  }
+
+  .nameUser {
+    padding-right: 14px;
+
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 100%;
+    color: var(--main-black) !important;
+  }
+
+  .nameUserActive {
+    background: var(--primary) !important;
+
+    .nameUser {
+      color: var(--pure-white) !important;
+    }
+  }
+
+  .accountStatus {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: #dadada;
+  }
+
+  .statusLabel {
+    display: block;
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+    box-shadow: 0 2px 2px rgb(0 0 0 / 10%);
+  }
+
+  .accountStatus > div::before {
+    content: attr(data-title);
+
+    position: absolute;
+    z-index: 9998;
+    top: 47%;
+    right: 87%;
+
+    display: none;
+
+    width: max-content;
+    height: auto;
+    padding: 8px 10px;
+
+    font-size: 10px;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 100%;
+    color: var(--main-grey);
+    text-align: center;
+    text-transform: capitalize;
+
+    background: var(--pure-white);
+    border-radius: 10px 0 10px 10px;
+    box-shadow: 0 4px 4px rgb(0 0 0 / 10%);
+  }
+
+  .accountStatus > div:hover::before,
+  .accountStatus > div:focus::before {
+    display: inline-block;
+  }
+
+  .statusName {
+    display: inline-block;
+
+    padding-left: 5px;
+
+    font-size: 10px;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 100%;
+    color: var(--main-black);
+    text-transform: capitalize;
+  }
+
+  .statusConnected {
+    margin: 3px;
+    padding: 4px 5px;
+    background: #5ec280;
+  }
+
+  .statusProcessing {
+    margin: 3px;
+    padding: 6px 5px;
+    background: #f5cf6c;
+  }
+
+  .statusError {
+    margin: 3px;
+    padding: 4px 2px 7px;
+    background: var(--primary);
+  }
+
+  .buttonDelete {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 30px;
+    height: 30px;
+    margin: 3px;
+
+    background-color: var(--pure-white);
+    filter: drop-shadow(0 2px 2px rgb(0 0 0 / 4%));
+    border-radius: 50%;
+
+    fill: #919191;
+
+    &:hover {
+      background-color: var(--primary);
+      fill: #fff;
+    }
+
+    &:active {
+      background-color: var(--primary-pressed);
+      fill: #fff;
+    }
+
+    &:disabled {
+      cursor: default;
+      background-color: #e5e5e5;
+      fill: #919191;
+    }
+  }
+
+  .buttonDelete svg {
+    fill: inherit;
+  }
+
+  .messageDelete {
+    height: calc(100% - 120px);
+    padding: 0 110px;
+
+    h6 {
+      font-size: 22px;
+      font-weight: 700;
+      font-style: normal;
+      line-height: 26px;
+      color: var(--main-grey);
+      text-align: center;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 500;
+      font-style: normal;
+      line-height: 16px;
+      color: #797979;
+      text-align: center;
+    }
+  }
+
+  .connectWalletsBtnModule {
+    display: flex;
+    align-items: center;
+    width: 44%;
+  }
+
+  .connectWalletsBtn {
+    display: block;
+
+    width: fit-content;
+    margin-left: 10px;
+    padding: 15px 20px;
+
+    font-size: 14px;
+    line-height: 100%;
+    color: #fff;
+
+    background: var(--primary);
+    border-radius: 12px;
+
+    &:hover {
+      background: #c12f49;
+    }
+
+    &:active {
+      background: var(--primary-pressed);
+    }
+
+    &:disabled {
+      cursor: default;
+      background-color: var(--main-grey);
+    }
+  }
+
+  .connectWalletsBtnInfo {
+    display: block;
+
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+
+    border-radius: 99px;
+  }
+
+  .connectWalletsBtnInfo svg {
+    fill: #c9c9c9;
+
+    &:hover,
+    &:focus {
+      fill: #adadad;
+    }
+
+    &:active {
+      fill: var(--main-grey);
+    }
+  }
+
+  .connectWalletsBtnInfo.active svg {
+    fill: var(--primary);
+
+    &:hover,
+    &:focus {
+      fill: #c12f49;
+    }
+
+    &:active {
+      fill: var(--primary-pressed);
+    }
+  }
+
+  .connectWalletsInfoWrapper {
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    height: 0;
+  }
+
+  .connectWalletsInfo {
+    transform: translateX(200%);
+
+    display: block;
+
+    width: 296px;
+    margin-top: 4px;
+    margin-right: 10px;
+    padding: 13px 16px;
+
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 149%;
+    color: var(--content-black);
+
+    opacity: 0;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 25%);
+
+    transition:
+      transform 0.01s ease-out 0.2s,
+      opacity 0.2s ease-out 0s;
+  }
+
+  .connectWalletsInfoVisible {
+    transform: translateX(0);
+    opacity: 1;
+    transition:
+      transform 0.01s ease-in 0s,
+      opacity 0.2s ease-in 0s;
+  }
+
+  .connectWalletsInfo p:first-child {
+    margin-bottom: 10px;
+  }
+`
 
 export const ConnectedAccount = () => {
   const [contractNetwork, setContractNetwork] = useState<NearNetworks>()
@@ -36,22 +785,22 @@ export const ConnectedAccount = () => {
   const [walletsReceivers, setWalletsReceivers] = useState<
     WalletDescriptorWithCAMainStatus[] | undefined
   >()
-  const [connectedAccountsListReceiver, setConnectedAccountsListReceiver] = useState<
-    WalletDescriptorWithCAMainStatus | undefined
-  >()
+  const [connectedAccountsListReceiver, setConnectedAccountsListReceiver] =
+    useState<WalletDescriptorWithCAMainStatus | null>(null)
 
   // ToDo: remove abort controller
   const abortController = useAbortController()
 
   const updatePairs = async (prevPairs?: IConnectedAccountsPair[]) => {
-    const { getConnectedAccountsPairs, execConnectedAccountsUpdateHandler } =
-      await initBGFunctions(browser)
-    const newPairs: IConnectedAccountsPair[] = connectedAccountsListReceiver
-      ? await getConnectedAccountsPairs({
-          receiver: connectedAccountsListReceiver,
-          prevPairs,
-        })
-      : []
+    // const { getConnectedAccountsPairs, execConnectedAccountsUpdateHandler } =
+    //   await initBGFunctions(browser)
+    // const newPairs: IConnectedAccountsPair[] = connectedAccountsListReceiver
+    //   ? await getConnectedAccountsPairs({
+    //       receiver: connectedAccountsListReceiver,
+    //       prevPairs,
+    //     })
+    //   : []
+    const newPairs: IConnectedAccountsPair[] = MOCKED_DATA.pairs // ToDo: remove mock data
     if (!abortController.signal.aborted) {
       setPairs(newPairs)
     }
@@ -62,52 +811,54 @@ export const ConnectedAccount = () => {
     )
     if (processingAccountIdsPairs.length > 0) {
       await new Promise((res) => setTimeout(res, 5000))
-      await execConnectedAccountsUpdateHandler()
+      // await execConnectedAccountsUpdateHandler() // ToDo: ???????
       updatePairs(newPairs)
     }
   }
 
   const updateContractNetworkAndWallets = async () => {
-    const {
-      getPreferredConnectedAccountsNetwork,
-      getWalletDescriptors,
-      getConnectedAccountStatus,
-    } = await initBGFunctions(browser)
-    const preferredConnectedAccountsNetwork: NearNetworks =
-      await getPreferredConnectedAccountsNetwork()
-    setContractNetwork(preferredConnectedAccountsNetwork)
-    const descriptors: WalletDescriptor[] = await getWalletDescriptors()
-    const connectedWalletsDescriptors = descriptors
-      .filter((d) => d.connected === true)
-      .filter(
-        (d: WalletDescriptor) =>
-          d.type !== WalletTypes.DAPPLETS &&
-          (d.chain === ChainTypes.ETHEREUM_SEPOLIA ||
-            d.chain === ChainTypes.ETHEREUM_XDAI ||
-            (preferredConnectedAccountsNetwork === NearNetworks.Testnet
-              ? d.chain === ChainTypes.NEAR_TESTNET
-              : d.chain === ChainTypes.NEAR_MAINNET))
-      )
-    const walletsForGettingCALists: WalletDescriptorWithCAMainStatus[] = await Promise.all(
-      connectedWalletsDescriptors.map(async (wallet) => {
-        const receiverOrigin =
-          wallet.chain === ChainTypes.ETHEREUM_SEPOLIA || wallet.chain === ChainTypes.ETHEREUM_XDAI
-            ? 'ethereum'
-            : wallet.chain
-        const receiverStatus: boolean = await getConnectedAccountStatus(
-          wallet.account,
-          receiverOrigin
-        )
-        return { ...wallet, accountActive: receiverStatus }
-      })
-    )
-    setWalletsReceivers(walletsForGettingCALists)
-    setConnectedAccountsListReceiver(walletsForGettingCALists[0])
+    console.log('should updateContractNetworkAndWallets') // ToDo: remove mock data
+    // const {
+    //   getPreferredConnectedAccountsNetwork,
+    //   getWalletDescriptors,
+    //   getConnectedAccountStatus,
+    // } = await initBGFunctions(browser)
+    // const preferredConnectedAccountsNetwork: NearNetworks =
+    //   await getPreferredConnectedAccountsNetwork()
+    setContractNetwork(NearNetworks.Testnet) // ToDo: remove mock data
+    // setContractNetwork(preferredConnectedAccountsNetwork)
+    // const descriptors: WalletDescriptor[] = await getWalletDescriptors()
+    // const connectedWalletsDescriptors = descriptors
+    //   .filter((d) => d.connected === true)
+    //   .filter(
+    //     (d: WalletDescriptor) =>
+    //       d.type !== WalletTypes.DAPPLETS &&
+    //       (d.chain === ChainTypes.ETHEREUM_SEPOLIA ||
+    //         d.chain === ChainTypes.ETHEREUM_XDAI ||
+    //         (preferredConnectedAccountsNetwork === NearNetworks.Testnet
+    //           ? d.chain === ChainTypes.NEAR_TESTNET
+    //           : d.chain === ChainTypes.NEAR_MAINNET))
+    //   )
+    // const walletsForGettingCALists: WalletDescriptorWithCAMainStatus[] = await Promise.all(
+    //   connectedWalletsDescriptors.map(async (wallet) => {
+    //     const receiverOrigin =
+    //       wallet.chain === ChainTypes.ETHEREUM_SEPOLIA || wallet.chain === ChainTypes.ETHEREUM_XDAI
+    //         ? 'ethereum'
+    //         : wallet.chain
+    //     const receiverStatus: boolean = await getConnectedAccountStatus(
+    //       wallet.account,
+    //       receiverOrigin
+    //     )
+    //     return { ...wallet, accountActive: receiverStatus }
+    //   })
+    // )
+    // setWalletsReceivers(walletsForGettingCALists)
+    // setConnectedAccountsListReceiver(walletsForGettingCALists[0])
   }
 
   useEffect(() => {
     updateContractNetworkAndWallets()
-    EventBus.on('connected_accounts_changed', () => updateContractNetworkAndWallets())
+    // EventBus.on('connected_accounts_changed', () => updateContractNetworkAndWallets())// ToDo: ???????
   }, [abortController.signal.aborted])
 
   useEffect(() => {
@@ -120,92 +871,93 @@ export const ConnectedAccount = () => {
       })
     }
 
-    EventBus.on('wallet_changed', updateContractNetworkAndWallets)
-    return () => {
-      EventBus.off('wallet_changed', updateContractNetworkAndWallets)
-    }
+    // EventBus.on('wallet_changed', updateContractNetworkAndWallets)
+    // return () => {
+    //   EventBus.off('wallet_changed', updateContractNetworkAndWallets)
+    // }
   }, [abortController.signal.aborted, contractNetwork, connectedAccountsListReceiver])
 
   const findWalletsToConnect = async () => {
-    const { getWalletDescriptors, getConnectedAccountStatus, getConnectedAccounts } =
-      await initBGFunctions(browser)
-    const descriptors: WalletDescriptor[] = await getWalletDescriptors()
-    const connectedWalletsDescriptors = descriptors.filter((d) => d.connected === true)
-    if (connectedWalletsDescriptors.length < 2) {
-      // setWalletsForConnect([])
-      setWalletsForDisconnect([])
-      return
-    }
+    console.log('should findWalletsToConnect') // ToDo: remove mock data
+    // const { getWalletDescriptors, getConnectedAccountStatus, getConnectedAccounts } =
+    //   await initBGFunctions(browser)
+    // const descriptors: WalletDescriptor[] = await getWalletDescriptors()
+    // const connectedWalletsDescriptors = descriptors.filter((d) => d.connected === true)
+    // if (connectedWalletsDescriptors.length < 2) {
+    //   // setWalletsForConnect([])
+    //   setWalletsForDisconnect([])
+    //   return
+    // }
 
-    const connectedEthWallets = connectedWalletsDescriptors.filter(
-      (d: WalletDescriptor) =>
-        d.type !== WalletTypes.DAPPLETS &&
-        (d.chain === ChainTypes.ETHEREUM_SEPOLIA || d.chain === ChainTypes.ETHEREUM_XDAI)
-    )
-    const connectedNearWallet = connectedWalletsDescriptors.find((d: WalletDescriptor) =>
-      contractNetwork === NearNetworks.Testnet
-        ? d.chain === ChainTypes.NEAR_TESTNET
-        : d.chain === ChainTypes.NEAR_MAINNET
-    )
-    if (!connectedNearWallet) {
-      // ToDo: we can't connect Eth wallets directly to each other. ONE Near wallet
-      // setWalletsForConnect([])
-      setWalletsForDisconnect([])
-      return
-    }
+    // const connectedEthWallets = connectedWalletsDescriptors.filter(
+    //   (d: WalletDescriptor) =>
+    //     d.type !== WalletTypes.DAPPLETS &&
+    //     (d.chain === ChainTypes.ETHEREUM_SEPOLIA || d.chain === ChainTypes.ETHEREUM_XDAI)
+    // )
+    // const connectedNearWallet = connectedWalletsDescriptors.find((d: WalletDescriptor) =>
+    //   contractNetwork === NearNetworks.Testnet
+    //     ? d.chain === ChainTypes.NEAR_TESTNET
+    //     : d.chain === ChainTypes.NEAR_MAINNET
+    // )
+    // if (!connectedNearWallet) {
+    //   // ToDo: we can't connect Eth wallets directly to each other. ONE Near wallet
+    //   // setWalletsForConnect([])
+    //   setWalletsForDisconnect([])
+    //   return
+    // }
 
-    const connectedAccountsUserEth: IConnectedAccountUser[] = []
+    // const connectedAccountsUserEth: IConnectedAccountUser[] = []
 
-    for (const connectedEthWallet of connectedEthWallets) {
-      const ethereumAccountStatus = await getConnectedAccountStatus(
-        connectedEthWallet.account,
-        'ethereum'
-      )
-      const connectedAccountUserEth: IConnectedAccountUser = {
-        img: resources.ethereum.icon,
-        name: connectedEthWallet.account,
-        origin: connectedEthWallet.chain,
-        accountActive: ethereumAccountStatus,
-        walletType: connectedEthWallet.type,
-      }
-      connectedAccountsUserEth.push(connectedAccountUserEth)
-    }
+    // for (const connectedEthWallet of connectedEthWallets) {
+    //   const ethereumAccountStatus = await getConnectedAccountStatus(
+    //     connectedEthWallet.account,
+    //     'ethereum'
+    //   )
+    //   const connectedAccountUserEth: IConnectedAccountUser = {
+    //     img: resources.ethereum.icon,
+    //     name: connectedEthWallet.account,
+    //     origin: connectedEthWallet.chain,
+    //     accountActive: ethereumAccountStatus,
+    //     walletType: connectedEthWallet.type,
+    //   }
+    //   connectedAccountsUserEth.push(connectedAccountUserEth)
+    // }
 
-    const nearAccountStatus = await getConnectedAccountStatus(
-      connectedNearWallet.account,
-      contractNetwork === NearNetworks.Testnet ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET
-    )
-    const connectedAccountUserNear: IConnectedAccountUser = {
-      img: resources[contractNetwork === NearNetworks.Testnet ? 'near/testnet' : 'near/mainnet']
-        .icon,
-      name: connectedNearWallet.account,
-      origin:
-        contractNetwork === NearNetworks.Testnet
-          ? ChainTypes.NEAR_TESTNET
-          : ChainTypes.NEAR_MAINNET,
-      accountActive: nearAccountStatus,
-    }
+    // const nearAccountStatus = await getConnectedAccountStatus(
+    //   connectedNearWallet.account,
+    //   contractNetwork === NearNetworks.Testnet ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET
+    // )
+    // const connectedAccountUserNear: IConnectedAccountUser = {
+    //   img: resources[contractNetwork === NearNetworks.Testnet ? 'near/testnet' : 'near/mainnet']
+    //     .icon,
+    //   name: connectedNearWallet.account,
+    //   origin:
+    //     contractNetwork === NearNetworks.Testnet
+    //       ? ChainTypes.NEAR_TESTNET
+    //       : ChainTypes.NEAR_MAINNET,
+    //   accountActive: nearAccountStatus,
+    //   }
 
-    const pairsToConnect: [IConnectedAccountUser, IConnectedAccountUser][] = []
-    const pairsToDisconnect: [IConnectedAccountUser, IConnectedAccountUser][] = []
-    const nearAccountGlobalId =
-      connectedAccountUserNear.name + '/' + connectedAccountUserNear.origin
-    loop1: for (const connectedAccountUserEth of connectedAccountsUserEth) {
-      const directlyConnectedAccountsToEth: TConnectedAccount[][] = await getConnectedAccounts(
-        connectedAccountUserEth.name,
-        'ethereum',
-        1
-      )
-      for (const ca of directlyConnectedAccountsToEth[0]) {
-        if (ca.id === nearAccountGlobalId) {
-          pairsToDisconnect.push([connectedAccountUserEth, connectedAccountUserNear])
-          continue loop1
-        }
-      }
-      pairsToConnect.push([connectedAccountUserEth, connectedAccountUserNear])
-    }
-    // setWalletsForConnect(pairsToConnect)
-    setWalletsForDisconnect(pairsToDisconnect)
+    //   const pairsToConnect: [IConnectedAccountUser, IConnectedAccountUser][] = []
+    //   const pairsToDisconnect: [IConnectedAccountUser, IConnectedAccountUser][] = []
+    //   const nearAccountGlobalId =
+    //     connectedAccountUserNear.name + '/' + connectedAccountUserNear.origin
+    //   loop1: for (const connectedAccountUserEth of connectedAccountsUserEth) {
+    //     const directlyConnectedAccountsToEth: TConnectedAccount[][] = await getConnectedAccounts(
+    //       connectedAccountUserEth.name,
+    //       'ethereum',
+    //       1
+    //     )
+    //     for (const ca of directlyConnectedAccountsToEth[0]) {
+    //       if (ca.id === nearAccountGlobalId) {
+    //         pairsToDisconnect.push([connectedAccountUserEth, connectedAccountUserNear])
+    //         continue loop1
+    //       }
+    //     }
+    //     pairsToConnect.push([connectedAccountUserEth, connectedAccountUserNear])
+    //   }
+    //   // setWalletsForConnect(pairsToConnect)
+    //   setWalletsForDisconnect(pairsToDisconnect)
   }
 
   useEffect(() => {
@@ -213,35 +965,37 @@ export const ConnectedAccount = () => {
   }, [pairsToDisplay, contractNetwork])
 
   const handleOpenPopup = async (account: IConnectedAccountUser) => {
-    const { openConnectedAccountsPopup, getThisTab } = await initBGFunctions(browser)
-    const thisTab = await getThisTab()
-    try {
-      await openConnectedAccountsPopup({ accountToChangeStatus: account }, thisTab.id)
-      updatePairs()
-    } catch (err) {
-      console.log(err)
-    }
+    console.log('should handleOpenPopup') // ToDo: remove mock data
+    // const { openConnectedAccountsPopup, getThisTab } = await initBGFunctions(browser)
+    // const thisTab = await getThisTab()
+    // try {
+    //   await openConnectedAccountsPopup({ accountToChangeStatus: account }, thisTab.id)
+    //   updatePairs()
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }
 
   const handleDisconnectAccounts = async (pair: IConnectedAccountsPair) => {
-    const disconnectedWallets = walletsForDisconnect.find((w) =>
-      areSameAccounts([pair.firstAccount, pair.secondAccount], w)
-    )
-    const { openConnectedAccountsPopup, getThisTab } = await initBGFunctions(browser)
-    const thisTab = await getThisTab()
-    try {
-      await openConnectedAccountsPopup(
-        {
-          accountsToDisconnect: disconnectedWallets
-            ? disconnectedWallets
-            : [pair.firstAccount, pair.secondAccount],
-        },
-        thisTab.id
-      )
-      updatePairs()
-    } catch (err) {
-      console.log(err)
-    }
+    console.log('should handleDisconnectAccounts') // ToDo: remove mock data
+    // const disconnectedWallets = walletsForDisconnect.find((w) =>
+    //   areSameAccounts([pair.firstAccount, pair.secondAccount], w)
+    // )
+    // const { openConnectedAccountsPopup, getThisTab } = await initBGFunctions(browser)
+    // const thisTab = await getThisTab()
+    // try {
+    //   await openConnectedAccountsPopup(
+    //     {
+    //       accountsToDisconnect: disconnectedWallets
+    //         ? disconnectedWallets
+    //         : [pair.firstAccount, pair.secondAccount],
+    //     },
+    //     thisTab.id
+    //   )
+    //   updatePairs()
+    // } catch (err) {
+    //   console.log(err)
+    // }
   }
 
   // const handleConnectWallets = async () => {
@@ -273,28 +1027,25 @@ export const ConnectedAccount = () => {
   // }
 
   return (
-    <>
+    <ConnectedAccountsContainer>
       {contractNetwork === NearNetworks.Testnet && (
-        <div className={styles.warningInfo}>Connected Accounts are using a test network</div>
+        <div className="warningInfo">Connected Accounts are using a test network</div>
       )}
-      <div
-        className={cn(styles.overlayPaddings, {
-          [styles.withWarning]: contractNetwork === NearNetworks.Testnet,
-        })}
-      >
-        <div className={styles.caHeaderTop}>
-          <h3>Accounts connected to:</h3>
-        </div>
-        <div className={styles.header}>
+      {/* <div className="caHeaderTop">
+        <h3>Accounts connected to:</h3>
+      </div> */}
+      {/* <div className="header">
+        {walletsReceivers ? (
           <div>
             <DropdownCAListReceiver
               values={walletsReceivers}
               setter={setConnectedAccountsListReceiver}
-              selected={connectedAccountsListReceiver}
+              selected={connectedAccountsListReceiver ?? undefined}
               maxLength={42}
             />
           </div>
-          {/* <div className={styles.connectWalletsBtnModule}>
+        ) : null} */}
+      {/* <div className={styles.connectWalletsBtnModule}>
             <button
               disabled={!walletsForConnect.length}
               className={styles.connectWalletsBtn}
@@ -309,8 +1060,8 @@ export const ConnectedAccount = () => {
               <Info />
             </button>
           </div> */}
-        </div>
-        {/* <div className={styles.connectWalletsInfoWrapper}>
+      {/* </div> */}
+      {/* <div className={styles.connectWalletsInfoWrapper}>
           <div
             className={cn(
               styles.connectWalletsInfo,
@@ -323,93 +1074,91 @@ export const ConnectedAccount = () => {
             </p>
           </div>
         </div> */}
-        {isLoadingListDapplets ? (
-          <TabLoader />
-        ) : (
-          <div className={styles.wrapper}>
-            {!pairsToDisplay || pairsToDisplay.length === 0 ? (
-              <Message
-                className={styles.messageDelete}
-                title={'There are no connected accounts'}
-                subtitle={
-                  <p>
-                    Check connected wallets or run Connecting Accounts dapplet and click{' '}
-                    <span style={{ width: 12 }}>
-                      <Home />
-                    </span>{' '}
-                    button to connect your accounts
-                  </p>
-                }
-              />
-            ) : (
-              <div className={styles.accountsWrapper}>
-                <div
-                  className={cn(styles.scrollContent, {
-                    [styles.withWarning]: contractNetwork === NearNetworks.Testnet,
-                  })}
-                >
-                  {pairsToDisplay.map((x, i) => {
-                    const statusLabel =
-                      x.statusName === ConnectedAccountsPairStatus.Connected
-                        ? Ok
-                        : x.statusName === ConnectedAccountsPairStatus.Processing
-                          ? Time
-                          : Attention
-                    const areWallets = areConnectedAccountsUsersWallets(
-                      x.firstAccount,
-                      x.secondAccount
+      {isLoadingListDapplets ? (
+        <TabLoader />
+      ) : (
+        <div className="wrapper">
+          {!pairsToDisplay || pairsToDisplay.length === 0 ? (
+            <Message
+              className="messageDelete"
+              title={'There are no connected accounts'}
+              subtitle={
+                <p>
+                  Check connected wallets or run Connecting Accounts dapplet and click{' '}
+                  <span style={{ width: 12 }}>
+                    <Home />
+                  </span>{' '}
+                  button to connect your accounts
+                </p>
+              }
+            />
+          ) : (
+            <div className="accountsWrapper">
+              <div
+                className={cn('scrollContent', {
+                  withWarning: contractNetwork === NearNetworks.Testnet,
+                })}
+              >
+                {pairsToDisplay.map((x, i) => {
+                  const statusLabel =
+                    x.statusName === ConnectedAccountsPairStatus.Connected
+                      ? Ok
+                      : x.statusName === ConnectedAccountsPairStatus.Processing
+                        ? Time
+                        : Attention
+                  const areWallets = areConnectedAccountsUsersWallets(
+                    x.firstAccount,
+                    x.secondAccount
+                  )
+                  const canDisconnectWallets =
+                    walletsForDisconnect.length &&
+                    walletsForDisconnect.some((w) =>
+                      areSameAccounts(w, [x.firstAccount, x.secondAccount])
                     )
-                    const canDisconnectWallets =
-                      walletsForDisconnect.length &&
-                      walletsForDisconnect.some((w) =>
-                        areSameAccounts(w, [x.firstAccount, x.secondAccount])
-                      )
 
-                    return (
-                      <div key={i} className={styles.mainBlock}>
-                        <div className={cn(styles.accountBlock, styles.accountBlockVertical)}>
-                          <CAUserButton user={x.firstAccount} onClick={handleOpenPopup} />
-                          <CAUserButton user={x.secondAccount} onClick={handleOpenPopup} />
-                        </div>
-                        <div className={cn(styles.accountStatus)}>
-                          <div data-title={x.statusMessage}>
-                            <img
-                              src={statusLabel}
-                              className={cn(styles.statusLabel, {
-                                [styles.statusConnected]:
-                                  x.statusName === ConnectedAccountsPairStatus.Connected,
-                                [styles.statusProcessing]:
-                                  x.statusName === ConnectedAccountsPairStatus.Processing,
-                                [styles.statusError]:
-                                  x.statusName === ConnectedAccountsPairStatus.Error,
-                              })}
-                              alt={x.statusMessage}
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleDisconnectAccounts(x)}
-                            className={styles.buttonDelete}
-                            disabled={
-                              x.closeness > 1 ||
-                              (!areWallets &&
-                                x.statusName !== ConnectedAccountsPairStatus.Connected) ||
-                              (areWallets && !canDisconnectWallets)
-                            }
-                          >
-                            <Trash />
-                          </button>
-                        </div>
+                  return (
+                    <div key={i} className="mainBlock">
+                      <div className={cn('accountBlock', 'accountBlockVertical')}>
+                        <CAUserButton user={x.firstAccount} onClick={handleOpenPopup} />
+                        <CAUserButton user={x.secondAccount} onClick={handleOpenPopup} />
                       </div>
-                    )
-                  })}
-                </div>
+                      <div className="accountStatus">
+                        <div data-title={x.statusMessage}>
+                          <img
+                            src={String(statusLabel)}
+                            className={cn('statusLabel', {
+                              statusConnected:
+                                x.statusName === ConnectedAccountsPairStatus.Connected,
+                              statusProcessing:
+                                x.statusName === ConnectedAccountsPairStatus.Processing,
+                              statusError: x.statusName === ConnectedAccountsPairStatus.Error,
+                            })}
+                            alt={x.statusMessage}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDisconnectAccounts(x)}
+                          className="buttonDelete"
+                          disabled={
+                            x.closeness > 1 ||
+                            (!areWallets &&
+                              x.statusName !== ConnectedAccountsPairStatus.Connected) ||
+                            (areWallets && !canDisconnectWallets)
+                          }
+                        >
+                          <Trash />
+                        </button>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            )}
-          </div>
-        )}
-      </div>
-    </>
+            </div>
+          )}
+        </div>
+      )}
+    </ConnectedAccountsContainer>
   )
 }
 

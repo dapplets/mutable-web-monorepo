@@ -1,5 +1,6 @@
 import MutationFallbackIcon from './mutation-fallback-icon'
 import ArrowIcon from './arrow'
+import Arrow01 from './arrow-01'
 import StopTopIcon from './stop-top'
 import PlayCenterIcon from './play-center'
 import StopCenterIcon from './stop-center'
@@ -20,10 +21,12 @@ import Info from './info'
 import Ok from './ok'
 import Time from './time'
 import Trash from './trash'
+import LoaderSettings from './loader-settings'
 
 export {
   MutationFallbackIcon,
   ArrowIcon,
+  Arrow01,
   StopTopIcon,
   PlayCenterIcon,
   StopCenterIcon,
@@ -44,4 +47,5 @@ export {
   Ok,
   Time,
   Trash,
+  LoaderSettings,
 }

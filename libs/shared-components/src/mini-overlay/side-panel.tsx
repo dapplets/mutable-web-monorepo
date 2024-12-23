@@ -1,28 +1,19 @@
-import React, { useEffect, useRef, useState } from 'react'
-import styled from 'styled-components'
-import { Button } from 'antd'
-import { useNotifications } from '@mweb/engine'
 import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
-import { Image } from '../common/image'
-import { IWalletConnect } from './types'
-import {
-  MutationFallbackIcon,
-  ArrowIcon,
-  OpenOverlay,
-  OpenOverlayWithCircle,
-  BellWithCircle,
-  PersonAddAlt,
-  BellIcon,
-} from './assets/icons'
+import { useNotifications } from '@mweb/engine'
+import { Button } from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
+import { Location, NavigateFunction } from 'react-router'
+import styled from 'styled-components'
 import { Badge } from '../common/Badge'
+import { Image } from '../common/image'
 import {
-  MemoryRouter,
-  Navigate,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  Location,
-} from 'react-router'
+  ArrowIcon,
+  BellIcon,
+  BellWithCircle,
+  MutationFallbackIcon,
+  PersonAddAlt,
+} from './assets/icons'
+import { IWalletConnect } from './types'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
