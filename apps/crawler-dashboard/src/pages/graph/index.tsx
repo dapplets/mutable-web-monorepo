@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { Drawer, Flex } from 'antd'
 import { FC, useMemo, useRef } from 'react'
 import { GraphCanvas, GraphCanvasRef, useSelection } from 'reagraph'
-import { getGraph } from './api'
-import { ContextDetails } from './context-details'
-import { Navigation } from './navigation'
+import { getGraph } from '../../api'
+import { ContextDetails } from '../../context-details'
+import { Navigation } from '../../navigation'
 
-export const Graph: FC = () => {
+export const GraphPage: FC = () => {
   const { data } = useQuery({
     queryFn: getGraph,
     queryKey: ['graph'],
@@ -35,17 +35,19 @@ export const Graph: FC = () => {
 
   return (
     <>
-      <GraphCanvas
-        ref={graphRef}
-        nodes={data.nodes}
-        edges={data.edges}
-        selections={selections}
-        actives={actives}
-        onCanvasClick={onCanvasClick}
-        onNodeClick={onNodeClick}
-        edgeArrowPosition="none"
-        sizingType="centrality"
-      />
+      <div style={{ position: 'fixed', width: '90%', height: '80%' }}>
+        <GraphCanvas
+          ref={graphRef}
+          nodes={data.nodes}
+          edges={data.edges}
+          selections={selections}
+          actives={actives}
+          onCanvasClick={onCanvasClick}
+          onNodeClick={onNodeClick}
+          edgeArrowPosition="none"
+          sizingType="centrality"
+        />
+      </div>
       <Drawer
         title="Selected Context"
         onClose={handleCloseDrawerClick}
