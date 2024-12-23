@@ -59,6 +59,9 @@ importers:
       '@mweb/core':
         specifier: workspace:*
         version: link:../../libs/core
+      '@mweb/crawler-sdk':
+        specifier: workspace:*
+        version: link:../../libs/crawler-sdk
       commander:
         specifier: 11.1.0
         version: 11.1.0

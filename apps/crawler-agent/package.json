@@ -35,6 +35,7 @@
     "commander": "11.1.0",
     "puppeteer": "23.10.4",
     "@mweb/core": "workspace:*",
+    "@mweb/crawler-sdk": "workspace:*",
     "events": "^3.3.0"
   },
   "devDependencies": {

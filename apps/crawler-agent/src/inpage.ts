@@ -1,5 +1,5 @@
 import { Core, IContextNode } from '@mweb/core'
-import DappletsE2EParserConfig from './parser-configs/dapplets-e2e.json'
+import DappletsE2EParserConfig from './parser-configs/dapplets-e2e'
 
 const core = new Core()
 

@@ -1,67 +1,32 @@
-import puppeteer, { Page, Browser } from 'puppeteer'
-
 import fs from 'fs'
 import path from 'path'
+import puppeteer, { Page, Browser } from 'puppeteer'
+import { GetOrderDto, GetStepDto } from '@mweb/crawler-sdk'
+import { autoScroll } from './utils/auto-scroll'
+import { CrawlerSdk } from '@mweb/crawler-sdk'
 
-async function autoScroll(page: Page) {
-  await page.evaluate(async () => {
-    await new Promise<void>((resolve) => {
-      var totalHeight = 0
-      var distance = 100
-      var timer = setInterval(() => {
-        // @ts-ignore
-        var scrollHeight = document.body.scrollHeight
-        // @ts-ignore
-        window.scrollBy(0, distance)
-        totalHeight += distance
-
-        // @ts-ignore
-        if (totalHeight >= scrollHeight - window.innerHeight) {
-          clearInterval(timer)
-          resolve()
-        }
-      }, 100)
-    })
-  })
+const DefaultCrawlerAgentConfig: CrawlerAgentConfig = {
+  parallel: 3,
+  apiUrl: process.env.API_URL ?? 'http://localhost:3001',
 }
 
-async function createAndProcessPage(browser: Browser): Promise<void> {
-  console.log('created page')
-  const coreScript = fs.readFileSync(path.join(__dirname, '../inpage/index.js'), 'utf-8')
-
-  const page = await browser.newPage()
-
-  let count = 0
-
-  await page.exposeFunction('handleChildContextAdded', async (subtree: any) => {
-    count++
-
-    console.log(subtree)
-
-    const response = await fetch('https://crawler-api.apps.dapplets.org/context', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ context: subtree, receiverId: 'hardcoded' }),
-    })
-  })
-
-  await page.goto('https://dapplets-e2e.netlify.app/dapplets', { waitUntil: 'networkidle0' })
-
-  await page.setViewport({ width: 1920, height: 1080 })
-
-  await page.addScriptTag({ content: coreScript })
-
-  await autoScroll(page)
-
-  console.log(`Found ${count} contexts`)
-
-  await page.close();
+export type CrawlerAgentConfig = {
+  parallel: number
+  apiUrl: string
 }
 
 export class CrawlerAgent {
-  constructor() {
+  config: CrawlerAgentConfig
+  api: CrawlerSdk
+
+  constructor(config: Partial<CrawlerAgentConfig> = {}) {
+    this.config = {
+      parallel: config.parallel ?? DefaultCrawlerAgentConfig.parallel,
+      apiUrl: config.apiUrl ?? DefaultCrawlerAgentConfig.apiUrl,
+    }
+
+    this.api = new CrawlerSdk({ apiUrl: this.config.apiUrl })
+
     console.log('CrawlerAgent initialized')
   }
 
@@ -72,16 +37,71 @@ export class CrawlerAgent {
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu'],
     })
 
+    // ToDo: pagination
+    const orders = await this.api.order.findAll()
+
+    console.log(`Found ${orders.length} orders`)
+
+    const { parallel } = this.config
+
     try {
-      await Promise.all([
-        createAndProcessPage(browser),
-        createAndProcessPage(browser),
-        createAndProcessPage(browser),
-      ])
+      // Divide orders into chunks for parallel processing
+      const chunks = Array.from({ length: Math.ceil(orders.length / parallel) }, (_, i) =>
+        orders.slice(i * parallel, i * parallel + parallel)
+      )
+
+      for (const chunk of chunks) {
+        await Promise.all(chunk.map((order) => this.processOrder(order, browser)))
+      }
     } catch (e) {
+      console.error('Error processing orders:', e)
       throw e
     } finally {
       await browser.close()
     }
+  }
+
+  private async processOrder(order: GetOrderDto, browser: Browser) {
+    console.log('created page')
+
+    const page = await browser.newPage()
+
+    for (const job of order.jobs) {
+      for (const step of job.steps) {
+        await this._processStep(step, page)
+      }
+    }
+
+    await page.close()
+  }
+
+  private async _processStep(step: GetStepDto, page: Page) {
+    let count = 0
+
+    await page.exposeFunction('handleChildContextAdded', async (subtree: any) => {
+      count++
+
+      // ToDo: hardcoded
+      // ToDo: agent should be stateless, but the backend requires to store receipts
+      try {
+        console.log('Saving contexts')
+        const receipts = await this.api.context.save({ context: subtree, receiverId: 'hardcoded' })
+        console.log('Saved contexts', receipts)
+      } catch (err) {
+        console.error(err)
+      }
+    })
+
+    await page.goto(step.url, { waitUntil: 'networkidle0' })
+
+    await page.setViewport({ width: 1920, height: 1080 })
+
+    // ToDo: load parser by its ID
+    const coreScript = fs.readFileSync(path.join(__dirname, '../inpage/index.js'), 'utf-8')
+    await page.addScriptTag({ content: coreScript })
+
+    await autoScroll(page)
+
+    console.log(`Found ${count} contexts`)
   }
 }

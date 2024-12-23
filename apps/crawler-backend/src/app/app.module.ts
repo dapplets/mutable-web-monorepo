@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ContextModule } from '../context/context.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderModule } from 'src/order/order.module';
@@ -14,7 +14,7 @@ import { Job, Order, Step } from 'src/order/entities/order.entity';
       dropSchema: true,
       entities: [Order, Job, Step],
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
   ],
 })
