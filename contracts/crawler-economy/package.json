@@ -1,0 +1,8 @@
+{
+  "name": "@mweb/crawler-economy",
+  "scripts": {
+    "build": "cargo near build --no-docker",
+    "test": "cargo test",
+    "deploy": "near contract deploy app.crwl.near use-file ./target/near/contract_rs.wasm without-init-call network-config mainnet sign-with-keychain send"
+  }
+}

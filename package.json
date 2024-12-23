@@ -10,10 +10,11 @@
   "packageManager": "pnpm@9.9.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "turbo run build",
+    "build": "turbo run build --filter=!@mweb/crawler-economy",
     "build:extension": "turbo run build --filter=@mweb/extension",
     "build:gateway": "turbo run build --filter=@mweb/gateway",
-    "dev": "turbo run dev",
+    "build:contract": "turbo run build --filter=@mweb/crawler-economy",
+    "dev": "turbo run dev --concurrency 11",
     "clean": "turbo run clean",
     "autoclave": "rimraf libs/**/dist && rimraf libs/**/lib && rimraf libs/**/node_modules && rimraf libs/**/coverage && rimraf libs/**/.turbo && rimraf apps/**/dist && rimraf apps/**/lib && rimraf apps/**/node_modules && rimraf apps/**/coverage && rimraf apps/**/build && rimraf apps/**/.turbo && rm -rf node_modules",
     "test": "turbo run test",
@@ -21,9 +22,9 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.24.4",
-    "@types/jest": "^29.5.11",
-    "@types/node": "^20.10.4",
+    "@babel/preset-env": "^7.25.9",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.16.15",
     "@typescript-eslint/eslint-plugin": "5.31.0",
     "@typescript-eslint/parser": "5.31.0",
     "babel-jest": "^29.7.0",
@@ -33,8 +34,8 @@
     "prettier": "3.2.5",
     "rimraf": "3.0.2",
     "semantic-release": "^19.0.5",
-    "ts-jest": "^29.1.2",
-    "turbo": "^2.0.11",
+    "ts-jest": "^29.2.5",
+    "turbo": "^2.2.3",
     "typescript": "^5.6.3"
   }
 }
