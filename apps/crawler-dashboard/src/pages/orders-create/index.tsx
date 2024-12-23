@@ -2,7 +2,7 @@ import { Button, Form, Input, Table, theme } from 'antd'
 import React, { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
-import { createOrder } from '../../api'
+import { api } from '../../api'
 
 export const CreateOrderPage: FC = () => {
   const [form] = Form.useForm()
@@ -13,7 +13,7 @@ export const CreateOrderPage: FC = () => {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
 
-  const createOrderMutation = useMutation({ mutationFn: createOrder })
+  const createOrderMutation = useMutation({ mutationFn: api.order.create })
 
   const handleAddStep = (values: any) => {
     setSteps((prev) => [...prev, values])
@@ -86,11 +86,7 @@ export const CreateOrderPage: FC = () => {
             <Input placeholder="e.g. parser-123" />
           </Form.Item>
 
-          <Form.Item
-            name="url"
-            label="URL"
-            rules={[{ message: 'Please input the URL!' }]}
-          >
+          <Form.Item name="url" label="URL" rules={[{ message: 'Please input the URL!' }]}>
             <Input placeholder="e.g. http://example.com" />
           </Form.Item>
 

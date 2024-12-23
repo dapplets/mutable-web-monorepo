@@ -2,7 +2,7 @@ import { Button, Card, Spin, Typography, Row, Col, Empty, Result, theme } from '
 import { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { getOrders } from '../../api'
+import { api } from '../../api'
 
 const { Title, Text } = Typography
 
@@ -19,7 +19,7 @@ export const OrdersPage: FC = () => {
     error,
   } = useQuery({
     queryKey: ['orders'],
-    queryFn: getOrders,
+    queryFn: api.order.findAll,
   })
 
   return (

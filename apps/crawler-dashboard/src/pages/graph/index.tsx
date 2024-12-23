@@ -2,13 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import { Drawer, Flex } from 'antd'
 import { FC, useMemo, useRef } from 'react'
 import { GraphCanvas, GraphCanvasRef, useSelection } from 'reagraph'
-import { getGraph } from '../../api'
-import { ContextDetails } from '../../context-details'
+import { api } from '../../api'
+import { ContextDetails } from './components/context-details'
 import { Navigation } from '../../navigation'
 
 export const GraphPage: FC = () => {
   const { data } = useQuery({
-    queryFn: getGraph,
+    queryFn: api.context.findAll,
     queryKey: ['graph'],
     refetchInterval: 1000,
     initialData: { nodes: [], edges: [] },

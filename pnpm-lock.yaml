@@ -205,6 +205,9 @@ importers:
 
   apps/crawler-dashboard:
     dependencies:
+      '@mweb/crawler-sdk':
+        specifier: workspace:*
+        version: link:../../libs/crawler-sdk
       '@near-js/providers':
         specifier: ^1.0.0
         version: 1.0.1
@@ -1015,6 +1018,8 @@ importers:
       json-stringify-deterministic:
         specifier: ^1.0.12
         version: 1.0.12
+
+  libs/crawler-sdk: {}
 
   libs/engine:
     dependencies:
