@@ -205,9 +205,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       {mut.authorId ? (
                         <AuthorMutation
                           className={
-                            mut.id === selectedMutation?.id && mut.id === favoriteMutationId
-                              ? 'authorMutationSelected'
-                              : ''
+                            mut.id === selectedMutation?.id ? 'authorMutationSelected' : ''
                           }
                         >
                           by {mut.authorId}

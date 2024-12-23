@@ -9,9 +9,8 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   align-items: center;
   gap: 2px;
   position: relative;
-  top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
   cursor: pointer;
-  left: ${({ $isWhite }) => ($isWhite ? `0` : '2px')};
+  left: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
   justify-content: center;
   padding: 2px 0;
   padding-left: 4px;

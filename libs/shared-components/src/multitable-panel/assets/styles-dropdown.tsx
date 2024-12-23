@@ -123,10 +123,6 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
     background: #384bff;
 
     div,
-    span {
-      color: #fff;
-    }
-
     svg {
       fill: #fff;
 
@@ -176,11 +172,11 @@ export const InputInfoWrapper = styled.div`
   flex: 1;
 
   .inputMutationSelected {
-    color: rgba(34, 34, 34, 1);
+    color: #fff;
   }
 
   .authorMutationSelected {
-    color: #384bff;
+    color: #fff;
   }
 `
 export const ImageBlock = styled.div`
@@ -207,12 +203,7 @@ export const ListMutations = styled.div`
 
   .active-mutation {
     background: #384bff;
-
-    div,
-    span,
-    p {
-      color: #fff;
-    }
+    color: #fff;
 
     svg path {
       fill: #fff;
@@ -225,9 +216,9 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
   align-items: center;
   gap: 2px;
   position: relative;
-  top: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
+  top: 0;
   cursor: pointer;
-  left: ${({ $isWhite }) => ($isWhite ? `0` : '2px')};
+  left: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
   justify-content: center;
   padding: 2px 0;
   padding-left: 4px;
@@ -254,7 +245,6 @@ export const AvalibleMutations = styled.div`
   flex-direction: column;
   box-sizing: border-box;
   padding: 10px;
-  z-index: 1;
 
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);
@@ -275,6 +265,7 @@ export const AvalibleLableBlock = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
   .iconRotate {
     svg {
       transform: rotate(0deg);
@@ -296,6 +287,7 @@ export const AvalibleArrowBlock = styled.div`
   justify-content: space-between;
   transition: all 0.2s ease;
   cursor: pointer;
+
   svg {
     margin-left: 10px;
     transform: rotate(180deg);
@@ -315,7 +307,6 @@ export const InputMutation = styled.span`
 
   color: rgba(34, 34, 34, 0.6);
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
   column-gap: 8px;
   width: 180px;
