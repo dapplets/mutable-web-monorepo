@@ -18,17 +18,14 @@ program
   .command('start')
   .description('Start the crawler agent')
   .action(async () => {
-    try {
-      const agent = new CrawlerAgent()
+    const agent = new CrawlerAgent()
 
+    try {
       logger.info('The crawler agent is running...')
 
-      while (true) {
-        logger.info('Fetching...')
-        await agent.run()
-        await new Promise((resolve) => setTimeout(resolve, 5000))
-      }
+      await agent.launch()
     } catch (error) {
+      agent.close()
       logger.error('Failed to start:', {
         message: error instanceof Error ? error.message : String(error),
       })

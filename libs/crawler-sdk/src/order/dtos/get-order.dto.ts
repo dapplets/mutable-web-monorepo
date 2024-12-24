@@ -5,7 +5,7 @@ export type GetOrderDto = {
 
 export type GetJobDto = {
   id: string
-  schedule: string
+  schedule: string // cron expression
   steps: GetStepDto[]
 }
 
