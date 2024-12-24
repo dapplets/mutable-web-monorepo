@@ -56,6 +56,9 @@ importers:
 
   apps/crawler-agent:
     dependencies:
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../../libs/backend
       '@mweb/core':
         specifier: workspace:*
         version: link:../../libs/core
@@ -208,6 +211,9 @@ importers:
 
   apps/crawler-dashboard:
     dependencies:
+      '@mweb/backend':
+        specifier: workspace:*
+        version: link:../../libs/backend
       '@mweb/crawler-sdk':
         specifier: workspace:*
         version: link:../../libs/crawler-sdk
@@ -256,6 +262,9 @@ importers:
       buffer:
         specifier: ^6.0.3
         version: 6.0.3
+      events:
+        specifier: ^3.3.0
+        version: 3.3.0
       near-api-js:
         specifier: ^4.0.3
         version: 4.0.4
@@ -981,6 +990,9 @@ importers:
       big.js:
         specifier: ^6.2.1
         version: 6.2.1
+      bn.js:
+        specifier: ^5.2.1
+        version: 5.2.1
       caching-decorator:
         specifier: ^1.0.3
         version: 1.0.3

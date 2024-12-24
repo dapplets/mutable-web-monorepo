@@ -1,5 +1,4 @@
 import { Core, IContextNode } from '@mweb/core'
-import DappletsE2EParserConfig from './parser-configs/dapplets-e2e'
 
 const core = new Core()
 
@@ -31,4 +30,7 @@ const handler = ({ child }: { child: IContextNode }) => {
 }
 core.tree.on('childContextAdded', handler)
 
-core.attachParserConfig(DappletsE2EParserConfig as any)
+// @ts-ignore
+handleGetParserConfigs().then((configs: any[]) => {
+  configs.forEach((config) => core.attachParserConfig(config))
+})

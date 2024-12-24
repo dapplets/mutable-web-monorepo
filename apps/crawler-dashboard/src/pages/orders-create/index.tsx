@@ -1,8 +1,8 @@
-import { Button, Form, Input, Table, theme } from 'antd'
+import { Button, Form, Input, Select, Spin, Table, theme } from 'antd'
 import React, { FC } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { api } from '../../api'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { api, mweb } from '../../api'
 
 export const CreateOrderPage: FC = () => {
   const [form] = Form.useForm()
@@ -14,6 +14,13 @@ export const CreateOrderPage: FC = () => {
   } = theme.useToken()
 
   const createOrderMutation = useMutation({ mutationFn: api.order.create })
+
+  const { data: parserConfigs, isLoading: areParserConfigsLoading } = useQuery({
+    queryKey: ['parserConfigs'],
+    queryFn: () => mweb.parserConfigService.getAllParserConfigs(),
+  })
+
+  console.log({ parserConfigs })
 
   const handleAddStep = (values: any) => {
     setSteps((prev) => [...prev, values])
@@ -82,11 +89,25 @@ export const CreateOrderPage: FC = () => {
             name="parserId"
             label="Parser ID"
             rules={[{ message: 'Please input the parser ID!' }]}
+            style={{ flex: 1 }}
           >
-            <Input placeholder="e.g. parser-123" />
+            <Select
+              filterOption={false}
+              notFoundContent={areParserConfigsLoading ? <Spin size="small" /> : null}
+              options={
+                parserConfigs?.map((parserConfig) => ({
+                  value: parserConfig.id,
+                })) ?? []
+              }
+            />
           </Form.Item>
 
-          <Form.Item name="url" label="URL" rules={[{ message: 'Please input the URL!' }]}>
+          <Form.Item
+            name="url"
+            label="URL"
+            rules={[{ message: 'Please input the URL!' }]}
+            style={{ flex: 1 }}
+          >
             <Input placeholder="e.g. http://example.com" />
           </Form.Item>
 
