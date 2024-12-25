@@ -1,8 +1,9 @@
+import { NearNetworks } from '@mweb/backend'
 import { FC } from 'react'
-import { Location, NavigateFunction } from 'react-router'
+import { NavigateFunction } from 'react-router'
 import styled from 'styled-components'
 import { ArrowIcon } from '../assets/icons'
-import { ConnectedAccount } from '../components/connected-accounts'
+import { ConnectedAccount } from '../../connected-accounts'
 
 const ProfileContainer = styled.div`
   width: calc(100% - 20px);
@@ -51,10 +52,11 @@ const H1 = styled.h1`
   text-decoration-skip-ink: none;
 `
 
-const Profile: FC<{ navigate: NavigateFunction; location: Location<any> }> = ({
-  navigate,
-  location,
-}) => {
+const Profile: FC<{
+  navigate: NavigateFunction
+  loggedInAccountId: string
+  nearNetwork: string
+}> = ({ navigate, loggedInAccountId, nearNetwork }) => {
   return (
     <ProfileContainer data-testid="profile-page">
       <Header>
@@ -63,7 +65,10 @@ const Profile: FC<{ navigate: NavigateFunction; location: Location<any> }> = ({
         </BackButton>
         <H1>Profile</H1>
       </Header>
-      <ConnectedAccount />
+      <ConnectedAccount
+        loggedInAccountId={loggedInAccountId}
+        nearNetwork={nearNetwork as NearNetworks}
+      />
     </ProfileContainer>
   )
 }

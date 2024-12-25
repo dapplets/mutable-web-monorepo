@@ -38,6 +38,17 @@ export {
 export { PullRequestAcceptedPayload } from './services/notification/types/pull-request-accepted'
 export { PullRequestRejectedPayload } from './services/notification/types/pull-request-rejected'
 export { RegularPayload } from './services/notification/types/regular'
+export {
+  TConnectedAccount,
+  IConnectedAccountsPair,
+  ConnectedAccountsPairStatus,
+  IConnectedAccountUser,
+  WalletDescriptorWithCAMainStatus,
+  NearNetworks,
+  ChainTypes,
+  TConnectedAccountsVerificationRequestInfo,
+} from './services/connected-accounts/types'
+export { ConnectedAccountService } from './services/connected-accounts/connectedAccountService'
 
 // ToDo: replace with DTO
 export { ParserConfig } from './services/parser-config/parser-config.entity'

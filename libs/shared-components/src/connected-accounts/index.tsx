@@ -1,251 +1,23 @@
 import cn from 'classnames'
-import { useEffect, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 // import browser from 'webextension-polyfill'
 // import * as EventBus from '../../../../../common/global-event-bus'
 import styled from 'styled-components'
-import useAbortController from '../../hooks/use-abort-controller'
-import { Attention, Home, Ok, Time, Trash } from '../assets/icons'
+import useAbortController from '../hooks/use-abort-controller'
+import { Attention, Ok, Time, Trash } from './assets/icons'
 import { CAUserButton } from './connected-accounts-button'
 // import { DropdownCAListReceiver } from './dropdown-ca-list-receiver'
-import { Message } from './message'
-import { resources } from './resources'
-import { TabLoader } from './tab-loader'
 import {
   ConnectedAccountsPairStatus,
   IConnectedAccountsPair,
   IConnectedAccountUser,
   NearNetworks,
-  TConnectedAccount,
   WalletDescriptorWithCAMainStatus,
-  WalletTypes,
-} from './types'
-
-// ToDo: remove mock data
-const MOCKED_DATA: {
-  getConnectedAccounts: TConnectedAccount[][]
-  pairs: IConnectedAccountsPair[]
-} = {
-  getConnectedAccounts: [
-    [
-      {
-        id: '0xa56494f979487e08f5e183013dc71d62eeae704b/ethereum',
-        status: {
-          isMain: false,
-        },
-      },
-      {
-        id: '0x9126d36880905fcb9e5f2a7f7c4f19703d52bc62/ethereum',
-        status: {
-          isMain: false,
-        },
-      },
-      {
-        id: '0xf64849376812667bda7d902666229f8b8dd90687/ethereum',
-        status: {
-          isMain: false,
-        },
-      },
-      {
-        id: '0x4cda54f321c2880f3b9a06b2aabc1b5080420fa7/ethereum',
-        status: {
-          isMain: false,
-        },
-      },
-      {
-        id: 'teremovskii/twitter',
-        status: {
-          isMain: true,
-        },
-      },
-    ],
-    [
-      {
-        id: 'nik4ter.testnet/near/testnet',
-        status: {
-          isMain: false,
-        },
-      },
-      {
-        id: 'nik2ter.testnet/near/testnet',
-        status: {
-          isMain: false,
-        },
-      },
-      {
-        id: 'nikter.testnet/near/testnet',
-        status: {
-          isMain: false,
-        },
-      },
-    ],
-    [
-      {
-        id: 'Ni-2/github',
-        status: {
-          isMain: false,
-        },
-      },
-    ],
-  ],
-  pairs: [
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: '0xa56494f979487e08f5e183013dc71d62eeae704b',
-        origin: 'ethereum',
-        accountActive: false,
-        walletType: WalletTypes.METAMASK,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: '0x9126d36880905fcb9e5f2a7f7c4f19703d52bc62',
-        origin: 'ethereum',
-        accountActive: false,
-        walletType: WalletTypes.METAMASK,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: 'teremovskii',
-        origin: 'twitter',
-        accountActive: false,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: 'Ni-2',
-        origin: 'github',
-        accountActive: true,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: 'nikter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: 'teremovskii',
-        origin: 'twitter',
-        accountActive: false,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: 'dapplets',
-        origin: 'github',
-        accountActive: false,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-    {
-      firstAccount: {
-        img: () => <></>,
-        name: 'nik3ter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      secondAccount: {
-        img: () => <></>,
-        name: 'nikter.testnet',
-        origin: 'near/testnet',
-        accountActive: false,
-        walletType: WalletTypes.NEAR,
-      },
-      statusName: ConnectedAccountsPairStatus.Connected,
-      statusMessage: '',
-      closeness: 1,
-      pendingRequestId: 1,
-    },
-  ],
-}
+} from '@mweb/backend'
+import { useChangeCAStatus, useConnectedAccounts } from '@mweb/engine'
+import { Message } from './message'
+import { resources } from './resources'
+import { TabLoader } from './tab-loader'
 
 const ConnectedAccountsContainer = styled.div`
   --primary: rgba(56, 75, 255, 1);
@@ -350,6 +122,7 @@ const ConnectedAccountsContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: calc(100vh - 176px);
 
   .warningInfo {
     display: block;
@@ -632,9 +405,9 @@ const ConnectedAccountsContainer = styled.div`
     fill: inherit;
   }
 
-  .messageDelete {
+  .noAccounts {
     height: calc(100% - 120px);
-    padding: 0 110px;
+    padding: 0 10px;
 
     h6 {
       font-size: 22px;
@@ -643,6 +416,7 @@ const ConnectedAccountsContainer = styled.div`
       line-height: 26px;
       color: var(--main-grey);
       text-align: center;
+      padding: 0 0 16px !important;
     }
 
     p {
@@ -771,9 +545,12 @@ const ConnectedAccountsContainer = styled.div`
   }
 `
 
-export const ConnectedAccount = () => {
+export const ConnectedAccount: FC<{ loggedInAccountId: string; nearNetwork: NearNetworks }> = ({
+  loggedInAccountId,
+  nearNetwork,
+}) => {
   const [contractNetwork, setContractNetwork] = useState<NearNetworks>()
-  const [pairsToDisplay, setPairs] = useState<IConnectedAccountsPair[]>([])
+  const [pairsToDisplay, setPairs] = useState<IConnectedAccountsPair[] | null>(null)
   // const [walletsForConnect, setWalletsForConnect] = useState<
   //   [IConnectedAccountUser, IConnectedAccountUser][]
   // >([])
@@ -788,6 +565,21 @@ export const ConnectedAccount = () => {
   const [connectedAccountsListReceiver, setConnectedAccountsListReceiver] =
     useState<WalletDescriptorWithCAMainStatus | null>(null)
 
+  const { pairs, connectedAccountsNet } = useConnectedAccounts()
+  // console.log('loggedInAccountId', loggedInAccountId)
+  // console.log('nearNetwork', nearNetwork)
+  // console.log('connectedAccountsNet', connectedAccountsNet)
+  // console.log('pairs', pairs)
+  const { changeCAStatus } = useChangeCAStatus()
+
+  // useEffect(() => {
+  //   const fn = async () => {
+  //     const net = await getNet(`${loggedInAccountId}/near/${nearNetwork}`)
+  //     console.log('net', net)
+  //   }
+  //   fn()
+  // })
+
   // ToDo: remove abort controller
   const abortController = useAbortController()
 
@@ -800,7 +592,7 @@ export const ConnectedAccount = () => {
     //       prevPairs,
     //     })
     //   : []
-    const newPairs: IConnectedAccountsPair[] = MOCKED_DATA.pairs // ToDo: remove mock data
+    const newPairs: IConnectedAccountsPair[] | null = pairs
     if (!abortController.signal.aborted) {
       setPairs(newPairs)
     }
@@ -825,7 +617,7 @@ export const ConnectedAccount = () => {
     // } = await initBGFunctions(browser)
     // const preferredConnectedAccountsNetwork: NearNetworks =
     //   await getPreferredConnectedAccountsNetwork()
-    setContractNetwork(NearNetworks.Testnet) // ToDo: remove mock data
+    setContractNetwork(nearNetwork === 'testnet' ? NearNetworks.Testnet : NearNetworks.Mainnet)
     // setContractNetwork(preferredConnectedAccountsNetwork)
     // const descriptors: WalletDescriptor[] = await getWalletDescriptors()
     // const connectedWalletsDescriptors = descriptors
@@ -875,7 +667,14 @@ export const ConnectedAccount = () => {
     // return () => {
     //   EventBus.off('wallet_changed', updateContractNetworkAndWallets)
     // }
-  }, [abortController.signal.aborted, contractNetwork, connectedAccountsListReceiver])
+  }, [
+    contractNetwork,
+    loggedInAccountId,
+    pairs,
+    connectedAccountsNet,
+    abortController.signal.aborted,
+    connectedAccountsListReceiver,
+  ])
 
   const findWalletsToConnect = async () => {
     console.log('should findWalletsToConnect') // ToDo: remove mock data
@@ -965,7 +764,8 @@ export const ConnectedAccount = () => {
   }, [pairsToDisplay, contractNetwork])
 
   const handleOpenPopup = async (account: IConnectedAccountUser) => {
-    console.log('should handleOpenPopup') // ToDo: remove mock data
+    console.log('should handleOpenPopup')
+    changeCAStatus(account.name, account.origin) // ToDo: should open some popup
     // const { openConnectedAccountsPopup, getThisTab } = await initBGFunctions(browser)
     // const thisTab = await getThisTab()
     // try {
@@ -1080,15 +880,13 @@ export const ConnectedAccount = () => {
         <div className="wrapper">
           {!pairsToDisplay || pairsToDisplay.length === 0 ? (
             <Message
-              className="messageDelete"
+              className="noAccounts"
               title={'There are no connected accounts'}
               subtitle={
                 <p>
-                  Check connected wallets or run Connecting Accounts dapplet and click{' '}
-                  <span style={{ width: 12 }}>
-                    <Home />
-                  </span>{' '}
-                  button to connect your accounts
+                  {!loggedInAccountId
+                    ? 'Connect your wallet to see connected accounts'
+                    : 'Connection of new accounts will be available soon'}
                 </p>
               }
             />

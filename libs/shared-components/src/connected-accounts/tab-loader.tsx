@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { FC } from 'react'
 import styled from 'styled-components'
 
-const LoadingListDapplets = styled.div`
+const LoadingListDapps = styled.div`
   z-index: 3;
 
   display: flex;
@@ -37,7 +37,7 @@ export interface TabLoaderProps {
 export const TabLoader: FC<TabLoaderProps> = (props) => {
   const { isGrayPageColor } = props
   return (
-    <LoadingListDapplets
+    <LoadingListDapps
       className={cn({
         isGrayPageColor: isGrayPageColor,
       })}

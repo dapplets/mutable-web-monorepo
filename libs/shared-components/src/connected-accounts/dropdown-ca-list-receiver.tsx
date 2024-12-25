@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react'
 import { DropdownAccounts } from './dropdown-accounts'
-import { WalletDescriptorWithCAMainStatus } from './types'
+import { WalletDescriptorWithCAMainStatus } from '@mweb/backend'
 
 type TDropdownCAListReceiverProps = {
   values: WalletDescriptorWithCAMainStatus[]
@@ -13,7 +13,7 @@ export const DropdownCAListReceiver = (props: TDropdownCAListReceiverProps) => {
   const { values, selected, setter, maxLength } = props
 
   return (
-    <DropdownAccounts<WalletDescriptorWithCAMainStatus>
+    <DropdownAccounts
       values={values}
       selected={selected}
       setter={setter}

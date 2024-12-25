@@ -1,9 +1,8 @@
 import cn from 'classnames'
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import { Arrow01 as DropdownIcon } from '../assets/icons'
+import { Arrow01 as DropdownIcon } from './assets/icons'
 import { CAUserButton } from './connected-accounts-button'
 import styled from 'styled-components'
-import { resources } from './resources'
 
 const DropdownAccountsContainer = styled.div`
   cursor: pointer;
@@ -161,9 +160,7 @@ type TDropdownAccountsProps = {
   maxLength?: number
 }
 
-export function DropdownAccounts<T extends { accountActive: boolean }>(
-  props: TDropdownAccountsProps
-) {
+export function DropdownAccounts(props: TDropdownAccountsProps) {
   const { values, selected, setter, nameId, originId, maxLength = 20 } = props
   const [isOpen, setOpen] = useState(false)
 
@@ -189,7 +186,7 @@ export function DropdownAccounts<T extends { accountActive: boolean }>(
           <CAUserButton
             user={
               selected && {
-                img: resources[selected[originId]].icon,
+                img: '',
                 name: selected[nameId],
                 origin: selected[originId],
                 accountActive: selected.accountActive,
@@ -223,7 +220,7 @@ export function DropdownAccounts<T extends { accountActive: boolean }>(
                 >
                   <CAUserButton
                     user={{
-                      img: resources[value[originId]].icon,
+                      img: '',
                       name: value[nameId],
                       origin: value[originId],
                       accountActive: value['accountActive'],

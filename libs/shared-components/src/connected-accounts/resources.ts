@@ -1,5 +1,5 @@
-import { GithubIcon, XIcon } from '../assets/resources/social'
-import { EthIcon, NearIcon } from '../assets/resources/wallets'
+import { GithubIcon, XIcon } from './assets/resources/social'
+import { EthIcon, NearIcon } from './assets/resources/wallets'
 
 export interface Resources {
   [name: string]: {

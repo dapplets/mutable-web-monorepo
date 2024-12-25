@@ -1,7 +1,7 @@
 import makeBlockie from 'ethereum-blockies-base64'
-import { FC, RefObject, useRef, useState } from 'react'
+import { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { useOutside } from '../../hooks/use-outside'
+// import { useOutside } from '../../hooks/use-outside'
 import {
   Connect as ConnectIcon,
   Copy as CopyIcon,
@@ -244,24 +244,24 @@ const ButtonDisconnect = styled.button`
 
 export interface IHeaderProps extends IWalletConnect {
   accountId: string | null
-  closeProfile: () => void
-  trackingRefs: Set<RefObject<HTMLDivElement>>
-  openCloseWalletPopupRef: RefObject<HTMLButtonElement>
+  // closeProfile: () => void
+  // trackingRefs: Set<RefObject<HTMLDivElement>>
+  // openCloseWalletPopupRef: RefObject<HTMLButtonElement>
 }
 
 const Header: FC<IHeaderProps> = ({
   accountId,
-  closeProfile,
+  // closeProfile,
   connectWallet,
   disconnectWallet,
   nearNetwork,
-  trackingRefs,
-  openCloseWalletPopupRef,
+  // trackingRefs,
+  // openCloseWalletPopupRef,
 }) => {
   const [waiting, setWaiting] = useState(false)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
-  useOutside(wrapperRef, closeProfile, trackingRefs, openCloseWalletPopupRef)
+  // useOutside(wrapperRef, closeProfile, trackingRefs, openCloseWalletPopupRef)
 
   const handleSignIn = async () => {
     setWaiting(true)

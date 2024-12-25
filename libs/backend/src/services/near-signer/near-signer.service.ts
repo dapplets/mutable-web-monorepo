@@ -1,4 +1,4 @@
-import { WalletSelector } from '@near-wallet-selector/core'
+import { Account, WalletSelector } from '@near-wallet-selector/core'
 import * as nearAPI from 'near-api-js'
 import { QueryResponseKind } from 'near-api-js/lib/providers/provider'
 import { KeyStorage } from '../social-db/key-storage'
@@ -30,6 +30,12 @@ export class NearSigner {
     this.provider = new nearAPI.providers.JsonRpcProvider({
       url: nearConfig.nodeUrl,
     })
+  }
+
+  async getAccount(): Promise<Account | null> {
+    const wallet = await (await this._selector).wallet()
+    const accounts = await wallet.getAccounts()
+    return accounts[0] ?? null
   }
 
   async getAccountId(): Promise<string | null> {

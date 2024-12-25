@@ -1,3 +1,5 @@
+import React from 'react'
+
 const GithubIcon = () => (
   <svg
     height="32"

@@ -12,6 +12,7 @@ import { PickerProvider } from './contexts/picker-context'
 import { ContextHighlighter } from './components/context-highlighter'
 import { HighlighterProvider } from './contexts/highlighter-context'
 import { ModalContextState } from './contexts/modal-context/modal-context'
+import { ConnectedAccountsProvider } from './contexts/connected-accounts-context'
 
 export const App: FC<{
   config: EngineConfig
@@ -35,14 +36,16 @@ export const App: FC<{
               defaultMutationId={defaultMutationId}
               modalApi={modalApi}
             >
-              <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
-                <ModalProvider onModalApiReady={setModalApi}>
-                  <ContextPicker />
-                  <ContextManager />
-                  <ContextHighlighter />
-                </ModalProvider>
-              </ViewportProvider>
-              <Fragment>{children}</Fragment>
+              <ConnectedAccountsProvider>
+                <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
+                  <ModalProvider onModalApiReady={setModalApi}>
+                    <ContextPicker />
+                    <ContextManager />
+                    <ContextHighlighter />
+                  </ModalProvider>
+                </ViewportProvider>
+                <Fragment>{children}</Fragment>
+              </ConnectedAccountsProvider>
             </MutableWebProvider>
           </HighlighterProvider>
         </PickerProvider>
