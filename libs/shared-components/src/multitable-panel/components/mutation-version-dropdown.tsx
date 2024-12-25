@@ -4,16 +4,16 @@ import { FC } from 'react'
 import { IconDropdown } from '../../mini-overlay/assets/icons'
 import styled from 'styled-components'
 
-export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
+export const SpanStyled = styled.span<{ $isWhite?: boolean; $isExpanded?: boolean }>`
   display: flex;
   align-items: center;
   gap: 2px;
   position: relative;
   cursor: pointer;
   left: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
-  justify-content: center;
+  justify-content: ${({ $isExpanded }) => ($isExpanded ? `center` : 'flex-start')};
   padding: 2px 0;
-  padding-left: 4px;
+  padding-left: ${({ $isExpanded }) => ($isExpanded ? `4px` : '6px')};
   width: 100%;
   height: 100%;
   border-radius: 4px;
@@ -155,7 +155,7 @@ export const MutationVersionDropdown: FC<{
     <>
       <span
         style={{
-          maxWidth: '50px',
+          maxWidth: mutationVersions && mutationVersions.length > 0 ? '50px' : '40px',
           width: '100%',
           display: 'inline-flex',
           flexDirection: 'column',
@@ -168,7 +168,10 @@ export const MutationVersionDropdown: FC<{
         }}
         onClick={toggleDropdown}
       >
-        <SpanStyled $isWhite={isWhite}>
+        <SpanStyled
+          $isWhite={isWhite}
+          $isExpanded={mutationVersions && mutationVersions.length > 0}
+        >
           {currentMutationVersions[mutationId]
             ? `v${currentMutationVersions[mutationId]}`
             : LatestKey}

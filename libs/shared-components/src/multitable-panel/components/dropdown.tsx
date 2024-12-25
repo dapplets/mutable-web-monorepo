@@ -22,7 +22,6 @@ import {
   MutationsList,
   MutationsListWrapper,
   WrapperDropdown,
-  SpanStyled,
 } from '../assets/styles-dropdown'
 import {
   AvailableIcon,
@@ -178,18 +177,13 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       <InputMutation
                         className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
                       >
-                        {selectedMutation && selectedMutation.metadata ? (
+                        {mut.id === selectedMutation?.id ? (
                           <MutationVersionDropdown
                             expanded={expandedVersion}
                             toggleDropdown={toggleDropdown}
                             mutationId={selectedMutation.id}
                           />
-                        ) : (
-                          selectedMutation &&
-                          selectedMutation.metadata && (
-                            <SpanStyled>v{selectedMutation.version}</SpanStyled>
-                          )
-                        )}{' '}
+                        ) : null}
                         {mut.metadata ? mut.metadata.name : ''}{' '}
                         {recentlyUsedMutations[mut.id]?.length === 2 ? (
                           mut.source === EntitySourceType.Local ? (
