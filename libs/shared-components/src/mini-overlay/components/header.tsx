@@ -1,5 +1,5 @@
 import makeBlockie from 'ethereum-blockies-base64'
-import { FC, useRef, useState } from 'react'
+import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
 // import { useOutside } from '../../hooks/use-outside'
 import {

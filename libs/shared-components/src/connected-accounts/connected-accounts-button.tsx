@@ -1,10 +1,11 @@
+import { IConnectedAccountUser } from '@mweb/backend'
 import cn from 'classnames'
+import React from 'react'
+import styled from 'styled-components'
 import useCopied from '../hooks/useCopyed'
 import { Copy16 } from './assets/icons'
 import { GithubIcon, XIcon } from './assets/resources/social'
-import styled from 'styled-components'
 import { resources } from './resources'
-import { IConnectedAccountUser } from '@mweb/backend'
 
 const CAUserButtonWrapper = styled.div`
   --primary: rgba(56, 75, 255, 1);

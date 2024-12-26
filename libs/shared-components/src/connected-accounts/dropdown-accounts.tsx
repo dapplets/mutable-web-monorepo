@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import React, { Dispatch, SetStateAction, useState } from 'react'
+import styled from 'styled-components'
 import { Arrow01 as DropdownIcon } from './assets/icons'
 import { CAUserButton } from './connected-accounts-button'
-import styled from 'styled-components'
 
 const DropdownAccountsContainer = styled.div`
   cursor: pointer;

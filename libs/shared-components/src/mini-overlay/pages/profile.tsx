@@ -1,5 +1,5 @@
 import { NearNetworks } from '@mweb/backend'
-import { FC } from 'react'
+import React, { FC } from 'react'
 import { NavigateFunction } from 'react-router'
 import styled from 'styled-components'
 import { ArrowIcon } from '../assets/icons'

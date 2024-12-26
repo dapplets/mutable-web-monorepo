@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { ReactElement, ReactNode } from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 import styled from 'styled-components'
 
 const MessageContainer = styled.div`

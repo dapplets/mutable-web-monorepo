@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 // import browser from 'webextension-polyfill'
 // import * as EventBus from '../../../../../common/global-event-bus'
 import styled from 'styled-components'

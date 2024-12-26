@@ -952,8 +952,6 @@ importers:
         specifier: 2.1.3
         version: 2.1.3
 
-  libs/connected-accounts: {}
-
   libs/core:
     dependencies:
       json-stringify-deterministic:

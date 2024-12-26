@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { FC } from 'react'
+import React, { FC } from 'react'
 import styled from 'styled-components'
 
 const LoadingListDapps = styled.div`

@@ -1,6 +1,6 @@
 import { ChainTypes, IConnectedAccountsPair } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import { FC, ReactNode } from 'react'
+import React, { FC, ReactNode } from 'react'
 import { useQuery } from '../../hooks/use-query'
 import { useMutableWeb } from '../mutable-web-context'
 import {

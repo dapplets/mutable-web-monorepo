@@ -1,5 +1,5 @@
 import { Button, Drawer, Space, Typography } from 'antd'
-import { FC, RefObject, useRef } from 'react'
+import React, { FC, RefObject, useRef } from 'react'
 import { Location, NavigateFunction } from 'react-router'
 import styled from 'styled-components'
 import { Close as CloseIcon, Logo as LogoIcon } from './assets/icons'
