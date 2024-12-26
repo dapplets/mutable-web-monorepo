@@ -7,51 +7,17 @@ import {
   ConnectedAccountsContext,
   ConnectedAccountsContextState,
 } from './connected-accounts-context'
+import { useGetCANet } from './use-get-ca-net'
+import { useGetCAPairs } from './use-get-ca-pairs'
 
 type Props = {
   children?: ReactNode
 }
 
 const ConnectedAccountsProvider: FC<Props> = ({ children }) => {
-  const { engine, config } = useMutableWeb()
-  const accountId = useAccountId()
-  const networkId = config.networkId
-
-  const {
-    data: connectedAccountsNet,
-    setData: setConnectedAccountsNet,
-    isLoading,
-    error,
-  } = useQuery<string[] | null>({
-    query: async () => {
-      if (!accountId) return null
-      return engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`)
-    },
-    initialData: [],
-    deps: [engine, config, accountId],
-  })
-
-  const {
-    data: connectedAccountsPairs,
-    setData: setConnectedAccountsPairs,
-    isLoading: isLoading2,
-    error: error2,
-  } = useQuery<IConnectedAccountsPair[] | null>({
-    query: async () => {
-      if (!accountId) return null
-      const status = await engine.connectedAccountsService.getStatus(accountId, `near/${networkId}`)
-      return engine.connectedAccountsService.getPairs({
-        receiver: {
-          account: accountId,
-          chain: networkId === 'testnet' ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET,
-          accountActive: status,
-        },
-        prevPairs: null,
-      })
-    },
-    initialData: [],
-    deps: [engine, config, accountId],
-  })
+  const { engine } = useMutableWeb()
+  const { connectedAccountsNet, setConnectedAccountsNet } = useGetCANet()
+  const { connectedAccountsPairs, setConnectedAccountsPairs } = useGetCAPairs()
 
   const state: ConnectedAccountsContextState = {
     pairs: connectedAccountsPairs,

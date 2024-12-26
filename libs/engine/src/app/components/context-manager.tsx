@@ -59,6 +59,7 @@ interface WidgetProps {
     source?: EntitySourceType
   }) => Promise<DocumentDto | null>
   deleteLocalDocument: () => Promise<void>
+  getConnectedAccountsNet: (accountId: string, origin: string) => Promise<string[] | null>
 }
 
 interface LayoutManagerProps {
@@ -301,6 +302,11 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
     [engine, selectedMutation, refreshMutation]
   )
 
+  const handleGetConnectedAccountsNet = useCallback(
+    async (accountId: string, origin: string) =>
+      engine.connectedAccountsService.getNet(`${accountId}/${origin}`),
+    [engine]
+  )
   // ToDo: check context.element
 
   return (
@@ -328,6 +334,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onCommitDocumentCurry={handleCommitDocumentCurry}
           onGetDocumentCurry={handleGetDocumentCurry}
           onDeleteDocumentCurry={handleDeleteDocumentCurry}
+          onGetConnectedAccountsNet={handleGetConnectedAccountsNet}
         />
       ))}
 
@@ -351,6 +358,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
         onCommitDocumentCurry={handleCommitDocumentCurry}
         onGetDocumentCurry={handleGetDocumentCurry}
         onDeleteDocumentCurry={handleDeleteDocumentCurry}
+        onGetConnectedAccountsNet={handleGetConnectedAccountsNet}
       />
 
       {controllers.map((c) => (
@@ -364,6 +372,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           onCommitDocumentCurry={handleCommitDocumentCurry}
           onGetDocumentCurry={handleGetDocumentCurry}
           onDeleteDocumentCurry={handleDeleteDocumentCurry}
+          onGetConnectedAccountsNet={handleGetConnectedAccountsNet}
         />
       ))}
 
@@ -417,6 +426,7 @@ const InsPointHandler: FC<{
     appInstanceId: string
   ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
   onDeleteDocumentCurry: (appInstanceId: string) => () => Promise<void>
+  onGetConnectedAccountsNet: (accountId: string, origin: string) => Promise<string[] | null>
 }> = ({
   insPointName,
   element,
@@ -438,6 +448,7 @@ const InsPointHandler: FC<{
   onCommitDocumentCurry,
   onGetDocumentCurry,
   onDeleteDocumentCurry,
+  onGetConnectedAccountsNet,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { config, engine } = useMutableWeb()
@@ -520,6 +531,7 @@ const InsPointHandler: FC<{
         commitDocument: onCommitDocumentCurry(link.appInstanceId),
         getDocument: onGetDocumentCurry(link.appInstanceId),
         deleteLocalDocument: onDeleteDocumentCurry(link.appInstanceId),
+        getConnectedAccountsNet: onGetConnectedAccountsNet,
       }, // ToDo: add props
       isSuitable: link.insertionPoint === insPointName, // ToDo: LM know about widgets from other LM
     })),
@@ -590,6 +602,7 @@ const ControllerHandler: FC<{
     appInstanceId: string
   ) => (options?: { id?: EntityId; source?: EntitySourceType }) => Promise<DocumentDto | null>
   onDeleteDocumentCurry: (appInstanceId: string) => () => Promise<void>
+  onGetConnectedAccountsNet: (accountId: string, origin: string) => Promise<string[] | null>
 }> = ({
   transferableContext,
   controller,
@@ -599,6 +612,7 @@ const ControllerHandler: FC<{
   onCommitDocumentCurry,
   onGetDocumentCurry,
   onDeleteDocumentCurry,
+  onGetConnectedAccountsNet,
 }) => {
   const { redirectMap, isDevServerLoading } = useEngine()
   const { notify } = useModal()
@@ -618,6 +632,7 @@ const ControllerHandler: FC<{
     commitDocument: onCommitDocumentCurry(controller.appInstanceId),
     getDocument: onGetDocumentCurry(controller.appInstanceId),
     deleteLocalDocument: onDeleteDocumentCurry(controller.appInstanceId),
+    getConnectedAccountsNet: onGetConnectedAccountsNet,
   }
 
   return (
