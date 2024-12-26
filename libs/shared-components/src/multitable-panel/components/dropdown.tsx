@@ -1,7 +1,16 @@
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import { useDeleteLocalMutation, useMutableWeb } from '@mweb/engine'
-import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
+import React, {
+  DetailedHTMLProps,
+  FC,
+  HTMLAttributes,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react'
 import styled from 'styled-components'
 import {
   AuthorMutation,
@@ -65,6 +74,15 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   } = useMutableWeb()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const [, forceUpdate] = useReducer((x) => x + 1, 0)
+
+  const handleRemoveFromRecentlyUsedClick = useCallback(
+    async (mut: MutationWithSettings) => {
+      removeMutationFromRecents(mut.id)
+      forceUpdate()
+    },
+    [removeMutationFromRecents]
+  )
 
   const recentlyUsedMutations = useMemo(() => {
     if (!selectedMutation) return []
@@ -72,7 +90,6 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
     let recentList = Object.values(mutations).flat()
 
     recentList = recentList.filter((mut) => mut.id !== selectedMutation.id)
-
     recentList.unshift(selectedMutation)
 
     recentList.sort((a, b) => {
@@ -81,30 +98,31 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
 
       if (a.source === EntitySourceType.Local && b.source !== EntitySourceType.Local) return -1
       if (b.source === EntitySourceType.Local && a.source !== EntitySourceType.Local) return 1
+
       return 0
     })
 
     const localMutations = recentList.filter((mut) => mut.source === EntitySourceType.Local)
     const otherMutations = recentList.filter((mut) => mut.source !== EntitySourceType.Local)
 
-    const limitedOtherMutations = otherMutations.slice(0, 5 - localMutations.length)
+    const limitedOtherMutations =
+      localMutations.length < 5 ? otherMutations.slice(0, 5 - localMutations.length) : []
 
+    forceUpdate()
     return [...localMutations, ...limitedOtherMutations]
-  }, [selectedMutation, mutations])
+  }, [selectedMutation, mutations, handleRemoveFromRecentlyUsedClick])
 
   const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(
     Object.keys(recentlyUsedMutations).length === 0
   )
   const [mutationIdToDelete, setMutationIdToDelete] = useState<string | null>(null)
 
-  const unusedMutations = useMemo(
-    () =>
-      Object.groupBy(
-        mutations.filter((mut) => !mut.settings.lastUsage),
-        (mut) => mut.id
-      ),
-    [mutations]
-  )
+  const unusedMutations = useMemo(() => {
+    return Object.groupBy(
+      mutations.filter((mut) => !recentlyUsedMutations.some((usedMut) => usedMut.id === mut.id)),
+      (mut) => mut.id
+    )
+  }, [mutations, recentlyUsedMutations])
 
   const handleMutationClick = (mutationId: string) => {
     switchMutation(mutationId)
@@ -125,10 +143,6 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
 
   const handleOriginalButtonClick = async () => {
     switchMutation(null)
-  }
-
-  const handleRemoveFromRecentlyUsedClick = async (mut: MutationWithSettings) => {
-    removeMutationFromRecents(mut.id)
   }
 
   const getBadgeProps = (mut: { source: EntitySourceType; id: string | undefined }) => {
