@@ -8,11 +8,8 @@ export const SpanStyled = styled.span<{ $isWhite?: boolean; $isExpanded?: boolea
   display: flex;
   align-items: center;
   gap: 2px;
-  position: relative;
   cursor: pointer;
-  left: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
   justify-content: ${({ $isExpanded }) => ($isExpanded ? `center` : 'flex-start')};
-  padding: 2px 0;
   padding-left: ${({ $isExpanded }) => ($isExpanded ? `4px` : '6px')};
   width: 100%;
   height: 100%;
@@ -171,6 +168,7 @@ export const MutationVersionDropdown: FC<{
         <SpanStyled
           $isWhite={isWhite}
           $isExpanded={mutationVersions && mutationVersions.length > 0}
+          className="mutation-version-dropdown"
         >
           {currentMutationVersions[mutationId]
             ? `v${currentMutationVersions[mutationId]}`

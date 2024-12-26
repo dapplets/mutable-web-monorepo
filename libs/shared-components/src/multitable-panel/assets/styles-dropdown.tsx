@@ -69,9 +69,11 @@ export const ButtonBack = styled.div`
   padding-bottom: 10px;
   padding-top: 10px;
   transition: all 0.2s ease;
+
   svg {
     margin-right: 5px;
   }
+
   &:hover {
     background: rgba(56, 75, 255, 0.1);
     border-radius: 4px;
@@ -94,9 +96,11 @@ export const ButtonMutation = styled.div`
   padding-bottom: 10px;
   padding-top: 10px;
   transition: all 0.2s ease;
+
   svg {
     margin-left: 5px;
   }
+
   &:hover {
     background: rgba(56, 75, 255, 0.1);
     border-radius: 4px;
@@ -105,22 +109,24 @@ export const ButtonMutation = styled.div`
 
 export const InputBlock = styled.div<{ isActive?: boolean }>`
   display: flex;
-
   padding: 2px 4px;
   cursor: pointer;
-
   align-items: center;
   width: 100%;
-
   color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   border-radius: 4px;
 
-  .inputMutation {
-    color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
-  }
-
   &:hover {
     background: #384bff;
+    color: #fff;
+
+    .inputMutation {
+      color: #fff;
+    }
+
+    .authorMutation {
+      color: #fff;
+    }
 
     div,
     svg {
@@ -130,6 +136,10 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
         stroke: #fff;
       }
     }
+  }
+
+  .inputMutation {
+    color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   }
 `
 export const InputIconWrapper = styled.div`
@@ -160,13 +170,10 @@ export const InputIconWrapper = styled.div`
 
 export const InputInfoWrapper = styled.div`
   display: flex;
-
   padding: 4px;
-  padding-left: 6px;
+  margin-left: 10px;
   cursor: pointer;
-
   position: relative;
-
   flex-direction: column;
   align-items: flex-start;
   flex: 1;
@@ -206,9 +213,38 @@ export const ListMutations = styled.div`
     color: #fff;
 
     svg path {
-      fill: #fff;
+      stroke: #fff;
+      fill: #384bff;
     }
-  }
+
+    &:hover {
+      background: #fff;
+      color: #384bff;
+
+      svg path {
+        stroke:  #384bff;
+        fill: #384bff;
+      }
+
+      .infoSelected{
+        .inputMutationSelected {
+          color:   #384bff;
+        }
+
+        .authorMutationSelected {
+          color:  #384bff;
+        }
+      }
+    
+        .mutation-version-dropdown {
+          background: rgba(56, 75, 255, 0.1);
+          color: #384bff;
+
+          svg path {
+            stroke: #384bff;
+          }
+        }
+    }
 `
 
 export const SpanStyled = styled.span<{ $isWhite?: boolean }>`

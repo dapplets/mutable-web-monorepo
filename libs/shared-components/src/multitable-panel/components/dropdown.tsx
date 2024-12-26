@@ -171,11 +171,18 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                         // fallbackUrl={defaultIcon}
                       />
                     </ImageBlock>
-                    <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
+                    <InputInfoWrapper
+                      className={mut.id === selectedMutation?.id ? 'infoSelected' : 'info'}
+                      onClick={() => handleMutationClick(mut.id)}
+                    >
                       {/* todo: mocked classname */}
 
                       <InputMutation
-                        className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
+                        className={
+                          mut.id === selectedMutation?.id
+                            ? 'inputMutationSelected'
+                            : 'authorMutation'
+                        }
                       >
                         {mut.id === selectedMutation?.id ? (
                           <MutationVersionDropdown
@@ -199,7 +206,9 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       {mut.authorId ? (
                         <AuthorMutation
                           className={
-                            mut.id === selectedMutation?.id ? 'authorMutationSelected' : ''
+                            mut.id === selectedMutation?.id
+                              ? 'authorMutationSelected'
+                              : 'authorMutation'
                           }
                         >
                           by {mut.authorId}
