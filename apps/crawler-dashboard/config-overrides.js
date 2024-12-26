@@ -12,6 +12,7 @@ module.exports = function override(config) {
     url: false, // require.resolve("url") can be polyfilled here if needed
     zlib: false, // require.resolve("browserify-zlib") can be polyfilled here if needed
     // buffer: false, // require.resolve("buffer") can be polyfilled here if needed
+    events: require.resolve('events/'),
   })
   config.resolve.fallback = fallback
   config.plugins = (config.plugins || []).concat([

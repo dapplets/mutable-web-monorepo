@@ -1,0 +1,32 @@
+name: Crawler Agent
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'apps/crawler-agent/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Push container
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: "Checkout GitHub Action"
+        uses: actions/checkout@main
+
+      - name: "Login to GitHub Container Registry"
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: "Build Inventory Image"
+        run: |
+          docker build -f apps/crawler-agent/Dockerfile . --tag ghcr.io/dapplets/crawler-agent:latest
+          docker push ghcr.io/dapplets/crawler-agent:latest

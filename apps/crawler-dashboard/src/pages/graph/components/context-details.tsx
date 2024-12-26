@@ -1,15 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 import { Button, Descriptions } from 'antd'
 import { FC, useContext, useState } from 'react'
-import { getContext } from './api'
-import { NearContext } from './near'
+import { api } from '../../../api'
+import { NearContext } from '../../../near'
 
 export const ContextDetails: FC<{ selectedNode: any }> = ({ selectedNode }) => {
   const { signedAccountId, wallet } = useContext(NearContext)
   const [isBuyingDataItem, setIsBuyingDataItem] = useState(false)
 
   const { data } = useQuery({
-    queryFn: () => getContext(selectedNode.id),
+    queryFn: () => api.context.get(selectedNode.id),
     queryKey: ['getContext', selectedNode.id],
   })
 

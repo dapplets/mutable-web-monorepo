@@ -101,7 +101,7 @@ export class ContextService {
 
   async getContexts(): Promise<{
     nodes: { id: string; label: string }[];
-    edges: { source: string; target: string }[];
+    edges: { id: string; source: string; target: string }[];
   }> {
     return {
       nodes: Array.from(this.nodes.entries()).map(([id]) => ({
