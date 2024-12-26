@@ -1,13 +1,13 @@
 import { IConnectedAccountUser } from '@mweb/backend'
+import { Spin } from 'antd'
 import cn from 'classnames'
-import React, { useState, useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
+import { useOutside } from '../hooks/use-outside'
 import useCopied from '../hooks/useCopyed'
-import { Copy16, MoreHoriz } from './assets/icons'
+import { MoreHoriz } from './assets/icons'
 import { GithubIcon, XIcon } from './assets/resources/social'
 import { resources } from './resources'
-import { Spin } from 'antd'
-import { useOutside } from '../hooks/use-outside'
 
 const CAListItemWrapper = styled.div`
   --primary: rgba(56, 75, 255, 1);
@@ -121,9 +121,19 @@ const CAListItemWrapper = styled.div`
       background-color: #c9d2dd;
     }
 
-    &.disabled {
+    &:disabled {
       cursor: default;
       color: #c9d2dd;
+
+      &:hover {
+        color: #c9d2dd;
+        background: none;
+      }
+
+      &:active {
+        color: #c9d2dd;
+        background: none;
+      }
     }
   }
 
@@ -149,6 +159,15 @@ const CAListItemWrapper = styled.div`
       background: none;
       margin: 4px;
       padding: 2px;
+      transition: color 0.1s ease;
+
+      :hover {
+        color: #4096ff;
+      }
+
+      :active {
+        color: #0958d9;
+      }
     }
   }
 `
