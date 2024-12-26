@@ -13,6 +13,7 @@ import OpenOverlay from './open-overlay'
 import OpenOverlayWithCircle from './open-overlay-with-circle'
 import Logo from './logo'
 import PersonAddAlt from './person-add-alt'
+import Person from './person'
 import Home from './home'
 import Info from './info'
 import LoaderSettings from './loader-settings'
@@ -33,6 +34,7 @@ export {
   OpenOverlayWithCircle,
   Logo,
   PersonAddAlt,
+  Person,
   Home,
   Info,
   LoaderSettings,

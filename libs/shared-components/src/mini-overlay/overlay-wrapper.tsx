@@ -261,6 +261,8 @@ const OverlayWrapper: FC<
               connectWallet={connectWallet!}
               disconnectWallet={disconnectWallet}
               nearNetwork={nearNetwork}
+              navigate={navigate}
+              location={location}
               // trackingRefs={trackingRefs!}
               // openCloseWalletPopupRef={openCloseWalletPopupRef}
             />
