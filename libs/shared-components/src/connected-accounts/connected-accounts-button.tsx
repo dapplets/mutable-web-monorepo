@@ -12,7 +12,7 @@ const CAUserButtonWrapper = styled.div`
   --primary-pressed: rgba(56, 75, 255, 0.4);
   --pure-white: #fff;
   --web-bg: #eaf0f0;
-  --main-black: #2a2a2a;
+  --main-black: #02193a;
 
   position: relative;
   display: flex;

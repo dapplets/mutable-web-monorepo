@@ -4,5 +4,6 @@ import Attention from './attention'
 import Ok from './ok'
 import Time from './time'
 import Trash from './trash'
+import MoreHoriz from './more-horiz'
 
-export { Copy16, Arrow01, Ok, Time, Trash, Attention }
+export { Copy16, Arrow01, Ok, Time, Trash, Attention, MoreHoriz }

@@ -6,10 +6,10 @@ import { ArrowIcon } from '../assets/icons'
 import { ConnectedAccount } from '../../connected-accounts'
 
 const ProfileContainer = styled.div`
-  width: calc(100% - 20px);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 0 10px;
+  margin: 0;
   gap: 10px;
 `
 
@@ -18,6 +18,7 @@ const Header = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  margin: 0 10px;
 `
 
 const BackButton = styled.button`
@@ -44,6 +45,9 @@ const BackButton = styled.button`
 
 const H1 = styled.h1`
   margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  color: #02193a;
   font-size: 22px;
   font-weight: 600;
   line-height: 32.78px;
@@ -56,7 +60,8 @@ const Profile: FC<{
   navigate: NavigateFunction
   loggedInAccountId: string
   nearNetwork: string
-}> = ({ navigate, loggedInAccountId, nearNetwork }) => {
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+}> = ({ navigate, loggedInAccountId, nearNetwork, trackingRefs }) => {
   return (
     <ProfileContainer data-testid="profile-page">
       <Header>
@@ -68,6 +73,7 @@ const Profile: FC<{
       <ConnectedAccount
         loggedInAccountId={loggedInAccountId}
         nearNetwork={nearNetwork as NearNetworks}
+        trackingRefs={trackingRefs}
       />
     </ProfileContainer>
   )

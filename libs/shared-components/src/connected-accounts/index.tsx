@@ -4,8 +4,8 @@ import React, { FC, useEffect, useState } from 'react'
 // import * as EventBus from '../../../../../common/global-event-bus'
 import styled from 'styled-components'
 import useAbortController from '../hooks/use-abort-controller'
-import { Attention, Ok, Time, Trash } from './assets/icons'
-import { CAUserButton } from './connected-accounts-button'
+// import { Attention, Ok, Time, Trash } from './assets/icons'
+import { CAListItem } from './connected-account-list-item'
 // import { DropdownCAListReceiver } from './dropdown-ca-list-receiver'
 import {
   ConnectedAccountsPairStatus,
@@ -25,7 +25,7 @@ const ConnectedAccountsContainer = styled.div`
   --main-grey: #919191;
   --web-bg: #eaf0f0;
   --pure-white: #fff;
-  --main-black: #2a2a2a;
+  --main-black: #02193a;
   --content-black: #747376;
 
   * {
@@ -121,11 +121,12 @@ const ConnectedAccountsContainer = styled.div`
 
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  height: calc(100vh - 176px);
+  gap: 10px;
+  height: calc(100vh - 183px);
 
   .warningInfo {
     display: block;
+    margin: 0 10px;
     padding: 4px;
     color: white;
     text-align: center;
@@ -134,12 +135,24 @@ const ConnectedAccountsContainer = styled.div`
   }
 
   .wrapper {
-    overflow: hidden;
     display: flex;
     flex-direction: column;
-
-    width: 100%;
-    height: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    width: calc(100% - 20px);
+    max-height: 100%;
+    border-radius: 10px;
+    margin: 0 10px;
+    padding: 10px;
+    padding-left: 0;
+    background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+      'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    box-shadow:
+      0px 4px 20px 0px #0b576f26,
+      0px 4px 5px 0px #2d343c1a;
+    overflow: hidden;
   }
 
   .caHeaderTop {
@@ -167,9 +180,14 @@ const ConnectedAccountsContainer = styled.div`
   }
 
   .scrollContent {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     direction: rtl;
     overflow-y: auto;
-    height: calc(100vh - 187px);
+    height: auto;
+    min-height: 156px;
+    max-height: calc(100vh - 187px);
     padding-left: 7px;
 
     &::-webkit-scrollbar {
@@ -200,7 +218,7 @@ const ConnectedAccountsContainer = styled.div`
     }
 
     &.withWarning {
-      height: calc(100vh - 215px);
+      max-height: calc(100vh - 215px);
     }
 
     &:first-child {
@@ -216,9 +234,11 @@ const ConnectedAccountsContainer = styled.div`
     display: flex;
     flex-direction: column;
     height: 100%;
+    width: 100%;
+    padding-left: 3px;
   }
 
-  .mainBlock {
+  /* .mainBlock {
     display: grid;
     grid-template-columns: 333px 90px;
     align-items: center;
@@ -229,7 +249,7 @@ const ConnectedAccountsContainer = styled.div`
     &:first-child {
       margin-top: 0;
     }
-  }
+  } */
 
   .accountBlock {
     display: flex;
@@ -266,12 +286,10 @@ const ConnectedAccountsContainer = styled.div`
   }
 
   .nameUser {
-    padding-right: 14px;
-
     font-size: 14px;
     font-weight: 400;
     font-style: normal;
-    line-height: 100%;
+    line-height: 150%;
     color: var(--main-black) !important;
   }
 
@@ -406,8 +424,7 @@ const ConnectedAccountsContainer = styled.div`
   }
 
   .noAccounts {
-    height: calc(100% - 120px);
-    padding: 0 10px;
+    padding: 16px 10px 24px;
 
     h6 {
       font-size: 22px;
@@ -545,10 +562,11 @@ const ConnectedAccountsContainer = styled.div`
   }
 `
 
-export const ConnectedAccount: FC<{ loggedInAccountId: string; nearNetwork: NearNetworks }> = ({
-  loggedInAccountId,
-  nearNetwork,
-}) => {
+export const ConnectedAccount: FC<{
+  loggedInAccountId: string
+  nearNetwork: NearNetworks
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+}> = ({ loggedInAccountId, nearNetwork, trackingRefs }) => {
   const [contractNetwork, setContractNetwork] = useState<NearNetworks>()
   const [pairsToDisplay, setPairs] = useState<IConnectedAccountsPair[] | null>(null)
   // const [walletsForConnect, setWalletsForConnect] = useState<
@@ -765,7 +783,7 @@ export const ConnectedAccount: FC<{ loggedInAccountId: string; nearNetwork: Near
 
   const handleOpenPopup = async (account: IConnectedAccountUser) => {
     console.log('should handleOpenPopup')
-    changeCAStatus(account.name, account.origin) // ToDo: should open some popup
+    await changeCAStatus(account.name, account.origin) // ToDo: should open some popup
     // const { openConnectedAccountsPopup, getThisTab } = await initBGFunctions(browser)
     // const thisTab = await getThisTab()
     // try {
@@ -898,58 +916,71 @@ export const ConnectedAccount: FC<{ loggedInAccountId: string; nearNetwork: Near
                 })}
               >
                 {pairsToDisplay.map((x, i) => {
-                  const statusLabel =
-                    x.statusName === ConnectedAccountsPairStatus.Connected
-                      ? Ok
-                      : x.statusName === ConnectedAccountsPairStatus.Processing
-                        ? Time
-                        : Attention
-                  const areWallets = areConnectedAccountsUsersWallets(
-                    x.firstAccount,
-                    x.secondAccount
-                  )
-                  const canDisconnectWallets =
-                    walletsForDisconnect.length &&
-                    walletsForDisconnect.some((w) =>
-                      areSameAccounts(w, [x.firstAccount, x.secondAccount])
-                    )
+                  // const statusLabel =
+                  //   x.statusName === ConnectedAccountsPairStatus.Connected
+                  //     ? Ok
+                  //     : x.statusName === ConnectedAccountsPairStatus.Processing
+                  //       ? Time
+                  //       : Attention
+                  // const areWallets = areConnectedAccountsUsersWallets(
+                  //   x.firstAccount,
+                  //   x.secondAccount
+                  // )
+                  // const canDisconnectWallets =
+                  //   walletsForDisconnect.length &&
+                  //   walletsForDisconnect.some((w) =>
+                  //     areSameAccounts(w, [x.firstAccount, x.secondAccount])
+                  //   )
 
                   return (
-                    <div key={x.secondAccount.name + x.secondAccount.origin} className="mainBlock">
-                      <div className={cn('accountBlock', 'accountBlockVertical')}>
-                        <CAUserButton user={x.firstAccount} onClick={handleOpenPopup} />
-                        <CAUserButton user={x.secondAccount} onClick={handleOpenPopup} />
-                      </div>
-                      <div className="accountStatus">
-                        <div data-title={x.statusMessage}>
-                          <img
-                            src={String(statusLabel)}
-                            className={cn('statusLabel', {
-                              statusConnected:
-                                x.statusName === ConnectedAccountsPairStatus.Connected,
-                              statusProcessing:
-                                x.statusName === ConnectedAccountsPairStatus.Processing,
-                              statusError: x.statusName === ConnectedAccountsPairStatus.Error,
-                            })}
-                            alt={x.statusMessage}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleDisconnectAccounts(x)}
-                          className="buttonDelete"
-                          disabled={
-                            x.closeness > 1 ||
-                            (!areWallets &&
-                              x.statusName !== ConnectedAccountsPairStatus.Connected) ||
-                            (areWallets && !canDisconnectWallets)
-                          }
-                        >
-                          <Trash />
-                        </button>
-                      </div>
-                    </div>
+                    <CAListItem
+                      key={x.secondAccount.name + x.secondAccount.origin}
+                      user={x.secondAccount}
+                      onClick={handleOpenPopup}
+                      trackingRefs={trackingRefs}
+                      openListUp={
+                        (pairsToDisplay.length > 4 && i >= pairsToDisplay.length - 2) ||
+                        (pairsToDisplay.length === 3 && i === pairsToDisplay.length - 1)
+                      }
+                    />
                   )
+
+                  // return (
+                  //   <div key={x.secondAccount.name + x.secondAccount.origin} className="mainBlock">
+                  //     <div className={cn('accountBlock', 'accountBlockVertical')}>
+                  //       <CAUserButton user={x.firstAccount} onClick={handleOpenPopup} />
+                  //       <CAUserButton user={x.secondAccount} onClick={handleOpenPopup} />
+                  //     </div>
+                  //     {/* <div className="accountStatus">
+                  //       <div data-title={x.statusMessage}>
+                  //         <img
+                  //           src={String(statusLabel)}
+                  //           className={cn('statusLabel', {
+                  //             statusConnected:
+                  //               x.statusName === ConnectedAccountsPairStatus.Connected,
+                  //             statusProcessing:
+                  //               x.statusName === ConnectedAccountsPairStatus.Processing,
+                  //             statusError: x.statusName === ConnectedAccountsPairStatus.Error,
+                  //           })}
+                  //           alt={x.statusMessage}
+                  //         />
+                  //       </div>
+                  //       <button
+                  //         type="button"
+                  //         onClick={() => handleDisconnectAccounts(x)}
+                  //         className="buttonDelete"
+                  //         disabled={
+                  //           x.closeness > 1 ||
+                  //           (!areWallets &&
+                  //             x.statusName !== ConnectedAccountsPairStatus.Connected) ||
+                  //           (areWallets && !canDisconnectWallets)
+                  //         }
+                  //       >
+                  //         <Trash />
+                  //       </button>
+                  //     </div> */}
+                  //   </div>
+                  // )
                 })}
               </div>
             </div>

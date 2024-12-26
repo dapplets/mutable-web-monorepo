@@ -300,7 +300,7 @@ const _MiniOverlay: FC<
           modalContainerRef={overlayRef}
           disconnectWallet={disconnectWallet!}
           nearNetwork={nearNetwork!}
-          // trackingRefs={trackingRefs}
+          trackingRefs={trackingRefs}
           handleMutateButtonClick={handleMutateButtonClick}
         />
       </NotificationProvider>

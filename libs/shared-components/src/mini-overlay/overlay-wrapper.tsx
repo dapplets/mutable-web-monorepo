@@ -186,7 +186,7 @@ export interface IOverlayWrapperProps extends IWalletConnect {
   open: boolean
   loggedInAccountId: string
   modalContainerRef: RefObject<HTMLElement>
-  // trackingRefs?: Set<RefObject<HTMLDivElement>>
+  trackingRefs?: Set<RefObject<HTMLDivElement>>
   handleMutateButtonClick: () => void
 }
 
@@ -203,7 +203,7 @@ const OverlayWrapper: FC<
   disconnectWallet,
   nearNetwork,
   modalContainerRef,
-  // trackingRefs,
+  trackingRefs,
   handleMutateButtonClick,
 }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -280,6 +280,7 @@ const OverlayWrapper: FC<
                 navigate={navigate}
                 loggedInAccountId={loggedInAccountId}
                 nearNetwork={nearNetwork}
+                trackingRefs={trackingRefs}
               />
             ) : null}
           </Body>
