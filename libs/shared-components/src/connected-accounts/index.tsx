@@ -915,7 +915,7 @@ export const ConnectedAccount: FC<{ loggedInAccountId: string; nearNetwork: Near
                     )
 
                   return (
-                    <div key={i} className="mainBlock">
+                    <div key={x.secondAccount.name + x.secondAccount.origin} className="mainBlock">
                       <div className={cn('accountBlock', 'accountBlockVertical')}>
                         <CAUserButton user={x.firstAccount} onClick={handleOpenPopup} />
                         <CAUserButton user={x.secondAccount} onClick={handleOpenPopup} />
