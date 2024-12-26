@@ -583,7 +583,7 @@ export const ConnectedAccount: FC<{
   const [connectedAccountsListReceiver, setConnectedAccountsListReceiver] =
     useState<WalletDescriptorWithCAMainStatus | null>(null)
 
-  const { pairs, connectedAccountsNet } = useConnectedAccounts()
+  const { pairs } = useConnectedAccounts()
   // console.log('loggedInAccountId', loggedInAccountId)
   // console.log('nearNetwork', nearNetwork)
   // console.log('connectedAccountsNet', connectedAccountsNet)
@@ -689,7 +689,6 @@ export const ConnectedAccount: FC<{
     contractNetwork,
     loggedInAccountId,
     pairs,
-    connectedAccountsNet,
     abortController.signal.aborted,
     connectedAccountsListReceiver,
   ])
