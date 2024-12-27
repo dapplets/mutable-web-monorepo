@@ -32,12 +32,6 @@ export class NearSigner {
     })
   }
 
-  async getAccount(): Promise<Account | null> {
-    const wallet = await (await this._selector).wallet()
-    const accounts = await wallet.getAccounts()
-    return accounts[0] ?? null
-  }
-
   async getAccountId(): Promise<string | null> {
     const wallet = await (await this._selector).wallet()
     const accounts = await wallet.getAccounts()
