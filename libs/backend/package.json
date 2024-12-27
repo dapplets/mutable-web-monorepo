@@ -26,6 +26,7 @@
     "@mweb/core": "workspace:*",
     "@mweb/react": "workspace:*",
     "big.js": "^6.2.1",
+    "bn.js": "^5.2.1",
     "caching-decorator": "^1.0.3",
     "ethereum-blockies-base64": "^1.0.2",
     "js-sha256": "^0.11.0",

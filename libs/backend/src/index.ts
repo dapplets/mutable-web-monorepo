@@ -59,6 +59,8 @@ export { BosRedirectMap, getRedirectMap } from './services/dev-server-service'
 import { ApplicationService } from './services/application/application.service'
 import { TargetService } from './services/target/target.service'
 
+export { InMemoryStorage } from './services/local-db/in-memory-storage'
+
 export const utils = {
   isTargetMet: TargetService.isTargetMet.bind(TargetService),
   getRootContext: TargetService.getRootContext.bind(TargetService),
