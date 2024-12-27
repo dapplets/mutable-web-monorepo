@@ -1,9 +1,9 @@
 import React, { createContext } from 'react'
-import { ConnectedAccountService, IConnectedAccountsPair } from '@mweb/backend'
+import { ConnectedAccountsService, IConnectedAccountsPair } from '@mweb/backend'
 
 export interface ConnectedAccountsContextState
   extends Omit<
-    ConnectedAccountService,
+    ConnectedAccountsService,
     'contractName' | 'networkId' | 'nearSigner' | 'changeStatus' | 'getPairs' | 'getNet'
   > {
   pairs: IConnectedAccountsPair[] | null

@@ -48,7 +48,7 @@ export {
   ChainTypes,
   TConnectedAccountsVerificationRequestInfo,
 } from './services/connected-accounts/types'
-export { ConnectedAccountService } from './services/connected-accounts/connectedAccountService'
+export { ConnectedAccountsService } from './services/connected-accounts/connected-accounts.service'
 
 // ToDo: replace with DTO
 export { ParserConfig } from './services/parser-config/parser-config.entity'

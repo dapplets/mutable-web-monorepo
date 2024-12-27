@@ -1,7 +1,6 @@
 import makeBlockie from 'ethereum-blockies-base64'
 import * as nearAPI from 'near-api-js'
 // import * as EventBus from '../../common/global-event-bus'
-import { getNearConfig } from '../../config'
 import {
   ChainTypes,
   ConnectedAccountsPairStatus,
@@ -22,7 +21,7 @@ type EthSignature = {
   mc: boolean
 }
 
-export class ConnectedAccountService {
+export class ConnectedAccountsService {
   constructor(
     // private _globalConfigService: GlobalConfigService,
     // private _walletService: WalletService

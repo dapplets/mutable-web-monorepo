@@ -25,8 +25,7 @@ import { Notification } from './services/notification/notification.entity'
 import { Resolution } from './services/notification/resolution.entity'
 import { BaseLocalRepository } from './services/base/base-local.repository'
 import { BaseAggRepository } from './services/base/base-agg.repository'
-import { ConnectedAccountService } from './services/connected-accounts/connectedAccountService'
-import { NearNetworks } from './services/connected-accounts/types'
+import { ConnectedAccountsService } from './services/connected-accounts/connected-accounts.service'
 
 export type EngineConfig = {
   networkId: string
@@ -47,7 +46,7 @@ export class Engine {
   parserConfigService: ParserConfigService
   notificationService: NotificationService
   documentService: DocumentSerivce
-  connectedAccountsService: ConnectedAccountService
+  connectedAccountsService: ConnectedAccountsService
 
   constructor(public readonly config: EngineConfig) {
     if (!this.config.storage) {
@@ -141,7 +140,7 @@ export class Engine {
       unitOfWorkService,
       nearSigner
     )
-    this.connectedAccountsService = new ConnectedAccountService(
+    this.connectedAccountsService = new ConnectedAccountsService(
       nearSigner,
       nearConfig.connectedAccountsContractAddress
     )
