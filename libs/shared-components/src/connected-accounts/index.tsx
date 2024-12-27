@@ -844,7 +844,7 @@ export const ConnectedAccount: FC<{
   // }
 
   return (
-    <ConnectedAccountsContainer>
+    <ConnectedAccountsContainer data-testid="connected-accounts-module">
       {contractNetwork === NearNetworks.Testnet && (
         <div className="warningInfo">Connected Accounts are using a test network</div>
       )}

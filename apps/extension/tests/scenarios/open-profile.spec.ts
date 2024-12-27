@@ -1,6 +1,5 @@
 import { expect, test } from '../fixtures/browser'
 
-// ToDo: qase mw-1
 test('open Profile page through the button in Mini Overlay', async ({ page }) => {
   const url = 'https://github.com/dapplets/dapplet-extension/pull/217'
 

@@ -291,6 +291,7 @@ const Header: FC<IHeaderProps> = ({
           </ProfileInfo>
           <ProfileButton
             className={cn({ active: location.pathname === '/system/profile' })}
+            data-testid="profile-page-button"
             disabled={waiting}
             onClick={() => location.pathname !== '/system/profile' && navigate(`/system/profile`)}
           >
