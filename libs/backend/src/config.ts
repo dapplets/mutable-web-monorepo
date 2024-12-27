@@ -18,6 +18,7 @@ export type NearConfig = {
   defaultMutationId: string
   layoutManagers: BuiltInLayoutManagers
   timeReference: TimeReference
+  connectedAccountsContractAddress: string
 }
 
 export const NearConfigs: { [networkId: string]: NearConfig } = {
@@ -37,6 +38,7 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
       height: 134671239,
       avgBlockTime: 1091, // https://nearblocks.io/
     },
+    connectedAccountsContractAddress: 'connected-accounts.near',
   },
   testnet: {
     networkId: 'testnet',
@@ -54,6 +56,7 @@ export const NearConfigs: { [networkId: string]: NearConfig } = {
       height: 181770025,
       avgBlockTime: 1000, // https://testnet.nearblocks.io/
     },
+    connectedAccountsContractAddress: 'dev-1674551865700-67703371677231',
   },
 }
 

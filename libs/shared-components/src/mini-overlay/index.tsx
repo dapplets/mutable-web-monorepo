@@ -1,24 +1,24 @@
-import { EventEmitter as NEventEmitter } from 'events'
 import { AppWithSettings, MutationDto } from '@mweb/backend'
-import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactElement, useState, useRef, useEffect } from 'react'
-import Spinner from 'react-bootstrap/Spinner'
-import styled from 'styled-components'
-import { Image } from '../common/image'
-import { IWalletConnect } from './types'
-import { Drawer } from 'antd'
-import OverlayWrapper from './overlay-wrapper'
-import { MutationFallbackIcon, StopTopIcon, PlayCenterIcon, StopCenterIcon } from './assets/icons'
 import { NotificationProvider } from '@mweb/engine'
-import SidePanel from './side-panel'
+import { Drawer } from 'antd'
+import { EventEmitter as NEventEmitter } from 'events'
+import { useAccountId } from 'near-social-vm'
+import React, { FC, ReactElement, useEffect, useRef } from 'react'
+import Spinner from 'react-bootstrap/Spinner'
 import {
+  Location,
   MemoryRouter,
   Navigate,
   NavigateFunction,
   useLocation,
   useNavigate,
-  Location,
 } from 'react-router'
+import styled from 'styled-components'
+import { Image } from '../common/image'
+import { MutationFallbackIcon, PlayCenterIcon, StopCenterIcon, StopTopIcon } from './assets/icons'
+import OverlayWrapper from './overlay-wrapper'
+import SidePanel from './side-panel'
+import { IWalletConnect } from './types'
 
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;

@@ -1,4 +1,4 @@
-import { WalletSelector } from '@near-wallet-selector/core'
+import { Account, WalletSelector } from '@near-wallet-selector/core'
 import * as nearAPI from 'near-api-js'
 import { QueryResponseKind } from 'near-api-js/lib/providers/provider'
 import { KeyStorage } from '../social-db/key-storage'

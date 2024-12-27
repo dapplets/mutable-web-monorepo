@@ -24,3 +24,10 @@ export {
   useViewNotification,
   useHideNotification,
 } from './app/contexts/notification-context'
+export {
+  ConnectedAccountsProvider,
+  useConnectedAccounts,
+  useChangeCAStatus,
+  useGetCANet,
+  useGetCAPairs,
+} from './app/contexts/connected-accounts-context'

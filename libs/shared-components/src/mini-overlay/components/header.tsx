@@ -1,13 +1,16 @@
 import makeBlockie from 'ethereum-blockies-base64'
 import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { useOutside } from '../hooks/use-outside'
+// import { useOutside } from '../../hooks/use-outside'
 import {
   Connect as ConnectIcon,
   Copy as CopyIcon,
   Disconnect as DisconnectIcon,
-} from './assets/icons'
-import { IWalletConnect } from './types'
+  Person as PersonIcon,
+} from '../assets/icons'
+import { IWalletConnect } from '../types'
+import { Location, NavigateFunction } from 'react-router'
+import cn from 'classnames'
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -138,7 +141,7 @@ const ProfileNetwork = styled.span`
   }
 `
 
-const ButtonCopy = styled.button`
+const ProfileButton = styled.button`
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
@@ -150,47 +153,34 @@ const ButtonCopy = styled.button`
   padding: 0;
   outline: none;
   border: none;
-  background: #f8f9ff;
   border-radius: 50%;
   transition: all 0.15s ease;
-
-  svg {
-    rect {
-      transition: all 0.15s ease;
-    }
-    path {
-      transition: all 0.15s ease;
-    }
-  }
+  color: rgb(122, 129, 139);
+  background: rgb(248, 249, 255);
 
   &:hover {
-    svg {
-      rect {
-        fill: rgb(195 197 209);
-      }
-      path {
-        stroke: rgb(101 108 119);
-      }
-    }
+    color: rgb(101, 108, 119);
+    background-color: rgb(195, 197, 209);
   }
 
   &:active {
-    svg {
-      rect {
-        fill: rgb(173 175 187);
-      }
-      path {
-        stroke: rgb(84 90 101);
-      }
-    }
+    color: rgb(84, 90, 101);
+    background-color: rgb(173, 175, 187);
   }
 
   &:disabled {
     opacity: 0.7;
+    cursor: default;
+  }
+
+  &.active {
+    color: white !important;
+    background-color: rgb(56, 75, 255) !important;
+    cursor: default;
   }
 `
 
-const ButtonDisconnect = styled.button`
+const HeaderButton = styled.button`
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
@@ -202,9 +192,9 @@ const ButtonDisconnect = styled.button`
   padding: 0;
   outline: none;
   border: none;
-  background: #f8f9ff;
   border-radius: 50%;
   transition: all 0.15s ease;
+  background: #f8f9ff;
 
   svg {
     rect {
@@ -239,29 +229,34 @@ const ButtonDisconnect = styled.button`
 
   &:disabled {
     opacity: 0.7;
+    cursor: default;
   }
 `
 
 export interface IHeaderProps extends IWalletConnect {
   accountId: string | null
-  closeProfile: () => void
-  trackingRefs: Set<React.RefObject<HTMLDivElement>>
-  openCloseWalletPopupRef: React.RefObject<HTMLButtonElement>
+  navigate: NavigateFunction
+  location: Location<any>
+  // closeProfile: () => void
+  // trackingRefs: Set<RefObject<HTMLDivElement>>
+  // openCloseWalletPopupRef: RefObject<HTMLButtonElement>
 }
 
 const Header: FC<IHeaderProps> = ({
   accountId,
-  closeProfile,
+  // closeProfile,
   connectWallet,
   disconnectWallet,
   nearNetwork,
-  trackingRefs,
-  openCloseWalletPopupRef,
+  navigate,
+  location,
+  // trackingRefs,
+  // openCloseWalletPopupRef,
 }) => {
   const [waiting, setWaiting] = useState(false)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
-  useOutside(wrapperRef, closeProfile, trackingRefs, openCloseWalletPopupRef)
+  // useOutside(wrapperRef, closeProfile, trackingRefs, openCloseWalletPopupRef)
 
   const handleSignIn = async () => {
     setWaiting(true)
@@ -294,12 +289,20 @@ const Header: FC<IHeaderProps> = ({
               {nearNetwork === 'mainnet' ? 'NEAR-Mainnet' : 'NEAR-Testnet'}
             </ProfileNetwork>
           </ProfileInfo>
-          <ButtonCopy disabled={waiting} onClick={() => navigator.clipboard.writeText(accountId)}>
+          <ProfileButton
+            className={cn({ active: location.pathname === '/system/profile' })}
+            data-testid="profile-page-button"
+            disabled={waiting}
+            onClick={() => location.pathname !== '/system/profile' && navigate(`/system/profile`)}
+          >
+            <PersonIcon />
+          </ProfileButton>
+          <HeaderButton disabled={waiting} onClick={() => navigator.clipboard.writeText(accountId)}>
             <CopyIcon />
-          </ButtonCopy>
-          <ButtonDisconnect disabled={waiting} onClick={handleSignOut}>
+          </HeaderButton>
+          <HeaderButton disabled={waiting} onClick={handleSignOut}>
             <DisconnectIcon />
-          </ButtonDisconnect>
+          </HeaderButton>
         </>
       ) : (
         <>

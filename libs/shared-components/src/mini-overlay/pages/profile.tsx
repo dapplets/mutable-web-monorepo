@@ -1,13 +1,15 @@
+import { NearNetworks } from '@mweb/backend'
 import React, { FC } from 'react'
-import { Location, NavigateFunction } from 'react-router'
+import { NavigateFunction } from 'react-router'
 import styled from 'styled-components'
 import { ArrowIcon } from '../assets/icons'
+import { ConnectedAccount } from '../../connected-accounts'
 
 const ProfileContainer = styled.div`
-  width: calc(100% - 20px);
+  width: 100%;
   display: flex;
   flex-direction: column;
-  margin: 0 10px;
+  margin: 0;
   gap: 10px;
 `
 
@@ -16,6 +18,7 @@ const Header = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  margin: 0 10px;
 `
 
 const BackButton = styled.button`
@@ -42,6 +45,9 @@ const BackButton = styled.button`
 
 const H1 = styled.h1`
   margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  color: #02193a;
   font-size: 22px;
   font-weight: 600;
   line-height: 32.78px;
@@ -50,10 +56,12 @@ const H1 = styled.h1`
   text-decoration-skip-ink: none;
 `
 
-const Profile: FC<{ navigate: NavigateFunction; location: Location<any> }> = ({
-  navigate,
-  location,
-}) => {
+const Profile: FC<{
+  navigate: NavigateFunction
+  loggedInAccountId: string
+  nearNetwork: string
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+}> = ({ navigate, loggedInAccountId, nearNetwork, trackingRefs }) => {
   return (
     <ProfileContainer data-testid="profile-page">
       <Header>
@@ -62,12 +70,11 @@ const Profile: FC<{ navigate: NavigateFunction; location: Location<any> }> = ({
         </BackButton>
         <H1>Profile</H1>
       </Header>
-      <div>
-        <a href="https://github.com/dapplets/connecting-accounts-dapplet" target="_blank">
-          Connected Accounts
-        </a>{' '}
-        are coming back soon...
-      </div>
+      <ConnectedAccount
+        loggedInAccountId={loggedInAccountId}
+        nearNetwork={nearNetwork as NearNetworks}
+        trackingRefs={trackingRefs}
+      />
     </ProfileContainer>
   )
 }

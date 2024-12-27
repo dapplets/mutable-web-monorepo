@@ -1,6 +1,5 @@
 import { expect, test } from '../fixtures/browser'
 
-// ToDo: qase mw-1
 test('switch mutation', async ({ page }) => {
   const url = 'https://github.com/dapplets/dapplet-extension/pull/217'
   const sourceMutationId = 'bos.dapplets.near/mutation/Sandbox'
