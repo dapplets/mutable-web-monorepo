@@ -142,8 +142,8 @@ export class Engine {
       nearSigner
     )
     this.connectedAccountsService = new ConnectedAccountService(
-      this.config.networkId as NearNetworks,
-      nearSigner
+      nearSigner,
+      nearConfig.connectedAccountsContractAddress
     )
   }
 }

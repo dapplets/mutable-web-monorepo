@@ -23,15 +23,12 @@ type EthSignature = {
 }
 
 export class ConnectedAccountService {
-  private contractName: string
   constructor(
     // private _globalConfigService: GlobalConfigService,
     // private _walletService: WalletService
-    private networkId: NearNetworks,
-    private nearSigner: NearSigner
-  ) {
-    this.contractName = getNearConfig(this.networkId).connectedAccountsContractAddress
-  }
+    private nearSigner: NearSigner,
+    private contractName: string
+  ) {}
 
   // private _createContract = (near_account: nearAPI.Account, contractAddress: string) =>
   //   new nearAPI.Contract(near_account, contractAddress, {
