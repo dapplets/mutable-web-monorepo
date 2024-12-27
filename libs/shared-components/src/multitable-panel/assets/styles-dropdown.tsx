@@ -69,9 +69,11 @@ export const ButtonBack = styled.div`
   padding-bottom: 10px;
   padding-top: 10px;
   transition: all 0.2s ease;
+
   svg {
     margin-right: 5px;
   }
+
   &:hover {
     background: rgba(56, 75, 255, 0.1);
     border-radius: 4px;
@@ -94,47 +96,39 @@ export const ButtonMutation = styled.div`
   padding-bottom: 10px;
   padding-top: 10px;
   transition: all 0.2s ease;
+
   svg {
     margin-left: 5px;
   }
+
   &:hover {
     background: rgba(56, 75, 255, 0.1);
     border-radius: 4px;
   }
 `
 
-export const ListMutations = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  z-index: 1;
-`
-
 export const InputBlock = styled.div<{ isActive?: boolean }>`
   display: flex;
-
   padding: 2px 4px;
   cursor: pointer;
-
   align-items: center;
   width: 100%;
-
   color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   border-radius: 4px;
 
-  .inputMutation {
-    color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
-  }
-
   &:hover {
     background: #384bff;
+    color: #fff;
 
-    div,
-    span {
+    .inputMutation {
       color: #fff;
     }
 
+    .authorMutation {
+      color: #fff;
+    }
+
+    div,
     svg {
       fill: #fff;
 
@@ -142,6 +136,10 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
         stroke: #fff;
       }
     }
+  }
+
+  .inputMutation {
+    color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   }
 `
 export const InputIconWrapper = styled.div`
@@ -172,23 +170,20 @@ export const InputIconWrapper = styled.div`
 
 export const InputInfoWrapper = styled.div`
   display: flex;
-
   padding: 4px;
-  padding-left: 6px;
+  margin-left: 10px;
   cursor: pointer;
-
   position: relative;
-
   flex-direction: column;
   align-items: flex-start;
   flex: 1;
 
   .inputMutationSelected {
-    color: rgba(34, 34, 34, 1);
+    color: #fff;
   }
 
   .authorMutationSelected {
-    color: #384bff;
+    color: #fff;
   }
 `
 export const ImageBlock = styled.div`
@@ -206,6 +201,77 @@ export const ImageBlock = styled.div`
   }
 `
 
+export const ListMutations = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  z-index: 1;
+
+  .active-mutation {
+    background: #384bff;
+    color: #fff;
+
+    svg path {
+      stroke: #fff;
+      fill: #384bff;
+    }
+
+    &:hover {
+      background: #fff;
+      color: #384bff;
+
+      svg path {
+        stroke:  #384bff;
+        fill: #384bff;
+      }
+
+      .infoSelected{
+        .inputMutationSelected {
+          color:   #384bff;
+        }
+
+        .authorMutationSelected {
+          color:  #384bff;
+        }
+      }
+    
+        .mutation-version-dropdown {
+          background: rgba(56, 75, 255, 0.1);
+          color: #384bff;
+
+          svg path {
+            stroke: #384bff;
+          }
+        }
+    }
+`
+
+export const SpanStyled = styled.span<{ $isWhite?: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  top: 0;
+  cursor: pointer;
+  left: ${({ $isWhite }) => ($isWhite ? `0` : '-6px')};
+  justify-content: center;
+  padding: 2px 0;
+  padding-left: 4px;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  text-align: left;
+  color: #ffffff;
+  background: ${({ $isWhite }) => ($isWhite ? `#FFFFFF` : '#384bff')};
+
+  svg path {
+    stroke: ${({ $isWhite }) => ($isWhite ? ` #7a818b` : '#FFFFFF')};
+  }
+`
+
 export const AvalibleMutations = styled.div`
   width: 100%;
   background: #f8f9ff;
@@ -215,7 +281,6 @@ export const AvalibleMutations = styled.div`
   flex-direction: column;
   box-sizing: border-box;
   padding: 10px;
-  z-index: 1;
 
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);
@@ -236,6 +301,7 @@ export const AvalibleLableBlock = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
   .iconRotate {
     svg {
       transform: rotate(0deg);
@@ -257,6 +323,7 @@ export const AvalibleArrowBlock = styled.div`
   justify-content: space-between;
   transition: all 0.2s ease;
   cursor: pointer;
+
   svg {
     margin-left: 10px;
     transform: rotate(180deg);
@@ -276,8 +343,8 @@ export const InputMutation = styled.span`
 
   color: rgba(34, 34, 34, 0.6);
   white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
+  column-gap: 8px;
   width: 180px;
   display: inline-flex;
   align-items: center;

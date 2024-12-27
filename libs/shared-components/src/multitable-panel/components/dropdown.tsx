@@ -33,6 +33,7 @@ import {
 import { Badge } from './badge'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
+import { MutationVersionDropdown } from './mutation-version-dropdown'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -65,6 +66,8 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   } = useMutableWeb()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const [expandedVersion, setExpandedVersion] = useState(false)
+  const toggleDropdown = () => setExpandedVersion(!expandedVersion)
 
   const recentlyUsedMutations = useMemo(
     () =>
@@ -168,11 +171,26 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                         // fallbackUrl={defaultIcon}
                       />
                     </ImageBlock>
-                    <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
+                    <InputInfoWrapper
+                      className={mut.id === selectedMutation?.id ? 'infoSelected' : 'info'}
+                      onClick={() => handleMutationClick(mut.id)}
+                    >
                       {/* todo: mocked classname */}
+
                       <InputMutation
-                        className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
+                        className={
+                          mut.id === selectedMutation?.id
+                            ? 'inputMutationSelected'
+                            : 'authorMutation'
+                        }
                       >
+                        {mut.id === selectedMutation?.id ? (
+                          <MutationVersionDropdown
+                            expanded={expandedVersion}
+                            toggleDropdown={toggleDropdown}
+                            mutationId={selectedMutation.id}
+                          />
+                        ) : null}
                         {mut.metadata ? mut.metadata.name : ''}{' '}
                         {recentlyUsedMutations[mut.id]?.length === 2 ? (
                           mut.source === EntitySourceType.Local ? (
@@ -188,9 +206,9 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       {mut.authorId ? (
                         <AuthorMutation
                           className={
-                            mut.id === selectedMutation?.id && mut.id === favoriteMutationId
+                            mut.id === selectedMutation?.id
                               ? 'authorMutationSelected'
-                              : ''
+                              : 'authorMutation'
                           }
                         >
                           by {mut.authorId}
