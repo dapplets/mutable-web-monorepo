@@ -1,7 +1,7 @@
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import { useDeleteLocalMutation, useMutableWeb } from '@mweb/engine'
-import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
+import React, { DetailedHTMLProps, FC, HTMLAttributes, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import {
   AuthorMutation,
@@ -33,6 +33,7 @@ import {
 import { Badge } from './badge'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
+import { log } from 'console'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -66,24 +67,32 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
 
-  const recentlyUsedMutations = useMemo(
-    () =>
-      Object.groupBy(
-        mutations
-          .filter((mut) => mut.settings.lastUsage)
-          .sort((a, b) => {
-            const dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
-            const dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
+  const recentlyUsedMutations = useMemo(() => {
+    let sortedMutations = mutations
+      .filter((mut) => mut.settings.lastUsage)
+      .sort((a, b) => {
+        let dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
+        let dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
 
-            if (!dateA) return 1
-            if (!dateB) return -1
+        if (!dateA) return 1
+        if (!dateB) return -1
 
-            return dateB - dateB
-          }),
-        (mut) => mut.id
-      ),
-    [mutations]
-  )
+        if (a.source === EntitySourceType.Local && b.source !== EntitySourceType.Local) return -1
+        if (b.source === EntitySourceType.Local && a.source !== EntitySourceType.Local) return 1
+
+        return dateB - dateA
+      })
+
+    if (sortedMutations.length > 5) {
+      const excessMutations = sortedMutations.slice(5)
+      excessMutations.forEach((mut) => {
+        removeMutationFromRecents(mut.id)
+      })
+      sortedMutations = sortedMutations.slice(0, 5)
+    }
+
+    return Object.groupBy(sortedMutations, (mut) => mut.id)
+  }, [mutations])
 
   const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(
     Object.keys(recentlyUsedMutations).length === 0
