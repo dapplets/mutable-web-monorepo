@@ -18,7 +18,7 @@
     "build:crawler-backend": "turbo run build --filter=@mweb/crawler-backend",
     "build:crawler-dashboard": "turbo run build --filter=@mweb/crawler-dashboard",
     "dev": "turbo run dev --concurrency 11",
-    "dev:extension": "turbo run dev --concurrency 7 --filter=!@mweb/gateway --filter=!@mweb/crawler-economy --filter=!@mweb/crawler-backend --filter=!@mweb/crawler-dashboard --filter=!@mweb/crawler-extension",
+    "dev:extension": "turbo run dev --concurrency 7 --filter=!@mweb/gateway --filter=!@mweb/crawler-economy --filter=!@mweb/crawler-backend --filter=!@mweb/crawler-dashboard --filter=!@mweb/crawler-extension --filter=!@mweb/crawler-sdk",
     "clean": "turbo run clean",
     "autoclave": "rimraf libs/**/dist && rimraf libs/**/lib && rimraf libs/**/node_modules && rimraf libs/**/coverage && rimraf libs/**/.turbo && rimraf apps/**/dist && rimraf apps/**/lib && rimraf apps/**/node_modules && rimraf apps/**/coverage && rimraf apps/**/build && rimraf apps/**/.turbo && rm -rf node_modules",
     "test": "turbo run test",
