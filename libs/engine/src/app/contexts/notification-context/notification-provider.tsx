@@ -6,7 +6,7 @@ import { NotificationContext, NotificationContextState } from './notification-co
 type Props = {
   engine: Engine
   children?: ReactNode
-  recipientId: string
+  recipientId: string | null
 }
 
 const NotificationProvider: FC<Props> = ({ engine, children, recipientId }) => {
@@ -16,7 +16,10 @@ const NotificationProvider: FC<Props> = ({ engine, children, recipientId }) => {
     isLoading,
     error,
   } = useQueryArray<NotificationDto>({
-    query: () => engine.notificationService.getMyNotifications(recipientId),
+    query: () =>
+      recipientId
+        ? engine.notificationService.getMyNotifications(recipientId)
+        : Promise.resolve([]),
     deps: [engine, recipientId],
   })
 

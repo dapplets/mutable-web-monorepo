@@ -27,3 +27,5 @@ test-results
 typedoc-docs/
 
 build
+
+dependency-graph.svg

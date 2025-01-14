@@ -30,10 +30,9 @@ const Loader = () => (
 )
 
 const MultitablePanel: FC<{
-  loggedInAccountId: string
   connectWallet: (() => Promise<void>) | undefined
   handleMutateButtonClick: () => void
-}> = ({ loggedInAccountId, connectWallet, handleMutateButtonClick }) => {
+}> = ({ connectWallet, handleMutateButtonClick }) => {
   const [isWaiting, setWaiting] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 

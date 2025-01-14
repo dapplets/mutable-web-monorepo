@@ -4,7 +4,9 @@ import { AppSwitcher, MiniOverlay } from '@mweb/shared-components'
 import React from 'react'
 import Background from '../../common/background'
 import { NearNetworkId } from '../../common/networks'
+import { useAccountId } from 'near-social-vm'
 
+// ToDo: move to shared components?
 function AppSwitcherContainer({ app }: { app: AppInstanceWithSettings }) {
   const { enableApp, disableApp, isLoading } = useMutationApp(app.instanceId)
   return (
@@ -25,20 +27,23 @@ function MutableOverlayContainer({
   open: boolean
   handleMutateButtonClick: () => void
 }) {
+  const loggedInAccountId = useAccountId()
   const { selectedMutation, mutationApps } = useMutableWeb()
   const trackingRefs = new Set<React.RefObject<HTMLDivElement>>()
   trackingRefs.add(notchRef)
+
   return (
     <MiniOverlay
       setOpen={setOpen}
       open={open}
+      trackingRefs={trackingRefs}
       baseMutation={selectedMutation}
       mutationApps={mutationApps}
       nearNetwork={networkId}
-      connectWallet={Background.connectWallet}
-      disconnectWallet={Background.disconnectWallet}
-      trackingRefs={trackingRefs}
-      handleMutateButtonClick={handleMutateButtonClick}
+      loggedInAccountId={loggedInAccountId}
+      onConnectWallet={Background.connectWallet}
+      onDisconnectWallet={Background.disconnectWallet}
+      onMutateButtonClick={handleMutateButtonClick}
     >
       <>
         {mutationApps.map((app) => (

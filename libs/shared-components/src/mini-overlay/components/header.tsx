@@ -9,7 +9,7 @@ import {
   Person as PersonIcon,
 } from '../assets/icons'
 import { IWalletConnect } from '../types'
-import { Location, NavigateFunction } from 'react-router'
+import { Location, NavigateFunction, useLocation, useNavigate } from 'react-router'
 import cn from 'classnames'
 
 const HeaderWrapper = styled.div`
@@ -235,8 +235,6 @@ const HeaderButton = styled.button`
 
 export interface IHeaderProps extends IWalletConnect {
   accountId: string | null
-  navigate: NavigateFunction
-  location: Location<any>
   // closeProfile: () => void
   // trackingRefs: Set<RefObject<HTMLDivElement>>
   // openCloseWalletPopupRef: RefObject<HTMLButtonElement>
@@ -245,14 +243,15 @@ export interface IHeaderProps extends IWalletConnect {
 const Header: FC<IHeaderProps> = ({
   accountId,
   // closeProfile,
-  connectWallet,
-  disconnectWallet,
+  onConnectWallet: connectWallet,
+  onDisconnectWallet: disconnectWallet,
   nearNetwork,
-  navigate,
-  location,
   // trackingRefs,
   // openCloseWalletPopupRef,
 }) => {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   const [waiting, setWaiting] = useState(false)
 
   const wrapperRef = useRef<HTMLDivElement>(null)

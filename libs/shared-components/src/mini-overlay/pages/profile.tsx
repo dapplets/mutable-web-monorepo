@@ -1,6 +1,6 @@
 import { NearNetworks } from '@mweb/backend'
 import React, { FC } from 'react'
-import { NavigateFunction } from 'react-router'
+import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { ArrowIcon } from '../assets/icons'
 import { ConnectedAccount } from '../../connected-accounts'
@@ -57,11 +57,14 @@ const H1 = styled.h1`
 `
 
 const Profile: FC<{
-  navigate: NavigateFunction
-  loggedInAccountId: string
+  loggedInAccountId: string | null
   nearNetwork: string
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-}> = ({ navigate, loggedInAccountId, nearNetwork, trackingRefs }) => {
+}> = ({ loggedInAccountId, nearNetwork, trackingRefs }) => {
+  const navigate = useNavigate()
+
+  // ToDo: loggedInAccountId null
+
   return (
     <ProfileContainer data-testid="profile-page">
       <Header>
@@ -70,11 +73,13 @@ const Profile: FC<{
         </BackButton>
         <H1>Profile</H1>
       </Header>
-      <ConnectedAccount
-        loggedInAccountId={loggedInAccountId}
-        nearNetwork={nearNetwork as NearNetworks}
-        trackingRefs={trackingRefs}
-      />
+      {loggedInAccountId ? (
+        <ConnectedAccount
+          loggedInAccountId={loggedInAccountId}
+          nearNetwork={nearNetwork as NearNetworks}
+          trackingRefs={trackingRefs}
+        />
+      ) : null}
     </ProfileContainer>
   )
 }

@@ -1,12 +1,8 @@
 import { Button, Drawer, Space, Typography } from 'antd'
-import React, { FC, RefObject, useRef } from 'react'
-import { Location, NavigateFunction } from 'react-router'
+import React, { FC, useRef } from 'react'
 import styled from 'styled-components'
 import { Close as CloseIcon, Logo as LogoIcon } from './assets/icons'
-import Header from './components/header'
-import Main from './pages/main'
-import Profile from './pages/profile'
-import { IWalletConnect } from './types'
+
 const { Title } = Typography
 
 const OverlayWrapperBlock = styled.div<{ $isApps: boolean }>`
@@ -180,46 +176,15 @@ const Body = styled.div`
   }
 `
 
-export interface IOverlayWrapperProps extends IWalletConnect {
+export interface IOverlayWrapperProps {
   apps: boolean
   onClose: () => void
   open: boolean
-  loggedInAccountId: string
-  modalContainerRef: RefObject<HTMLElement>
-  trackingRefs?: Set<RefObject<HTMLDivElement>>
-  handleMutateButtonClick: () => void
+  children: React.ReactNode
 }
 
-const OverlayWrapper: FC<
-  IOverlayWrapperProps & { navigate: NavigateFunction; location: Location<any> }
-> = ({
-  navigate,
-  location,
-  apps,
-  onClose,
-  open,
-  loggedInAccountId,
-  connectWallet,
-  disconnectWallet,
-  nearNetwork,
-  modalContainerRef,
-  trackingRefs,
-  handleMutateButtonClick,
-}) => {
+const OverlayWrapper: FC<IOverlayWrapperProps> = ({ apps, onClose, open, children }) => {
   const overlayRef = useRef<HTMLDivElement>(null)
-  // const [waiting, setWaiting] = useState(false)
-  // const [isProfileOpen, openCloseProfile] = useState(false)
-  // const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
-  // const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
-
-  // const handleSignIn = async () => {
-  //   setWaiting(true)
-  //   try {
-  //     await connectWallet()
-  //   } finally {
-  //     setWaiting(false)
-  //   }
-  // }
 
   return (
     <OverlayWrapperBlock $isApps={apps}>
@@ -252,38 +217,7 @@ const OverlayWrapper: FC<
           }}
           width={360}
         >
-          <Body ref={overlayRef}>
-            <Header
-              accountId={loggedInAccountId ?? null}
-              // closeProfile={() => {
-              //   openCloseProfile(false)
-              // }}
-              connectWallet={connectWallet!}
-              disconnectWallet={disconnectWallet}
-              nearNetwork={nearNetwork}
-              navigate={navigate}
-              location={location}
-              // trackingRefs={trackingRefs!}
-              // openCloseWalletPopupRef={openCloseWalletPopupRef}
-            />
-            {location.pathname === '/system/main' ? (
-              <Main
-                loggedInAccountId={loggedInAccountId}
-                modalContainerRef={modalContainerRef}
-                handleMutateButtonClick={handleMutateButtonClick}
-                onClose={onClose}
-                connectWallet={connectWallet}
-              />
-            ) : null}
-            {location.pathname === '/system/profile' ? (
-              <Profile
-                navigate={navigate}
-                loggedInAccountId={loggedInAccountId}
-                nearNetwork={nearNetwork}
-                trackingRefs={trackingRefs}
-              />
-            ) : null}
-          </Body>
+          <Body ref={overlayRef}>{children}</Body>
         </Drawer>
       </OverlayContent>
     </OverlayWrapperBlock>

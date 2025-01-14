@@ -12,24 +12,23 @@ const MainContainer = styled.div`
 `
 
 export interface IMainProps {
-  loggedInAccountId: string
+  loggedInAccountId: string | null
   modalContainerRef: React.RefObject<HTMLElement>
-  handleMutateButtonClick: () => void
-  onClose: () => void
+  onMutateButtonClick: () => void
+  onCloseOverlay: () => void
   connectWallet: () => Promise<void>
 }
 const Main: FC<IMainProps> = ({
   loggedInAccountId,
   modalContainerRef,
-  handleMutateButtonClick,
-  onClose,
+  onMutateButtonClick: handleMutateButtonClick,
+  onCloseOverlay: onClose,
   connectWallet,
 }) => {
   return (
     <MainContainer data-testid="main-page">
       <MultitablePanel
         connectWallet={connectWallet}
-        loggedInAccountId={loggedInAccountId}
         handleMutateButtonClick={handleMutateButtonClick}
       />
       {loggedInAccountId ? (
