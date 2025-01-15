@@ -1,4 +1,4 @@
-import { AppWithSettings, MutationDto } from '@mweb/backend'
+import { AppInstanceWithSettings, AppWithSettings, MutationDto } from '@mweb/backend'
 import { NotificationProvider, useMutableWeb } from '@mweb/engine'
 import { Drawer } from 'antd'
 import React, { FC, ReactElement, useRef } from 'react'
@@ -44,8 +44,7 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
 interface IMiniOverlayProps extends IWalletConnect {
   loggedInAccountId: string | null
   baseMutation: MutationDto | null
-  mutationApps: AppWithSettings[]
-  children: ReactElement
+  mutationApps: AppInstanceWithSettings[]
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   open: boolean
@@ -59,7 +58,6 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   onDisconnectWallet: disconnectWallet,
   loggedInAccountId,
   nearNetwork,
-  children,
   trackingRefs,
   setOpen,
   open,
@@ -102,9 +100,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
               trackingRefs={trackingRefs}
               isOverlayOpened={open}
               openOverlay={setOpen}
-            >
-              {children}
-            </UberSausage>
+            />
           </Drawer>
 
           <OverlayWrapper apps={mutationApps.length > 0} onClose={handleCloseOverlay} open={open}>

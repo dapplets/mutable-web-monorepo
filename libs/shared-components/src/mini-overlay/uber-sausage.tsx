@@ -1,4 +1,9 @@
-import { AppWithSettings, EntitySourceType, MutationDto } from '@mweb/backend'
+import {
+  AppInstanceWithSettings,
+  AppWithSettings,
+  EntitySourceType,
+  MutationDto,
+} from '@mweb/backend'
 import { useNotifications } from '@mweb/engine'
 import { Button } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
@@ -14,6 +19,7 @@ import {
   PersonAddAlt,
 } from './assets/icons'
 import { IWalletConnect } from './types'
+import { AppSwitcher } from './app-switcher'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
@@ -211,9 +217,8 @@ const ButtonOpenWrapper = styled.div`
 `
 
 interface ISidePanelProps extends Partial<IWalletConnect> {
-  children: React.ReactNode
   baseMutation: MutationDto | null
-  mutationApps: AppWithSettings[]
+  mutationApps: AppInstanceWithSettings[]
   loggedInAccountId?: string | null
   overlayRef: React.RefObject<HTMLDivElement>
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
@@ -222,7 +227,6 @@ interface ISidePanelProps extends Partial<IWalletConnect> {
 }
 
 const UberSausage: React.FC<ISidePanelProps> = ({
-  children,
   nearNetwork,
   onConnectWallet: connectWallet,
   onDisconnectWallet: disconnectWallet,
@@ -319,7 +323,11 @@ const UberSausage: React.FC<ISidePanelProps> = ({
             />
           ) : (
             <div style={{ display: 'flex', direction: 'rtl' }}>
-              <AppsWrapper>{children}</AppsWrapper>
+              <AppsWrapper>
+                {mutationApps.map((app) => (
+                  <AppSwitcher key={`${app.id}/${app.instanceId}`} app={app} />
+                ))}
+              </AppsWrapper>
             </div>
           )}
           <ButtonOpenWrapper
