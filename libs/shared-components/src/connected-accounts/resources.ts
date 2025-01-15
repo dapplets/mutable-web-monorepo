@@ -11,6 +11,12 @@ export interface Resources {
 }
 
 export const resources: Resources = {
+  x: {
+    title: 'X',
+    type: 'social',
+    icon: XIcon,
+    proofUrl: (name) => 'https://x.com/' + name,
+  },
   twitter: {
     title: 'X',
     type: 'social',

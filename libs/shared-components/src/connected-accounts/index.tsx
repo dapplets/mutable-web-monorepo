@@ -5,7 +5,7 @@ import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import useAbortController from '../hooks/use-abort-controller'
 // import { Attention, Ok, Time, Trash } from './assets/icons'
-import { CAListItem } from './connected-account-list-item'
+import CAListItem from './connected-account-list-item'
 // import { DropdownCAListReceiver } from './dropdown-ca-list-receiver'
 import {
   ConnectedAccountsPairStatus,
@@ -15,6 +15,7 @@ import {
   WalletDescriptorWithCAMainStatus,
 } from '@mweb/backend'
 import { useChangeCAStatus, useConnectedAccounts } from '@mweb/engine'
+import ConnectModule from './connect-module'
 import { Message } from './message'
 import { resources } from './resources'
 import { TabLoader } from './tab-loader'
@@ -27,6 +28,8 @@ const ConnectedAccountsContainer = styled.div`
   --pure-white: #fff;
   --main-black: #02193a;
   --content-black: #747376;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
   * {
     margin: 0;
@@ -48,24 +51,6 @@ const ConnectedAccountsContainer = styled.div`
   a:focus,
   a:active {
     outline: none;
-  }
-
-  nav,
-  footer,
-  header,
-  aside {
-    display: block;
-  }
-
-  html,
-  body {
-    width: 100%;
-    height: 100%;
-
-    font-size: 100%;
-    font-size: 14px;
-    line-height: 1;
-    text-size-adjust: 100%;
   }
 
   input,
@@ -147,8 +132,7 @@ const ConnectedAccountsContainer = styled.div`
     padding: 10px;
     padding-left: 0;
     background: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-      'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font);
     box-shadow:
       0px 4px 20px 0px #0b576f26,
       0px 4px 5px 0px #2d343c1a;
@@ -582,6 +566,7 @@ export const ConnectedAccount: FC<{
   >()
   const [connectedAccountsListReceiver, setConnectedAccountsListReceiver] =
     useState<WalletDescriptorWithCAMainStatus | null>(null)
+  const [showConnectModule, setShowConnectModule] = useState(true) // ToDo: remove mock data
 
   const { pairs } = useConnectedAccounts()
   // console.log('loggedInAccountId', loggedInAccountId)
@@ -848,6 +833,7 @@ export const ConnectedAccount: FC<{
       {contractNetwork === NearNetworks.Testnet && (
         <div className="warningInfo">Connected Accounts are using a test network</div>
       )}
+      {showConnectModule && <ConnectModule setShowConnectModule={setShowConnectModule} />}
       {/* <div className="caHeaderTop">
         <h3>Accounts connected to:</h3>
       </div> */}

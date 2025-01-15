@@ -5,5 +5,6 @@ import Ok from './ok'
 import Time from './time'
 import Trash from './trash'
 import MoreHoriz from './more-horiz'
+import Link from './link'
 
-export { Copy16, Arrow01, Ok, Time, Trash, Attention, MoreHoriz }
+export { Copy16, Arrow01, Ok, Time, Trash, Attention, MoreHoriz, Link }
