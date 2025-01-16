@@ -17,6 +17,15 @@ const Button = styled.button`
   padding: 1px 8px !important;
   gap: 6px;
   border-radius: 7px !important;
+  transition: var(--transition-default);
+
+  &:hover {
+    background: var(--primary-hover);
+  }
+
+  &:active {
+    background: var(--primary-pressed);
+  }
 `
 
 type LinkButtonProps = {

@@ -12,7 +12,7 @@ const Wrapper = styled.div`
   padding: 10px !important;
   gap: 10px;
   border-radius: 10px !important;
-  background: #ffffff;
+  background: var(--pure-white);
   box-shadow:
     0px 4px 20px 0px #0b576f26,
     0px 4px 5px 0px #2d343c1a;
@@ -26,7 +26,7 @@ const Header = styled.div`
 `
 
 const H3 = styled.h3`
-  font-family: var(--font);
+  font-family: var(--font-default);
   color: var(--primary);
   font-size: 14px !important;
   font-weight: 600 !important;
@@ -41,11 +41,21 @@ const ButtonClose = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--gray);
+  transition: var(--transition-default);
+
+  &:hover {
+    color: var(--gray-hover);
+  }
+
+  &:active {
+    color: var(--gray-active);
+  }
 `
 
 const Text = styled.p`
-  font-family: var(--font);
-  color: #7a818b;
+  font-family: var(--font-default);
+  color: var(--gray);
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 150%;

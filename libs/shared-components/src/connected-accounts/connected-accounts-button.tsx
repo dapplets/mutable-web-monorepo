@@ -8,12 +8,6 @@ import { GithubIcon, XIcon } from './assets/resources/social'
 import { resources } from './resources'
 
 const CAUserButtonWrapper = styled.div`
-  --primary: rgba(56, 75, 255, 1);
-  --primary-pressed: rgba(56, 75, 255, 0.4);
-  --pure-white: #fff;
-  --web-bg: #eaf0f0;
-  --main-black: #02193a;
-
   position: relative;
   display: flex;
   align-items: center;

@@ -235,7 +235,11 @@ const OverlayWrapper: FC<
                 <Title style={{ userSelect: 'none' }} level={3}>
                   <LogoIcon /> Mutable Web
                 </Title>
-                <Button type="text" onClick={onClose}>
+                <Button
+                  type="primary"
+                  style={{ background: 'none', boxShadow: 'none' }}
+                  onClick={onClose}
+                >
                   <CloseIcon />
                 </Button>
               </Space>

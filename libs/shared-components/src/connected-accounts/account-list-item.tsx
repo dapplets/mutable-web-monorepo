@@ -4,12 +4,6 @@ import styled from 'styled-components'
 import { resources } from './resources'
 
 const AccountListItemWrapper = styled.div`
-  --primary: rgba(56, 75, 255, 1);
-  --primary-pressed: rgba(56, 75, 255, 0.4);
-  --pure-white: #fff;
-  --web-bg: #eaf0f0;
-  --main-black: #02193a;
-
   position: relative;
   display: flex;
   align-items: center;
@@ -17,9 +11,8 @@ const AccountListItemWrapper = styled.div`
   height: auto;
   padding: 4px 10px !important;
   border-radius: 12px;
-  background-color: rgb(248, 249, 255);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  background-color: var(--muddy-white);
+  font-family: var(--font-default);
 
   &.pointer {
     cursor: pointer;
@@ -55,7 +48,7 @@ const AccountListItemWrapper = styled.div`
   &.info .imgUser svg {
     width: 22px;
     height: 22px;
-    fill: #636363;
+    fill: rgb(99, 99, 99);
   }
 
   .nameUser {
@@ -70,7 +63,7 @@ const AccountListItemWrapper = styled.div`
 
   &.info .nameUser {
     width: calc(100% - 22px);
-    color: #636363;
+    color: rgb(99, 99, 99);
     word-wrap: break-word;
   }
 
@@ -85,12 +78,12 @@ const AccountListItemWrapper = styled.div`
   .mainAccount {
     display: flex;
     align-items: center;
-    border: #7a818b solid 1px;
+    border: 1px solid var(--gray);
     border-radius: 6px;
     padding: 0 4px;
     font-size: 12px;
     line-height: 136%;
-    color: #5e646d;
+    color: var(--gray-hover);
   }
 
   .copyButton {
@@ -102,30 +95,30 @@ const AccountListItemWrapper = styled.div`
     height: 20px;
     border-radius: 50%;
     background: none;
-    color: #7a818b;
+    color: var(--gray);
     transition: all 0.15s ease;
 
     &:hover {
-      color: #6e757e;
-      background-color: #dae1ea;
+      color: var(--gray-hover);
+      background-color: rgb(218, 225, 234);
     }
 
     &:active {
-      color: #5e646d;
-      background-color: #c9d2dd;
+      color: var(--gray-active);
+      background-color: rgb(201, 210, 221);
     }
 
     &:disabled {
       cursor: default;
-      color: #c9d2dd;
+      color: rgb(201, 210, 221);
 
       &:hover {
-        color: #c9d2dd;
+        color: rgb(201, 210, 221);
         background: none;
       }
 
       &:active {
-        color: #c9d2dd;
+        color: rgb(201, 210, 221);
         background: none;
       }
     }
@@ -137,11 +130,11 @@ const AccountListItemWrapper = styled.div`
     right: 6px;
     z-index: 1;
     padding: 8px;
-    background: white;
+    background: var(--pure-white);
     border-radius: 8px;
     box-shadow:
-      0px 4px 20px 0px #0b576f26,
-      0px 4px 5px 0px #2d343c1a;
+      0px 4px 20px 0px rgba(11, 87, 111, 0.149),
+      0px 4px 5px 0px rgba(45, 52, 60, 0.102);
 
     &.openListUp {
       top: unset;
@@ -156,11 +149,11 @@ const AccountListItemWrapper = styled.div`
       transition: color 0.1s ease;
 
       :hover {
-        color: #4096ff;
+        color: var(--primary-hover);
       }
 
       :active {
-        color: #0958d9;
+        color: var(--primary-pressed);
       }
     }
   }

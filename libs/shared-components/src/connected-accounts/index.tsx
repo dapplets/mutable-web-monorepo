@@ -21,15 +21,27 @@ import { resources } from './resources'
 import { TabLoader } from './tab-loader'
 
 const ConnectedAccountsContainer = styled.div`
-  --primary: rgba(56, 75, 255, 1);
-  --primary-pressed: rgba(56, 75, 255, 0.5);
-  --main-grey: #919191;
-  --web-bg: #eaf0f0;
-  --pure-white: #fff;
-  --main-black: #02193a;
-  --content-black: #747376;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --primary: rgb(56, 75, 255);
+  --primary-hover: rgb(36, 55, 235);
+  --primary-pressed: rgb(16, 35, 215);
+
+  --main-grey: rgb(145, 145, 145);
+  --content-black: rgb(116, 115, 118);
+
+  --gray: rgb(122, 129, 139);
+  --gray-hover: rgb(69, 71, 75);
+  --gray-active: rgb(21, 21, 22);
+
+  --pure-white: white;
+  --muddy-white: rgb(248, 249, 255);
+  --web-bg: rgb(234, 240, 240);
+
+  --pure-black: black;
+  --main-black: rgb(2, 25, 58);
+
+  --font-default: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --transition-default: all 0.1s ease;
 
   * {
     margin: 0;
@@ -132,7 +144,7 @@ const ConnectedAccountsContainer = styled.div`
     padding: 10px;
     padding-left: 0;
     background: #fff;
-    font-family: var(--font);
+    font-family: var(--font-default);
     box-shadow:
       0px 4px 20px 0px #0b576f26,
       0px 4px 5px 0px #2d343c1a;
