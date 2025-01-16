@@ -111,11 +111,9 @@ const DragIcon = () => (
   </svg>
 )
 
-interface MultitablePanelProps {
-  eventEmitter: NEventEmitter
-}
+interface MultitablePanelProps {}
 
-export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
+export const MultitablePanel: FC<MultitablePanelProps> = () => {
   const { mutations, selectedMutation, config } = useMutableWeb()
   const { applications: allApps } = useApplications()
   const [isOverlayOpened, setIsOverlayOpened] = useState(false)
@@ -133,15 +131,15 @@ export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
     return () => clearTimeout(timer)
   }, [isPin])
 
-  useEffect(() => {
-    const openMutationPopupCallback = () => {
-      setIsModalOpen(true)
-    }
-    eventEmitter.on('openMutationPopup', openMutationPopupCallback)
-    return () => {
-      eventEmitter.off('openMutationPopup', openMutationPopupCallback)
-    }
-  }, [eventEmitter])
+  // useEffect(() => {
+  //   const openMutationPopupCallback = () => {
+  //     setIsModalOpen(true)
+  //   }
+  //   eventEmitter.on('openMutationPopup', openMutationPopupCallback)
+  //   return () => {
+  //     eventEmitter.off('openMutationPopup', openMutationPopupCallback)
+  //   }
+  // }, [eventEmitter])
 
   const handleStartDrag = () => {
     setIsDragging(true)

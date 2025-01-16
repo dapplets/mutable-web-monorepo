@@ -6,6 +6,9 @@ import { DefaultNetworkId, NearNetworkId, networkConfigs } from '../common/netwo
 import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
+import { EventEmitter as NEventEmitter } from 'events'
+
+const eventEmitter = new NEventEmitter()
 
 const getCurrentNetwork = async (): Promise<NearNetworkId> => {
   // @ts-ignore
@@ -40,18 +43,10 @@ const connectWallet = async (): Promise<void> => {
   const accounts = await near.signIn(params)
 
   // send events to all tabs
-  browser.tabs.query({}).then((tabs) =>
-    tabs.map((tab) => {
-      if (!tab.id) return
-      browser.tabs.sendMessage(tab.id, {
-        type: 'SIGNED_IN',
-        params: {
-          ...params,
-          accounts,
-        },
-      })
-    })
-  )
+  eventEmitter.emit('signedIn', {
+    ...params,
+    accounts,
+  })
 
   updateMenuForConnectedState(accounts[0].accountId)
 }
@@ -60,12 +55,8 @@ const disconnectWallet = async (): Promise<void> => {
   await near.signOut()
 
   // send events to all tabs
-  browser.tabs.query({}).then((tabs) =>
-    tabs.map((tab) => {
-      if (!tab.id) return
-      browser.tabs.sendMessage(tab.id, { type: 'SIGNED_OUT' })
-    })
-  )
+  eventEmitter.emit('signedOut')
+
   updateMenuForDisconnectedState()
 }
 
@@ -300,3 +291,20 @@ browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))
 // Allows users to open the side panel by clicking on the action toolbar icon
 // @ts-ignore
 browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error)
+
+const portConnectListener = async (port: browser.Runtime.Port) => {
+  if (port.name === 'port-from-page') {
+    const signInListener = (params: any) => port.postMessage({ type: 'signedIn', params })
+    const signOutListener = () => port.postMessage({ type: 'signedOut' })
+
+    eventEmitter.addListener('signedIn', signInListener)
+    eventEmitter.addListener('signedOut', signOutListener)
+
+    port.onDisconnect.addListener(() => {
+      eventEmitter.removeListener('signedIn', signInListener)
+      eventEmitter.removeListener('signedOut', signOutListener)
+    })
+  }
+}
+
+browser.runtime.onConnect.addListener(portConnectListener)

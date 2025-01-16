@@ -1,24 +1,20 @@
-import React, { Fragment, ReactNode, useRef, useState } from 'react'
-import { FC } from 'react'
-import { CoreProvider, useCore } from '@mweb/react'
 import { Engine, EngineConfig } from '@mweb/backend'
-import { EngineProvider } from '@mweb/react-engine'
-import { DevProvider } from './contexts/dev-context'
-import { PortalProvider } from './contexts/portal-context'
-import { MutableWebProvider } from './contexts/mutable-web-context'
-import { ViewportProvider } from './contexts/viewport-context'
-import { ContextPicker } from './components/context-picker'
-import { ContextManager } from './components/context-manager'
-import { ModalProvider } from './contexts/modal-context'
-import { PickerProvider } from './contexts/picker-context'
-import { ContextHighlighter } from './components/context-highlighter'
-import { HighlighterProvider } from './contexts/highlighter-context'
-import { ModalContextState } from './contexts/modal-context/modal-context'
-import { ConnectedAccountsProvider } from './contexts/connected-accounts-context'
 import { ParserConfig, ParserType } from '@mweb/core'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import { CoreProvider } from '@mweb/react'
+import { EngineProvider } from '@mweb/react-engine'
+import React, { FC, Fragment, ReactNode, useRef, useState } from 'react'
+import { ContextHighlighter } from './components/context-highlighter'
+import { ContextManager } from './components/context-manager'
+import { ContextPicker } from './components/context-picker'
+import { ConnectedAccountsProvider } from './contexts/connected-accounts-context'
+import { DevProvider } from './contexts/dev-context'
+import { HighlighterProvider } from './contexts/highlighter-context'
+import { ModalProvider } from './contexts/modal-context'
+import { ModalContextState } from './contexts/modal-context/modal-context'
+import { MutableWebProvider } from './contexts/mutable-web-context'
+import { PickerProvider } from './contexts/picker-context'
+import { PortalProvider } from './contexts/portal-context'
+import { ViewportProvider } from './contexts/viewport-context'
 
 const InitialParserConfigs: ParserConfig[] = [
   {
@@ -52,34 +48,32 @@ export const App: FC<{
 
   return (
     <CoreProvider initialParserConfigs={InitialParserConfigs}>
-      <QueryClientProvider client={queryClient}>
-        <EngineProvider engine={engineRef.current}>
-          <DevProvider devServerUrl={devServerUrl}>
-            <PortalProvider>
-              <PickerProvider>
-                <HighlighterProvider>
-                  <MutableWebProvider
-                    config={config}
-                    defaultMutationId={defaultMutationId}
-                    modalApi={modalApi}
-                  >
-                    <ConnectedAccountsProvider>
-                      <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
-                        <ModalProvider onModalApiReady={setModalApi}>
-                          <ContextPicker />
-                          <ContextManager />
-                          <ContextHighlighter />
-                        </ModalProvider>
-                      </ViewportProvider>
-                      <Fragment>{children}</Fragment>
-                    </ConnectedAccountsProvider>
-                  </MutableWebProvider>
-                </HighlighterProvider>
-              </PickerProvider>
-            </PortalProvider>
-          </DevProvider>
-        </EngineProvider>
-      </QueryClientProvider>
+      <EngineProvider engine={engineRef.current}>
+        <DevProvider devServerUrl={devServerUrl}>
+          <PortalProvider>
+            <PickerProvider>
+              <HighlighterProvider>
+                <MutableWebProvider
+                  config={config}
+                  defaultMutationId={defaultMutationId}
+                  modalApi={modalApi}
+                >
+                  <ConnectedAccountsProvider>
+                    <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
+                      <ModalProvider onModalApiReady={setModalApi}>
+                        <ContextPicker />
+                        <ContextManager />
+                        <ContextHighlighter />
+                      </ModalProvider>
+                    </ViewportProvider>
+                    <Fragment>{children}</Fragment>
+                  </ConnectedAccountsProvider>
+                </MutableWebProvider>
+              </HighlighterProvider>
+            </PickerProvider>
+          </PortalProvider>
+        </DevProvider>
+      </EngineProvider>
     </CoreProvider>
   )
 }

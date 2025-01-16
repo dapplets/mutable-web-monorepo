@@ -1,6 +1,5 @@
 import React from 'react'
 import { FC } from 'react'
-import { useMutableWeb } from '@mweb/engine'
 import { SidePanel as SidePanelInternal } from '../mini-overlay/side-panel'
 import { MemoryRouter } from 'react-router'
 
@@ -25,8 +24,6 @@ export const SidePanel: FC<ISidePanelProps> = ({
   onConnectWallet,
   onDisconnectWallet,
 }) => {
-  const { engine } = useMutableWeb()
-
   return (
     <MemoryRouter>
       <SidePanelInternal
