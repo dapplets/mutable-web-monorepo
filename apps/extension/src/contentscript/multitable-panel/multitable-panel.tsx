@@ -10,6 +10,7 @@ import { PinOutlineIcon, PinSolidIcon } from './assets/vectors'
 import { Dropdown } from './components/dropdown'
 import { MutationEditorModal } from './components/mutation-editor-modal'
 import MutableOverlayContainer from './mutable-overlay-container'
+import { useApplications } from '@mweb/react-engine'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -115,7 +116,8 @@ interface MultitablePanelProps {
 }
 
 export const MultitablePanel: FC<MultitablePanelProps> = ({ eventEmitter }) => {
-  const { mutations, allApps, selectedMutation, config } = useMutableWeb()
+  const { mutations, selectedMutation, config } = useMutableWeb()
+  const { applications: allApps } = useApplications()
   const [isOverlayOpened, setIsOverlayOpened] = useState(false)
   const [isPin, setPin] = useState(!getIsPanelUnpinned())
   const [isDragging, setIsDragging] = useState(false)

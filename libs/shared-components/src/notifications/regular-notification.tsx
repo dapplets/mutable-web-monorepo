@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react'
 import { Space, Typography, Card, Collapse, Button } from 'antd'
-import { useHideNotification, useViewNotification } from '@mweb/engine'
+import { useHideNotification, useViewNotification } from '@mweb/react-engine'
 import { NotificationDto, NotificationType, RegularPayload } from '@mweb/backend'
 import {
   Collapse as CollapseIcon,

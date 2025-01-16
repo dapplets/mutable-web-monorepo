@@ -82,6 +82,16 @@ export class UserLinkService {
     )
   }
 
+  async getAllLinksForContext(
+    appsToCheck: AppInstanceWithSettings[],
+    mutationId: MutationId,
+    context: IContextNode
+  ) {
+    const staticLinks = this.getStaticLinksForApps(appsToCheck, context)
+    const dynamicLinks = await this.getLinksForContext(appsToCheck, mutationId, context)
+    return [...staticLinks, ...dynamicLinks]
+  }
+
   getControllersForApps(
     appsToCheck: AppInstanceWithSettings[],
     context: IContextNode

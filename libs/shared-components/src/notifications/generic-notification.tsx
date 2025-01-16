@@ -1,5 +1,5 @@
 import { NotificationDto } from '@mweb/backend'
-import { useHideNotification, useViewNotification } from '@mweb/engine'
+import { useHideNotification, useViewNotification } from '@mweb/react-engine'
 import { Button, ButtonProps, Card, Collapse, Space, Typography } from 'antd'
 import React, { FC, ReactNode, useMemo } from 'react'
 import styled from 'styled-components'
@@ -36,7 +36,7 @@ export const GenericNotification: FC<{
   message: ReactNode
   icon: ReactNode
   title: string
-  error?: string | null
+  error?: Error | null
   actions?: TAction[]
   disabled?: boolean
   children: ReactNode

@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { InjectableTarget } from '../app/contexts/engine-context/engine-context'
+import { InjectableTarget } from '../app/contexts/portal-context/portal-context'
 import { useHighlighter, THighlighterTask } from '../app/contexts/highlighter-context'
 import { FirstTargetTransformerHoc } from './dapplet-portal'
 

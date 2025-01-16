@@ -7,7 +7,7 @@ import {
   PullRequestResult,
   PullRequestStatus,
 } from '@mweb/backend'
-import { useAcceptPullRequest, useRejectPullRequest } from '@mweb/engine'
+import { useAcceptPullRequest, useRejectPullRequest } from '@mweb/react-engine'
 import { BlueBadge, Branch, Decline, GreenBadge, RedBadge, Review } from './assets/icons'
 import { GenericNotification } from './generic-notification'
 import { PrReviewerModal } from './pr-reviewer-modal'

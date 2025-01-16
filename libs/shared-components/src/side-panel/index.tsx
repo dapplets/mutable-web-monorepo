@@ -1,6 +1,6 @@
 import React from 'react'
 import { FC } from 'react'
-import { NotificationProvider, useMutableWeb } from '@mweb/engine'
+import { useMutableWeb } from '@mweb/engine'
 import { SidePanel as SidePanelInternal } from '../mini-overlay/side-panel'
 import { MemoryRouter } from 'react-router'
 
@@ -29,18 +29,16 @@ export const SidePanel: FC<ISidePanelProps> = ({
 
   return (
     <MemoryRouter>
-      <NotificationProvider engine={engine} recipientId={loggedInAccountId}>
-        <SidePanelInternal
-          loggedInAccountId={loggedInAccountId}
-          nearNetwork={nearNetwork}
-          trackingRefs={trackingRefs}
-          overlayRef={overlayRef}
-          onCloseOverlay={onCloseOverlay}
-          onMutateButtonClick={onMutateButtonClick}
-          onConnectWallet={onConnectWallet}
-          onDisconnectWallet={onDisconnectWallet}
-        />
-      </NotificationProvider>
+      <SidePanelInternal
+        loggedInAccountId={loggedInAccountId}
+        nearNetwork={nearNetwork}
+        trackingRefs={trackingRefs}
+        overlayRef={overlayRef}
+        onCloseOverlay={onCloseOverlay}
+        onMutateButtonClick={onMutateButtonClick}
+        onConnectWallet={onConnectWallet}
+        onDisconnectWallet={onDisconnectWallet}
+      />
     </MemoryRouter>
   )
 }

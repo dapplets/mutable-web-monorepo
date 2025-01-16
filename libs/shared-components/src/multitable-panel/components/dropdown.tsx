@@ -1,6 +1,6 @@
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
-import { useDeleteLocalMutation, useMutableWeb } from '@mweb/engine'
+import { useMutableWeb } from '@mweb/engine'
 import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import {
@@ -33,6 +33,7 @@ import {
 import { Badge } from './badge'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
+import { useDeleteLocalMutation, useRemoveMutationFromRecents } from '@mweb/react-engine'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -61,10 +62,10 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
     setFavoriteMutation,
     switchMutation,
     getPreferredSource,
-    removeMutationFromRecents,
   } = useMutableWeb()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const { removeMutationFromRecents } = useRemoveMutationFromRecents()
 
   const recentlyUsedMutations = useMemo(
     () =>

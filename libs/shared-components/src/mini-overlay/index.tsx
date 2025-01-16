@@ -1,5 +1,5 @@
 import { AppInstanceWithSettings, AppWithSettings, MutationDto } from '@mweb/backend'
-import { NotificationProvider, useMutableWeb } from '@mweb/engine'
+import { useMutableWeb } from '@mweb/engine'
 import { Drawer } from 'antd'
 import React, { FC, ReactElement, useRef } from 'react'
 import { MemoryRouter } from 'react-router'
@@ -74,48 +74,46 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   return (
     <MemoryRouter>
       <WrapperDriver $isOpen={open} ref={overlayRef}>
-        <NotificationProvider engine={engine} recipientId={loggedInAccountId}>
-          <Drawer
-            classNames={{
-              wrapper: 'sideWrapper',
-              content: 'sideContent',
-            }}
-            open
-            style={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
-            mask={false}
-            rootStyle={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
-            getContainer={() => {
-              if (!overlayRef.current) return
-              return overlayRef.current as any
-            }}
-          >
-            <UberSausage
-              baseMutation={baseMutation}
-              mutationApps={mutationApps}
-              onConnectWallet={connectWallet}
-              onDisconnectWallet={disconnectWallet}
-              nearNetwork={nearNetwork}
-              overlayRef={overlayRef}
-              loggedInAccountId={loggedInAccountId}
-              trackingRefs={trackingRefs}
-              isOverlayOpened={open}
-              openOverlay={setOpen}
-            />
-          </Drawer>
+        <Drawer
+          classNames={{
+            wrapper: 'sideWrapper',
+            content: 'sideContent',
+          }}
+          open
+          style={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
+          mask={false}
+          rootStyle={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
+          getContainer={() => {
+            if (!overlayRef.current) return
+            return overlayRef.current as any
+          }}
+        >
+          <UberSausage
+            baseMutation={baseMutation}
+            mutationApps={mutationApps}
+            onConnectWallet={connectWallet}
+            onDisconnectWallet={disconnectWallet}
+            nearNetwork={nearNetwork}
+            overlayRef={overlayRef}
+            loggedInAccountId={loggedInAccountId}
+            trackingRefs={trackingRefs}
+            isOverlayOpened={open}
+            openOverlay={setOpen}
+          />
+        </Drawer>
 
-          <OverlayWrapper apps={mutationApps.length > 0} onClose={handleCloseOverlay} open={open}>
-            <SidePanel
-              loggedInAccountId={loggedInAccountId}
-              nearNetwork={nearNetwork}
-              trackingRefs={trackingRefs}
-              overlayRef={overlayRef}
-              onCloseOverlay={handleCloseOverlay}
-              onMutateButtonClick={handleMutateButtonClick}
-              onConnectWallet={connectWallet}
-              onDisconnectWallet={disconnectWallet}
-            />
-          </OverlayWrapper>
-        </NotificationProvider>
+        <OverlayWrapper apps={mutationApps.length > 0} onClose={handleCloseOverlay} open={open}>
+          <SidePanel
+            loggedInAccountId={loggedInAccountId}
+            nearNetwork={nearNetwork}
+            trackingRefs={trackingRefs}
+            overlayRef={overlayRef}
+            onCloseOverlay={handleCloseOverlay}
+            onMutateButtonClick={handleMutateButtonClick}
+            onConnectWallet={connectWallet}
+            onDisconnectWallet={disconnectWallet}
+          />
+        </OverlayWrapper>
       </WrapperDriver>
     </MemoryRouter>
   )

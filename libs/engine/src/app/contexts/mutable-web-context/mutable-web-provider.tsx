@@ -1,18 +1,20 @@
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
-import { Engine, EngineConfig, EntitySourceType } from '@mweb/backend'
-import { useMutationApps } from './use-mutation-apps'
-import { useMutationParsers } from './use-mutation-parsers'
+import { EngineConfig, EntitySourceType } from '@mweb/backend'
 import { useCore } from '@mweb/react'
-import { useMutations } from './use-mutations'
-import { useApplications } from './use-applications'
 import { utils } from '@mweb/backend'
 import { mutationDisabled, mutationSwitched } from './notifications'
 import { getNearConfig } from '@mweb/backend'
 import { ModalContextState } from '../modal-context/modal-context'
-import { MutationDto } from '@mweb/backend'
-import { ParserType, ParserConfig } from '@mweb/core'
-import { useSelectedMutation } from './use-selected-mutation'
+import {
+  useApplications,
+  useEngine,
+  useMutationApps,
+  useMutationParsers,
+  useMutations,
+  useMutationWithSettings,
+} from '@mweb/react-engine'
+import { useUpdateMutationLastUsage } from '@mweb/react-engine'
 
 type Props = {
   config: EngineConfig
@@ -21,34 +23,18 @@ type Props = {
   children: ReactNode
 }
 
-const MWebParserConfig: ParserConfig = {
-  parserType: ParserType.MWeb,
-  id: 'mweb',
-}
-
-const LinkParserConfig: ParserConfig = {
-  parserType: ParserType.Link,
-  id: 'engine', // ToDo: id used as namespace
-}
-
 const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, children }) => {
   const { tree, attachParserConfig, detachParserConfig, updateRootContext } = useCore()
-  const engineRef = useRef<Engine | null>(null)
 
-  if (!engineRef.current) {
-    engineRef.current = new Engine(config)
-    attachParserConfig(MWebParserConfig) // ToDo: move
-    attachParserConfig(LinkParserConfig)
-
-    console.log('[MutableWeb] Engine initialized', engineRef.current)
-  }
+  if (!tree) throw new Error('Context tree is not initialized')
 
   const nearConfig = useMemo(() => getNearConfig(config.networkId), [config.networkId])
 
-  const engine = engineRef.current
+  const { engine } = useEngine()
 
-  const { mutations, setMutations, isLoading: isMutationsLoading } = useMutations(engine)
-  const { applications: allApps, isLoading: isAppsLoading } = useApplications(engine)
+  const { mutations, isLoading: isMutationsLoading } = useMutations(tree)
+
+  const { updateMutationLastUsage } = useUpdateMutationLastUsage()
 
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const [preferredSources, setPreferredSources] = useState<{
@@ -97,24 +83,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     return lastUsedMutation ?? favoriteMutation
   }, [engine, tree])
 
-  // const selectedMutation = useMemo(() => {
-  //   if (!selectedMutationId) return null
-
-  //   const [localMut, remoteMut] = mutations
-  //     .filter((m) => m.id === selectedMutationId)
-  //     .sort((a) => (a.source === EntitySourceType.Local ? -1 : 1))
-
-  //   if (preferredSources[selectedMutationId] === EntitySourceType.Local) {
-  //     return localMut ?? remoteMut ?? null
-  //   } else if (preferredSources[selectedMutationId] === EntitySourceType.Origin) {
-  //     return remoteMut ?? localMut ?? null
-  //   } else {
-  //     return localMut ?? remoteMut ?? null
-  //   }
-  // }, [mutations, selectedMutationId, preferredSources, mutationVersions])
-
-  const { selectedMutation, isSelectedMutationLoading, setSelectedMutation } = useSelectedMutation(
-    engine,
+  const { selectedMutation, isSelectedMutationLoading } = useMutationWithSettings(
     selectedMutationId,
     selectedMutationId ? preferredSources[selectedMutationId] : undefined,
     selectedMutationId ? mutationVersions[selectedMutationId] : undefined
@@ -147,21 +116,14 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     })
   }, [getMutationToBeLoaded, defaultMutationId, modalApi])
 
-  const {
-    mutationApps,
-    setMutationApps,
-    isLoading: isMutationAppsLoading,
-  } = useMutationApps(engine, selectedMutation)
+  const { mutationApps, isLoading: isMutationAppsLoading } = useMutationApps(selectedMutation)
 
   const activeApps = useMemo(
     () => mutationApps.filter((app) => app.settings.isEnabled),
     [mutationApps]
   )
 
-  const { parserConfigs, isLoading: isMutationParsersLoading } = useMutationParsers(
-    engine,
-    mutationApps
-  )
+  const { parserConfigs, isLoading: isMutationParsersLoading } = useMutationParsers(mutationApps)
 
   useEffect(() => {
     if (!tree) return
@@ -198,43 +160,13 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
       if (selectedMutationId === mutationId) return
 
       if (mutationId) {
-        const lastUsage = await engine.mutationService.updateMutationLastUsage(
-          mutationId,
-          window.location.hostname
-        )
-
-        // Update last usage for selected mutation
-        setMutations((prev) =>
-          prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage } } : mut
-          )
-        )
+        updateMutationLastUsage({ mutationId: mutationId, hostname: window.location.hostname })
       }
 
       setSelectedMutationId(mutationId)
     },
     [selectedMutationId]
   )
-
-  const refreshMutation = useCallback(async (mutation: MutationDto) => {
-    const mutationWithSettings = await engine.mutationService.populateMutationWithSettings(mutation)
-
-    setMutations((prev) => {
-      const index = prev.findIndex(
-        (m) => m.id === mutationWithSettings.id && m.source === mutationWithSettings.source
-      )
-      if (index === -1) {
-        return [...prev, mutationWithSettings]
-      } else {
-        return prev.map((m, i) => (i === index ? mutationWithSettings : m))
-      }
-    })
-
-    if (mutation.id === selectedMutationId) {
-      switchPreferredSource(mutation.id, mutation.source)
-      setSelectedMutation(mutationWithSettings)
-    }
-  }, [selectedMutationId])
 
   // ToDo: move to separate hook
   const setFavoriteMutation = useCallback(
@@ -290,27 +222,8 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const getPreferredSource = (mutationId: string): EntitySourceType | null =>
     preferredSources[mutationId]
 
-  // ToDo: move to separate hook
-  const removeMutationFromRecents = useCallback(
-    async (mutationId: string) => {
-      try {
-        await engine.mutationService.removeMutationFromRecents(mutationId)
-
-        setMutations((prev) =>
-          prev.map((mut) =>
-            mut.id === mutationId ? { ...mut, settings: { ...mut.settings, lastUsage: null } } : mut
-          )
-        )
-      } catch (err) {
-        console.error(err)
-      }
-    },
-    [engine]
-  )
-
   const isLoading =
     isMutationsLoading ||
-    isAppsLoading ||
     isMutationAppsLoading ||
     isMutationParsersLoading ||
     isSelectedMutationLoading
@@ -319,7 +232,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     config: nearConfig,
     engine,
     mutations,
-    allApps,
     mutationApps,
     activeApps,
     selectedMutation,
@@ -327,12 +239,8 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     switchMutation,
     switchPreferredSource,
     getPreferredSource,
-    refreshMutation,
     setFavoriteMutation,
-    removeMutationFromRecents,
     favoriteMutationId,
-    setMutations,
-    setMutationApps,
     switchMutationVersion,
     mutationVersions,
   }

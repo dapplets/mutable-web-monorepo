@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from 'react'
 import { Button, Modal } from 'antd'
 import toJson from 'json-stringify-deterministic'
-import { useAcceptPullRequest, useMutation, useRejectPullRequest } from '@mweb/engine'
+import { useAcceptPullRequest, useMutation, useRejectPullRequest } from '@mweb/react-engine'
 import { PrReviewer } from './pr-reviewer'
 import { NotificationDto, NotificationType, PullRequestPayload } from '@mweb/backend'
 import { Decline, Branch } from './assets/icons'

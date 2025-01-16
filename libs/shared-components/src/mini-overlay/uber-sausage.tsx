@@ -4,7 +4,7 @@ import {
   EntitySourceType,
   MutationDto,
 } from '@mweb/backend'
-import { useNotifications } from '@mweb/engine'
+import { useNotifications } from '@mweb/react-engine'
 import { Button } from 'antd'
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -227,6 +227,7 @@ interface ISidePanelProps extends Partial<IWalletConnect> {
 }
 
 const UberSausage: React.FC<ISidePanelProps> = ({
+  loggedInAccountId,
   nearNetwork,
   onConnectWallet: connectWallet,
   onDisconnectWallet: disconnectWallet,
@@ -238,7 +239,7 @@ const UberSausage: React.FC<ISidePanelProps> = ({
   openOverlay,
 }) => {
   const navigate = useNavigate()
-  const { notifications } = useNotifications()
+  const { notifications } = useNotifications(loggedInAccountId)
   const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
     !!notifications.filter((not) => not.status === 'new').length
   )
@@ -314,7 +315,7 @@ const UberSausage: React.FC<ISidePanelProps> = ({
         </ActionLikeButton>
       </TopBlock>
 
-      {mutationApps.length ? (
+      {mutationApps.length && baseMutation ? (
         <>
           {!isOpenAppsPane ? (
             <ButtonWrapper
@@ -325,7 +326,11 @@ const UberSausage: React.FC<ISidePanelProps> = ({
             <div style={{ display: 'flex', direction: 'rtl' }}>
               <AppsWrapper>
                 {mutationApps.map((app) => (
-                  <AppSwitcher key={`${app.id}/${app.instanceId}`} app={app} />
+                  <AppSwitcher
+                    key={`${app.id}/${app.instanceId}`}
+                    mutationId={baseMutation.id}
+                    app={app}
+                  />
                 ))}
               </AppsWrapper>
             </div>

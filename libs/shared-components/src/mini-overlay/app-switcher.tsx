@@ -1,10 +1,10 @@
-import { AppInstanceWithSettings, AppWithSettings } from '@mweb/backend'
+import { AppInstanceWithSettings } from '@mweb/backend'
 import React, { FC } from 'react'
 import Spinner from 'react-bootstrap/Spinner'
 import styled from 'styled-components'
 import { Image } from '../common/image'
 import { MutationFallbackIcon, PlayCenterIcon, StopCenterIcon, StopTopIcon } from './assets/icons'
-import { useMutationApp } from '@mweb/engine'
+import { useEnableApp, useDisableApp } from '@mweb/react-engine'
 
 const MutationIconWrapper = styled.button<{ $isStopped?: boolean; $isButton: boolean }>`
   display: flex;
@@ -106,13 +106,17 @@ const LabelAppTop = styled.div`
 `
 
 interface IAppSwitcherProps {
+  mutationId: string
   app: AppInstanceWithSettings
 }
 
-export const AppSwitcher: FC<IAppSwitcherProps> = ({ app }) => {
+export const AppSwitcher: FC<IAppSwitcherProps> = ({ mutationId, app }) => {
   const docMeta = (app as any).documentId?.split('/')
 
-  const { enableApp, disableApp, isLoading } = useMutationApp(app.instanceId)
+  const { enableApp, isLoading: isAppEnabling } = useEnableApp(mutationId, app.instanceId)
+  const { disableApp, isLoading: isAppDisabling } = useDisableApp(mutationId, app.instanceId)
+
+  const isLoading = isAppEnabling || isAppDisabling
 
   return (
     <>

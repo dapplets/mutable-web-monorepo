@@ -70,6 +70,7 @@
     "@ant-design/icons": "5.5.1",
     "@mweb/backend": "workspace:*",
     "@mweb/engine": "workspace:*",
+    "@mweb/react-engine": "workspace:*",
     "@mweb/shared-components": "workspace:*",
     "@near-wallet-selector/core": "^8.9.1",
     "@near-wallet-selector/wallet-utils": "^8.9.1",

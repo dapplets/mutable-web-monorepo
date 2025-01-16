@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useState, useCallback, useMemo } from 'react'
-import { useEngine } from '../app/contexts/engine-context'
-import { InjectableTarget, Portal } from '../app/contexts/engine-context/engine-context'
+import { usePortal } from '../app/contexts/portal-context'
+import { InjectableTarget, Portal } from '../app/contexts/portal-context/portal-context'
 import { utils } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 import { buildTransferableContext } from '../app/common/transferable-context'
@@ -14,7 +14,7 @@ const _DappletPortal: React.FC<{
   _onContextFinished?: (context: IContextNode) => void
 }> = ({ component, target, inMemory, _onContextStarted, _onContextFinished }) => {
   const key = React.useId()
-  const { addPortal, removePortal } = useEngine()
+  const { addPortal, removePortal } = usePortal()
 
   React.useEffect(() => {
     const portal: Portal = {

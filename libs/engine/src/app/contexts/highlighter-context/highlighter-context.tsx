@@ -1,5 +1,5 @@
 import React, { createContext, ReactElement } from 'react'
-import { InjectableTarget } from '../engine-context/engine-context'
+import { InjectableTarget } from '../portal-context/portal-context'
 
 export type THighlighterTask = {
   target: InjectableTarget

@@ -1,4 +1,4 @@
-import { useNotifications, useViewAllNotifications } from '@mweb/engine'
+import { useNotifications, useViewAllNotifications } from '@mweb/react-engine'
 import { Button, Flex, Space, Spin, Typography } from 'antd'
 import React, { FC, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
@@ -42,7 +42,7 @@ const NotificationFeed: FC<{
   const [isWaiting, setWaiting] = useState(false)
   const { notifications, isLoading } = useNotifications()
   const overlayRef = useRef<HTMLDivElement>(null)
-  const { viewAllNotifcations, isLoading: isViewAllLoading } =
+  const { viewAllNotifications, isLoading: isViewAllLoading } =
     useViewAllNotifications(loggedInAccountId)
 
   const viewedNotifications = useMemo(
@@ -89,7 +89,7 @@ const NotificationFeed: FC<{
               {newNotifications.length ? (
                 <Button
                   style={{ float: 'right' }}
-                  onClick={() => viewAllNotifcations()}
+                  onClick={() => viewAllNotifications()}
                   type="link"
                 >
                   Mark all as read

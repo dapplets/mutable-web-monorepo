@@ -24,14 +24,20 @@ import { filterAndDiscriminate } from '../common/filter-and-discriminate'
 import { memoize } from '../common/memoize'
 import { buildTransferableContext } from '../common/transferable-context'
 import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
-import { useEngine } from '../contexts/engine-context'
-import { Portal } from '../contexts/engine-context/engine-context'
 import { useModal } from '../contexts/modal-context'
 import { ModalProps } from '../contexts/modal-context/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
-import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
-import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
-import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
+import { usePortal, Portal } from '../contexts/portal-context'
+import { useDev } from '../contexts/dev-context'
+import {
+  useAppControllers,
+  useCommitDocumentToMutation,
+  useContextApps,
+  useCreateUserLink,
+  useDeleteUserLink,
+  useUpdateMutationLastUsage,
+  useUserLinks,
+} from '@mweb/react-engine'
 
 interface WidgetProps {
   context: TransferableContext
@@ -94,6 +100,10 @@ interface LayoutManagerProps {
 }
 
 export const ContextManager: FC = () => {
+  const { selectedMutation } = useMutableWeb()
+
+  if (!selectedMutation) return null
+
   return <ContextTree children={ContextHandler} />
 }
 
@@ -101,11 +111,17 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   context,
   insPoints,
 }) => {
-  const { controllers } = useAppControllers(context)
-  const { links, createUserLink, deleteUserLink } = useUserLinks(context)
-  const { apps } = useContextApps(context)
-  const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
-  const { portals } = useEngine()
+  const { engine, selectedMutation, activeApps, switchPreferredSource } = useMutableWeb()
+
+  if (!selectedMutation) throw new Error('No selected mutation')
+
+  const { controllers } = useAppControllers(selectedMutation.id, context, activeApps)
+  const { links } = useUserLinks(selectedMutation.id, context, activeApps)
+  const { createUserLink } = useCreateUserLink(selectedMutation.id, context, activeApps)
+  const { deleteUserLink } = useDeleteUserLink(selectedMutation.id, context, activeApps)
+  const { commitDocumentToMutation } = useCommitDocumentToMutation()
+  const { apps } = useContextApps(context, activeApps)
+  const { portals } = usePortal()
 
   const portalComponents = useMemo(() => {
     return Array.from(portals.values())
@@ -281,25 +297,21 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
           // ToDo: show fork dialog
 
-          const { mutation, document: savedDocument } =
-            await engine.documentService.commitDocumentToMutation(
-              selectedMutation.id,
-              appInstance.appId,
-              document
-            )
+          const { mutation, document: savedDocument } = await commitDocumentToMutation({
+            mutationId: selectedMutation.id,
+            appId: appInstance.appId,
+            document,
+          })
 
-          // mutation changed
-          if (mutation) {
-            // ToDo: workaround to wait when blockchain changes will be propagated
-            await new Promise((resolve) => setTimeout(resolve, 3000))
-
-            await refreshMutation(mutation)
+          // is mutation changed?
+          if (mutation && mutation.id === selectedMutation.id) {
+            switchPreferredSource(mutation.id, mutation.source)
           }
 
           return savedDocument
         }
     ),
-    [engine, selectedMutation, refreshMutation]
+    [engine, selectedMutation]
   )
 
   const handleGetConnectedAccountsNet = useCallback(
@@ -450,7 +462,7 @@ const InsPointHandler: FC<{
   onDeleteDocumentCurry,
   onGetConnectedAccountsNet,
 }) => {
-  const { redirectMap, isDevServerLoading } = useEngine()
+  const { redirectMap, isDevServerLoading } = useDev()
   const { config, engine } = useMutableWeb()
   const { notify } = useModal()
 
@@ -614,7 +626,7 @@ const ControllerHandler: FC<{
   onDeleteDocumentCurry,
   onGetConnectedAccountsNet,
 }) => {
-  const { redirectMap, isDevServerLoading } = useEngine()
+  const { redirectMap, isDevServerLoading } = useDev()
   const { notify } = useModal()
 
   if (isDevServerLoading) {

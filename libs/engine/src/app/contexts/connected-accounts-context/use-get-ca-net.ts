@@ -4,7 +4,7 @@ import { useMutableWeb } from '../mutable-web-context'
 
 export function useGetCANet() {
   const { engine, config } = useMutableWeb()
-  const accountId = useAccountId()
+  const accountId = useAccountId() // ToDo: use accountId as hook parameter
   const networkId = config.networkId
 
   const {
