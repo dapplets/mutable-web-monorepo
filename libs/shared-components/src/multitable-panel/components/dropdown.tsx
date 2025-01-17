@@ -33,7 +33,11 @@ import {
 import { Badge } from './badge'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
-import { useDeleteLocalMutation, useRemoveMutationFromRecents } from '@mweb/react-engine'
+import {
+  useDeleteLocalMutation,
+  useMutationWithSettings,
+  useRemoveMutationFromRecents,
+} from '@mweb/react-engine'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;

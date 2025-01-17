@@ -40,7 +40,7 @@ const NotificationFeed: FC<{
   modalContainerRef: React.RefObject<HTMLElement>
 }> = ({ loggedInAccountId, connectWallet, modalContainerRef }) => {
   const [isWaiting, setWaiting] = useState(false)
-  const { notifications, isLoading } = useNotifications()
+  const { notifications, isLoading } = useNotifications(loggedInAccountId)
   const overlayRef = useRef<HTMLDivElement>(null)
   const { viewAllNotifications, isLoading: isViewAllLoading } =
     useViewAllNotifications(loggedInAccountId)
