@@ -3,6 +3,8 @@ import React, { FC } from 'react'
 import styled from 'styled-components'
 import MultitablePanel from '../../multitable-panel'
 import NotificationFeed from '../../notifications/notification-feed'
+import { useEngine } from '../../contexts/engine-context'
+
 const { Title, Text } = Typography
 
 const MainContainer = styled.div`
@@ -12,28 +14,17 @@ const MainContainer = styled.div`
 `
 
 export interface IMainProps {
-  loggedInAccountId: string | null
   modalContainerRef: React.RefObject<HTMLElement>
   onMutateButtonClick: () => void
-  onCloseOverlay: () => void
-  connectWallet: () => Promise<void>
 }
-const Main: FC<IMainProps> = ({
-  loggedInAccountId,
-  modalContainerRef,
-  onMutateButtonClick: handleMutateButtonClick,
-  onCloseOverlay: onClose,
-  connectWallet,
-}) => {
+const Main: FC<IMainProps> = ({ modalContainerRef, onMutateButtonClick }) => {
+  const { loggedInAccountId, onConnectWallet } = useEngine()
   return (
     <MainContainer data-testid="main-page">
-      <MultitablePanel
-        connectWallet={connectWallet}
-        handleMutateButtonClick={handleMutateButtonClick}
-      />
+      <MultitablePanel onMutateButtonClick={onMutateButtonClick} />
       {loggedInAccountId ? (
         <NotificationFeed
-          connectWallet={connectWallet}
+          onConnectWallet={onConnectWallet}
           loggedInAccountId={loggedInAccountId}
           modalContainerRef={modalContainerRef}
         />

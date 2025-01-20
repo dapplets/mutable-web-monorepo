@@ -36,9 +36,9 @@ const Loader = () => (
 
 const NotificationFeed: FC<{
   loggedInAccountId: string
-  connectWallet: (() => Promise<void>) | undefined
+  onConnectWallet: (() => Promise<void>) | undefined
   modalContainerRef: React.RefObject<HTMLElement>
-}> = ({ loggedInAccountId, connectWallet, modalContainerRef }) => {
+}> = ({ loggedInAccountId, onConnectWallet, modalContainerRef }) => {
   const [isWaiting, setWaiting] = useState(false)
   const { notifications, isLoading } = useNotifications(loggedInAccountId)
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -58,7 +58,7 @@ const NotificationFeed: FC<{
   const handleSignIn = async () => {
     setWaiting(true)
     try {
-      connectWallet && (await connectWallet())
+      onConnectWallet && (await onConnectWallet())
     } finally {
       setWaiting(false)
     }
@@ -70,7 +70,7 @@ const NotificationFeed: FC<{
         <Loader />
       ) : !loggedInAccountId ? (
         <Text type="secondary">
-          {!!connectWallet ? (
+          {!!onConnectWallet ? (
             <Button style={{ padding: ' 4px 4px' }} type="link" onClick={handleSignIn}>
               Login
             </Button>

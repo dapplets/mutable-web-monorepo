@@ -3,10 +3,12 @@ import { createContext } from 'react'
 import { AppInstanceWithSettings } from '@mweb/backend'
 import { MutationWithSettings } from '@mweb/backend'
 import { NearConfig } from '@mweb/backend'
+import { IContextNode } from '@mweb/core'
 
 export type MutableWebContextState = {
   config: NearConfig
   engine: Engine
+  tree: IContextNode | null
   mutations: MutationWithSettings[]
   mutationApps: AppInstanceWithSettings[]
   activeApps: AppInstanceWithSettings[]
@@ -24,6 +26,7 @@ export type MutableWebContextState = {
 export const contextDefaultValues: MutableWebContextState = {
   config: null as any as NearConfig, // ToDo
   engine: null as any as Engine, // ToDo
+  tree: null,
   mutations: [],
   mutationApps: [],
   activeApps: [],

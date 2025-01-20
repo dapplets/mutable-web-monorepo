@@ -7,8 +7,26 @@ import { MutableWebParser } from './parsers/mweb-parser'
 import { LinkParser } from './parsers/link-parser'
 import { ParserType, ParserConfig } from './types'
 
+const DefaultConfig: CoreConfig = {
+  initialParserConfigs: [
+    {
+      parserType: ParserType.MWeb,
+      id: 'mweb',
+    },
+    {
+      parserType: ParserType.Link,
+      id: 'engine', // ToDo: id used as namespace
+    },
+  ],
+}
+
+export type CoreConfig = {
+  initialParserConfigs: ParserConfig[]
+}
+
 export class Core {
   private _treeBuilder: PureTreeBuilder
+  private _config: CoreConfig
 
   private adapters = new Map<string, IAdapter>()
 
@@ -16,8 +34,11 @@ export class Core {
     return this._treeBuilder.root
   }
 
-  constructor() {
+  constructor(config: Partial<CoreConfig> = {}) {
+    this._config = { ...DefaultConfig, ...config }
     this._treeBuilder = new PureTreeBuilder()
+
+    this._config.initialParserConfigs.forEach((pc) => this.attachParserConfig(pc))
   }
 
   public attachParserConfig(parserConfig: ParserConfig) {

@@ -1,12 +1,12 @@
-import { AppInstanceWithSettings, MutationDto } from '@mweb/backend'
 import { Drawer } from 'antd'
 import React, { FC, useRef } from 'react'
 import { MemoryRouter } from 'react-router'
 import styled from 'styled-components'
 import OverlayWrapper from './overlay-wrapper'
 import { SidePanel } from './side-panel'
-import { IWalletConnect } from './types'
 import UberSausage from './uber-sausage'
+import { useEngine } from '../contexts/engine-context'
+import { useMutationApps } from '@mweb/react-engine'
 
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;
@@ -40,28 +40,20 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   }
 `
 
-interface IMiniOverlayProps extends IWalletConnect {
-  loggedInAccountId: string | null
-  baseMutation: MutationDto | null
-  mutationApps: AppInstanceWithSettings[]
-  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+interface IMiniOverlayProps {
+  setOpen: (open: boolean) => void
   open: boolean
   onMutateButtonClick: () => void
 }
 
 export const MiniOverlay: FC<IMiniOverlayProps> = ({
-  baseMutation,
-  mutationApps,
-  onConnectWallet: connectWallet,
-  onDisconnectWallet: disconnectWallet,
-  loggedInAccountId,
-  nearNetwork,
-  trackingRefs,
   setOpen,
   open,
   onMutateButtonClick: handleMutateButtonClick,
 }) => {
+  const { selectedMutation } = useEngine()
+  const { mutationApps } = useMutationApps(selectedMutation)
+
   // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
 
@@ -87,30 +79,15 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
           }}
         >
           <UberSausage
-            baseMutation={baseMutation}
+            baseMutation={selectedMutation}
             mutationApps={mutationApps}
-            onConnectWallet={connectWallet}
-            onDisconnectWallet={disconnectWallet}
-            nearNetwork={nearNetwork}
-            overlayRef={overlayRef}
-            loggedInAccountId={loggedInAccountId}
-            trackingRefs={trackingRefs}
             isOverlayOpened={open}
             openOverlay={setOpen}
           />
         </Drawer>
 
         <OverlayWrapper apps={mutationApps.length > 0} onClose={handleCloseOverlay} open={open}>
-          <SidePanel
-            loggedInAccountId={loggedInAccountId}
-            nearNetwork={nearNetwork}
-            trackingRefs={trackingRefs}
-            overlayRef={overlayRef}
-            onCloseOverlay={handleCloseOverlay}
-            onMutateButtonClick={handleMutateButtonClick}
-            onConnectWallet={connectWallet}
-            onDisconnectWallet={disconnectWallet}
-          />
+          <SidePanel onMutateButtonClick={handleMutateButtonClick} />
         </OverlayWrapper>
       </WrapperDriver>
     </MemoryRouter>

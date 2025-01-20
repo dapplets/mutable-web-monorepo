@@ -1,11 +1,14 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
+import { Core } from '@mweb/core'
 import Background from '../common/background'
 import { WalletProvider } from '../common/wallet-context'
 import { App } from './app'
 
 async function main() {
+  const core = new Core()
+
   const networkId = await Background.getCurrentNetwork()
   const devServerUrl = await Background.getDevServerUrl()
   const tabState = await Background.popTabState()
@@ -33,7 +36,7 @@ async function main() {
   const root = createRoot(container)
   root.render(
     <WalletProvider networkId={networkId}>
-      <App defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
+      <App core={core} defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
     </WalletProvider>
   )
 }

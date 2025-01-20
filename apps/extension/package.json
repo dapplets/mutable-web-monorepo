@@ -68,6 +68,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "5.5.1",
+    "@mweb/core": "workspace:*",
     "@mweb/backend": "workspace:*",
     "@mweb/engine": "workspace:*",
     "@mweb/react-engine": "workspace:*",

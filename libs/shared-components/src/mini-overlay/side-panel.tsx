@@ -5,35 +5,19 @@ import MainPage from './pages/main'
 import ProfilePage from './pages/profile'
 
 export interface ISidePanelProps {
-  loggedInAccountId: string | null
-  nearNetwork: string
-  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  overlayRef: React.RefObject<HTMLDivElement>
-  onCloseOverlay: () => void
   onMutateButtonClick: () => void
-  onConnectWallet: () => Promise<void>
-  onDisconnectWallet: () => Promise<void>
 }
 
-export const SidePanel: FC<ISidePanelProps> = ({
-  loggedInAccountId,
-  nearNetwork,
-  trackingRefs,
-  overlayRef,
-  onMutateButtonClick,
-  onCloseOverlay,
-  onConnectWallet,
-  onDisconnectWallet,
-}) => {
+export const SidePanel: FC<ISidePanelProps> = ({ onMutateButtonClick }) => {
+  const modalContainerRef = React.useRef<HTMLDivElement>(null)
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', width: '100%' }}
+      ref={modalContainerRef} // ToDo: move to context to avoid props drilling?
+    >
       {/* ToDo: move to pages? */}
-      <Header
-        accountId={loggedInAccountId}
-        onConnectWallet={onConnectWallet}
-        onDisconnectWallet={onDisconnectWallet}
-        nearNetwork={nearNetwork!}
-      />
+      <Header />
       <Routes>
         <Route path="/" element={<Navigate to="/system/main" replace />} />
         <Route
@@ -41,25 +25,12 @@ export const SidePanel: FC<ISidePanelProps> = ({
           element={
             // ToDo: avoid props drilling
             <MainPage
-              loggedInAccountId={loggedInAccountId}
-              modalContainerRef={overlayRef}
+              modalContainerRef={modalContainerRef}
               onMutateButtonClick={onMutateButtonClick}
-              onCloseOverlay={onCloseOverlay}
-              connectWallet={onConnectWallet}
             />
           }
         />
-        <Route
-          path="/system/profile"
-          element={
-            // ToDo: avoid props drilling
-            <ProfilePage
-              loggedInAccountId={loggedInAccountId}
-              nearNetwork={nearNetwork!}
-              trackingRefs={trackingRefs}
-            />
-          }
-        />
+        <Route path="/system/profile" element={<ProfilePage />} />
       </Routes>
     </div>
   )

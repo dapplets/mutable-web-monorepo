@@ -3,27 +3,11 @@ import { Core, ParserConfig } from '@mweb/core'
 import { CoreContext, CoreContextState } from './core-context'
 
 type Props = {
-  initialParserConfigs?: ParserConfig[]
+  core: Core
   children: ReactElement
 }
 
-const CoreProvider: FC<Props> = ({ initialParserConfigs, children }) => {
-  const coreRef = useRef<Core | null>(null)
-
-  if (!coreRef.current) {
-    const core = new Core()
-
-    initialParserConfigs?.forEach((parserConfig) => {
-      core.attachParserConfig(parserConfig)
-    })
-
-    coreRef.current = core
-
-    console.log('[@mweb/react] Initialized core', coreRef.current)
-  }
-
-  const core = coreRef.current
-
+const CoreProvider: FC<Props> = ({ core, children }) => {
   const attachParserConfig = useCallback(
     (parserConfig: ParserConfig) => {
       core.attachParserConfig(parserConfig)

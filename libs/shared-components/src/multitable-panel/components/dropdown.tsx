@@ -1,8 +1,13 @@
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
-import { useMutableWeb } from '@mweb/engine'
-import React, { DetailedHTMLProps, FC, HTMLAttributes, useMemo, useState } from 'react'
+import {
+  useDeleteLocalMutation,
+  useMutations,
+  useRemoveMutationFromRecents,
+} from '@mweb/react-engine'
+import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
+import { useEngine } from '../../contexts/engine-context'
 import {
   AuthorMutation,
   AvalibleArrowBlock,
@@ -33,7 +38,6 @@ import {
 import { Badge } from './badge'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
-import { useDeleteLocalMutation, useRemoveMutationFromRecents } from '@mweb/react-engine'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -50,19 +54,20 @@ const ModalConfirmBackground = styled.div`
   z-index: 1;
 `
 
-export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
+export type DropdownProps = {
   onMutateButtonClick: () => void
 }
 
 export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownProps) => {
   const {
-    mutations,
+    tree,
     selectedMutation,
     favoriteMutationId,
-    setFavoriteMutation,
-    switchMutation,
-    getPreferredSource,
-  } = useMutableWeb()
+    onSetFavoriteMutation,
+    onSwitchMutation,
+    onGetPreferredSource,
+  } = useEngine()
+  const { mutations } = useMutations(tree)
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
   const { removeMutationFromRecents } = useRemoveMutationFromRecents()
@@ -101,7 +106,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   )
 
   const handleMutationClick = (mutationId: string) => {
-    switchMutation(mutationId)
+    onSwitchMutation(mutationId)
   }
 
   // todo: mock
@@ -114,11 +119,11 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   }
 
   const handleFavoriteButtonClick = (mutationId: string) => {
-    setFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
+    onSetFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
   }
 
   const handleOriginalButtonClick = async () => {
-    switchMutation(null)
+    onSwitchMutation(null)
   }
 
   const handleRemoveFromRecentlyUsedClick = async (mut: MutationWithSettings) => {
@@ -151,7 +156,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
             >
               {Object.values(recentlyUsedMutations).map((muts) => {
                 if (!muts || !muts.length) return null
-                const recentlyUsedSource = getPreferredSource(muts[0].id)
+                const recentlyUsedSource = onGetPreferredSource(muts[0].id)
                 const mut =
                   muts.find(
                     (mut) => mut.source === (recentlyUsedSource ?? EntitySourceType.Local)
@@ -216,7 +221,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       </InputIconWrapper>
                     ) : mut.id !== selectedMutation?.id &&
                       mut.id !== favoriteMutationId &&
-                      !getPreferredSource(mut.id) ? (
+                      !onGetPreferredSource(mut.id) ? (
                       <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
                         <ArrowDownOutlined />
                       </InputIconWrapper>

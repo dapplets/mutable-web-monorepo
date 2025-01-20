@@ -231,6 +231,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const state: MutableWebContextState = {
     config: nearConfig,
     engine,
+    tree,
     mutations,
     mutationApps,
     activeApps,

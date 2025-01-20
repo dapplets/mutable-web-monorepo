@@ -11,6 +11,7 @@ import {
 import { IWalletConnect } from '../types'
 import { Location, NavigateFunction, useLocation, useNavigate } from 'react-router'
 import cn from 'classnames'
+import { useEngine } from '../../contexts/engine-context'
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -233,34 +234,19 @@ const HeaderButton = styled.button`
   }
 `
 
-export interface IHeaderProps extends IWalletConnect {
-  accountId: string | null
-  // closeProfile: () => void
-  // trackingRefs: Set<RefObject<HTMLDivElement>>
-  // openCloseWalletPopupRef: RefObject<HTMLButtonElement>
-}
-
-const Header: FC<IHeaderProps> = ({
-  accountId,
-  // closeProfile,
-  onConnectWallet: connectWallet,
-  onDisconnectWallet: disconnectWallet,
-  nearNetwork,
-  // trackingRefs,
-  // openCloseWalletPopupRef,
-}) => {
+const Header: FC = () => {
+  const { onConnectWallet, onDisconnectWallet, loggedInAccountId, nearNetwork } = useEngine()
   const navigate = useNavigate()
   const location = useLocation()
 
   const [waiting, setWaiting] = useState(false)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
-  // useOutside(wrapperRef, closeProfile, trackingRefs, openCloseWalletPopupRef)
 
   const handleSignIn = async () => {
     setWaiting(true)
     try {
-      await connectWallet()
+      await onConnectWallet()
     } finally {
       setWaiting(false)
     }
@@ -269,7 +255,7 @@ const Header: FC<IHeaderProps> = ({
   const handleSignOut = async () => {
     setWaiting(true)
     try {
-      await disconnectWallet()
+      await onDisconnectWallet()
     } finally {
       setWaiting(false)
     }
@@ -277,13 +263,13 @@ const Header: FC<IHeaderProps> = ({
 
   return (
     <HeaderWrapper ref={wrapperRef}>
-      {accountId ? (
+      {loggedInAccountId ? (
         <>
           <ProfileIcon>
-            <img src={makeBlockie(accountId)} alt="account blockie image" />
+            <img src={makeBlockie(loggedInAccountId)} alt="account blockie image" />
           </ProfileIcon>
           <ProfileInfo>
-            <ProfileAddress>{accountId}</ProfileAddress>
+            <ProfileAddress>{loggedInAccountId}</ProfileAddress>
             <ProfileNetwork>
               {nearNetwork === 'mainnet' ? 'NEAR-Mainnet' : 'NEAR-Testnet'}
             </ProfileNetwork>
@@ -296,7 +282,10 @@ const Header: FC<IHeaderProps> = ({
           >
             <PersonIcon />
           </ProfileButton>
-          <HeaderButton disabled={waiting} onClick={() => navigator.clipboard.writeText(accountId)}>
+          <HeaderButton
+            disabled={waiting}
+            onClick={() => navigator.clipboard.writeText(loggedInAccountId)}
+          >
             <CopyIcon />
           </HeaderButton>
           <HeaderButton disabled={waiting} onClick={handleSignOut}>

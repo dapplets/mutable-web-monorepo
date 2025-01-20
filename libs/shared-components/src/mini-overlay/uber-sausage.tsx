@@ -20,6 +20,7 @@ import {
 } from './assets/icons'
 import { IWalletConnect } from './types'
 import { AppSwitcher } from './app-switcher'
+import { useEngine } from '../contexts/engine-context'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
   position: absolute;
@@ -216,28 +217,20 @@ const ButtonOpenWrapper = styled.div`
   }
 `
 
-interface ISidePanelProps extends Partial<IWalletConnect> {
+interface ISidePanelProps {
   baseMutation: MutationDto | null
   mutationApps: AppInstanceWithSettings[]
-  loggedInAccountId?: string | null
-  overlayRef: React.RefObject<HTMLDivElement>
-  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   isOverlayOpened: boolean
-  openOverlay: React.Dispatch<React.SetStateAction<boolean>>
+  openOverlay: (open: boolean) => void
 }
 
 const UberSausage: React.FC<ISidePanelProps> = ({
-  loggedInAccountId,
-  nearNetwork,
-  onConnectWallet: connectWallet,
-  onDisconnectWallet: disconnectWallet,
   baseMutation,
   mutationApps,
-  overlayRef,
-  trackingRefs = new Set(),
   isOverlayOpened,
   openOverlay,
 }) => {
+  const { loggedInAccountId } = useEngine()
   const navigate = useNavigate()
   const { notifications } = useNotifications(loggedInAccountId)
   const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
@@ -245,21 +238,14 @@ const UberSausage: React.FC<ISidePanelProps> = ({
   )
   const [isOpenAppsPane, openCloseAppsPane] = useState(false)
 
-  const rootRef = useRef<HTMLDivElement>(null)
-  const openCloseWalletPopupRef = useRef<HTMLButtonElement>(null)
-
-  trackingRefs.add(rootRef)
-  trackingRefs.add(overlayRef)
-
   useEffect(() => {
     setHaveUnreadNotifications(!!notifications.filter((not) => not.status === 'new').length)
   }, [notifications])
 
-  const isMutationIconButton = !!connectWallet && !!disconnectWallet && !!nearNetwork
+  const isMutationIconButton = !!loggedInAccountId
 
   return (
     <SidePanelWrapper
-      ref={rootRef}
       $isApps={!!mutationApps.length}
       data-testid="mweb-overlay"
       data-mweb-context-type="mweb-overlay"
@@ -268,10 +254,9 @@ const UberSausage: React.FC<ISidePanelProps> = ({
     >
       <TopBlock $open={isOpenAppsPane || !!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
-          onClick={() => openOverlay((val) => !val)}
+          onClick={() => openOverlay(!isOverlayOpened)}
           $isButton={isMutationIconButton}
           title={baseMutation?.metadata.name}
-          ref={openCloseWalletPopupRef}
           data-testid="mutation-button"
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
@@ -295,7 +280,7 @@ const UberSausage: React.FC<ISidePanelProps> = ({
           block
           type={isOverlayOpened && location.pathname === '/system/main' ? 'primary' : 'default'}
           onClick={() => {
-            openOverlay((val) => (location.pathname !== '/system/main' ? true : !val))
+            openOverlay(location.pathname !== '/system/main' ? true : !isOverlayOpened)
             navigate!(`/system/main`)
           }}
         >
@@ -305,7 +290,7 @@ const UberSausage: React.FC<ISidePanelProps> = ({
           block
           type={isOverlayOpened && location.pathname === '/system/profile' ? 'primary' : 'default'}
           onClick={() => {
-            openOverlay((val) => (location.pathname !== '/system/profile' ? true : !val))
+            openOverlay(location.pathname !== '/system/profile' ? true : !isOverlayOpened)
             navigate!(`/system/profile`)
           }}
           style={{ paddingLeft: '14px' }}

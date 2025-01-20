@@ -551,6 +551,9 @@ importers:
       '@mweb/backend':
         specifier: workspace:*
         version: link:../../libs/backend
+      '@mweb/core':
+        specifier: workspace:*
+        version: link:../../libs/core
       '@mweb/engine':
         specifier: workspace:*
         version: link:../../libs/engine
@@ -771,9 +774,6 @@ importers:
       '@mweb/engine':
         specifier: workspace:*
         version: link:../../libs/engine
-      '@mweb/react-engine':
-        specifier: workspace:*
-        version: link:../../libs/react-engine
       '@mweb/shared-components':
         specifier: workspace:*
         version: link:../../libs/shared-components
@@ -1212,6 +1212,9 @@ importers:
       '@mweb/backend':
         specifier: workspace:*
         version: link:../backend
+      '@mweb/core':
+        specifier: workspace:*
+        version: link:../core
       '@mweb/engine':
         specifier: workspace:*
         version: link:../engine

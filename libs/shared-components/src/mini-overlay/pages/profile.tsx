@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { ArrowIcon } from '../assets/icons'
 import { ConnectedAccount } from '../../connected-accounts'
+import { useEngine } from '../../contexts/engine-context'
 
 const ProfileContainer = styled.div`
   width: 100%;
@@ -57,10 +58,9 @@ const H1 = styled.h1`
 `
 
 const Profile: FC<{
-  loggedInAccountId: string | null
-  nearNetwork: string
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-}> = ({ loggedInAccountId, nearNetwork, trackingRefs }) => {
+}> = ({ trackingRefs }) => {
+  const { loggedInAccountId, nearNetwork } = useEngine()
   const navigate = useNavigate()
 
   // ToDo: loggedInAccountId null

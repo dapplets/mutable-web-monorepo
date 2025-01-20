@@ -4,38 +4,13 @@ import { SidePanel as SidePanelInternal } from '../mini-overlay/side-panel'
 import { MemoryRouter } from 'react-router'
 
 export interface ISidePanelProps {
-  loggedInAccountId: string | null
-  nearNetwork: string
-  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  overlayRef: React.RefObject<HTMLDivElement>
-  onCloseOverlay: () => void
   onMutateButtonClick: () => void
-  onConnectWallet: () => Promise<void>
-  onDisconnectWallet: () => Promise<void>
 }
 
-export const SidePanel: FC<ISidePanelProps> = ({
-  loggedInAccountId,
-  nearNetwork,
-  trackingRefs,
-  overlayRef,
-  onMutateButtonClick,
-  onCloseOverlay,
-  onConnectWallet,
-  onDisconnectWallet,
-}) => {
+export const SidePanel: FC<ISidePanelProps> = ({ onMutateButtonClick }) => {
   return (
     <MemoryRouter>
-      <SidePanelInternal
-        loggedInAccountId={loggedInAccountId}
-        nearNetwork={nearNetwork}
-        trackingRefs={trackingRefs}
-        overlayRef={overlayRef}
-        onCloseOverlay={onCloseOverlay}
-        onMutateButtonClick={onMutateButtonClick}
-        onConnectWallet={onConnectWallet}
-        onDisconnectWallet={onDisconnectWallet}
-      />
+      <SidePanelInternal onMutateButtonClick={onMutateButtonClick} />
     </MemoryRouter>
   )
 }
