@@ -1,5 +1,6 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
-// import { useAccountId } from 'near-social-vm'
+import { useMutableWeb } from '@mweb/engine'
+import { useSaveMutation } from '@mweb/react-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { cloneDeep, mergeDeep } from '../../helpers'
@@ -7,12 +8,10 @@ import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
-import { DocumentsModal } from './documents-modal'
-import { ModalConfirm } from './modals-confirm'
-import { AppInMutation } from '@mweb/backend'
-import { Image } from './image'
-import { useSaveMutation, useMutableWeb } from '@mweb/engine'
 import { ButtonsGroup } from './buttons-group'
+import { DocumentsModal } from './documents-modal'
+import { Image } from './image'
+import { ModalConfirm } from './modals-confirm'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -198,6 +197,7 @@ const EMPTY_MUTATION_ID = '/mutation/NewMutation'
 
 const createEmptyMutation = (): MutationDto => ({
   authorId: null,
+  version: '0',
   blockNumber: 0,
   id: EMPTY_MUTATION_ID,
   localId: 'NewMutation',

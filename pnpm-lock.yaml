@@ -771,6 +771,9 @@ importers:
       '@mweb/engine':
         specifier: workspace:*
         version: link:../../libs/engine
+      '@mweb/react-engine':
+        specifier: workspace:*
+        version: link:../../libs/react-engine
       '@mweb/shared-components':
         specifier: workspace:*
         version: link:../../libs/shared-components

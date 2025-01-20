@@ -275,7 +275,7 @@ function App(props) {
               />
             </Routes>
           </Router>
-          <MutableOverlayContainer />
+          <MutableOverlayContainer {...passProps} />
         </EthersProviderContext.Provider>
       </MutableWebProvider>
     </div>

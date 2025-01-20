@@ -1,11 +1,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import {
-  useCreateMutation,
-  useEditMutation,
-  useMutableWeb,
-  useDeleteLocalMutation,
-} from '@mweb/engine'
+import { useMutableWeb } from '@mweb/engine'
+import { useCreateMutation, useEditMutation, useDeleteLocalMutation } from '@mweb/react-engine'
 import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
 import { useEscape } from '../../hooks/use-escape'
@@ -306,14 +302,14 @@ export const ModalConfirm: FC<Props> = ({
 
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
-        const id = await createMutation(
+        const createdMutation = await createMutation(
           mutationToPublish,
           mode === MutationModalMode.Forking
             ? { askOriginToApplyChanges: isApplyToOriginChecked }
             : undefined
         )
-        switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Origin)
+        switchMutation(createdMutation.id)
+        switchPreferredSource(createdMutation.id, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {

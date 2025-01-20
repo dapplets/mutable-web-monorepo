@@ -1,18 +1,28 @@
 import React from 'react'
 import { useMutableWeb } from '@mweb/engine'
 import { MiniOverlay } from '@mweb/shared-components'
-import styled from 'styled-components'
+import { useAccountId } from 'near-social-vm'
+import { NetworkId } from '../../data/widgets'
 
-const MiniOverlayContainer = styled(MiniOverlay)`
-  div[data-mweb-context-type='mweb-overlay'] {
-    top: 80px;
-  }
-`
-
-function MutableOverlayContainer() {
-  // ToDo: move to @mweb/engine
+function MutableOverlayContainer(props) {
+  const loggedInAccountId = useAccountId()
   const { selectedMutation, mutationApps } = useMutableWeb()
-  return <MiniOverlayContainer baseMutation={selectedMutation} mutationApps={mutationApps} />
+
+  const [open, setOpen] = React.useState(false)
+
+  return (
+    <MiniOverlay
+      setOpen={setOpen}
+      open={open}
+      baseMutation={selectedMutation}
+      mutationApps={mutationApps}
+      nearNetwork={NetworkId}
+      loggedInAccountId={loggedInAccountId}
+      onConnectWallet={() => props.requestSignIn()}
+      onDisconnectWallet={() => props.logOut()}
+      onMutateButtonClick={console.log}
+    />
+  )
 }
 
 export default MutableOverlayContainer
