@@ -1,25 +1,25 @@
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import React, { useCallback, useEffect } from 'react'
 
-function maybeRedirect(history, newURL) {
+function maybeRedirect(navigate, newURL) {
   let url = new URL(newURL)
   const hashFragment = url.hash.slice(1)
   const prefixSlash = hashFragment.startsWith('/')
   const numParts = hashFragment.split('/').length
 
   if (hashFragment && (prefixSlash || numParts >= 3)) {
-    history && history.replace(`${prefixSlash ? '' : '/'}${hashFragment}`)
+    navigate && navigate(`${prefixSlash ? '' : '/'}${hashFragment}`, { replace: true })
   }
 }
 
 export function useHashRouterLegacy() {
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const onHashChange = useCallback(
     (event) => {
-      maybeRedirect(history, event.newURL)
+      maybeRedirect(navigate, event.newURL)
     },
-    [history]
+    [navigate]
   )
 
   useEffect(() => {
@@ -31,10 +31,10 @@ export function useHashRouterLegacy() {
   }, [onHashChange])
 
   useEffect(() => {
-    if (!history) {
+    if (!navigate) {
       return
     }
     const currentUrl = window.location.href
-    maybeRedirect(history, currentUrl)
-  }, [history])
+    maybeRedirect(navigate, currentUrl)
+  }, [navigate])
 }
