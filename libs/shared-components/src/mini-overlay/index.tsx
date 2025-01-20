@@ -1,7 +1,6 @@
-import { AppInstanceWithSettings, AppWithSettings, MutationDto } from '@mweb/backend'
-import { useMutableWeb } from '@mweb/engine'
+import { AppInstanceWithSettings, MutationDto } from '@mweb/backend'
 import { Drawer } from 'antd'
-import React, { FC, ReactElement, useRef } from 'react'
+import React, { FC, useRef } from 'react'
 import { MemoryRouter } from 'react-router'
 import styled from 'styled-components'
 import OverlayWrapper from './overlay-wrapper'
@@ -65,7 +64,6 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
 }) => {
   // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)
-  const { engine } = useMutableWeb()
 
   const handleCloseOverlay = () => {
     setOpen(false)
