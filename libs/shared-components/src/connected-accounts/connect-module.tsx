@@ -62,10 +62,12 @@ const Text = styled.p`
 `
 
 type ConnectModuleProps = {
+  name: string
+  origin: string
   setShowConnectModule: Dispatch<SetStateAction<boolean>>
 }
 
-const ConnectModule: FC<ConnectModuleProps> = ({ setShowConnectModule }) => {
+const ConnectModule: FC<ConnectModuleProps> = ({ name, origin, setShowConnectModule }) => {
   return (
     <Wrapper>
       <Header>
@@ -74,10 +76,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({ setShowConnectModule }) => {
           <Close />
         </ButtonClose>
       </Header>
-      <AccountListItem
-        name={'@user'} // mocked
-        origin={'x'}
-      >
+      <AccountListItem name={name} origin={origin}>
         <LinkButton onClick={() => console.log('Link!')} />
       </AccountListItem>
       <Text>

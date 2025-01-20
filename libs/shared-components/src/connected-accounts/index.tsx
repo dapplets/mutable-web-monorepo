@@ -15,6 +15,8 @@ import {
   WalletDescriptorWithCAMainStatus,
 } from '@mweb/backend'
 import { useChangeCAStatus, useConnectedAccounts } from '@mweb/engine'
+import { useCore } from '@mweb/react'
+import { IContextNode } from '../../../core/lib'
 import ConnectModule from './connect-module'
 import { Message } from './message'
 import { resources } from './resources'
@@ -578,7 +580,13 @@ export const ConnectedAccount: FC<{
   >()
   const [connectedAccountsListReceiver, setConnectedAccountsListReceiver] =
     useState<WalletDescriptorWithCAMainStatus | null>(null)
-  const [showConnectModule, setShowConnectModule] = useState(true) // ToDo: remove mock data
+  const [showConnectModule, setShowConnectModule] = useState(false) // ToDo: remove mock data
+  const [accountToConnect, setAccountToConnect] = useState<{ name: string; origin: string } | null>(
+    null
+  )
+  const [contextInfoNode, setContextInfoNode] = useState<IContextNode | null>(null)
+
+  const core = useCore()
 
   const { pairs } = useConnectedAccounts()
   // console.log('loggedInAccountId', loggedInAccountId)
@@ -597,6 +605,35 @@ export const ConnectedAccount: FC<{
 
   // ToDo: remove abort controller
   const abortController = useAbortController()
+
+  useEffect(() => {
+    const subscription = contextInfoNode?.on('contextChanged', () => updateConnectModule())
+    return () => subscription?.remove()
+  }, [contextInfoNode])
+
+  const updateConnectModule = () => {
+    const siteSpecificContexts = core.tree?.children.filter(
+      (c) => c.namespace !== 'engine' && c.namespace !== 'mweb'
+    )
+    const node = siteSpecificContexts?.find(
+      (c) => c.parsedContext?.username && c.parsedContext?.fullname && c.parsedContext?.websiteName
+    )
+    if (node && node !== contextInfoNode) setContextInfoNode(node)
+
+    if (
+      node &&
+      node.parsedContext &&
+      node.parsedContext.username !== accountToConnect &&
+      node.parsedContext.fullname &&
+      node.parsedContext.websiteName !== accountToConnect?.origin
+    ) {
+      setAccountToConnect({
+        name: node.parsedContext.username,
+        origin: node.parsedContext.websiteName,
+      })
+      setShowConnectModule(true)
+    }
+  }
 
   const updatePairs = async (prevPairs?: IConnectedAccountsPair[]) => {
     // const { getConnectedAccountsPairs, execConnectedAccountsUpdateHandler } =
@@ -676,6 +713,18 @@ export const ConnectedAccount: FC<{
           setLoadingListDapplets(false)
         }
       })
+      updateConnectModule()
+      const contextChangedSubscription = core.tree?.on('contextChanged', () =>
+        updateConnectModule()
+      )
+      const childContextAddedSubscription = core.tree?.on('childContextAdded', () =>
+        updateConnectModule()
+      )
+
+      return () => {
+        contextChangedSubscription?.remove()
+        childContextAddedSubscription?.remove()
+      }
     }
 
     // EventBus.on('wallet_changed', updateContractNetworkAndWallets)
@@ -845,7 +894,13 @@ export const ConnectedAccount: FC<{
       {contractNetwork === NearNetworks.Testnet && (
         <div className="warningInfo">Connected Accounts are using a test network</div>
       )}
-      {showConnectModule && <ConnectModule setShowConnectModule={setShowConnectModule} />}
+      {showConnectModule && accountToConnect && (
+        <ConnectModule
+          name={accountToConnect.name}
+          origin={accountToConnect.origin.toLowerCase()}
+          setShowConnectModule={setShowConnectModule}
+        />
+      )}
       {/* <div className="caHeaderTop">
         <h3>Accounts connected to:</h3>
       </div> */}

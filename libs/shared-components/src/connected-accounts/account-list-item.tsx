@@ -2,6 +2,7 @@ import cn from 'classnames'
 import React, { FC, ReactElement } from 'react'
 import styled from 'styled-components'
 import { resources } from './resources'
+import PictureIcon from './assets/resources/picture'
 
 const AccountListItemWrapper = styled.div`
   position: relative;
@@ -167,14 +168,12 @@ type AccountListItemProps = {
 }
 
 const AccountListItem: FC<AccountListItemProps> = ({ children, name, origin, maxLength = 32 }) => {
-  const ResourceIcon = origin && resources[origin].icon
+  const ResourceIcon = (origin && resources[origin]?.icon) || null
   return (
     <AccountListItemWrapper>
-      {name && ResourceIcon ? (
+      {name ? (
         <>
-          <div className="imgUser">
-            <ResourceIcon />
-          </div>
+          <div className="imgUser">{ResourceIcon ? <ResourceIcon /> : <PictureIcon />}</div>
           <h4 className="nameUser">
             {name.length > maxLength
               ? name.slice(0, (maxLength - 2) / 2) + '...' + name.slice(-(maxLength - 4) / 2)
