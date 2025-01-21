@@ -10,8 +10,6 @@ type Props = {
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
   selectedMutationId: string | null
-  favoriteMutationId: string | null
-  onSetFavoriteMutation: (mutationId: string | null) => void
   onSwitchMutation: (mutationId: string | null) => void
   onGetPreferredSource: (mutationId: string) => EntitySourceType | null // ToDo: refactor
   children?: ReactNode
@@ -24,8 +22,6 @@ const EngineProvider: FC<Props> = ({
   onConnectWallet,
   onDisconnectWallet,
   selectedMutationId,
-  favoriteMutationId,
-  onSetFavoriteMutation,
   onSwitchMutation,
   onGetPreferredSource,
   children,
@@ -37,8 +33,6 @@ const EngineProvider: FC<Props> = ({
     onConnectWallet,
     onDisconnectWallet,
     selectedMutationId,
-    favoriteMutationId,
-    onSetFavoriteMutation,
     onSwitchMutation,
     onGetPreferredSource,
   }

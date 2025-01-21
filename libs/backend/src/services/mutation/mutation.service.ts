@@ -310,7 +310,7 @@ export class MutationService {
   public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {
     const lastUsage = await this.settingsService.getMutationLastUsage(
       mutation.id,
-      window.location.hostname
+      window.location.hostname // ToDo: bug for side panels
     )
 
     // ToDo: do not mix MutationWithSettings and Mutation

@@ -2,9 +2,10 @@ import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import {
   useDeleteLocalMutation,
+  useFavoriteMutation,
   useMutations,
-  useMutationWithSettings,
   useRemoveMutationFromRecents,
+  useSetFavoriteMutation,
 } from '@mweb/react-engine'
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -60,15 +61,10 @@ export type DropdownProps = {
 }
 
 export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownProps) => {
-  const {
-    tree,
-    selectedMutationId,
-    favoriteMutationId,
-    onSetFavoriteMutation,
-    onSwitchMutation,
-    onGetPreferredSource,
-  } = useEngine()
+  const { tree, selectedMutationId, onSwitchMutation, onGetPreferredSource } = useEngine()
   const { mutations } = useMutations(tree)
+  const { favoriteMutationId } = useFavoriteMutation()
+  const { setFavoriteMutation } = useSetFavoriteMutation()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
   const { removeMutationFromRecents } = useRemoveMutationFromRecents()
@@ -120,7 +116,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   }
 
   const handleFavoriteButtonClick = (mutationId: string) => {
-    onSetFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
+    setFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
   }
 
   const handleOriginalButtonClick = async () => {

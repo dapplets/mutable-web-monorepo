@@ -16,6 +16,7 @@ import {
 import { IconDropdown, StarSelectMutation, StarSelectMutationDefault } from '../assets/vectors'
 import { Badge } from './badge'
 import { MutationVersionDropdown } from './mutation-version-dropdown'
+import { useFavoriteMutation, useSetFavoriteMutation } from '@mweb/react-engine'
 
 export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> & {
   isVisible: boolean
@@ -23,14 +24,11 @@ export type DropdownProps = DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HT
   onMutateButtonClick: () => void
 }
 
+// ToDo: delete ?
 export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: DropdownProps) => {
-  const {
-    mutations,
-    selectedMutation,
-    favoriteMutationId,
-    setFavoriteMutation,
-    switchPreferredSource,
-  } = useMutableWeb()
+  const { mutations, selectedMutation, switchPreferredSource } = useMutableWeb()
+  const { favoriteMutationId } = useFavoriteMutation()
+  const { setFavoriteMutation } = useSetFavoriteMutation()
 
   // ToDo: think about this
   // The state is here to prevent closing dropdown when mutation changed

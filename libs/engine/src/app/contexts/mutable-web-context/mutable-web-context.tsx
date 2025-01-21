@@ -17,8 +17,6 @@ export type MutableWebContextState = {
   switchMutation: (mutationId: string | null) => void
   switchPreferredSource: (mutationId: string, source: EntitySourceType | null) => void
   getPreferredSource: (mutationId: string) => EntitySourceType | null
-  favoriteMutationId: string | null
-  setFavoriteMutation: (mutationId: string | null) => void
   switchMutationVersion: (mutationId: string, version?: string | null) => void
   mutationVersions: { [key: string]: string | null }
 }
@@ -35,8 +33,6 @@ export const contextDefaultValues: MutableWebContextState = {
   switchMutation: () => undefined,
   switchPreferredSource: () => undefined,
   getPreferredSource: () => null,
-  favoriteMutationId: null,
-  setFavoriteMutation: () => undefined,
   switchMutationVersion: () => undefined,
   mutationVersions: {},
 }

@@ -10,8 +10,6 @@ export type EngineContextState = {
   onDisconnectWallet: () => Promise<void>
 
   selectedMutationId: string | null
-  favoriteMutationId: string | null
-  onSetFavoriteMutation: (mutationId: string | null) => void
   onSwitchMutation: (mutationId: string | null) => void
   onGetPreferredSource: (mutationId: string) => EntitySourceType | null // ToDo: refactor
 }
@@ -23,8 +21,6 @@ export const contextDefaultValues: EngineContextState = {
   onConnectWallet: async () => {},
   onDisconnectWallet: async () => {},
   selectedMutationId: null,
-  favoriteMutationId: null,
-  onSetFavoriteMutation: () => {},
   onSwitchMutation: () => {},
   onGetPreferredSource: () => null,
 }

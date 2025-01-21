@@ -39,8 +39,6 @@ export const App: React.FC = () => {
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
         selectedMutationId={selectedMutationId}
-        favoriteMutationId={null} // todo: implement
-        onSetFavoriteMutation={() => {}} // todo: implement
         onSwitchMutation={switchMutation}
         onGetPreferredSource={() => null} // todo: implement
       >

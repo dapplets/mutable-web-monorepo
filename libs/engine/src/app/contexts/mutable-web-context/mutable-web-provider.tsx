@@ -1,20 +1,17 @@
-import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
-import { EngineConfig, EntitySourceType } from '@mweb/backend'
+import { EngineConfig, EntitySourceType, getNearConfig, utils } from '@mweb/backend'
 import { useCore } from '@mweb/react'
-import { utils } from '@mweb/backend'
-import { mutationDisabled, mutationSwitched } from './notifications'
-import { getNearConfig } from '@mweb/backend'
-import { ModalContextState } from '../modal-context/modal-context'
 import {
-  useApplications,
   useEngine,
   useMutationApps,
   useMutationParsers,
   useMutations,
   useMutationWithSettings,
+  useUpdateMutationLastUsage,
 } from '@mweb/react-engine'
-import { useUpdateMutationLastUsage } from '@mweb/react-engine'
+import React, { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ModalContextState } from '../modal-context/modal-context'
+import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
+import { mutationDisabled, mutationSwitched } from './notifications'
 
 type Props = {
   config: EngineConfig
@@ -43,13 +40,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const [mutationVersions, setMutationVersions] = useState<{
     [key: string]: string | null
   }>({})
-  const [favoriteMutationId, setFavoriteMutationId] = useState<string | null>(null)
-
-  useEffect(() => {
-    engine.mutationService.getFavoriteMutation().then((mutationId) => {
-      setFavoriteMutationId(mutationId)
-    })
-  }, [engine])
 
   useEffect(() => {
     const fn = async () => {
@@ -169,19 +159,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   )
 
   // ToDo: move to separate hook
-  const setFavoriteMutation = useCallback(
-    async (mutationId: string | null) => {
-      try {
-        setFavoriteMutationId(mutationId)
-        await engine.mutationService.setFavoriteMutation(mutationId)
-      } catch (err) {
-        console.error(err)
-      }
-    },
-    [engine]
-  )
-
-  // ToDo: move to separate hook
   const switchPreferredSource = useCallback(
     async (mutationId: string, source: EntitySourceType | null) => {
       try {
@@ -240,8 +217,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     switchMutation,
     switchPreferredSource,
     getPreferredSource,
-    setFavoriteMutation,
-    favoriteMutationId,
     switchMutationVersion,
     mutationVersions,
   }

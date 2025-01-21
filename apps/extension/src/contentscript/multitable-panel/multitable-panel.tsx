@@ -59,15 +59,7 @@ export const MultitablePanel: FC = () => {
   const { accountId, networkId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const {
-    tree,
-    mutations,
-    selectedMutation,
-    favoriteMutationId,
-    setFavoriteMutation,
-    switchMutation,
-    getPreferredSource,
-  } = useMutableWeb()
+  const { tree, mutations, selectedMutation, switchMutation, getPreferredSource } = useMutableWeb()
   const { applications: allApps } = useApplications()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isOverlayOpen, setIsOverlayOpen] = useState(false)
@@ -92,8 +84,6 @@ export const MultitablePanel: FC = () => {
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
         selectedMutationId={selectedMutation?.id ?? null}
-        favoriteMutationId={favoriteMutationId}
-        onSetFavoriteMutation={setFavoriteMutation}
         onSwitchMutation={switchMutation}
         onGetPreferredSource={getPreferredSource}
       >
