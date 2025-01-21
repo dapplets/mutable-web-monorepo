@@ -196,9 +196,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     [engine, mutations]
   )
 
-  const getPreferredSource = (mutationId: string): EntitySourceType | null =>
-    preferredSources[mutationId]
-
   const isLoading =
     isMutationsLoading ||
     isMutationAppsLoading ||
@@ -216,7 +213,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     isLoading,
     switchMutation,
     switchPreferredSource,
-    getPreferredSource,
     switchMutationVersion,
     mutationVersions,
   }

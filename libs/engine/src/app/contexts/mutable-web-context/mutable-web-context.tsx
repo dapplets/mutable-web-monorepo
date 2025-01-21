@@ -16,7 +16,6 @@ export type MutableWebContextState = {
   isLoading: boolean
   switchMutation: (mutationId: string | null) => void
   switchPreferredSource: (mutationId: string, source: EntitySourceType | null) => void
-  getPreferredSource: (mutationId: string) => EntitySourceType | null
   switchMutationVersion: (mutationId: string, version?: string | null) => void
   mutationVersions: { [key: string]: string | null }
 }
@@ -32,7 +31,6 @@ export const contextDefaultValues: MutableWebContextState = {
   selectedMutation: null,
   switchMutation: () => undefined,
   switchPreferredSource: () => undefined,
-  getPreferredSource: () => null,
   switchMutationVersion: () => undefined,
   mutationVersions: {},
 }

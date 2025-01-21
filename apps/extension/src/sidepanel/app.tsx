@@ -40,7 +40,6 @@ export const App: React.FC = () => {
         onDisconnectWallet={disconnectWallet}
         selectedMutationId={selectedMutationId}
         onSwitchMutation={switchMutation}
-        onGetPreferredSource={() => null} // todo: implement
       >
         <div style={{ position: 'absolute' }}>Tree: {tree?.id}</div>
         <SidePanel

@@ -1,5 +1,4 @@
 import { createContext } from 'react'
-import { EntitySourceType } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 
 export type EngineContextState = {
@@ -11,7 +10,6 @@ export type EngineContextState = {
 
   selectedMutationId: string | null
   onSwitchMutation: (mutationId: string | null) => void
-  onGetPreferredSource: (mutationId: string) => EntitySourceType | null // ToDo: refactor
 }
 
 export const contextDefaultValues: EngineContextState = {
@@ -22,7 +20,6 @@ export const contextDefaultValues: EngineContextState = {
   onDisconnectWallet: async () => {},
   selectedMutationId: null,
   onSwitchMutation: () => {},
-  onGetPreferredSource: () => null,
 }
 
 export const EngineContext = createContext<EngineContextState>(contextDefaultValues)

@@ -5,7 +5,7 @@ import { EventEmitter as NEventEmitter } from 'events'
 import { useMutableWeb } from '@mweb/engine'
 
 export const useSidePanel = () => {
-  const { tree, selectedMutation, switchMutation, getPreferredSource } = useMutableWeb()
+  const { tree, selectedMutation, switchMutation } = useMutableWeb()
 
   useEffect(() => {
     if (!tree) return

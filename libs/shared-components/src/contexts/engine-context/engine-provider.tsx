@@ -11,7 +11,6 @@ type Props = {
   onDisconnectWallet: () => Promise<void>
   selectedMutationId: string | null
   onSwitchMutation: (mutationId: string | null) => void
-  onGetPreferredSource: (mutationId: string) => EntitySourceType | null // ToDo: refactor
   children?: ReactNode
 }
 
@@ -23,7 +22,6 @@ const EngineProvider: FC<Props> = ({
   onDisconnectWallet,
   selectedMutationId,
   onSwitchMutation,
-  onGetPreferredSource,
   children,
 }) => {
   const state: EngineContextState = {
@@ -34,7 +32,6 @@ const EngineProvider: FC<Props> = ({
     onDisconnectWallet,
     selectedMutationId,
     onSwitchMutation,
-    onGetPreferredSource,
   }
 
   return <EngineContext.Provider value={state}>{children}</EngineContext.Provider>
