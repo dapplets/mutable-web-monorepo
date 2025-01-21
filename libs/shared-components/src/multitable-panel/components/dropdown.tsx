@@ -3,6 +3,7 @@ import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
 import {
   useDeleteLocalMutation,
   useMutations,
+  useMutationWithSettings,
   useRemoveMutationFromRecents,
 } from '@mweb/react-engine'
 import React, { FC, useMemo, useState } from 'react'
@@ -61,7 +62,7 @@ export type DropdownProps = {
 export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownProps) => {
   const {
     tree,
-    selectedMutation,
+    selectedMutationId,
     favoriteMutationId,
     onSetFavoriteMutation,
     onSwitchMutation,
@@ -164,9 +165,9 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                 return (
                   <InputBlock
                     data-testid={mut.id}
-                    className={mut.id === selectedMutation?.id ? 'active-mutation' : ''}
+                    className={mut.id === selectedMutationId ? 'active-mutation' : ''}
                     key={mut.id}
-                    isActive={mut.id === selectedMutation?.id}
+                    isActive={mut.id === selectedMutationId}
                   >
                     <ImageBlock>
                       <Image
@@ -177,7 +178,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                     <InputInfoWrapper onClick={() => handleMutationClick(mut.id)}>
                       {/* todo: mocked classname */}
                       <InputMutation
-                        className={mut.id === selectedMutation?.id ? 'inputMutationSelected' : ''}
+                        className={mut.id === selectedMutationId ? 'inputMutationSelected' : ''}
                       >
                         {mut.metadata ? mut.metadata.name : ''}{' '}
                         {recentlyUsedMutations[mut.id]?.length === 2 ? (
@@ -194,7 +195,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       {mut.authorId ? (
                         <AuthorMutation
                           className={
-                            mut.id === selectedMutation?.id && mut.id === favoriteMutationId
+                            mut.id === selectedMutationId && mut.id === favoriteMutationId
                               ? 'authorMutationSelected'
                               : ''
                           }
@@ -209,7 +210,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut.id)}>
                         <StarMutationList />
                       </InputIconWrapper>
-                    ) : mut.id === selectedMutation?.id ? (
+                    ) : mut.id === selectedMutationId ? (
                       <InputIconWrapper onClick={() => handleFavoriteButtonClick(mut.id)}>
                         <StarMutationListDefault />
                       </InputIconWrapper>
@@ -219,7 +220,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       <InputIconWrapper onClick={() => setMutationIdToDelete(mut.id)}>
                         <DeleteOutlined />
                       </InputIconWrapper>
-                    ) : mut.id !== selectedMutation?.id &&
+                    ) : mut.id !== selectedMutationId &&
                       mut.id !== favoriteMutationId &&
                       !onGetPreferredSource(mut.id) ? (
                       <InputIconWrapper onClick={() => handleRemoveFromRecentlyUsedClick(mut)}>
@@ -266,7 +267,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
                       <InputBlock
                         key={mut.id}
                         data-testid={mut.id}
-                        isActive={mut.id === selectedMutation?.id}
+                        isActive={mut.id === selectedMutationId}
                         onClick={() => handleMutationClick(mut.id)}
                         className="avalibleMutationsInput"
                       >

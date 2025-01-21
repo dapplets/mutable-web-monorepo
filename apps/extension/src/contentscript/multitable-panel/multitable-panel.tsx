@@ -89,7 +89,7 @@ export const MultitablePanel: FC = () => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
-        selectedMutation={selectedMutation}
+        selectedMutationId={selectedMutation?.id ?? null}
         favoriteMutationId={favoriteMutationId}
         onSetFavoriteMutation={setFavoriteMutation}
         onSwitchMutation={switchMutation}

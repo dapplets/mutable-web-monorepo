@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
+import { EntitySourceType } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 
 export type EngineContextState = {
@@ -9,7 +9,7 @@ export type EngineContextState = {
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
 
-  selectedMutation: MutationWithSettings | null
+  selectedMutationId: string | null
   favoriteMutationId: string | null
   onSetFavoriteMutation: (mutationId: string | null) => void
   onSwitchMutation: (mutationId: string | null) => void
@@ -22,7 +22,7 @@ export const contextDefaultValues: EngineContextState = {
   nearNetwork: '',
   onConnectWallet: async () => {},
   onDisconnectWallet: async () => {},
-  selectedMutation: null,
+  selectedMutationId: null,
   favoriteMutationId: null,
   onSetFavoriteMutation: () => {},
   onSwitchMutation: () => {},

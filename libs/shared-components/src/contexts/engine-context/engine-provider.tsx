@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react'
 import { EngineContext, EngineContextState } from './engine-context'
-import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
+import { EntitySourceType } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 
 type Props = {
@@ -9,7 +9,7 @@ type Props = {
   nearNetwork: string
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
-  selectedMutation: MutationWithSettings | null
+  selectedMutationId: string | null
   favoriteMutationId: string | null
   onSetFavoriteMutation: (mutationId: string | null) => void
   onSwitchMutation: (mutationId: string | null) => void
@@ -23,7 +23,7 @@ const EngineProvider: FC<Props> = ({
   nearNetwork,
   onConnectWallet,
   onDisconnectWallet,
-  selectedMutation,
+  selectedMutationId,
   favoriteMutationId,
   onSetFavoriteMutation,
   onSwitchMutation,
@@ -36,7 +36,7 @@ const EngineProvider: FC<Props> = ({
     nearNetwork,
     onConnectWallet,
     onDisconnectWallet,
-    selectedMutation,
+    selectedMutationId,
     favoriteMutationId,
     onSetFavoriteMutation,
     onSwitchMutation,

@@ -6,7 +6,7 @@ import OverlayWrapper from './overlay-wrapper'
 import { SidePanel } from './side-panel'
 import UberSausage from './uber-sausage'
 import { useEngine } from '../contexts/engine-context'
-import { useMutationApps } from '@mweb/react-engine'
+import { useMutationApps, useMutationWithSettings } from '@mweb/react-engine'
 
 const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   display: block;
@@ -51,7 +51,8 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
   open,
   onMutateButtonClick: handleMutateButtonClick,
 }) => {
-  const { selectedMutation } = useEngine()
+  const { selectedMutationId } = useEngine()
+  const { selectedMutation } = useMutationWithSettings(selectedMutationId)
   const { mutationApps } = useMutationApps(selectedMutation)
 
   // ToDo: check type

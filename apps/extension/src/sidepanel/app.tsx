@@ -40,7 +40,7 @@ export const App: React.FC = () => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
-        selectedMutation={null} // todo: implement
+        selectedMutationId={null} // todo: implement
         favoriteMutationId={null} // todo: implement
         onSetFavoriteMutation={() => {}} // todo: implement
         onSwitchMutation={() => {}} // todo: implement
