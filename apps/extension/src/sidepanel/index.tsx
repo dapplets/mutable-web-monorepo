@@ -8,6 +8,8 @@ import './index.css'
 async function main() {
   const networkId = await Background.getCurrentNetwork()
 
+  // ToDo: handle another events
+
   const container = document.getElementById('app')
 
   if (container) {

@@ -20,6 +20,16 @@ export type ParsedContext = {
 
 export type ContextLevel = 'default' | 'system' | 'callout'
 
+export type TransferableContextNode = {
+  namespace: string
+  contextType: string
+  id: string | null
+  parsedContext: any
+  children?: TransferableContextNode[]
+  parentNode?: TransferableContextNode | null
+  contextLevel: ContextLevel
+}
+
 export interface IContextNode {
   id: string | null
   contextType: string // ToDo: rename to type
@@ -42,6 +52,8 @@ export interface IContextNode {
     eventName: EventName,
     callback: (event: TreeNodeEvents[EventName]) => void
   ): Subscription
+
+  toTransferable(options: { dir: 'up' | 'down' }): TransferableContextNode
 }
 
 export interface ITreeBuilder {

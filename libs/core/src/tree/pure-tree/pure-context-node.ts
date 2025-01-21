@@ -1,5 +1,11 @@
 import { EventEmitter, Subscription } from '../../event-emitter'
-import { ContextLevel, IContextNode, InsertionPointWithElement, TreeNodeEvents } from '../types'
+import {
+  ContextLevel,
+  IContextNode,
+  InsertionPointWithElement,
+  TransferableContextNode,
+  TreeNodeEvents,
+} from '../types'
 
 export class PureContextNode implements IContextNode {
   public id: string | null = null
@@ -84,5 +90,28 @@ export class PureContextNode implements IContextNode {
     callback: (event: TreeNodeEvents[EventName]) => void
   ): Subscription {
     return this.#eventEmitter.on(eventName, callback)
+  }
+
+  toTransferable(opt: { dir: 'up' | 'down' }): TransferableContextNode {
+    return {
+      namespace: this.namespace,
+      contextType: this.contextType,
+      id: this.id,
+      parsedContext: { ...this.parsedContext },
+      parentNode: opt.dir === 'up' && this.parentNode ? this.parentNode.toTransferable(opt) : null,
+      children: opt.dir === 'down' ? this.children.map((ch) => ch.toTransferable(opt)) : undefined,
+      contextLevel: this.contextLevel,
+    }
+  }
+
+  static fromTransferable(transferable: TransferableContextNode): PureContextNode {
+    return new PureContextNode(
+      transferable.namespace,
+      transferable.contextType,
+      { ...transferable.parsedContext },
+      [], // insertion points are not transferable
+      null, // element is not transferable
+      transferable.contextLevel
+    )
   }
 }

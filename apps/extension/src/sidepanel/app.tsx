@@ -8,10 +8,12 @@ import { ExtensionStorage } from '../common/extension-storage'
 import { useWallet } from '../common/wallet-context'
 import { useConnectWallet } from '../common/wallet-context/use-connect-wallet'
 import { useDisconnectWallet } from '../common/wallet-context/use-disconnect-wallet'
+import { useCurrentTab } from './use-current-tab'
 
 export const App: React.FC = () => {
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
 
+  const { tree } = useCurrentTab()
   const {} = useMutableWeb()
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
@@ -33,7 +35,7 @@ export const App: React.FC = () => {
   return (
     <MWebProvider engine={engine}>
       <EngineProvider
-        tree={null}
+        tree={tree}
         loggedInAccountId={accountId}
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
@@ -44,6 +46,7 @@ export const App: React.FC = () => {
         onSwitchMutation={() => {}} // todo: implement
         onGetPreferredSource={() => null} // todo: implement
       >
+        <div style={{ position: 'absolute' }}>Tree: {tree?.id}</div>
         <SidePanel
           onMutateButtonClick={() => console.log('mutate button click')} // ToDo: implement
         />

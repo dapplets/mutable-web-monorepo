@@ -1,5 +1,5 @@
 import { SignInParams } from '@near-wallet-selector/core'
-import { setupMessageListener } from 'chrome-extension-message-wrapper'
+import { setupMessageListener } from '../common/messenger'
 import browser from 'webextension-polyfill'
 import { MUTATION_LINK_URL } from '../common/constants'
 import { DefaultNetworkId, NearNetworkId, networkConfigs } from '../common/networks'
@@ -7,6 +7,7 @@ import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
 import { EventEmitter as NEventEmitter } from 'events'
+import ContentScript from '../common/content-script'
 
 const eventEmitter = new NEventEmitter()
 
@@ -70,7 +71,7 @@ const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
   await browser.storage.local.set({ devServerUrl })
 }
 
-export const bgFunctions = {
+const bgFunctions = {
   near_signIn: near.signIn.bind(near),
   near_signOut: near.signOut.bind(near),
   near_getAccounts: near.getAccounts.bind(near),
@@ -86,13 +87,15 @@ export const bgFunctions = {
 
 export type BgFunctions = typeof bgFunctions
 
-browser.runtime.onMessage.addListener(setupMessageListener(bgFunctions))
+browser.runtime.onMessage.addListener(
+  setupMessageListener(bgFunctions, { handlerName: 'bg' }) as any
+)
 
 // Context menu actions
 
 const setClipboard = async (tab: browser.Tabs.Tab, address: string): Promise<void> => {
   if (!tab.id) return
-  await browser.tabs.sendMessage(tab.id, { type: 'COPY', address })
+  await ContentScript(tab.id).writeToClipboard(address)
 }
 
 const copy = async (info: browser.Menus.OnClickData, tab: browser.Tabs.Tab) => {
@@ -191,13 +194,12 @@ setActionMenu()
 // Set availability for copy address
 
 const setCopyAvailability = async (tabId: number) => {
-  const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
-  if (!currentTab || tabId !== currentTab.id) return
   // The script may not be injected if the extension was just installed
-  const isContentScriptInjected = await browser.tabs
-    .sendMessage(currentTab.id, { type: 'PING' }) // The CS must reply 'PONG'
+  const isContentScriptInjected = await ContentScript(tabId)
+    .isAlive()
     .then(() => true)
     .catch(() => false)
+
   browser.contextMenus
     .update('copy', { enabled: isContentScriptInjected })
     .then(() => true)
