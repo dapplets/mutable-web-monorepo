@@ -1,5 +1,4 @@
 import { Engine, EngineConfig } from '@mweb/backend'
-import { useMutableWeb } from '@mweb/engine'
 import { EngineProvider as MWebProvider } from '@mweb/react-engine'
 import { EngineProvider, SidePanel } from '@mweb/shared-components'
 import React from 'react'
@@ -13,8 +12,7 @@ import { useCurrentTab } from './use-current-tab'
 export const App: React.FC = () => {
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
 
-  const { tree } = useCurrentTab()
-  const {} = useMutableWeb()
+  const { tree, selectedMutationId, switchMutation } = useCurrentTab()
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
@@ -40,10 +38,10 @@ export const App: React.FC = () => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
-        selectedMutationId={null} // todo: implement
+        selectedMutationId={selectedMutationId}
         favoriteMutationId={null} // todo: implement
         onSetFavoriteMutation={() => {}} // todo: implement
-        onSwitchMutation={() => {}} // todo: implement
+        onSwitchMutation={switchMutation}
         onGetPreferredSource={() => null} // todo: implement
       >
         <div style={{ position: 'absolute' }}>Tree: {tree?.id}</div>

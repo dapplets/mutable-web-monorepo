@@ -1,27 +1,30 @@
 import { IContextNode, PureContextNode, TransferableContextNode } from '@mweb/core'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import browser from 'webextension-polyfill'
 
 export const useCurrentTab = () => {
   const [tree, setTree] = useState<IContextNode | null>(null)
+  const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
+  const portRef = useRef<browser.Runtime.Port | null>(null)
 
   useEffect(() => {
-    let port: browser.Runtime.Port | null = null
-
     const handleTabActivated = async () => {
       const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true })
 
-      port?.disconnect()
-      port = null
+      portRef.current?.disconnect()
+      portRef.current = null
 
       setTree(null)
+      setSelectedMutationId(null)
 
       if (currentTab?.id) {
-        port = browser.tabs.connect(currentTab.id, { name: 'sp-to-cs' })
+        portRef.current = browser.tabs.connect(currentTab.id, { name: 'sp-to-cs' })
 
-        port.onMessage.addListener((msg: any) => {
+        portRef.current.onMessage.addListener((msg: any) => {
           // ToDo: handle childContextRemoved, contextChanged
-          if (msg.type === 'contextTree') {
+          if (msg.type === 'setSelectedMutationId') {
+            setSelectedMutationId(msg.data)
+          } else if (msg.type === 'contextTree') {
             setTree(PureContextNode.fromTransferable(msg.data))
           } else if (msg.type === 'childContextAdded') {
             function updateTree(node: TransferableContextNode): IContextNode | null {
@@ -63,10 +66,16 @@ export const useCurrentTab = () => {
     return () => {
       browser.tabs.onActivated.removeListener(handleTabActivated)
       browser.tabs.onUpdated.removeListener(handleTabActivated)
-      port?.disconnect()
-      port = null
+      portRef.current?.disconnect()
+      portRef.current = null
     }
   }, [])
 
-  return { tree }
+  const switchMutation = useCallback((mutationId: string | null) => {
+    if (!portRef.current) return
+
+    portRef.current.postMessage({ type: 'switchMutation', data: mutationId })
+  }, [])
+
+  return { tree, selectedMutationId, switchMutation }
 }

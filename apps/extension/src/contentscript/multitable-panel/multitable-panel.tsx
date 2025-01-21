@@ -9,6 +9,7 @@ import { MiniOverlay } from '@mweb/shared-components'
 import { useWallet } from '../../common/wallet-context'
 import { useConnectWallet } from '../../common/wallet-context/use-connect-wallet'
 import { useDisconnectWallet } from '../../common/wallet-context/use-disconnect-wallet'
+import { useSidePanel } from '../hooks/use-side-panel'
 
 const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
   // Global Styles
@@ -54,6 +55,7 @@ const WrapperPanel = styled.div<{ $isAnimated?: boolean }>`
 `
 
 export const MultitablePanel: FC = () => {
+  useSidePanel()
   const { accountId, networkId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
