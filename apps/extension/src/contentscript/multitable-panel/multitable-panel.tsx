@@ -16,7 +16,7 @@ export const MultitablePanel: FC = () => {
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
   const { tree, mutations, selectedMutation, switchMutation } = useMutableWeb()
-  const [isOverlayOpen, setIsOverlayOpen] = useState(false)
+  const [isOverlayOpen, setIsOverlayOpen] = useState(false) // ToDo: move to MiniOverlay
 
   // The notch can be opened from the extension's context menu on websites without any mutation
   if (mutations.length === 0) return null
