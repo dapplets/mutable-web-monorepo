@@ -40,15 +40,13 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
   }
 `
 
-interface IMiniOverlayProps {
-  setOpen: (open: boolean) => void
-  open: boolean
-}
+interface IMiniOverlayProps {}
 
-export const MiniOverlay: FC<IMiniOverlayProps> = ({ setOpen, open }) => {
+export const MiniOverlay: FC<IMiniOverlayProps> = ({}) => {
   const { selectedMutationId } = useEngine()
   const { selectedMutation } = useMutationWithSettings(selectedMutationId)
   const { mutationApps } = useMutationApps(selectedMutation)
+  const [open, setOpen] = React.useState(false)
 
   // ToDo: check type
   const overlayRef = useRef<HTMLDivElement>(null)

@@ -8,12 +8,8 @@ function MutableOverlayContainer(props) {
   const loggedInAccountId = useAccountId()
   const { selectedMutation, mutationApps } = useMutableWeb()
 
-  const [open, setOpen] = React.useState(false)
-
   return (
     <MiniOverlay
-      setOpen={setOpen}
-      open={open}
       baseMutation={selectedMutation}
       mutationApps={mutationApps}
       nearNetwork={NetworkId}
