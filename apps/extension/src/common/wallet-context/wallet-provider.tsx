@@ -5,17 +5,24 @@ import browser from 'webextension-polyfill'
 import { ExtensionStorage } from '../extension-storage'
 import { setupWallet } from './wallet'
 import { WalletContext, WalletContextState } from './wallet-context'
+import Background from '../background'
 
 type Props = {
-  networkId: string
   children?: ReactNode
 }
 
-const WalletProvider: FC<Props> = ({ networkId, children }) => {
+const WalletProvider: FC<Props> = ({ children }) => {
+  const [networkId, setNetworkId] = React.useState<string | null>(null)
   const [selector, setSelector] = React.useState<WalletSelector | null>(null)
   const [accountId, setAccountId] = React.useState<string | null>(null)
 
   useEffect(() => {
+    Background.getCurrentNetwork().then(setNetworkId)
+  }, [])
+
+  useEffect(() => {
+    if (!networkId) return
+
     const eventEmitter = new NEventEmitter()
 
     // The wallet selector looks like an unnecessary abstraction layer over the "mutable-web-extension" wallet
@@ -87,6 +94,8 @@ const WalletProvider: FC<Props> = ({ networkId, children }) => {
       }
     }
   }, [networkId])
+
+  if (!networkId) return null
 
   const state: WalletContextState = {
     selector,

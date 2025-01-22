@@ -1,13 +1,13 @@
 import { EngineConfig } from '@mweb/backend'
+import { Core } from '@mweb/core'
 import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
 import browser from 'webextension-polyfill'
 import { ExtensionStorage } from '../common/extension-storage'
 import { networkConfigs } from '../common/networks'
-import { useWallet, WalletProvider } from '../common/wallet-context'
+import { useWallet } from '../common/wallet-context'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
-import { Core } from '@mweb/core'
 
 export const App: FC<{
   core: Core
@@ -16,19 +16,15 @@ export const App: FC<{
 }> = ({ core, defaultMutationId, devServerUrl }) => {
   const { selector, networkId } = useWallet()
 
-  // ToDo: fix
-  // @ts-ignore
-  const networkConfig = networkConfigs[networkId]
-
   const { initNear } = useInitNear()
 
   useEffect(() => {
-    if (initNear && selector) {
+    if (initNear && selector && networkId in networkConfigs) {
+      const { nodeUrl } = networkConfigs[networkId]
+
       initNear({
-        networkId: networkConfig.networkId,
-        config: {
-          nodeUrl: networkConfig.nodeUrl,
-        },
+        networkId,
+        config: { nodeUrl },
         selector: Promise.resolve(selector),
         features: {
           skipTxConfirmationPopup: true,
@@ -36,7 +32,7 @@ export const App: FC<{
         customElements,
       })
     }
-  }, [initNear, selector])
+  }, [initNear, selector, networkId])
 
   if (!selector) return null
 
@@ -52,17 +48,15 @@ export const App: FC<{
   }
 
   return (
-    <WalletProvider networkId={networkId}>
-      <MutableWebProvider
-        core={core}
-        config={engineConfig}
-        defaultMutationId={defaultMutationId}
-        devServerUrl={devServerUrl}
-      >
-        <ShadowDomWrapper stylesheetSrc={engineConfig.bosElementStyleSrc}>
-          <MultitablePanel />
-        </ShadowDomWrapper>
-      </MutableWebProvider>
-    </WalletProvider>
+    <MutableWebProvider
+      core={core}
+      config={engineConfig}
+      defaultMutationId={defaultMutationId}
+      devServerUrl={devServerUrl}
+    >
+      <ShadowDomWrapper stylesheetSrc={engineConfig.bosElementStyleSrc}>
+        <MultitablePanel />
+      </ShadowDomWrapper>
+    </MutableWebProvider>
   )
 }

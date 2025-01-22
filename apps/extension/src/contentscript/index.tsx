@@ -1,16 +1,15 @@
+import { Core } from '@mweb/core'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
-import { Core } from '@mweb/core'
 import Background from '../common/background'
+import { setupMessageListener } from '../common/messenger'
 import { WalletProvider } from '../common/wallet-context'
 import { App } from './app'
-import { setupMessageListener } from '../common/messenger'
 
 async function main() {
   const core = new Core()
 
-  const networkId = await Background.getCurrentNetwork()
   const devServerUrl = await Background.getDevServerUrl()
   const tabState = await Background.popTabState()
 
@@ -22,7 +21,7 @@ async function main() {
   document.body.appendChild(container)
   const root = createRoot(container)
   root.render(
-    <WalletProvider networkId={networkId}>
+    <WalletProvider>
       <App core={core} defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
     </WalletProvider>
   )
