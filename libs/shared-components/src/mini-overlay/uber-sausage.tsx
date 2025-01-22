@@ -1,32 +1,16 @@
-import {
-  AppInstanceWithSettings,
-  AppWithSettings,
-  EntitySourceType,
-  MutationDto,
-} from '@mweb/backend'
-import { useNotifications } from '@mweb/react-engine'
+import { EntitySourceType } from '@mweb/backend'
+import { useMutationApps, useMutationWithSettings } from '@mweb/react-engine'
 import { Button } from 'antd'
-import React, { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router'
+import React, { CSSProperties, useState } from 'react'
 import styled from 'styled-components'
 import { Badge } from '../common/Badge'
 import { Image } from '../common/image'
-import {
-  ArrowIcon,
-  BellIcon,
-  BellWithCircle,
-  MutationFallbackIcon,
-  PersonAddAlt,
-} from './assets/icons'
-import { IWalletConnect } from './types'
-import { AppSwitcher } from './app-switcher'
 import { useEngine } from '../contexts/engine-context'
+import { AppSwitcher } from './app-switcher'
+import { ArrowIcon, MutationFallbackIcon } from './assets/icons'
 
 const SidePanelWrapper = styled.div<{ $isApps: boolean }>`
-  position: absolute;
-  z-index: 6000;
   display: flex;
-  top: 68px;
   user-select: none;
   flex-direction: column;
   justify-content: center;
@@ -218,34 +202,21 @@ const ButtonOpenWrapper = styled.div`
 `
 
 interface ISidePanelProps {
-  baseMutation: MutationDto | null
-  mutationApps: AppInstanceWithSettings[]
-  isOverlayOpened: boolean
-  openOverlay: (open: boolean) => void
+  onToggleOverlay: () => void
+  style?: CSSProperties
 }
 
-const UberSausage: React.FC<ISidePanelProps> = ({
-  baseMutation,
-  mutationApps,
-  isOverlayOpened,
-  openOverlay,
-}) => {
-  const { loggedInAccountId } = useEngine()
-  const navigate = useNavigate()
-  const { notifications } = useNotifications(loggedInAccountId)
-  const [haveUnreadNotifications, setHaveUnreadNotifications] = useState<boolean>(
-    !!notifications.filter((not) => not.status === 'new').length
-  )
+const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
+  const { selectedMutationId, loggedInAccountId } = useEngine()
+  const { selectedMutation } = useMutationWithSettings(selectedMutationId)
+  const { mutationApps } = useMutationApps(selectedMutation)
   const [isOpenAppsPane, openCloseAppsPane] = useState(false)
-
-  useEffect(() => {
-    setHaveUnreadNotifications(!!notifications.filter((not) => not.status === 'new').length)
-  }, [notifications])
 
   const isMutationIconButton = !!loggedInAccountId
 
   return (
     <SidePanelWrapper
+      style={style}
       $isApps={!!mutationApps.length}
       data-testid="mweb-overlay"
       data-mweb-context-type="mweb-overlay"
@@ -254,9 +225,9 @@ const UberSausage: React.FC<ISidePanelProps> = ({
     >
       <TopBlock $open={isOpenAppsPane || !!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
-          onClick={() => openOverlay(!isOverlayOpened)}
+          onClick={onToggleOverlay}
           $isButton={isMutationIconButton}
-          title={baseMutation?.metadata.name}
+          title={selectedMutation?.metadata.name}
           data-testid="mutation-button"
           data-mweb-context-type="mweb-overlay"
           data-mweb-context-parsed={JSON.stringify({
@@ -264,43 +235,21 @@ const UberSausage: React.FC<ISidePanelProps> = ({
           })}
           data-mweb-context-level="system"
         >
-          {baseMutation?.metadata.image ? (
-            <Image image={baseMutation?.metadata.image} />
+          {selectedMutation?.metadata.image ? (
+            <Image image={selectedMutation?.metadata.image} />
           ) : (
             <MutationFallbackIcon />
           )}
-          {baseMutation?.source === EntitySourceType.Local && (
+          {selectedMutation?.source === EntitySourceType.Local && (
             <BadgeWrapper>
-              <Badge text={baseMutation.source} theme={'blue'} />
+              <Badge text={selectedMutation.source} theme={'blue'} />
             </BadgeWrapper>
           )}
           <div data-mweb-insertion-point="mutation-icon" style={{ display: 'none' }} />
         </MutationIconWrapper>
-        <ActionLikeButton
-          block
-          type={isOverlayOpened && location.pathname === '/system/main' ? 'primary' : 'default'}
-          onClick={() => {
-            openOverlay(location.pathname !== '/system/main' ? true : !isOverlayOpened)
-            navigate!(`/system/main`)
-          }}
-        >
-          {haveUnreadNotifications ? <BellWithCircle /> : <BellIcon />}
-        </ActionLikeButton>
-        <ActionLikeButton
-          block
-          type={isOverlayOpened && location.pathname === '/system/profile' ? 'primary' : 'default'}
-          onClick={() => {
-            openOverlay(location.pathname !== '/system/profile' ? true : !isOverlayOpened)
-            navigate!(`/system/profile`)
-          }}
-          style={{ paddingLeft: '14px' }}
-          data-testid="profile-action-button"
-        >
-          <PersonAddAlt />
-        </ActionLikeButton>
       </TopBlock>
 
-      {mutationApps.length && baseMutation ? (
+      {mutationApps.length && selectedMutation ? (
         <>
           {!isOpenAppsPane ? (
             <ButtonWrapper
@@ -313,7 +262,7 @@ const UberSausage: React.FC<ISidePanelProps> = ({
                 {mutationApps.map((app) => (
                   <AppSwitcher
                     key={`${app.id}/${app.instanceId}`}
-                    mutationId={baseMutation.id}
+                    mutationId={selectedMutation.id}
                     app={app}
                   />
                 ))}

@@ -1,28 +1,24 @@
 import makeBlockie from 'ethereum-blockies-base64'
 import React, { FC, useRef, useState } from 'react'
 import styled from 'styled-components'
-// import { useOutside } from '../../hooks/use-outside'
+import cn from 'classnames'
+import { useLocation, useNavigate } from 'react-router'
+import { useEngine } from '../../contexts/engine-context'
 import {
   Connect as ConnectIcon,
   Copy as CopyIcon,
   Disconnect as DisconnectIcon,
   Person as PersonIcon,
 } from '../assets/icons'
-import { IWalletConnect } from '../types'
-import { Location, NavigateFunction, useLocation, useNavigate } from 'react-router'
-import cn from 'classnames'
-import { useEngine } from '../../contexts/engine-context'
 
 const HeaderWrapper = styled.div`
   display: flex;
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
-  width: calc(100% - 20px);
+  width: 100%;
   height: 56px;
   border-radius: 10px;
-  margin: 10px;
-  margin-bottom: 0;
   padding: 4px 10px;
   background: #fff;
   font-family: sans-serif;

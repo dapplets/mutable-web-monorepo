@@ -1,89 +1,50 @@
 import { Drawer } from 'antd'
-import React, { FC, useRef } from 'react'
-import { MemoryRouter } from 'react-router'
-import styled from 'styled-components'
-import OverlayWrapper from './overlay-wrapper'
+import React, { FC } from 'react'
 import { SidePanel } from './side-panel'
 import UberSausage from './uber-sausage'
-import { useEngine } from '../contexts/engine-context'
-import { useMutationApps, useMutationWithSettings } from '@mweb/react-engine'
-
-const WrapperDriver = styled.div<{ $isOpen: boolean }>`
-  display: block;
-  position: relative;
-  border: none;
-  z-index: 5000;
-
-  .sideWrapper {
-    box-shadow: none;
-    width: min-content !important;
-    top: 10px;
-    transition: all 0.2s ease-in-out;
-    transform: ${(props) => (props.$isOpen ? 'translateX(-360px)' : 'translateX(0)')};
-
-    .ant-drawer-header-close-only {
-      display: none;
-    }
-  }
-
-  .sideContent {
-    position: relative;
-    overflow: visible;
-    padding: 0;
-
-    .ant-drawer-body {
-      overflow: visible;
-      padding: 0;
-      width: 58px;
-      direction: rtl;
-    }
-  }
-`
+import styled from 'styled-components'
 
 interface IMiniOverlayProps {}
 
+// ToDo: imitation of behavior of AntDesign's Drawer
+const UberSausageWrapper = styled.div<{ isOpen: boolean }>`
+  z-index: 1010; // over the drawer's shadow (1000) and NearSocial's navbar (900), under overlay mask (2030)
+  transition: all 0.3s;
+  right: ${({ isOpen }) => (isOpen ? '360px' : '0px')};
+  top: 68px;
+  position: fixed;
+`
+
 export const MiniOverlay: FC<IMiniOverlayProps> = ({}) => {
-  const { selectedMutationId } = useEngine()
-  const { selectedMutation } = useMutationWithSettings(selectedMutationId)
-  const { mutationApps } = useMutationApps(selectedMutation)
-  const [open, setOpen] = React.useState(false)
+  const [isOpen, setOpen] = React.useState(false)
 
-  // ToDo: check type
-  const overlayRef = useRef<HTMLDivElement>(null)
-
-  const handleCloseOverlay = () => {
-    setOpen(false)
+  const handleToggleOverlay = () => {
+    setOpen((val) => !val)
   }
 
   return (
-    <MemoryRouter>
-      <WrapperDriver $isOpen={open} ref={overlayRef}>
-        <Drawer
-          classNames={{
-            wrapper: 'sideWrapper',
-            content: 'sideContent',
-          }}
-          open
-          style={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
-          mask={false}
-          rootStyle={{ boxShadow: 'none', background: 'none', border: 'none', outline: 'none' }}
-          getContainer={() => {
-            if (!overlayRef.current) return
-            return overlayRef.current as any
-          }}
-        >
-          <UberSausage
-            baseMutation={selectedMutation}
-            mutationApps={mutationApps}
-            isOverlayOpened={open}
-            openOverlay={setOpen}
-          />
-        </Drawer>
-
-        <OverlayWrapper apps={mutationApps.length > 0} onClose={handleCloseOverlay} open={open}>
-          <SidePanel />
-        </OverlayWrapper>
-      </WrapperDriver>
-    </MemoryRouter>
+    <>
+      <Drawer
+        data-testid="side-panel"
+        data-mweb-insertion-point="mweb-overlay"
+        placement="right"
+        open={isOpen}
+        closable={false}
+        mask={false}
+        width={360}
+        destroyOnClose
+        getContainer={false}
+        rootStyle={{ position: 'fixed' }}
+        styles={{
+          body: { padding: 10 },
+          wrapper: { background: '#F8F9FF' },
+        }}
+      >
+        <SidePanel />
+      </Drawer>
+      <UberSausageWrapper isOpen={isOpen}>
+        <UberSausage onToggleOverlay={handleToggleOverlay} />
+      </UberSausageWrapper>
+    </>
   )
 }
