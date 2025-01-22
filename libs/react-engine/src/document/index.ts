@@ -1,2 +1,2 @@
-export { useAppDocuments } from './use-app-documents'
-export { useCommitDocumentToMutation } from './use-commit-document-to-mutation'
+export * from './use-app-documents'
+export * from './use-commit-document-to-mutation'

@@ -1,1 +1,1 @@
-export { useMutationParsers } from './use-mutation-parsers'
+export * from './use-mutation-parsers'
