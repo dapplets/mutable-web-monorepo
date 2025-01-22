@@ -71,6 +71,15 @@ const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
   await browser.storage.local.set({ devServerUrl })
 }
 
+const toggleSidePanel = async (req?: any) => {
+  const windowId: number = req?.sender?.tab?.windowId
+
+  if (!windowId) return
+
+  // @ts-ignore
+  await browser.sidePanel.open({ windowId })
+}
+
 const bgFunctions = {
   near_signIn: near.signIn.bind(near),
   near_signOut: near.signOut.bind(near),
@@ -83,6 +92,7 @@ const bgFunctions = {
   getCurrentNetwork,
   getDevServerUrl,
   setDevServerUrl,
+  toggleSidePanel,
 }
 
 export type BgFunctions = typeof bgFunctions

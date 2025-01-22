@@ -1,8 +1,18 @@
 import { useMutableWeb } from '@mweb/engine'
-import { EngineProvider, MiniOverlay } from '@mweb/shared-components'
+import { EngineProvider, UberSausage } from '@mweb/shared-components'
 import React, { FC } from 'react'
 import { useConnectWallet, useDisconnectWallet, useWallet } from '../../common/wallet-context'
 import { useSidePanel } from '../hooks/use-side-panel'
+import styled from 'styled-components'
+import Background from '../../common/background'
+
+// ToDo: imitation of behavior of AntDesign's Drawer
+const UberSausageWrapper = styled.div`
+  z-index: 1010; // over the drawer's shadow (1000) and NearSocial's navbar (900), under overlay mask (2030)
+  right: 0;
+  top: 68px;
+  position: fixed;
+`
 
 export const MultitablePanel: FC = () => {
   useSidePanel()
@@ -13,6 +23,10 @@ export const MultitablePanel: FC = () => {
 
   // The notch can be opened from the extension's context menu on websites without any mutation
   if (mutations.length === 0) return null
+
+  const handleToggleOverlay = () => {
+    Background.toggleSidePanel()
+  }
 
   return (
     <>
@@ -25,7 +39,9 @@ export const MultitablePanel: FC = () => {
         selectedMutationId={selectedMutation?.id ?? null}
         onSwitchMutation={switchMutation}
       >
-        <MiniOverlay />
+        <UberSausageWrapper>
+          <UberSausage onToggleOverlay={handleToggleOverlay} />
+        </UberSausageWrapper>
       </EngineProvider>
     </>
   )

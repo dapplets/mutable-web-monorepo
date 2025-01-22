@@ -206,7 +206,7 @@ interface ISidePanelProps {
   style?: CSSProperties
 }
 
-const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
+export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
   const { selectedMutationId, loggedInAccountId } = useEngine()
   const { selectedMutation } = useMutationWithSettings(selectedMutationId)
   const { mutationApps } = useMutationApps(selectedMutation)
@@ -288,5 +288,3 @@ const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
     </SidePanelWrapper>
   )
 }
-
-export default UberSausage

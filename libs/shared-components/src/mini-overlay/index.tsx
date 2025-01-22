@@ -1,7 +1,7 @@
 import { Drawer } from 'antd'
 import React, { FC } from 'react'
 import { SidePanel } from './side-panel'
-import UberSausage from './uber-sausage'
+import { UberSausage } from './uber-sausage'
 import styled from 'styled-components'
 
 interface IMiniOverlayProps {}
