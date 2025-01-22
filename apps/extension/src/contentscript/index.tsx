@@ -8,8 +8,6 @@ import { WalletProvider } from '../common/wallet-context'
 import { App } from './app'
 
 async function main() {
-  const core = new Core()
-
   const devServerUrl = await Background.getDevServerUrl()
   const tabState = await Background.popTabState()
 
@@ -22,7 +20,7 @@ async function main() {
   const root = createRoot(container)
   root.render(
     <WalletProvider>
-      <App core={core} defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
+      <App defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
     </WalletProvider>
   )
 }

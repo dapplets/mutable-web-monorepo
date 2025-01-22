@@ -1,7 +1,7 @@
 import { useMutableWeb } from '@mweb/engine'
 import { EngineProvider, MiniOverlay } from '@mweb/shared-components'
-import React, { FC, useState } from 'react'
-import { useWallet, useConnectWallet, useDisconnectWallet } from '../../common/wallet-context'
+import React, { FC } from 'react'
+import { useConnectWallet, useDisconnectWallet, useWallet } from '../../common/wallet-context'
 import { useSidePanel } from '../hooks/use-side-panel'
 
 export const MultitablePanel: FC = () => {

@@ -58,9 +58,6 @@ const getNetworkPreset = (networkId) => {
   }
 }
 
-// ToDo: move to the engine?
-const core = new Core()
-
 function App(props) {
   const [connected, setConnected] = useState(false)
   const [signedIn, setSignedIn] = useState(false)
@@ -236,7 +233,7 @@ function App(props) {
 
   return (
     <div className="App">
-      <MutableWebProvider core={core} config={engineConfig} devServerUrl={devServerUrl}>
+      <MutableWebProvider config={engineConfig} devServerUrl={devServerUrl}>
         <EthersProviderContext.Provider value={ethersProviderContext}>
           <Router basename={process.env.PUBLIC_URL}>
             <Routes>

@@ -17,27 +17,30 @@ import { ViewportProvider } from './contexts/viewport-context'
 import { Core } from '@mweb/core'
 
 export const App: FC<{
-  core: Core
   config: EngineConfig
   defaultMutationId?: string | null
   devServerUrl?: string | null
   children?: ReactNode
-}> = ({ core, config, defaultMutationId, devServerUrl, children }) => {
+}> = ({ config, defaultMutationId, devServerUrl, children }) => {
   // ToDo: hack to make modal context available outside of its provider
   // children should be outside of ViewportProvider, but MutableWebProvider should be inside it
   const [modalApi, setModalApi] = useState<ModalContextState>({
     notify: () => console.log('notify'),
   })
-  const engineRef = useRef<Engine | null>(null)
 
+  const coreRef = useRef<Core | null>(null)
+  if (!coreRef.current) {
+    coreRef.current = new Core()
+  }
+
+  const engineRef = useRef<Engine | null>(null)
   if (!engineRef.current) {
     engineRef.current = new Engine(config)
-
     console.log('[MutableWeb] Engine initialized', engineRef.current)
   }
 
   return (
-    <CoreProvider core={core}>
+    <CoreProvider core={coreRef.current}>
       <EngineProvider engine={engineRef.current}>
         <DevProvider devServerUrl={devServerUrl}>
           <PortalProvider>

@@ -10,10 +10,9 @@ import { useWallet } from '../common/wallet-context'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
 
 export const App: FC<{
-  core: Core
   defaultMutationId?: string | null
   devServerUrl?: string | null
-}> = ({ core, defaultMutationId, devServerUrl }) => {
+}> = ({ defaultMutationId, devServerUrl }) => {
   const { selector, networkId } = useWallet()
 
   const { initNear } = useInitNear()
@@ -49,7 +48,6 @@ export const App: FC<{
 
   return (
     <MutableWebProvider
-      core={core}
       config={engineConfig}
       defaultMutationId={defaultMutationId}
       devServerUrl={devServerUrl}
