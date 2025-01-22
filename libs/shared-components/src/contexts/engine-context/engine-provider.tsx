@@ -1,6 +1,5 @@
 import React, { FC, ReactNode } from 'react'
 import { EngineContext, EngineContextState } from './engine-context'
-import { EntitySourceType } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 
 type Props = {

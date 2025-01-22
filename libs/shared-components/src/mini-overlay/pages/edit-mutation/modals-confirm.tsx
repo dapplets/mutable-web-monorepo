@@ -4,7 +4,7 @@ import { useCreateMutation, useEditMutation, useDeleteLocalMutation } from '@mwe
 import { useMutableWeb } from '@mweb/engine'
 import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import { Image } from './image'
-import { useEscape } from '../../hooks/use-escape'
+import { useEscape } from '../../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
 import { InputImage } from './upload-image'

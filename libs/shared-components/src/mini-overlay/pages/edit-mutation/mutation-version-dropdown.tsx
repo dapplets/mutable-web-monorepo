@@ -8,8 +8,8 @@ import {
   OpenList,
   OpenListDefault,
   SpanStyled,
-} from '../assets/styles-dropdown'
-import { IconDropdown } from '../assets/vectors'
+} from './assets/styles-dropdown'
+import { IconDropdown } from './assets/vectors'
 
 const LatestKey = 'latest'
 

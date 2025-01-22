@@ -15,13 +15,12 @@ const MainContainer = styled.div`
 
 export interface IMainProps {
   modalContainerRef: React.RefObject<HTMLElement>
-  onMutateButtonClick: () => void
 }
-const Main: FC<IMainProps> = ({ modalContainerRef, onMutateButtonClick }) => {
+const Main: FC<IMainProps> = ({ modalContainerRef }) => {
   const { loggedInAccountId, onConnectWallet } = useEngine()
   return (
     <MainContainer data-testid="main-page">
-      <MultitablePanel onMutateButtonClick={onMutateButtonClick} />
+      <MultitablePanel />
       {loggedInAccountId ? (
         <NotificationFeed
           onConnectWallet={onConnectWallet}

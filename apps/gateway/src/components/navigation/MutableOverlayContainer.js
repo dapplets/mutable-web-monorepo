@@ -20,7 +20,6 @@ function MutableOverlayContainer(props) {
       loggedInAccountId={loggedInAccountId}
       onConnectWallet={() => props.requestSignIn()}
       onDisconnectWallet={() => props.logOut()}
-      onMutateButtonClick={console.log}
     />
   )
 }

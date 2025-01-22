@@ -10,8 +10,7 @@ export const useMutations = (context: IContextNode | null) => {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['mutations', { isContext: !!context }], // ToDo: add context id to the key?
-    queryFn: () =>
-      context ? engine.mutationService.getMutationsWithSettings(context) : Promise.resolve([]),
+    queryFn: () => engine.mutationService.getMutationsWithSettings(context),
     initialData: [],
   })
 

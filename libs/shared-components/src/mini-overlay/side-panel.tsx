@@ -3,12 +3,11 @@ import { Navigate, Route, Routes } from 'react-router'
 import Header from './components/header'
 import MainPage from './pages/main'
 import ProfilePage from './pages/profile'
+import EditMutationPage from './pages/edit-mutation'
 
-export interface ISidePanelProps {
-  onMutateButtonClick: () => void
-}
+export interface ISidePanelProps {}
 
-export const SidePanel: FC<ISidePanelProps> = ({ onMutateButtonClick }) => {
+export const SidePanel: FC<ISidePanelProps> = ({}) => {
   const modalContainerRef = React.useRef<HTMLDivElement>(null)
 
   return (
@@ -24,13 +23,11 @@ export const SidePanel: FC<ISidePanelProps> = ({ onMutateButtonClick }) => {
           path="/system/main"
           element={
             // ToDo: avoid props drilling
-            <MainPage
-              modalContainerRef={modalContainerRef}
-              onMutateButtonClick={onMutateButtonClick}
-            />
+            <MainPage modalContainerRef={modalContainerRef} />
           }
         />
         <Route path="/system/profile" element={<ProfilePage />} />
+        <Route path="/system/edit-mutation/:mutationId" element={<EditMutationPage />} />
       </Routes>
     </div>
   )

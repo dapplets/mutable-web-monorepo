@@ -10,12 +10,10 @@ const FeedContainer = styled(Space)`
   gap: 10px;
 `
 
-const MultitablePanel: FC<{
-  onMutateButtonClick: () => void
-}> = ({ onMutateButtonClick }) => {
+const MultitablePanel: FC<{}> = ({}) => {
   return (
     <FeedContainer prefixCls="notifyWrapper" direction="vertical">
-      <Dropdown onMutateButtonClick={onMutateButtonClick} />
+      <Dropdown />
     </FeedContainer>
   )
 }

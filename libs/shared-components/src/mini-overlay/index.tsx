@@ -43,14 +43,9 @@ const WrapperDriver = styled.div<{ $isOpen: boolean }>`
 interface IMiniOverlayProps {
   setOpen: (open: boolean) => void
   open: boolean
-  onMutateButtonClick: () => void
 }
 
-export const MiniOverlay: FC<IMiniOverlayProps> = ({
-  setOpen,
-  open,
-  onMutateButtonClick: handleMutateButtonClick,
-}) => {
+export const MiniOverlay: FC<IMiniOverlayProps> = ({ setOpen, open }) => {
   const { selectedMutationId } = useEngine()
   const { selectedMutation } = useMutationWithSettings(selectedMutationId)
   const { mutationApps } = useMutationApps(selectedMutation)
@@ -88,7 +83,7 @@ export const MiniOverlay: FC<IMiniOverlayProps> = ({
         </Drawer>
 
         <OverlayWrapper apps={mutationApps.length > 0} onClose={handleCloseOverlay} open={open}>
-          <SidePanel onMutateButtonClick={handleMutateButtonClick} />
+          <SidePanel />
         </OverlayWrapper>
       </WrapperDriver>
     </MemoryRouter>

@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@monaco-editor/react": "^4.4.6",
+    "@mweb/core": "workspace:*",
     "@mweb/engine": "workspace:*",
     "@mweb/shared-components": "workspace:*",
     "@near-wallet-selector/core": "^8.9.7",

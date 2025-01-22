@@ -42,9 +42,7 @@ export const App: React.FC = () => {
         onSwitchMutation={switchMutation}
       >
         <div style={{ position: 'absolute' }}>Tree: {tree?.id}</div>
-        <SidePanel
-          onMutateButtonClick={() => console.log('mutate button click')} // ToDo: implement
-        />
+        <SidePanel />
       </EngineProvider>
     </MWebProvider>
   )

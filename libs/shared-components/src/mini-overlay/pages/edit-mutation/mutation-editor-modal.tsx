@@ -1,19 +1,26 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
 import { useAccountId } from 'near-social-vm'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { cloneDeep, mergeDeep } from '../../helpers'
-import { useEscape } from '../../hooks/use-escape'
+import { cloneDeep, mergeDeep } from '../../../helpers'
+import { useEscape } from '../../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
 import { DocumentsModal } from './documents-modal'
 import { ModalConfirm } from './modals-confirm'
 import { Image } from './image'
-import { useSaveMutation } from '@mweb/react-engine'
+import {
+  useApplications,
+  useMutation,
+  useMutations,
+  usePreferredSource,
+  useSaveMutation,
+} from '@mweb/react-engine'
 import { ButtonsGroup } from './buttons-group'
 import { useMutableWeb } from '@mweb/engine'
 import { MutationVersionDropdown } from './mutation-version-dropdown'
+import { useLocation, useNavigate, useParams } from 'react-router'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -94,7 +101,9 @@ const AppsList = styled.div`
     height: 2px;
     background: #384bff;
     border-radius: 2px;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 9%), 0 2px 2px rgb(38 117 209 / 4%);
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
   }
 `
 
@@ -216,12 +225,7 @@ const createEmptyMutation = (): MutationDto => ({
   ],
 })
 
-export interface Props {
-  apps: ApplicationDto[]
-  baseMutation: MutationDto | null
-  localMutations: MutationDto[]
-  onClose: () => void
-}
+export interface Props {}
 
 interface IAlert extends AlertProps {
   id: string
@@ -255,17 +259,26 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
+export const MutationEditorModal: FC<Props> = () => {
+  const navigate = useNavigate()
+  const params = useParams()
+  const { applications } = useApplications()
   const { switchMutation, switchPreferredSource, isLoading } = useMutableWeb()
-  const loggedInAccountId = useAccountId()
+  const loggedInAccountId = useAccountId() // ToDo: replace
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
   const [expandedVersion, setExpandedVersion] = useState(false)
   const toggleDropdown = () => setExpandedVersion(!expandedVersion)
   const { saveMutation, isLoading: isSaving } = useSaveMutation()
+  const { preferredSource } = usePreferredSource(params.mutationId ?? null)
+  const { mutation: baseMutation } = useMutation(params.mutationId, preferredSource ?? undefined) // ToDo: fix
+  const { mutations } = useMutations(null) // ToDo: need context?
 
-  useEscape(onClose)
+  const localMutations = useMemo(
+    () => mutations.filter((m) => m.source === EntitySourceType.Local),
+    [mutations]
+  )
 
   // Call `setEditingMutation(chooseEditingMutation())` if you want to revert changes
   const chooseEditingMutation = (): MutationDto =>
@@ -342,6 +355,10 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
     })
   }
 
+  const handleClose = () => {
+    navigate(-1)
+  }
+
   const handleSaveLocallyClick = () => {
     const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
 
@@ -350,7 +367,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
         switchMutation(id)
         switchPreferredSource(id, EntitySourceType.Local)
       })
-      .then(onClose)
+      .then(handleClose)
   }
 
   const handlePublishClick = () => {
@@ -366,7 +383,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
     <SelectedMutationEditorWrapper>
       <HeaderEditor>
         <HeaderTitle>Edit Mutation</HeaderTitle>
-        <Close onClick={onClose}>
+        <Close onClick={handleClose}>
           <CloseIcon />
         </Close>
       </HeaderEditor>
@@ -391,9 +408,9 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
                 {!baseMutation.authorId && !loggedInAccountId
                   ? 'me'
                   : (!baseMutation.authorId && loggedInAccountId) ||
-                    baseMutation.authorId === loggedInAccountId
-                  ? `me (${loggedInAccountId})`
-                  : baseMutation.authorId}
+                      baseMutation.authorId === loggedInAccountId
+                    ? `me (${loggedInAccountId})`
+                    : baseMutation.authorId}
                 <MutationVersionDropdown
                   toggleDropdown={toggleDropdown}
                   expanded={expandedVersion}
@@ -408,7 +425,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
       <AppsList>
         <Label>Applications List</Label>
-        {apps.map((app) =>
+        {applications.map((app) =>
           app.permissions.documents ? (
             <ApplicationCardWithDocs
               key={app.id}
@@ -468,7 +485,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
           <ModalConfirm
             itemType="mutation"
             onCloseCurrent={() => setIsConfirmModalOpen(false)}
-            onCloseAll={onClose}
+            onCloseAll={handleClose}
             editingMutation={editingMutation}
             loggedInAccountId={loggedInAccountId}
           />

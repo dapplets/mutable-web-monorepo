@@ -32,6 +32,7 @@ import { AvailableIcon, Back, Mutate } from '../assets/vectors'
 import { Image } from './image'
 import { ModalDelete } from './modal-delete'
 import { MutationDropdownItem } from './mutation-dropdown-item'
+import { useNavigate } from 'react-router'
 
 const ModalConfirmBackground = styled.div`
   position: absolute;
@@ -48,11 +49,10 @@ const ModalConfirmBackground = styled.div`
   z-index: 1;
 `
 
-export type DropdownProps = {
-  onMutateButtonClick: () => void
-}
+export type DropdownProps = {}
 
-export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownProps) => {
+export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
+  const navigate = useNavigate()
   const { tree, selectedMutationId, onSwitchMutation } = useEngine()
   const { mutations } = useMutations(tree)
   const { favoriteMutationId } = useFavoriteMutation()
@@ -104,7 +104,7 @@ export const Dropdown: FC<DropdownProps> = ({ onMutateButtonClick }: DropdownPro
   }
 
   const handleMutateButtonClick = () => {
-    onMutateButtonClick()
+    navigate(`/system/edit-mutation/${selectedMutationId}`)
   }
 
   const handleFavoriteButtonClick = (mutationId: string) => {

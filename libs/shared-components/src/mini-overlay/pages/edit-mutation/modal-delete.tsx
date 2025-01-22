@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
-import { useEscape } from '../../hooks/use-escape'
+import { useEscape } from '../../../hooks/use-escape'
 import { Button } from './button'
 import { ButtonsGroup } from './buttons-group'
 

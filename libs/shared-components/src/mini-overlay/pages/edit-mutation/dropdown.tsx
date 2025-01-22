@@ -12,8 +12,8 @@ import {
   SpanStyled,
   StarSelectedMutationWrapper,
   WrapperDropdown,
-} from '../assets/styles-dropdown'
-import { IconDropdown, StarSelectMutation, StarSelectMutationDefault } from '../assets/vectors'
+} from './assets/styles-dropdown'
+import { IconDropdown, StarSelectMutation, StarSelectMutationDefault } from './assets/vectors'
 import { Badge } from './badge'
 import { MutationVersionDropdown } from './mutation-version-dropdown'
 import { useFavoriteMutation, useSetFavoriteMutation } from '@mweb/react-engine'
@@ -37,6 +37,7 @@ export const Dropdown: FC<DropdownProps> = ({ isVisible, onVisibilityChange }: D
 
   const recentlyUsedMutations = useMemo(
     () =>
+      // @ts-ignore
       Object.groupBy(
         mutations
           .filter((mut) => mut.settings.lastUsage)

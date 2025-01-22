@@ -3,7 +3,7 @@ import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleApplicationCard } from './application-card'
 import { Button } from './button'
-import { MinusCircle, PlusCircle } from '../assets/vectors'
+import { MinusCircle, PlusCircle } from './assets/vectors'
 import { ButtonsGroup } from './buttons-group'
 
 const Wrapper = styled.div`

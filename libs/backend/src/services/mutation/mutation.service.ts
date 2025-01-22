@@ -47,16 +47,18 @@ export class MutationService {
     return versions.map((v) => ({ version: v }))
   }
 
-  async getMutationsForContext(context: IContextNode): Promise<MutationDto[]> {
+  async getMutationsForContext(context: IContextNode | null): Promise<MutationDto[]> {
     const mutations = await this.mutationRepository.getItems()
     return mutations
       .filter((mutation) =>
-        mutation.targets.some((target) => TargetService.isTargetMet(target, context))
+        context
+          ? mutation.targets.some((target) => TargetService.isTargetMet(target, context))
+          : true
       )
       .map((mutation) => mutation.toDto())
   }
 
-  async getMutationsWithSettings(context: IContextNode): Promise<MutationWithSettings[]> {
+  async getMutationsWithSettings(context: IContextNode | null): Promise<MutationWithSettings[]> {
     const mutations = await this.getMutationsForContext(context)
 
     return Promise.all(mutations.map((mut) => this.populateMutationWithSettings(mut)))

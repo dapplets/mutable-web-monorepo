@@ -30,6 +30,7 @@ import MutableOverlayContainer from './components/navigation/MutableOverlayConta
 import { useMatomoAnalytics } from './hooks/useMatomoAnalytics'
 import { MutableWebProvider, customElements } from '@mweb/engine'
 import OptionsPage from './pages/OptionsPage'
+import { Core } from '@mweb/core'
 
 export const refreshAllowanceObj = {}
 const documentationHref = 'https://social.near-docs.io/'
@@ -56,6 +57,9 @@ const getNetworkPreset = (networkId) => {
       throw Error(`Failed to find config for: '${networkId}'`)
   }
 }
+
+// ToDo: move to the engine?
+const core = new Core()
 
 function App(props) {
   const [connected, setConnected] = useState(false)
@@ -232,7 +236,7 @@ function App(props) {
 
   return (
     <div className="App">
-      <MutableWebProvider config={engineConfig} devServerUrl={devServerUrl}>
+      <MutableWebProvider core={core} config={engineConfig} devServerUrl={devServerUrl}>
         <EthersProviderContext.Provider value={ethersProviderContext}>
           <Router basename={process.env.PUBLIC_URL}>
             <Routes>
