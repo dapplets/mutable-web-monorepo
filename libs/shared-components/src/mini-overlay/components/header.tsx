@@ -9,6 +9,7 @@ import {
   Copy as CopyIcon,
   Disconnect as DisconnectIcon,
   Person as PersonIcon,
+  Bell as BellIcon,
 } from '../assets/icons'
 
 const HeaderWrapper = styled.div`
@@ -274,10 +275,13 @@ const Header: FC = () => {
             className={cn({ active: location.pathname === '/system/profile' })}
             data-testid="profile-page-button"
             disabled={waiting}
-            onClick={() => location.pathname !== '/system/profile' && navigate(`/system/profile`)}
+            onClick={() => navigate(`/system/profile`)}
           >
             <PersonIcon />
           </ProfileButton>
+          <HeaderButton disabled={waiting} onClick={() => navigate(`/system/notifications`)}>
+            <BellIcon />
+          </HeaderButton>
           <HeaderButton
             disabled={waiting}
             onClick={() => navigator.clipboard.writeText(loggedInAccountId)}
