@@ -27,7 +27,7 @@ export const SidePanel: FC<ISidePanelProps> = ({}) => {
             path="/system/notifications"
             element={<NotificationsPage modalContainerRef={modalContainerRef} />}
           />
-          <Route path="/system/edit-mutation/:mutationId" element={<EditMutationPage />} />
+          <Route path="/system/edit-mutation/:mutationId*" element={<EditMutationPage />} />
         </Routes>
       </div>
     </MemoryRouter>
