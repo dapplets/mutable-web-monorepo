@@ -221,7 +221,7 @@ export interface Props {
   baseMutation: MutationDto | null
   localMutations: MutationDto[]
   onClose: () => void
-  loggedInAccountId: string
+  loggedInAccountId: string | null
 }
 
 interface IAlert extends AlertProps {
