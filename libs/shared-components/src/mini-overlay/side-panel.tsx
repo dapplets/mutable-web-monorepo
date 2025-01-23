@@ -21,18 +21,18 @@ export const SidePanel: FC<ISidePanelProps> = ({}) => {
         {/* ToDo: move to pages? */}
         <Header />
         <Routes>
-          <Route path="/" element={<Navigate to="/system/main" replace />} />
-          <Route path="/system/main" element={<MainPage />} />
-          <Route path="/system/profile" element={<ProfilePage />} />
+          <Route path="/" element={<Navigate to="/main" replace />} />
+          <Route path="/main" element={<MainPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route
-            path="/system/notifications"
+            path="/notifications"
             element={<NotificationsPage modalContainerRef={modalContainerRef} />}
           />
           <Route
-            path="/system/edit-mutation/:authorId/mutation/:localId"
+            path="/edit-mutation/:authorId/mutation/:localId"
             element={<EditMutationPage />}
           />
-          <Route path="/system/applications" element={<ApplicationsPage />} />
+          <Route path="/applications" element={<ApplicationsPage />} />
         </Routes>
       </div>
     </MemoryRouter>

@@ -68,7 +68,7 @@ const Profile: FC<{
   return (
     <ProfileContainer data-testid="profile-page">
       <Header>
-        <BackButton onClick={() => navigate('/system/main')}>
+        <BackButton onClick={() => navigate('/main')}>
           <ArrowIcon />
         </BackButton>
         <H1>Profile</H1>

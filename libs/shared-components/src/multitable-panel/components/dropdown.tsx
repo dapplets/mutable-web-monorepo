@@ -108,7 +108,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   }
 
   const handleMutateButtonClick = () => {
-    navigate(`/system/edit-mutation/${selectedMutationId}`)
+    navigate(`/edit-mutation/${selectedMutationId}`)
   }
 
   const handleFavoriteButtonClick = (mutationId: string) => {

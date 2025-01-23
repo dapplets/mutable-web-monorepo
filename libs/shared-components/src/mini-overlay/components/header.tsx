@@ -215,31 +215,31 @@ const Header: FC = () => {
             </ProfileNetwork>
           </ProfileInfo>
           <ProfileButton
-            isActive={location.pathname === '/system/main'}
+            isActive={location.pathname === '/main'}
             disabled={waiting}
-            onClick={() => navigate(`/system/main`)}
+            onClick={() => navigate(`/main`)}
           >
             <HomeIcon />
           </ProfileButton>
           <ProfileButton
-            isActive={location.pathname === '/system/profile'}
+            isActive={location.pathname === '/profile'}
             data-testid="profile-page-button"
             disabled={waiting}
-            onClick={() => navigate(`/system/profile`)}
+            onClick={() => navigate(`/profile`)}
           >
             <PersonIcon />
           </ProfileButton>
           <ProfileButton
-            isActive={location.pathname === '/system/applications'}
+            isActive={location.pathname === '/applications'}
             disabled={waiting}
-            onClick={() => navigate(`/system/applications`)}
+            onClick={() => navigate(`/applications`)}
           >
             <PlayCenterIcon />
           </ProfileButton>
           <ProfileButton
-            isActive={location.pathname === '/system/notifications'}
+            isActive={location.pathname === '/notifications'}
             disabled={waiting}
-            onClick={() => navigate(`/system/notifications`)}
+            onClick={() => navigate(`/notifications`)}
           >
             <BellIcon />
           </ProfileButton>
