@@ -18,7 +18,7 @@ export const useMutations = (context?: IContextNode | null) => {
 
   const filteredData = useMemo(
     () => (context ? data.filter((mut) => utils.isMutationMetContext(mut, context)) : data),
-    [context]
+    [context, data]
   )
 
   return { mutations: filteredData, isLoading, error }
