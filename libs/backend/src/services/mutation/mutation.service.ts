@@ -49,13 +49,11 @@ export class MutationService {
 
   async getMutationsForContext(context: IContextNode | null): Promise<MutationDto[]> {
     const mutations = await this.mutationRepository.getItems()
-    return mutations
-      .filter((mutation) =>
-        context
-          ? mutation.targets.some((target) => TargetService.isTargetMet(target, context))
-          : true
-      )
-      .map((mutation) => mutation.toDto())
+    const dtos = mutations.map((mutation) => mutation.toDto())
+
+    if (!context) return dtos
+
+    return dtos.filter((mutation) => MutationService.isMutationMetContext(mutation, context))
   }
 
   getLastUsedMutation = async (context: IContextNode): Promise<string | null> => {
@@ -308,6 +306,10 @@ export class MutationService {
     const currentDate = new Date().toISOString()
     await this.settingsService.setMutationLastUsage(mutationId, currentDate, context.id)
     return currentDate
+  }
+
+  public static isMutationMetContext(mutation: MutationDto, context: IContextNode): boolean {
+    return mutation.targets.some((target) => TargetService.isTargetMet(target, context))
   }
 
   private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {

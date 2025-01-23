@@ -57,6 +57,7 @@ export { ParserConfig } from './services/parser-config/parser-config.entity'
 export { BosRedirectMap, getRedirectMap } from './services/dev-server-service'
 
 import { ApplicationService } from './services/application/application.service'
+import { MutationService } from './services/mutation/mutation.service'
 import { TargetService } from './services/target/target.service'
 
 export { InMemoryStorage } from './services/local-db/in-memory-storage'
@@ -66,4 +67,5 @@ export const utils = {
   getRootContext: TargetService.getRootContext.bind(TargetService),
   findContextByTarget: TargetService.findContextByTarget.bind(TargetService),
   constructAppInstanceId: ApplicationService.constructAppInstanceId.bind(TargetService),
+  isMutationMetContext: MutationService.isMutationMetContext.bind(MutationService),
 }
