@@ -126,17 +126,13 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
     // Load parser configs for root context
     // ToDo: generalize for whole context tree
-    for (const parser of parserConfigs) {
-      const isSuitableParser = parser.targets.some((target) => utils.isTargetMet(target, tree))
+    for (const pc of parserConfigs) {
+      const isSuitable = pc.targets.some((t) => utils.isTargetMet(t, tree))
 
-      if (isSuitableParser) {
-        attachParserConfig(parser)
-      }
-    }
-
-    return () => {
-      for (const parser of parserConfigs) {
-        detachParserConfig(parser.id)
+      if (isSuitable) {
+        attachParserConfig(pc)
+      } else {
+        detachParserConfig(pc.id)
       }
     }
   }, [parserConfigs, tree])

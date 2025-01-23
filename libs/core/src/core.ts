@@ -42,6 +42,7 @@ export class Core {
   }
 
   public attachParserConfig(parserConfig: ParserConfig) {
+    if (this.adapters.has(parserConfig.id)) return
     const adapter = this._createAdapter(parserConfig)
     this._registerAdapter(adapter)
   }
