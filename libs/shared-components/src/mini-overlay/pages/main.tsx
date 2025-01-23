@@ -5,6 +5,7 @@ import { Dropdown } from '../../multitable-panel/components/dropdown'
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 10px;
 `
 

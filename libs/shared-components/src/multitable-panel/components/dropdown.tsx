@@ -28,7 +28,6 @@ import {
   ListMutations,
   MutationsList,
   MutationsListWrapper,
-  WrapperDropdown,
 } from '../assets/styles-dropdown'
 import { AvailableIcon, Back, Mutate } from '../assets/vectors'
 import { Image } from './image'
@@ -126,116 +125,114 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   }
 
   return (
-    <WrapperDropdown>
-      <MutationsList>
-        <ButtonListBlock>
-          <ButtonBack onClick={handleOriginalButtonClick}>{<Back />} to Original</ButtonBack>
-          <ButtonMutation
-            onClick={handleMutateButtonClick}
-            data-testid="mutate-button"
+    <MutationsList>
+      <ButtonListBlock>
+        <ButtonBack onClick={handleOriginalButtonClick}>{<Back />} to Original</ButtonBack>
+        <ButtonMutation
+          onClick={handleMutateButtonClick}
+          data-testid="mutate-button"
+          data-mweb-context-type="notch"
+          data-mweb-context-parsed={JSON.stringify({ id: 'mutate-button' })}
+          data-mweb-context-level="system"
+        >
+          Mutate {<Mutate />}
+          <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
+        </ButtonMutation>
+      </ButtonListBlock>
+      <MutationsListWrapper>
+        {Object.keys(recentlyUsedMutations).length > 0 ? (
+          <ListMutations
+            data-testid="recently-used-mutations"
             data-mweb-context-type="notch"
-            data-mweb-context-parsed={JSON.stringify({ id: 'mutate-button' })}
+            data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
             data-mweb-context-level="system"
           >
-            Mutate {<Mutate />}
-            <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-          </ButtonMutation>
-        </ButtonListBlock>
-        <MutationsListWrapper>
-          {Object.keys(recentlyUsedMutations).length > 0 ? (
-            <ListMutations
-              data-testid="recently-used-mutations"
+            {Object.entries(recentlyUsedMutations).map(([mutationId, muts]) => (
+              <MutationDropdownItem
+                key={mutationId}
+                local={muts?.find((mut) => mut.source === EntitySourceType.Local)}
+                origin={muts?.find((mut) => mut.source === EntitySourceType.Origin)}
+                isSelected={mutationId === selectedMutationId}
+                isFavorite={mutationId === favoriteMutationId}
+                onFavoriteClick={() => handleFavoriteButtonClick(mutationId)}
+                onDeleteClick={() => setMutationIdToDelete(mutationId)}
+                onRemoveFromRecentClick={() => handleRemoveFromRecentlyUsedClick(mutationId)}
+                onSelect={() => handleMutationClick(mutationId)}
+              />
+            ))}
+            <div
+              data-mweb-insertion-point="recently-used-mutations"
+              style={{ display: 'none' }}
+            ></div>
+          </ListMutations>
+        ) : null}
+
+        {Object.keys(unusedMutations).length > 0 ? (
+          <AvalibleMutations>
+            <AvalibleLableBlock
+              onClick={handleAccordeonClick}
+              data-testid="unused-mutations-title"
               data-mweb-context-type="notch"
-              data-mweb-context-parsed={JSON.stringify({ id: 'recently-used-mutations' })}
+              data-mweb-context-parsed={JSON.stringify({ id: 'unused-mutations-title' })}
               data-mweb-context-level="system"
             >
-              {Object.entries(recentlyUsedMutations).map(([mutationId, muts]) => (
-                <MutationDropdownItem
-                  key={mutationId}
-                  local={muts?.find((mut) => mut.source === EntitySourceType.Local)}
-                  origin={muts?.find((mut) => mut.source === EntitySourceType.Origin)}
-                  isSelected={mutationId === selectedMutationId}
-                  isFavorite={mutationId === favoriteMutationId}
-                  onFavoriteClick={() => handleFavoriteButtonClick(mutationId)}
-                  onDeleteClick={() => setMutationIdToDelete(mutationId)}
-                  onRemoveFromRecentClick={() => handleRemoveFromRecentlyUsedClick(mutationId)}
-                  onSelect={() => handleMutationClick(mutationId)}
-                />
-              ))}
-              <div
-                data-mweb-insertion-point="recently-used-mutations"
-                style={{ display: 'none' }}
-              ></div>
-            </ListMutations>
-          ) : null}
+              <AvalibleLable>available</AvalibleLable>
+              {/* todo: mock */}
+              <AvalibleArrowBlock className={isAccordeonExpanded ? 'iconRotate' : ''}>
+                <AvalibleArrowLable>
+                  {Object.keys(unusedMutations).length} mutations
+                </AvalibleArrowLable>
+                <AvailableIcon />
+              </AvalibleArrowBlock>
+              <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
+            </AvalibleLableBlock>
 
-          {Object.keys(unusedMutations).length > 0 ? (
-            <AvalibleMutations>
-              <AvalibleLableBlock
-                onClick={handleAccordeonClick}
-                data-testid="unused-mutations-title"
-                data-mweb-context-type="notch"
-                data-mweb-context-parsed={JSON.stringify({ id: 'unused-mutations-title' })}
-                data-mweb-context-level="system"
-              >
-                <AvalibleLable>available</AvalibleLable>
-                {/* todo: mock */}
-                <AvalibleArrowBlock className={isAccordeonExpanded ? 'iconRotate' : ''}>
-                  <AvalibleArrowLable>
-                    {Object.keys(unusedMutations).length} mutations
-                  </AvalibleArrowLable>
-                  <AvailableIcon />
-                </AvalibleArrowBlock>
-                <div data-mweb-insertion-point="hidden" style={{ display: 'none' }}></div>
-              </AvalibleLableBlock>
+            {isAccordeonExpanded ? (
+              <div data-testid="unused-mutations">
+                {Object.values(unusedMutations).map((muts) => {
+                  if (!muts) return null
+                  const [mut] = muts
 
-              {isAccordeonExpanded ? (
-                <div data-testid="unused-mutations">
-                  {Object.values(unusedMutations).map((muts) => {
-                    if (!muts) return null
-                    const [mut] = muts
+                  return (
+                    <InputBlock
+                      key={mut.id}
+                      data-testid={mut.id}
+                      isActive={mut.id === selectedMutationId}
+                      onClick={() => handleMutationClick(mut.id)}
+                      className="avalibleMutationsInput"
+                    >
+                      <ImageBlock>
+                        <Image
+                          image={mut.metadata.image}
+                          // fallbackUrl={defaultIcon}
+                        />
+                      </ImageBlock>
+                      <InputInfoWrapper>
+                        <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
+                        {mut.authorId ? <AuthorMutation>by {mut.authorId}</AuthorMutation> : null}
+                      </InputInfoWrapper>
+                    </InputBlock>
+                  )
+                })}
+              </div>
+            ) : null}
+          </AvalibleMutations>
+        ) : null}
+      </MutationsListWrapper>
 
-                    return (
-                      <InputBlock
-                        key={mut.id}
-                        data-testid={mut.id}
-                        isActive={mut.id === selectedMutationId}
-                        onClick={() => handleMutationClick(mut.id)}
-                        className="avalibleMutationsInput"
-                      >
-                        <ImageBlock>
-                          <Image
-                            image={mut.metadata.image}
-                            // fallbackUrl={defaultIcon}
-                          />
-                        </ImageBlock>
-                        <InputInfoWrapper>
-                          <InputMutation>{mut.metadata ? mut.metadata.name : ''}</InputMutation>
-                          {mut.authorId ? <AuthorMutation>by {mut.authorId}</AuthorMutation> : null}
-                        </InputInfoWrapper>
-                      </InputBlock>
-                    )
-                  })}
-                </div>
-              ) : null}
-            </AvalibleMutations>
-          ) : null}
-        </MutationsListWrapper>
-
-        {mutationIdToDelete && (
-          <ModalConfirmBackground>
-            <ModalDelete
-              onAction={async () => {
-                await deleteLocalMutation(mutationIdToDelete)
-                if (mutationIdToDelete === favoriteMutationId)
-                  handleFavoriteButtonClick(mutationIdToDelete)
-                setMutationIdToDelete(null)
-              }}
-              onCloseCurrent={() => setMutationIdToDelete(null)}
-            />
-          </ModalConfirmBackground>
-        )}
-      </MutationsList>
-    </WrapperDropdown>
+      {mutationIdToDelete && (
+        <ModalConfirmBackground>
+          <ModalDelete
+            onAction={async () => {
+              await deleteLocalMutation(mutationIdToDelete)
+              if (mutationIdToDelete === favoriteMutationId)
+                handleFavoriteButtonClick(mutationIdToDelete)
+              setMutationIdToDelete(null)
+            }}
+            onCloseCurrent={() => setMutationIdToDelete(null)}
+          />
+        </ModalConfirmBackground>
+      )}
+    </MutationsList>
   )
 }
