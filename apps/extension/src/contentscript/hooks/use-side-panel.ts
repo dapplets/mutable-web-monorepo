@@ -1,11 +1,12 @@
 import { IContextNode } from '@mweb/core'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import browser from 'webextension-polyfill'
 import { EventEmitter as NEventEmitter } from 'events'
 import { useMutableWeb } from '@mweb/engine'
 
 export const useSidePanel = () => {
-  const { tree, selectedMutation, switchMutation } = useMutableWeb()
+  const { tree, selectedMutationId, switchMutation } = useMutableWeb()
+  const [port, setPort] = useState<browser.Runtime.Port | null>(null)
 
   useEffect(() => {
     if (!tree) return
@@ -33,9 +34,6 @@ export const useSidePanel = () => {
         return
       }
 
-      port.postMessage({ type: 'contextTree', data: tree.toTransferable({ dir: 'down' }) })
-      port.postMessage({ type: 'setSelectedMutationId', data: selectedMutation?.id })
-
       const handleChildContextAdded = (data: IContextNode) =>
         port.postMessage({ type: 'childContextAdded', data })
       const handleChildContextRemoved = (data: IContextNode) =>
@@ -58,7 +56,10 @@ export const useSidePanel = () => {
         ee.removeListener('childContextAdded', handleChildContextAdded)
         ee.removeListener('childContextRemoved', handleChildContextRemoved)
         ee.removeListener('contextChanged', handleContextChanged)
+        setPort(null)
       })
+
+      setPort(port)
     }
 
     browser.runtime.onConnect.addListener(handleConnect)
@@ -70,5 +71,13 @@ export const useSidePanel = () => {
       ee.removeAllListeners('childContextRemoved')
       ee.removeAllListeners('contextChanged')
     }
-  }, [tree, selectedMutation])
+  }, [tree])
+
+  useEffect(() => {
+    port?.postMessage({ type: 'setSelectedMutationId', data: selectedMutationId })
+  }, [port, selectedMutationId])
+
+  useEffect(() => {
+    port?.postMessage({ type: 'contextTree', data: tree?.toTransferable({ dir: 'down' }) })
+  }, [port, tree])
 }

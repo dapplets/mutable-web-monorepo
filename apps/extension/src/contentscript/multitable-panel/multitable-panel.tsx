@@ -19,7 +19,7 @@ export const MultitablePanel: FC = () => {
   const { accountId, networkId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { tree, mutations, selectedMutation, switchMutation } = useMutableWeb()
+  const { tree, mutations, selectedMutationId, switchMutation } = useMutableWeb()
 
   // The notch can be opened from the extension's context menu on websites without any mutation
   if (mutations.length === 0) return null
@@ -36,7 +36,7 @@ export const MultitablePanel: FC = () => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
-        selectedMutationId={selectedMutation?.id ?? null}
+        selectedMutationId={selectedMutationId}
         onSwitchMutation={switchMutation}
       >
         <UberSausageWrapper>

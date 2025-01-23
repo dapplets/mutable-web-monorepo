@@ -2,11 +2,10 @@ import { EngineConfig, EntitySourceType, getNearConfig, utils } from '@mweb/back
 import { useCore } from '@mweb/react'
 import {
   useEngine,
+  useMutation,
   useMutationApps,
   useMutationParsers,
   useMutations,
-  useMutationWithSettings,
-  useUpdateMutationLastUsage,
 } from '@mweb/react-engine'
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { ModalContextState } from '../modal-context/modal-context'
@@ -30,8 +29,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const { engine } = useEngine()
 
   const { mutations, isLoading: isMutationsLoading } = useMutations(tree)
-
-  const { updateMutationLastUsage } = useUpdateMutationLastUsage()
 
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const [preferredSources, setPreferredSources] = useState<{
@@ -73,7 +70,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     return lastUsedMutation ?? favoriteMutation
   }, [engine, tree])
 
-  const { selectedMutation, isSelectedMutationLoading } = useMutationWithSettings(
+  const { mutation: selectedMutation, isMutationLoading: isSelectedMutationLoading } = useMutation(
     selectedMutationId,
     selectedMutationId ? preferredSources[selectedMutationId] : undefined,
     selectedMutationId ? mutationVersions[selectedMutationId] : undefined
@@ -146,13 +143,8 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   // ToDo: move to separate hook
   const switchMutation = useCallback(
-    async (mutationId: string | null) => {
+    (mutationId: string | null) => {
       if (selectedMutationId === mutationId) return
-
-      if (mutationId) {
-        updateMutationLastUsage({ mutationId: mutationId, hostname: window.location.hostname })
-      }
-
       setSelectedMutationId(mutationId)
     },
     [selectedMutationId]
@@ -210,6 +202,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     mutationApps,
     activeApps,
     selectedMutation,
+    selectedMutationId,
     isLoading,
     switchMutation,
     switchPreferredSource,

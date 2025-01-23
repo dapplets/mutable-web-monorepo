@@ -5,6 +5,8 @@ import {
   useMutations,
   useRemoveMutationFromRecents,
   useSetFavoriteMutation,
+  useMutationsLastUsage,
+  useUpdateMutationLastUsage,
 } from '@mweb/react-engine'
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -60,24 +62,23 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
   const { removeMutationFromRecents } = useRemoveMutationFromRecents()
+  const { updateMutationLastUsage } = useUpdateMutationLastUsage()
+
+  const mutationsById = useMemo(() => Object.groupBy(mutations, (mut) => mut.id), [mutations])
+  const mutationIds = useMemo(() => Object.keys(mutationsById), [mutationsById])
+  const lastUsages = useMutationsLastUsage(mutationIds, tree)
 
   const recentlyUsedMutations = useMemo(
     () =>
-      Object.groupBy(
-        mutations
-          .filter((mut) => mut.settings.lastUsage)
-          .sort((a, b) => {
-            const dateA = a.settings.lastUsage ? new Date(a.settings.lastUsage).getTime() : null
-            const dateB = b.settings.lastUsage ? new Date(b.settings.lastUsage).getTime() : null
-
-            if (!dateA) return 1
-            if (!dateB) return -1
-
-            return dateB - dateB
-          }),
-        (mut) => mut.id
+      Object.fromEntries(
+        mutationIds
+          .map((_, index) => index)
+          .filter((index) => lastUsages[index].data)
+          // Sort by last use is disabled because the list is re-sorted when you click on it.
+          // .sort((a, b) => (lastUsages[a].data! > lastUsages[b].data! ? 1 : -1))
+          .map((index) => [mutationIds[index], mutationsById[mutationIds[index]]!])
       ),
-    [mutations]
+    [mutationsById, mutationIds, lastUsages]
   )
 
   const [isAccordeonExpanded, setIsAccordeonExpanded] = useState(
@@ -87,15 +88,19 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
 
   const unusedMutations = useMemo(
     () =>
-      Object.groupBy(
-        mutations.filter((mut) => !mut.settings.lastUsage),
-        (mut) => mut.id
+      Object.fromEntries(
+        mutationIds
+          .map((_, index) => index)
+          .filter((index) => !lastUsages[index].data)
+          .map((index) => [mutationIds[index], mutationsById[mutationIds[index]]!])
       ),
-    [mutations]
+    [mutationsById, mutationIds, lastUsages]
   )
 
   const handleMutationClick = (mutationId: string) => {
+    if (!tree) return
     onSwitchMutation(mutationId)
+    updateMutationLastUsage({ mutationId, context: tree })
   }
 
   // todo: mock
@@ -116,7 +121,8 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   }
 
   const handleRemoveFromRecentlyUsedClick = (mutationId: string) => {
-    removeMutationFromRecents(mutationId)
+    if (!tree) return null
+    removeMutationFromRecents({ mutationId, context: tree })
   }
 
   return (
@@ -153,6 +159,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
                   onFavoriteClick={() => handleFavoriteButtonClick(mutationId)}
                   onDeleteClick={() => setMutationIdToDelete(mutationId)}
                   onRemoveFromRecentClick={() => handleRemoveFromRecentlyUsedClick(mutationId)}
+                  onSelect={() => handleMutationClick(mutationId)}
                 />
               ))}
               <div

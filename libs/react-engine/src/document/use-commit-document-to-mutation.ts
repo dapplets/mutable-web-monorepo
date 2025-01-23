@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEngine } from '../engine'
-import { DocumentCommitDto, MutationWithSettings } from '@mweb/backend'
+import { DocumentCommitDto, MutationDto } from '@mweb/backend'
 
 export const useCommitDocumentToMutation = () => {
   const { engine } = useEngine()
@@ -24,7 +24,7 @@ export const useCommitDocumentToMutation = () => {
         // ToDo: workaround to wait when blockchain changes will be propagated
         await new Promise((res) => setTimeout(res, 3000))
 
-        queryClient.setQueryData(['mutations'], (prev: MutationWithSettings[]) => {
+        queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
           const index = prev.findIndex((m) => m.id === mutation.id && m.source === mutation.source)
           if (index === -1) {
             return [...prev, mutation]

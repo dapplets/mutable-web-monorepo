@@ -1,11 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEngine } from '../engine'
-import {
-  MutationDto,
-  MutationCreateDto,
-  MutationWithSettings,
-  SaveMutationOptions,
-} from '@mweb/backend'
+import { MutationDto, MutationCreateDto, SaveMutationOptions } from '@mweb/backend'
 
 export function useSaveMutation() {
   const queryClient = useQueryClient()
@@ -20,7 +15,7 @@ export function useSaveMutation() {
       options?: SaveMutationOptions
     }) => engine.mutationService.saveMutation(savingMutation, options),
     onSuccess: (savedMutation) => {
-      queryClient.setQueryData(['mutations'], (prev: MutationWithSettings[]) => {
+      queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
         const mutationExists = prev.some(
           (mut) => mut.id === savedMutation.id && mut.source === savedMutation.source
         )

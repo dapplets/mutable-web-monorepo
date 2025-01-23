@@ -39,12 +39,6 @@ export class Mutation extends Base {
   }
 }
 
-export type MutationWithSettings = MutationDto & {
-  settings: {
-    lastUsage: string | null
-  }
-}
-
 function normalizeApps(apps: any): AppInMutation[] {
   return apps.map((app: any) => (typeof app === 'string' ? { appId: app, documentId: null } : app))
 }

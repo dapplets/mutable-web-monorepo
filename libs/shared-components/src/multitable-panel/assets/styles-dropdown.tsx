@@ -120,6 +120,7 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
   align-items: center;
   width: 100%;
 
+  background: ${(props) => (props.isActive ? '#e9e9ea' : undefined)};
   color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   border-radius: 4px;
 

@@ -1,19 +1,27 @@
-import { EntityId, EntitySourceType } from '@mweb/backend'
-import { useQuery } from '@tanstack/react-query'
+import { EntityId, EntitySourceType, MutationDto } from '@mweb/backend'
 import { useEngine } from '../engine'
+import { useQuery } from '@tanstack/react-query'
 
 export const useMutation = (
   mutationId: EntityId | undefined | null,
-  source: EntitySourceType = EntitySourceType.Origin
+  source?: EntitySourceType | null,
+  version?: string | null
 ) => {
   const { engine } = useEngine()
 
-  const { data: mutation } = useQuery({
-    queryKey: ['mutation', { mutationId, source }],
+  const {
+    data: mutation,
+    isLoading: isMutationLoading,
+    error: mutationError,
+  } = useQuery<MutationDto | null>({
+    queryKey: ['mutation', { mutationId, source, version }], // ToDo: where cache invalidates?
     queryFn: () =>
-      mutationId ? engine.mutationService.getMutation(mutationId, source) : Promise.resolve(null),
+      mutationId
+        ? engine.mutationService.getMutation(mutationId, source ?? undefined, version ?? undefined)
+        : Promise.resolve(null),
+    enabled: !!mutationId,
     initialData: null,
   })
 
-  return { mutation }
+  return { mutation, isMutationLoading, mutationError }
 }

@@ -1,5 +1,5 @@
 import { EntitySourceType } from '@mweb/backend'
-import { useMutationApps, useMutationWithSettings } from '@mweb/react-engine'
+import { useMutation, useMutationApps } from '@mweb/react-engine'
 import { Button } from 'antd'
 import React, { CSSProperties, useState } from 'react'
 import styled from 'styled-components'
@@ -208,7 +208,7 @@ interface ISidePanelProps {
 
 export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
   const { selectedMutationId, loggedInAccountId } = useEngine()
-  const { selectedMutation } = useMutationWithSettings(selectedMutationId)
+  const { mutation: selectedMutation } = useMutation(selectedMutationId)
   const { mutationApps } = useMutationApps(selectedMutation)
   const [isOpenAppsPane, openCloseAppsPane] = useState(false)
 

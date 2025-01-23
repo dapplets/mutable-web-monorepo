@@ -1,6 +1,6 @@
 import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
-import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
+import { Mutation, MutationId } from './mutation.entity'
 import { Transaction } from '../unit-of-work/transaction'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { NotificationService } from '../notification/notification.service'
@@ -58,19 +58,16 @@ export class MutationService {
       .map((mutation) => mutation.toDto())
   }
 
-  async getMutationsWithSettings(context: IContextNode | null): Promise<MutationWithSettings[]> {
-    const mutations = await this.getMutationsForContext(context)
-
-    return Promise.all(mutations.map((mut) => this.populateMutationWithSettings(mut)))
-  }
-
   getLastUsedMutation = async (context: IContextNode): Promise<string | null> => {
-    const allMutations = await this.getMutationsWithSettings(context)
-    const hostname = window.location.hostname
+    if (!context.id) return null
+    const contextId = context.id
+
+    // ToDo: refactor it, too complicated
+    const allMutations = await this.getMutationsForContext(context)
     const lastUsedData = await Promise.all(
       allMutations.map(async (m) => ({
         id: m.id,
-        lastUsage: await this.settingsService.getMutationLastUsage(m.id, hostname),
+        lastUsage: await this.settingsService.getMutationLastUsage(m.id, contextId),
       }))
     )
     const usedMutationsData = lastUsedData
@@ -125,7 +122,7 @@ export class MutationService {
       applyChangesToOrigin: false,
       askOriginToApplyChanges: false,
     }
-  ): Promise<MutationWithSettings> {
+  ): Promise<MutationDto> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
     const mutation = await this._fixMutationErrors(await this.mutationRepository.constructItem(dto))
@@ -144,7 +141,7 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(mutation.toDto())
+    return mutation.toDto()
   }
 
   async editMutation(
@@ -154,7 +151,7 @@ export class MutationService {
       askOriginToApplyChanges: false,
     },
     tx?: Transaction
-  ): Promise<MutationWithSettings> {
+  ): Promise<MutationDto> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
     const mutation = await this._fixMutationErrors(Mutation.create(dto))
@@ -188,7 +185,7 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(editedMutation.toDto())
+    return editedMutation.toDto()
   }
 
   async saveMutation(
@@ -198,7 +195,7 @@ export class MutationService {
       askOriginToApplyChanges: false,
     },
     tx?: Transaction
-  ): Promise<MutationWithSettings> {
+  ): Promise<MutationDto> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
     const mutation = await this._fixMutationErrors(
@@ -225,7 +222,7 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(mutation.toDto())
+    return mutation.toDto()
   }
 
   async deleteMutation(mutationId: EntityId): Promise<void> {
@@ -289,34 +286,28 @@ export class MutationService {
     return freshNotification
   }
 
-  async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
-    await this.settingsService.setMutationLastUsage(mutationId, null, window.location.hostname)
+  async removeMutationFromRecents(mutationId: MutationId, context: IContextNode): Promise<void> {
+    if (!context.id) return
+    await this.settingsService.setMutationLastUsage(mutationId, null, context.id)
   }
 
-  public async updateMutationLastUsage(mutationId: MutationId, hostname: string): Promise<string> {
+  public async getMutationLastUsage(
+    mutationId: MutationId,
+    context: IContextNode
+  ): Promise<string | null> {
+    if (!context.id) return null
+    return this.settingsService.getMutationLastUsage(mutationId, context.id)
+  }
+
+  public async updateMutationLastUsage(
+    mutationId: MutationId,
+    context: IContextNode
+  ): Promise<string> {
+    if (!context.id) throw new Error('Context ID is not defined')
     // save last usage
     const currentDate = new Date().toISOString()
-    await this.settingsService.setMutationLastUsage(mutationId, currentDate, hostname)
+    await this.settingsService.setMutationLastUsage(mutationId, currentDate, context.id)
     return currentDate
-  }
-
-  async getMutationWithSettings(
-    mutationId: string,
-    source?: EntitySourceType,
-    version?: string
-  ): Promise<MutationWithSettings | null> {
-    const mutation = await this.getMutation(mutationId, source, version)
-    return mutation ? this.populateMutationWithSettings(mutation) : null
-  }
-
-  public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {
-    const lastUsage = await this.settingsService.getMutationLastUsage(
-      mutation.id,
-      window.location.hostname // ToDo: bug for side panels
-    )
-
-    // ToDo: do not mix MutationWithSettings and Mutation
-    return { ...mutation, settings: { lastUsage } }
   }
 
   private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {

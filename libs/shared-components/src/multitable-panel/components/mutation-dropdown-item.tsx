@@ -1,5 +1,5 @@
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
-import { EntitySourceType, MutationWithSettings } from '@mweb/backend'
+import { EntitySourceType, MutationDto } from '@mweb/backend'
 import React, { FC } from 'react'
 import {
   AuthorMutation,
@@ -15,13 +15,14 @@ import { Image } from './image'
 import { usePreferredSource } from '@mweb/react-engine'
 
 export const MutationDropdownItem: FC<{
-  local?: MutationWithSettings
-  origin?: MutationWithSettings
+  local?: MutationDto
+  origin?: MutationDto
   isSelected: boolean
   isFavorite: boolean
   onFavoriteClick: () => void
   onDeleteClick: () => void
   onRemoveFromRecentClick: () => void
+  onSelect: () => void
 }> = ({
   local,
   origin,
@@ -30,6 +31,7 @@ export const MutationDropdownItem: FC<{
   onFavoriteClick,
   onDeleteClick,
   onRemoveFromRecentClick,
+  onSelect,
 }) => {
   const mutationId = origin?.id ?? local?.id ?? null
 
@@ -41,19 +43,14 @@ export const MutationDropdownItem: FC<{
   if (!mut) return null
 
   return (
-    <InputBlock
-      data-testid={mutationId}
-      className={isSelected ? 'active-mutation' : ''}
-      key={mutationId}
-      isActive={isSelected}
-    >
+    <InputBlock data-testid={mutationId} key={mutationId} isActive={isSelected}>
       <ImageBlock>
         <Image
           image={mut.metadata.image}
           // fallbackUrl={defaultIcon}
         />
       </ImageBlock>
-      <InputInfoWrapper onClick={onFavoriteClick}>
+      <InputInfoWrapper onClick={onSelect}>
         {/* todo: mocked classname */}
         <InputMutation className={isSelected ? 'inputMutationSelected' : ''}>
           {mut.metadata ? mut.metadata.name : ''}{' '}
