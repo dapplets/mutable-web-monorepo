@@ -76,8 +76,6 @@ const WalletProvider: FC<Props> = ({ children }) => {
       port.onMessage.addListener(listener)
 
       port.onDisconnect.addListener(() => {
-        console.warn('Port disconnected. Attempting to reconnect...')
-
         // Delay before reconnecting to prevent immediate retries in rapid succession
         // ToDo: find a better solution
         setTimeout(connect, 1000)
