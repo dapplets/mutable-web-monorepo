@@ -14,5 +14,9 @@ export function useSetPreferredSource() {
     },
   })
 
-  return { setFavoriteMutation: mutate, isLoading: isPending, error }
+  const setPreferredSource = (mutationId: string, source: EntitySourceType | null) => {
+    mutate({ mutationId, source })
+  }
+
+  return { setPreferredSource, isLoading: isPending, error }
 }

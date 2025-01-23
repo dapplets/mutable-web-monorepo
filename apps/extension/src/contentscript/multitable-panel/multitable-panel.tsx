@@ -19,10 +19,7 @@ export const MultitablePanel: FC = () => {
   const { accountId, networkId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { tree, mutations, selectedMutationId, switchMutation } = useMutableWeb()
-
-  // The notch can be opened from the extension's context menu on websites without any mutation
-  if (mutations.length === 0) return null
+  const { tree, selectedMutationId, switchMutation } = useMutableWeb()
 
   const handleToggleOverlay = () => {
     Background.toggleSidePanel()

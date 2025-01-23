@@ -9,7 +9,6 @@ export type MutableWebContextState = {
   config: NearConfig
   engine: Engine
   tree: IContextNode | null
-  mutations: MutationDto[]
   mutationApps: AppInstanceWithSettings[]
   activeApps: AppInstanceWithSettings[]
   selectedMutation: MutationDto | null
@@ -18,14 +17,12 @@ export type MutableWebContextState = {
   switchMutation: (mutationId: string | null) => void
   switchPreferredSource: (mutationId: string, source: EntitySourceType | null) => void
   switchMutationVersion: (mutationId: string, version?: string | null) => void
-  mutationVersions: { [key: string]: string | null }
 }
 
 export const contextDefaultValues: MutableWebContextState = {
   config: null as any as NearConfig, // ToDo
   engine: null as any as Engine, // ToDo
   tree: null,
-  mutations: [],
   mutationApps: [],
   activeApps: [],
   isLoading: false,
@@ -34,7 +31,6 @@ export const contextDefaultValues: MutableWebContextState = {
   switchMutation: () => undefined,
   switchPreferredSource: () => undefined,
   switchMutationVersion: () => undefined,
-  mutationVersions: {},
 }
 
 export const MutableWebContext = createContext<MutableWebContextState>(contextDefaultValues)
