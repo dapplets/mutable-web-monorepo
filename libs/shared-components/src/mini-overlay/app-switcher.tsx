@@ -105,6 +105,13 @@ const LabelAppTop = styled.div`
   cursor: pointer;
 `
 
+const AppItem = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`
+
 interface IAppSwitcherProps {
   mutationId: string
   app: AppInstanceWithSettings
@@ -125,33 +132,36 @@ export const AppSwitcher: FC<IAppSwitcherProps> = ({ mutationId, app }) => {
           <Spinner animation="border" variant="primary"></Spinner>
         </Loading>
       ) : (
-        <MutationIconWrapper
-          title={
-            (app as any).documentId
-              ? `${app.localId}:\n${docMeta?.[2]}\nby ${docMeta?.[0]}`
-              : app.localId
-          }
-          $isStopped={!app.settings.isEnabled}
-          $isButton={true}
-        >
-          {app?.metadata.image ? <Image image={app?.metadata.image} /> : <MutationFallbackIcon />}
+        <AppItem>
+          <MutationIconWrapper
+            title={
+              (app as any).documentId
+                ? `${app.localId}:\n${docMeta?.[2]}\nby ${docMeta?.[0]}`
+                : app.localId
+            }
+            $isStopped={!app.settings.isEnabled}
+            $isButton={true}
+          >
+            {app?.metadata.image ? <Image image={app?.metadata.image} /> : <MutationFallbackIcon />}
 
-          {!app.settings.isEnabled ? (
-            <LabelAppTop className="labelAppTop">
-              <StopTopIcon />
-            </LabelAppTop>
-          ) : null}
+            {!app.settings.isEnabled ? (
+              <LabelAppTop className="labelAppTop">
+                <StopTopIcon />
+              </LabelAppTop>
+            ) : null}
 
-          {app.settings.isEnabled ? (
-            <LabelAppCenter className="labelAppCenter" onClick={disableApp}>
-              <StopCenterIcon />
-            </LabelAppCenter>
-          ) : (
-            <LabelAppCenter className="labelAppCenter" onClick={enableApp}>
-              <PlayCenterIcon />
-            </LabelAppCenter>
-          )}
-        </MutationIconWrapper>
+            {app.settings.isEnabled ? (
+              <LabelAppCenter className="labelAppCenter" onClick={disableApp}>
+                <StopCenterIcon />
+              </LabelAppCenter>
+            ) : (
+              <LabelAppCenter className="labelAppCenter" onClick={enableApp}>
+                <PlayCenterIcon />
+              </LabelAppCenter>
+            )}
+          </MutationIconWrapper>
+          <p>{app.id}</p>
+        </AppItem>
       )}
     </>
   )

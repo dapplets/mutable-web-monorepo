@@ -10,6 +10,8 @@ import {
   Disconnect as DisconnectIcon,
   Person as PersonIcon,
   Bell as BellIcon,
+  Home as HomeIcon,
+  PlayCenterIcon,
 } from '../assets/icons'
 
 const HeaderWrapper = styled.div`
@@ -139,11 +141,10 @@ const ProfileNetwork = styled.span`
   }
 `
 
-const ProfileButton = styled.button`
+const ProfileButton = styled.button<{ isActive?: boolean }>`
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
-  cursor: pointer;
   justify-content: center;
   align-items: center;
   width: 24px;
@@ -153,8 +154,9 @@ const ProfileButton = styled.button`
   border: none;
   border-radius: 50%;
   transition: all 0.15s ease;
-  color: rgb(122, 129, 139);
-  background: rgb(248, 249, 255);
+  cursor: ${({ isActive: active }) => (active ? 'default' : 'pointer')};
+  color: ${({ isActive: active }) => (active ? 'white' : 'rgb(122, 129, 139)')};
+  background: ${({ isActive: active }) => (active ? 'rgb(56, 75, 255)' : 'rgb(248, 249, 255)')};
 
   &:hover {
     color: rgb(101, 108, 119);
@@ -164,65 +166,6 @@ const ProfileButton = styled.button`
   &:active {
     color: rgb(84, 90, 101);
     background-color: rgb(173, 175, 187);
-  }
-
-  &:disabled {
-    opacity: 0.7;
-    cursor: default;
-  }
-
-  &.active {
-    color: white !important;
-    background-color: rgb(56, 75, 255) !important;
-    cursor: default;
-  }
-`
-
-const HeaderButton = styled.button`
-  display: flex;
-  box-sizing: border-box;
-  overflow: hidden;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  outline: none;
-  border: none;
-  border-radius: 50%;
-  transition: all 0.15s ease;
-  background: #f8f9ff;
-
-  svg {
-    rect {
-      transition: all 0.15s ease;
-    }
-    path {
-      transition: all 0.15s ease;
-    }
-  }
-
-  &:hover {
-    svg {
-      rect {
-        fill: rgb(195 197 209);
-      }
-      path {
-        stroke: rgb(101 108 119);
-      }
-    }
-  }
-
-  &:active {
-    svg {
-      rect {
-        fill: rgb(173 175 187);
-      }
-      path {
-        stroke: rgb(84 90 101);
-      }
-    }
   }
 
   &:disabled {
@@ -272,25 +215,43 @@ const Header: FC = () => {
             </ProfileNetwork>
           </ProfileInfo>
           <ProfileButton
-            className={cn({ active: location.pathname === '/system/profile' })}
+            isActive={location.pathname === '/system/main'}
+            disabled={waiting}
+            onClick={() => navigate(`/system/main`)}
+          >
+            <HomeIcon />
+          </ProfileButton>
+          <ProfileButton
+            isActive={location.pathname === '/system/profile'}
             data-testid="profile-page-button"
             disabled={waiting}
             onClick={() => navigate(`/system/profile`)}
           >
             <PersonIcon />
           </ProfileButton>
-          <HeaderButton disabled={waiting} onClick={() => navigate(`/system/notifications`)}>
+          <ProfileButton
+            isActive={location.pathname === '/system/applications'}
+            disabled={waiting}
+            onClick={() => navigate(`/system/applications`)}
+          >
+            <PlayCenterIcon />
+          </ProfileButton>
+          <ProfileButton
+            isActive={location.pathname === '/system/notifications'}
+            disabled={waiting}
+            onClick={() => navigate(`/system/notifications`)}
+          >
             <BellIcon />
-          </HeaderButton>
-          <HeaderButton
+          </ProfileButton>
+          <ProfileButton
             disabled={waiting}
             onClick={() => navigator.clipboard.writeText(loggedInAccountId)}
           >
             <CopyIcon />
-          </HeaderButton>
-          <HeaderButton disabled={waiting} onClick={handleSignOut}>
+          </ProfileButton>
+          <ProfileButton disabled={waiting} onClick={handleSignOut}>
             <DisconnectIcon />
-          </HeaderButton>
+          </ProfileButton>
         </>
       ) : (
         <>

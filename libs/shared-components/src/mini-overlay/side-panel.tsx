@@ -5,6 +5,7 @@ import MainPage from './pages/main'
 import ProfilePage from './pages/profile'
 import EditMutationPage from './pages/edit-mutation'
 import NotificationsPage from './pages/notifications'
+import ApplicationsPage from './pages/applications'
 
 export interface ISidePanelProps {}
 
@@ -31,6 +32,7 @@ export const SidePanel: FC<ISidePanelProps> = ({}) => {
             path="/system/edit-mutation/:authorId/mutation/:localId"
             element={<EditMutationPage />}
           />
+          <Route path="/system/applications" element={<ApplicationsPage />} />
         </Routes>
       </div>
     </MemoryRouter>

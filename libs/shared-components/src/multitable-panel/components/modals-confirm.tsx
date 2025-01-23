@@ -1,16 +1,22 @@
+import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
+import {
+  useCreateMutation,
+  useDeleteLocalMutation,
+  useEditMutation,
+  useMutations,
+  useSetPreferredSource,
+} from '@mweb/react-engine'
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
-import { useMutableWeb } from '@mweb/engine'
-import { useCreateMutation, useEditMutation, useDeleteLocalMutation } from '@mweb/react-engine'
-import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
-import { Image } from './image'
+import { useEngine } from '../../contexts/engine-context'
+import { cloneDeep } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
-import { InputImage } from './upload-image'
-import { cloneDeep } from '../../helpers'
-import { DropdownButton } from './dropdown-button'
 import { ButtonsGroup } from './buttons-group'
+import { DropdownButton } from './dropdown-button'
+import { Image } from './image'
+import { InputImage } from './upload-image'
 
 enum MutationModalMode {
   Editing = 'editing',
@@ -239,7 +245,9 @@ export const ModalConfirm: FC<Props> = ({
   const [newDescription, setDescription] = useState<string>(description ?? '')
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations, switchMutation, switchPreferredSource } = useMutableWeb()
+  const { mutations } = useMutations()
+  const { onSwitchMutation } = useEngine()
+  const { setPreferredSource } = useSetPreferredSource()
 
   const [mode, setMode] = useState(
     !editingMutation.authorId // Newly created local mutation doesn't have author
@@ -308,8 +316,8 @@ export const ModalConfirm: FC<Props> = ({
             ? { askOriginToApplyChanges: isApplyToOriginChecked }
             : undefined
         )
-        switchMutation(createdMutation.id)
-        switchPreferredSource(createdMutation.id, EntitySourceType.Origin)
+        onSwitchMutation(createdMutation.id)
+        setPreferredSource(createdMutation.id, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
@@ -327,7 +335,7 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
-        switchPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
+        setPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {

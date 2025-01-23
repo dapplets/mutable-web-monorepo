@@ -10,7 +10,6 @@ const EditMutation: FC = () => {
   const params = useParams()
   const mutationId = `${params.authorId}/mutation/${params.localId}`
 
-  const { loggedInAccountId } = useEngine()
   const { applications } = useApplications()
   const { preferredSource } = usePreferredSource(mutationId)
   const { mutation: baseMutation } = useMutation(mutationId, preferredSource ?? undefined) // ToDo: fix
@@ -31,7 +30,6 @@ const EditMutation: FC = () => {
       apps={applications}
       baseMutation={baseMutation}
       localMutations={localMutations}
-      loggedInAccountId={loggedInAccountId}
       onClose={() => navigate(-1)}
     />
   )

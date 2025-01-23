@@ -1,6 +1,6 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
 import { useMutableWeb } from '@mweb/engine'
-import { useSaveMutation } from '@mweb/react-engine'
+import { useSaveMutation, useSetPreferredSource } from '@mweb/react-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { cloneDeep, mergeDeep } from '../../helpers'
@@ -12,6 +12,7 @@ import { ButtonsGroup } from './buttons-group'
 import { DocumentsModal } from './documents-modal'
 import { Image } from './image'
 import { ModalConfirm } from './modals-confirm'
+import { useEngine } from '../../contexts/engine-context'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
@@ -221,7 +222,6 @@ export interface Props {
   baseMutation: MutationDto | null
   localMutations: MutationDto[]
   onClose: () => void
-  loggedInAccountId: string | null
 }
 
 interface IAlert extends AlertProps {
@@ -256,15 +256,9 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({
-  apps,
-  baseMutation,
-  localMutations,
-  onClose,
-  loggedInAccountId,
-}) => {
-  const { switchMutation, switchPreferredSource } = useMutableWeb()
-  // const loggedInAccountId = useAccountId()
+export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
+  const { onSwitchMutation, loggedInAccountId } = useEngine()
+  const { setPreferredSource } = useSetPreferredSource()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
@@ -349,8 +343,8 @@ export const MutationEditorModal: FC<Props> = ({
 
     saveMutation(localMutation)
       .then(({ id }) => {
-        switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Local)
+        onSwitchMutation(id)
+        setPreferredSource(id, EntitySourceType.Local)
       })
       .then(onClose)
   }
