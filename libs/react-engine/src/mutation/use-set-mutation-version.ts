@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEngine } from '../engine'
+import { useCallback } from 'react'
 
 export function useSetMutationVersion() {
   const queryClient = useQueryClient()
@@ -13,9 +14,12 @@ export function useSetMutationVersion() {
     },
   })
 
-  const setMutationVersion = (mutationId: string, version: string | null = null) => {
-    mutate({ mutationId, version })
-  }
+  const setMutationVersion = useCallback(
+    (mutationId: string, version: string | null = null) => {
+      mutate({ mutationId, version })
+    },
+    [mutate]
+  )
 
   return { setMutationVersion, isLoading: isPending, error }
 }

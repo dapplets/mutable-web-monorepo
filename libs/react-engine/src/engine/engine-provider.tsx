@@ -8,7 +8,13 @@ type Props = {
   children?: ReactNode
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // default: true
+    },
+  },
+})
 
 const EngineProvider: FC<Props> = ({ engine, children }) => {
   const state: EngineContextState = {
