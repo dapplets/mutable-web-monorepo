@@ -62,20 +62,20 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
               mutationSwitched({
                 fromMutationId: favoriteMutationId,
                 toMutationId: defaultMutationId,
-                onBack: () => switchMutation(favoriteMutationId),
+                onBack: () => setSelectedMutationId(favoriteMutationId),
               })
             )
           } else {
             modalApi.notify(
               mutationDisabled({
-                onBack: () => switchMutation(favoriteMutationId),
+                onBack: () => setSelectedMutationId(favoriteMutationId),
               })
             )
           }
         })
       }
 
-      switchMutation(defaultMutationId ?? favoriteMutationId)
+      setSelectedMutationId(defaultMutationId ?? favoriteMutationId)
     })
   }, [getMutationToBeLoaded, defaultMutationId, modalApi])
 
@@ -113,15 +113,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     }
   }, [parserConfigs, tree])
 
-  // ToDo: move to separate hook
-  const switchMutation = useCallback(
-    (mutationId: string | null) => {
-      if (selectedMutationId === mutationId) return
-      setSelectedMutationId(mutationId)
-    },
-    [selectedMutationId]
-  )
-
   const isLoading = isMutationAppsLoading || isMutationParsersLoading || isSelectedMutationLoading
 
   const state: MutableWebContextState = {
@@ -133,7 +124,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     selectedMutation,
     selectedMutationId,
     isLoading,
-    switchMutation,
+    switchMutation: setSelectedMutationId,
     switchPreferredSource,
     switchMutationVersion,
   }
