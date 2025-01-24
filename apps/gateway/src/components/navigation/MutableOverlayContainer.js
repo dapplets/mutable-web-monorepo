@@ -1,22 +1,23 @@
 import React from 'react'
 import { useMutableWeb } from '@mweb/engine'
-import { MiniOverlay } from '@mweb/shared-components'
-import { useAccountId } from 'near-social-vm'
+import { MiniOverlay, EngineProvider } from '@mweb/shared-components'
 import { NetworkId } from '../../data/widgets'
 
 function MutableOverlayContainer(props) {
-  const loggedInAccountId = useAccountId()
-  const { selectedMutation, mutationApps } = useMutableWeb()
+  const { selectedMutationId, switchMutation, tree } = useMutableWeb()
 
   return (
-    <MiniOverlay
-      baseMutation={selectedMutation}
-      mutationApps={mutationApps}
+    <EngineProvider
+      tree={tree}
+      loggedInAccountId={props.signedAccountId}
       nearNetwork={NetworkId}
-      loggedInAccountId={loggedInAccountId}
       onConnectWallet={() => props.requestSignIn()}
       onDisconnectWallet={() => props.logOut()}
-    />
+      selectedMutationId={selectedMutationId}
+      onSwitchMutation={switchMutation}
+    >
+      <MiniOverlay />
+    </EngineProvider>
   )
 }
 

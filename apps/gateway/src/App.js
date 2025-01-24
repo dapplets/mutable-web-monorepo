@@ -30,7 +30,6 @@ import MutableOverlayContainer from './components/navigation/MutableOverlayConta
 import { useMatomoAnalytics } from './hooks/useMatomoAnalytics'
 import { MutableWebProvider, customElements } from '@mweb/engine'
 import OptionsPage from './pages/OptionsPage'
-import { Core } from '@mweb/core'
 
 export const refreshAllowanceObj = {}
 const documentationHref = 'https://social.near-docs.io/'
