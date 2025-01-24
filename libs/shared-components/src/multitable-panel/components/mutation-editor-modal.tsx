@@ -1,5 +1,4 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
-import { useMutableWeb } from '@mweb/engine'
 import { useSaveMutation, useSetPreferredSource } from '@mweb/react-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -17,20 +16,8 @@ import { useEngine } from '../../contexts/engine-context'
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 20px;
   gap: 10px;
-  border-radius: 10px;
-  font-family: sans-serif;
-  border: 1px solid #02193a;
   background: #f8f9ff;
-  width: 400px;
-  max-height: 70vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 `
 
 const Close = styled.span`
