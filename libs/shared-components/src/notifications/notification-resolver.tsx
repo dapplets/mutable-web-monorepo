@@ -11,9 +11,8 @@ import PullRequestRejectedNotification, {
 
 export const NotificationsResolver: FC<{
   notification: NotificationDto
-  modalContainerRef: React.RefObject<HTMLElement>
   loggedInAccountId: string
-}> = ({ notification, modalContainerRef, loggedInAccountId }) => {
+}> = ({ notification, loggedInAccountId }) => {
   switch (notification.type) {
     case NotificationType.Regular:
       return (
@@ -27,7 +26,6 @@ export const NotificationsResolver: FC<{
         <PullRequestNotification
           loggedInAccountId={loggedInAccountId}
           notification={notification as PullRequestNotificationDto}
-          modalContainerRef={modalContainerRef}
         />
       )
     case NotificationType.PullRequestAccepted:

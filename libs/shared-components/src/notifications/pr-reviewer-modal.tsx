@@ -5,6 +5,7 @@ import { useAcceptPullRequest, useMutation, useRejectPullRequest } from '@mweb/r
 import { PrReviewer } from './pr-reviewer'
 import { NotificationDto, NotificationType, PullRequestPayload } from '@mweb/backend'
 import { Decline, Branch } from './assets/icons'
+import { useModal } from '../contexts/modal-context'
 
 const leaveMergableProps = (mutation: any): any => {
   return {
@@ -18,16 +19,17 @@ const leaveMergableProps = (mutation: any): any => {
 
 export interface Props {
   notification: NotificationDto
-  containerRef: React.RefObject<HTMLElement>
   onClose: () => void
 }
 
-export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose }) => {
+export const PrReviewerModal: FC<Props> = ({ notification, onClose }) => {
   if (notification.type !== NotificationType.PullRequest) {
     throw new Error('Only PullRequest notifications are supported')
   }
 
   const { sourceMutationId, targetMutationId } = notification.payload as PullRequestPayload
+
+  const { modalContainerRef } = useModal()
 
   const { mutation: source } = useMutation(sourceMutationId)
   const { mutation: target } = useMutation(targetMutationId)
@@ -53,7 +55,7 @@ export const PrReviewerModal: FC<Props> = ({ notification, containerRef, onClose
       title="Review Changes"
       open
       centered
-      getContainer={containerRef.current ?? false}
+      getContainer={modalContainerRef.current ?? false}
       zIndex={10000}
       onCancel={onClose}
       width={1000}

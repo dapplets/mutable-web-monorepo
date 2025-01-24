@@ -12,20 +12,12 @@ const MainContainer = styled.div`
   gap: 10px;
 `
 
-export interface INotificationsProps {
-  modalContainerRef: React.RefObject<HTMLElement>
-}
-
-const Notifications: FC<INotificationsProps> = ({ modalContainerRef }) => {
+const Notifications: FC = () => {
   const { loggedInAccountId, onConnectWallet } = useEngine()
   return (
     <MainContainer data-testid="main-page">
       {loggedInAccountId ? (
-        <NotificationFeed
-          onConnectWallet={onConnectWallet}
-          loggedInAccountId={loggedInAccountId}
-          modalContainerRef={modalContainerRef}
-        />
+        <NotificationFeed onConnectWallet={onConnectWallet} loggedInAccountId={loggedInAccountId} />
       ) : (
         <Space
           direction="vertical"

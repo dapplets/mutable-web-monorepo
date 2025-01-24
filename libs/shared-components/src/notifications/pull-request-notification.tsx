@@ -20,9 +20,8 @@ export interface PullRequestNotificationDto extends NotificationDto {
 
 const PullRequestNotification: FC<{
   notification: PullRequestNotificationDto
-  modalContainerRef: React.RefObject<HTMLElement>
   loggedInAccountId: string
-}> = ({ notification, modalContainerRef, loggedInAccountId }) => {
+}> = ({ notification, loggedInAccountId }) => {
   const { sourceMutationId, targetMutationId } = notification.payload
   const [sourceAuthorId, , sourceLocalMutationId] = sourceMutationId.split('/')
   const [targetAuthorId, , targetLocalMutationId] = targetMutationId.split('/')
@@ -55,11 +54,7 @@ const PullRequestNotification: FC<{
   return (
     <>
       {isReviewing ? (
-        <PrReviewerModal
-          notification={notification}
-          containerRef={modalContainerRef}
-          onClose={handleModalClose}
-        />
+        <PrReviewerModal notification={notification} onClose={handleModalClose} />
       ) : null}
       <GenericNotification
         notification={notification}

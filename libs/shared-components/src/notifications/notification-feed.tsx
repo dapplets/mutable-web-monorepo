@@ -37,8 +37,7 @@ const Loader = () => (
 const NotificationFeed: FC<{
   loggedInAccountId: string
   onConnectWallet: (() => Promise<void>) | undefined
-  modalContainerRef: React.RefObject<HTMLElement>
-}> = ({ loggedInAccountId, onConnectWallet, modalContainerRef }) => {
+}> = ({ loggedInAccountId, onConnectWallet }) => {
   const [isWaiting, setWaiting] = useState(false)
   const { notifications, isLoading } = useNotifications(loggedInAccountId)
   const overlayRef = useRef<HTMLDivElement>(null)
@@ -101,7 +100,6 @@ const NotificationFeed: FC<{
                 <NotificationsResolver
                   key={notification.id + i}
                   notification={notification}
-                  modalContainerRef={modalContainerRef}
                   loggedInAccountId={loggedInAccountId}
                 />
               ))}
@@ -118,7 +116,6 @@ const NotificationFeed: FC<{
                 <NotificationsResolver
                   key={i + notification.id}
                   notification={notification}
-                  modalContainerRef={modalContainerRef}
                   loggedInAccountId={loggedInAccountId}
                 />
               ))}
