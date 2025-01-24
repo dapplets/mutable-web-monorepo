@@ -7,7 +7,8 @@ import { NotificationDto, NotificationType, PullRequestPayload } from '@mweb/bac
 import { Decline, Branch } from './assets/icons'
 import { useModal } from '../contexts/modal-context'
 
-const leaveMergableProps = (mutation: any): any => {
+const leaveMergableProps = (mutation: any | null): any => {
+  if (!mutation) return {}
   return {
     apps: mutation.apps,
     targets: mutation.targets,
@@ -31,14 +32,20 @@ export const PrReviewerModal: FC<Props> = ({ notification, onClose }) => {
 
   const { modalContainerRef } = useModal()
 
-  const { mutation: source } = useMutation(sourceMutationId)
-  const { mutation: target } = useMutation(targetMutationId)
+  const { mutation: source, isMutationLoading: isSourceLoading } = useMutation(sourceMutationId)
+  const { mutation: target, isMutationLoading: isTargetLoading } = useMutation(targetMutationId)
 
   const { acceptPullRequest, isLoading: isLoadingAccept } = useAcceptPullRequest(notification.id)
   const { rejectPullRequest, isLoading: isLoadingReject } = useRejectPullRequest(notification.id)
 
-  const sourceJson = useMemo(() => toJson(leaveMergableProps(source), { space: '  ' }), [])
-  const targetJson = useMemo(() => toJson(leaveMergableProps(target), { space: '  ' }), [])
+  const sourceJson = useMemo(() => toJson(leaveMergableProps(source), { space: '  ' }), [source])
+  const targetJson = useMemo(() => toJson(leaveMergableProps(target), { space: '  ' }), [target])
+
+  const areMutationsLoading = isSourceLoading || isTargetLoading
+
+  if (areMutationsLoading) {
+    return null
+  }
 
   const handleAcceptClick = () => {
     // ToDo: replace .then() with useEffect?
