@@ -35,7 +35,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const { preferredSource } = usePreferredSource(selectedMutationId)
   const { setPreferredSource: switchPreferredSource } = useSetPreferredSource()
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
-  const { setMutationVersion: switchMutationVersion } = useSetMutationVersion()
 
   // ToDo: merge mutationId, source, version to one state
 
@@ -126,7 +125,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     isLoading,
     switchMutation: setSelectedMutationId,
     switchPreferredSource,
-    switchMutationVersion,
   }
 
   return (
