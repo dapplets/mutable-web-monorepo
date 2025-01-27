@@ -10,6 +10,7 @@ import { useMemo } from 'react'
 export const useMutations = (context?: IContextNode | null) => {
   const { engine } = useEngine()
 
+  // ToDo: invalidate cache, use useQueries?
   const { data, isLoading, error } = useQuery({
     queryKey: ['mutations'],
     queryFn: () => engine.mutationService.getMutationsForContext(null),

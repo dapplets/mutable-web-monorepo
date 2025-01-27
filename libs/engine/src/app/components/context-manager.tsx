@@ -35,6 +35,7 @@ import {
   useContextApps,
   useCreateUserLink,
   useDeleteUserLink,
+  useSetPreferredSource,
   useUserLinks,
 } from '@mweb/react-engine'
 
@@ -110,10 +111,11 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   context,
   insPoints,
 }) => {
-  const { engine, selectedMutation, activeApps, switchPreferredSource } = useMutableWeb()
+  const { engine, selectedMutation, activeApps } = useMutableWeb()
 
   if (!selectedMutation) throw new Error('No selected mutation')
 
+  const { setPreferredSource } = useSetPreferredSource()
   const { controllers } = useAppControllers(selectedMutation.id, context, activeApps)
   const { links } = useUserLinks(selectedMutation.id, context, activeApps)
   const { createUserLink } = useCreateUserLink(selectedMutation.id, context, activeApps)
@@ -304,7 +306,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
           // is mutation changed?
           if (mutation && mutation.id === selectedMutation.id) {
-            switchPreferredSource(mutation.id, mutation.source)
+            setPreferredSource(mutation.id, mutation.source)
           }
 
           return savedDocument

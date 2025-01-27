@@ -7,7 +7,6 @@ import {
   useMutationApps,
   useMutationParsers,
   usePreferredSource,
-  useSetMutationVersion,
   useSetPreferredSource,
 } from '@mweb/react-engine'
 import React, { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
@@ -33,7 +32,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const { preferredSource } = usePreferredSource(selectedMutationId)
-  const { setPreferredSource: switchPreferredSource } = useSetPreferredSource()
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
 
   // ToDo: merge mutationId, source, version to one state
@@ -124,7 +122,6 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     selectedMutationId,
     isLoading,
     switchMutation: setSelectedMutationId,
-    switchPreferredSource,
   }
 
   return (
