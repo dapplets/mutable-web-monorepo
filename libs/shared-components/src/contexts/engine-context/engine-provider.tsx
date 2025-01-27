@@ -9,7 +9,6 @@ type Props = {
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
   selectedMutationId: string | null
-  activeAppIds: string[]
   onSwitchMutation: (mutationId: string | null) => void
   children?: ReactNode
 }
@@ -21,7 +20,6 @@ const EngineProvider: FC<Props> = ({
   onConnectWallet,
   onDisconnectWallet,
   selectedMutationId,
-  activeAppIds,
   onSwitchMutation,
   children,
 }) => {
@@ -32,7 +30,6 @@ const EngineProvider: FC<Props> = ({
     onConnectWallet,
     onDisconnectWallet,
     selectedMutationId,
-    activeAppIds,
     onSwitchMutation,
   }
 
