@@ -8,6 +8,7 @@ import { TabStateService } from './services/tab-state-service'
 import { WalletImpl } from './wallet'
 import { EventEmitter as NEventEmitter } from 'events'
 import ContentScript from '../common/content-script'
+import SidePanel from '../common/sidepanel'
 
 const eventEmitter = new NEventEmitter()
 
@@ -76,8 +77,24 @@ const toggleSidePanel = async (req?: any) => {
 
   if (!windowId) return
 
+  // !!! Workaround for user gesture error
+  // We don't wait for the promise to resolve
+  const isAlivePromise = SidePanel()
+    .isAlive()
+    .then(() => true)
+    .catch(() => false)
+
+  // Open the side panel in any way
+  // Don't wait for promise here too
   // @ts-ignore
-  await browser.sidePanel.open({ windowId })
+  browser.sidePanel.open({ windowId })
+
+  const isAlive = await isAlivePromise
+
+  // And close it when promise resolves to true
+  if (isAlive) {
+    await SidePanel().close()
+  }
 }
 
 const bgFunctions = {

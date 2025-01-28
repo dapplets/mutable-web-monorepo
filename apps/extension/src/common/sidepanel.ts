@@ -1,18 +1,12 @@
 import { initBGFunctions } from './messenger'
 import browser from 'webextension-polyfill'
-import { CsFunctions } from '../contentscript'
+import { SpFunctions } from '../sidepanel'
 
-const HandlerName = 'cs'
+const HandlerName = 'sp'
 
-const ContentScript: (tabId?: number) => CsFunctions = (tabId) => {
+const SidePanel: () => SpFunctions = () => {
   const fakeSendMessage = async (message: unknown) => {
-    if (tabId) {
-      return browser.tabs.sendMessage(tabId, message)
-    } else {
-      const [currentTab] = await browser.tabs.query({ currentWindow: true, active: true })
-      if (!currentTab || !currentTab.id) throw new Error('No active tab')
-      return browser.tabs.sendMessage(currentTab.id, message)
-    }
+    return browser.runtime.sendMessage(message)
   }
 
   const fakeBrowser = { runtime: { sendMessage: fakeSendMessage } }
@@ -20,7 +14,7 @@ const ContentScript: (tabId?: number) => CsFunctions = (tabId) => {
   return new Proxy(
     {},
     {
-      get(_, prop: keyof CsFunctions) {
+      get(_, prop: keyof SpFunctions) {
         return (...args: unknown[]) => {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
@@ -30,7 +24,7 @@ const ContentScript: (tabId?: number) => CsFunctions = (tabId) => {
         }
       },
     }
-  ) as CsFunctions
+  ) as SpFunctions
 }
 
-export default ContentScript
+export default SidePanel
