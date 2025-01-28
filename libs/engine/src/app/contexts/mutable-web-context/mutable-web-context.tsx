@@ -1,4 +1,4 @@
-import { Engine, EntitySourceType } from '@mweb/backend'
+import { Engine } from '@mweb/backend'
 import { createContext } from 'react'
 import { AppInstanceWithSettings } from '@mweb/backend'
 import { MutationDto } from '@mweb/backend'
@@ -9,7 +9,6 @@ export type MutableWebContextState = {
   config: NearConfig
   engine: Engine
   tree: IContextNode | null
-  mutationApps: AppInstanceWithSettings[]
   activeApps: AppInstanceWithSettings[]
   selectedMutation: MutationDto | null
   selectedMutationId: string | null
@@ -21,7 +20,6 @@ export const contextDefaultValues: MutableWebContextState = {
   config: null as any as NearConfig, // ToDo
   engine: null as any as Engine, // ToDo
   tree: null,
-  mutationApps: [],
   activeApps: [],
   isLoading: false,
   selectedMutation: null,
