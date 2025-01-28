@@ -1,31 +1,37 @@
+import { IConnectedAccountsPair } from '@mweb/backend'
 import React, { createContext } from 'react'
-import { ConnectedAccountsService, IConnectedAccountsPair } from '@mweb/backend'
 
-export interface ConnectedAccountsContextState
-  extends Omit<
-    ConnectedAccountsService,
-    'contractName' | 'networkId' | 'nearSigner' | 'changeStatus' | 'getPairs' | 'getNet'
-  > {
+export enum RequestStatus {
+  CLAIMING = 'claiming',
+  VERIFICATION = 'verification',
+  SUCCESS = 'success',
+  FAILED = 'failed',
+  DEFAULT = 'default',
+}
+
+export type CARequest = {
+  id: number
+  type: string
+  payload: Set<string>
+  status: RequestStatus
+}
+
+export interface ConnectedAccountsContextState {
   pairs: IConnectedAccountsPair[] | null
   connectedAccountsNet: string[] | null
-  setConnectedAccountsPairs: React.Dispatch<React.SetStateAction<IConnectedAccountsPair[] | null>>
-  setConnectedAccountsNet: React.Dispatch<React.SetStateAction<string[] | null>>
+  updateConnectedAccountsPairs: () => Promise<void>
+  updateConnectedAccountsNet: () => Promise<void>
+  requests: CARequest[]
+  setRequests: React.Dispatch<React.SetStateAction<CARequest[]>>
 }
 
 export const contextDefaultValues: ConnectedAccountsContextState = {
   pairs: null,
   connectedAccountsNet: null,
-  setConnectedAccountsNet: () => new Promise(() => null),
-  setConnectedAccountsPairs: () => new Promise(() => null),
-  getConnectedAccounts: () => new Promise(() => null),
-  getMinStakeAmount: () => new Promise(() => null),
-  getPendingRequests: () => new Promise(() => null),
-  getVerificationRequest: () => new Promise(() => null),
-  getStatus: () => new Promise(() => null),
-  areConnected: () => new Promise(() => null),
-  getMainAccount: () => new Promise(() => null),
-  getRequestStatus: () => new Promise(() => null),
-  requestVerification: () => new Promise(() => null),
+  updateConnectedAccountsNet: () => new Promise(() => null),
+  updateConnectedAccountsPairs: () => new Promise(() => null),
+  requests: [],
+  setRequests: () => {},
 }
 
 export const ConnectedAccountsContext =

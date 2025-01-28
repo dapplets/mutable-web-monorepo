@@ -55,30 +55,10 @@ const CAUserButtonWrapper = styled.div`
   }
 
   .nameUser {
-    flex-grow: 1;
-
     padding: 10px 14px 10px 0;
-
-    font-size: 14px;
-    font-weight: 400;
-    font-style: normal;
+    text-align: left;
     line-height: 125%;
     color: var(--main-black);
-    text-align: left;
-  }
-
-  &.info .nameUser {
-    width: calc(100% - 22px);
-    color: #636363;
-    word-wrap: break-word;
-  }
-
-  &.nameUserActive {
-    background: var(--primary) !important;
-
-    .nameUser {
-      color: var(--pure-white);
-    }
   }
 
   .copyButton {

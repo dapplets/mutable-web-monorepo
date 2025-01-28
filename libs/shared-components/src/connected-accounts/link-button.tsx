@@ -26,15 +26,21 @@ const Button = styled.button`
   &:active {
     background: var(--primary-pressed);
   }
+
+  &:disabled {
+    cursor: default;
+    background-color: var(--main-grey);
+  }
 `
 
 type LinkButtonProps = {
   onClick: () => void
+  disabled?: boolean
 }
 
-const LinkButton: FC<LinkButtonProps> = ({ onClick }) => {
+const LinkButton: FC<LinkButtonProps> = ({ onClick, disabled }) => {
   return (
-    <Button onClick={onClick}>
+    <Button disabled={disabled} onClick={onClick}>
       <LinkIcon />
       Link
     </Button>

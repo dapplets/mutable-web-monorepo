@@ -1,4 +1,10 @@
-import { IConnectedAccountUser } from '@mweb/backend'
+import { IConnectedAccountUser, NearNetworks } from '@mweb/backend'
+import {
+  RequestStatus,
+  useChangeCAStatus,
+  useConnectedAccounts,
+  useConnectionRequest,
+} from '@mweb/engine'
 import { Spin } from 'antd'
 import cn from 'classnames'
 import React, { FC, useRef, useState } from 'react'
@@ -6,22 +12,31 @@ import { useOutside } from '../hooks/use-outside'
 import useCopied from '../hooks/useCopyed'
 import AccountListItem from './account-list-item'
 import { MoreHoriz } from './assets/icons'
+import { StatusBadge } from './status-badge'
 
 type CAListProps = {
   user?: IConnectedAccountUser
-  onClick?: (account: IConnectedAccountUser) => Promise<void>
   maxLength?: number
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   openListUp?: boolean
+  nearNetwork: NearNetworks
+  loggedInAccountId: string
 }
 
 const CAListItem: FC<CAListProps> = ({
   user,
-  onClick,
   maxLength = 32,
   trackingRefs,
   openListUp,
+  nearNetwork,
+  loggedInAccountId,
 }) => {
+  const { makeConnectionRequest } = useConnectionRequest()
+  const { requests } = useConnectedAccounts()
+  const status =
+    requests.find((r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`))
+      ?.status ?? RequestStatus.DEFAULT
+  const { changeCAStatus } = useChangeCAStatus()
   const [isListOpened, setIsListOpened] = useState(false)
   const [isWaiting, setIsWaiting] = useState(false)
   const ref = useRef(null)
@@ -33,38 +48,25 @@ const CAListItem: FC<CAListProps> = ({
       name={user?.name}
       origin={user?.origin}
       maxLength={user?.accountActive ? maxLength - 6 : maxLength}
+      disabled={status === RequestStatus.CLAIMING || status === RequestStatus.VERIFICATION}
     >
       {user?.accountActive ? <div className="mainAccount">Main</div> : null}
 
-      <button
-        className="copyButton"
-        disabled={isWaiting}
-        onClick={() => !isListOpened && setIsListOpened(true)}
-      >
-        {isWaiting ? <Spin size="small" /> : <MoreHoriz />}
-      </button>
+      {status !== RequestStatus.DEFAULT ? (
+        <StatusBadge status={status} />
+      ) : (
+        <button
+          className="copyButton"
+          disabled={isWaiting}
+          onClick={() => !isListOpened && setIsListOpened(true)}
+        >
+          {isWaiting ? <Spin size="small" /> : <MoreHoriz />}
+        </button>
+      )}
 
-      {isListOpened ? (
+      {isListOpened && user ? (
         <div className={cn('list', { openListUp })} ref={ref}>
           <ul>
-            <li>
-              <button
-                className="listItem"
-                onClick={
-                  onClick && user
-                    ? async () => {
-                        setIsListOpened(false)
-                        setIsWaiting(true)
-                        await onClick(user)
-                          .catch((e) => console.log(e))
-                          .finally(() => setIsWaiting(false))
-                      }
-                    : undefined
-                }
-              >
-                {user?.accountActive ? 'Reset main' : 'Set as main'}
-              </button>
-            </li>
             <li>
               <button
                 className="listItem"
@@ -74,6 +76,37 @@ const CAListItem: FC<CAListProps> = ({
                 }}
               >
                 Copy address
+              </button>
+            </li>
+            <li>
+              <button
+                className="listItem"
+                onClick={() => {
+                  setIsListOpened(false)
+                  makeConnectionRequest({
+                    name: user.name,
+                    origin: user.origin,
+                    isUnlink: true,
+                    nearNetwork,
+                    loggedInAccountId,
+                  })
+                }}
+              >
+                Unlink account
+              </button>
+            </li>
+            <li>
+              <button
+                className="listItem"
+                onClick={async () => {
+                  setIsListOpened(false)
+                  setIsWaiting(true)
+                  await changeCAStatus(user.name, user.origin)
+                    .catch((e) => console.log(e))
+                    .finally(() => setIsWaiting(false))
+                }}
+              >
+                {user?.accountActive ? 'Reset main' : 'Set as main'}
               </button>
             </li>
           </ul>

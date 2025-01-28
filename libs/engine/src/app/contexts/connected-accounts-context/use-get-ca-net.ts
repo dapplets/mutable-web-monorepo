@@ -1,5 +1,5 @@
 import { useAccountId } from 'near-social-vm'
-import { useQuery } from '../../hooks/use-query'
+import { useEffect, useState } from 'react'
 import { useMutableWeb } from '../mutable-web-context'
 
 export function useGetCANet() {
@@ -7,19 +7,31 @@ export function useGetCANet() {
   const accountId = useAccountId()
   const networkId = config.networkId
 
-  const {
-    data: connectedAccountsNet,
-    setData: setConnectedAccountsNet,
+  const [connectedAccountsNet, setConnectedAccountsNet] = useState<string[] | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const getConnectedAccountsNet = async () => {
+    if (!accountId || !networkId) return
+    try {
+      setIsLoading(true)
+      setError(null)
+      const net = await engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`)
+      setConnectedAccountsNet(net)
+      setIsLoading(false)
+    } catch (err) {
+      setError((err as Error).message)
+    }
+  }
+
+  useEffect(() => {
+    getConnectedAccountsNet()
+  }, [engine, config, accountId])
+
+  return {
+    connectedAccountsNet,
+    updateConnectedAccountsNet: getConnectedAccountsNet,
     isLoading,
     error,
-  } = useQuery<string[] | null>({
-    query: async () => {
-      if (!accountId) return null
-      return engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`)
-    },
-    initialData: [],
-    deps: [engine, accountId],
-  })
-
-  return { connectedAccountsNet, setConnectedAccountsNet, isLoading, error }
+  }
 }

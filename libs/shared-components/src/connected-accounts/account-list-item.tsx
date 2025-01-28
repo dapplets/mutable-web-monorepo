@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { resources } from './resources'
 import PictureIcon from './assets/resources/picture'
 
-const AccountListItemWrapper = styled.div`
+const AccountListItemWrapper = styled.div<{ $disabled?: boolean }>`
   position: relative;
   display: flex;
   align-items: center;
@@ -14,6 +14,7 @@ const AccountListItemWrapper = styled.div`
   border-radius: 12px;
   background-color: var(--muddy-white);
   font-family: var(--font-default);
+  user-select: none;
 
   &.pointer {
     cursor: pointer;
@@ -28,6 +29,7 @@ const AccountListItemWrapper = styled.div`
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    opacity: ${({ $disabled }) => ($disabled ? 0.4 : 1)};
 
     /* width: 22px;
     height: 22px; */
@@ -53,27 +55,9 @@ const AccountListItemWrapper = styled.div`
   }
 
   .nameUser {
-    flex-grow: 1;
-    font-size: 14px;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 150%;
-    color: var(--main-black);
     text-align: left;
-  }
-
-  &.info .nameUser {
-    width: calc(100% - 22px);
-    color: rgb(99, 99, 99);
-    word-wrap: break-word;
-  }
-
-  &.nameUserActive {
-    background: var(--primary) !important;
-
-    .nameUser {
-      color: var(--pure-white);
-    }
+    line-height: 150%;
+    color: ${({ $disabled }) => ($disabled ? 'var(--main-grey)' : 'var(--main-black)')};
   }
 
   .mainAccount {
@@ -85,6 +69,7 @@ const AccountListItemWrapper = styled.div`
     font-size: 12px;
     line-height: 136%;
     color: var(--gray-hover);
+    gap: 4px;
   }
 
   .copyButton {
@@ -165,12 +150,19 @@ type AccountListItemProps = {
   name?: string
   origin?: string
   maxLength?: number
+  disabled?: boolean
 }
 
-const AccountListItem: FC<AccountListItemProps> = ({ children, name, origin, maxLength = 32 }) => {
+const AccountListItem: FC<AccountListItemProps> = ({
+  children,
+  name,
+  origin,
+  maxLength = 32,
+  disabled,
+}) => {
   const ResourceIcon = (origin && resources[origin]?.icon) || null
   return (
-    <AccountListItemWrapper>
+    <AccountListItemWrapper $disabled={disabled}>
       {name ? (
         <>
           <div className="imgUser">{ResourceIcon ? <ResourceIcon /> : <PictureIcon />}</div>
