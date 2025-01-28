@@ -1,8 +1,8 @@
+import React from 'react'
+import browser from 'webextension-polyfill'
 import { Engine, EngineConfig } from '@mweb/backend'
 import { EngineProvider as MWebProvider } from '@mweb/react-engine'
 import { EngineProvider, SidePanel } from '@mweb/shared-components'
-import React from 'react'
-import browser from 'webextension-polyfill'
 import { ExtensionStorage } from '../common/extension-storage'
 import { useWallet } from '../common/wallet-context'
 import { useConnectWallet } from '../common/wallet-context/use-connect-wallet'
@@ -12,7 +12,7 @@ import { useCurrentTab } from './use-current-tab'
 export const App: React.FC = () => {
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
 
-  const { tree, selectedMutationId, switchMutation } = useCurrentTab()
+  const { tree, selectedMutationId, switchMutation, eventEmitter } = useCurrentTab()
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
@@ -26,6 +26,7 @@ export const App: React.FC = () => {
     selector,
     storage: new ExtensionStorage(`mweb:${networkId}`),
     bosElementStyleSrc: bootstrapCssUrl,
+    eventEmitter: eventEmitter ? eventEmitter : undefined,
   }
 
   const engine = new Engine(engineConfig)
@@ -41,7 +42,6 @@ export const App: React.FC = () => {
         selectedMutationId={selectedMutationId}
         onSwitchMutation={switchMutation}
       >
-        <div style={{ position: 'absolute' }}>Tree: {tree?.id}</div>
         <SidePanel />
       </EngineProvider>
     </MWebProvider>

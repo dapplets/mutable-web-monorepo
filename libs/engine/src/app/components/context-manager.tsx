@@ -111,9 +111,10 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   context,
   insPoints,
 }) => {
-  const { engine, selectedMutation, activeApps } = useMutableWeb()
+  const { engine, selectedMutation, activeApps, tree } = useMutableWeb()
 
   if (!selectedMutation) throw new Error('No selected mutation')
+  if (!tree) throw new Error('Context tree is not initialized')
 
   const { setPreferredSource } = useSetPreferredSource()
   const { controllers } = useAppControllers(selectedMutation.id, context, activeApps)
@@ -297,6 +298,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
             (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
+          if (!tree.id) throw new Error('No root context id')
 
           // ToDo: show fork dialog
 
@@ -308,13 +310,13 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
 
           // is mutation changed?
           if (mutation && mutation.id === selectedMutation.id) {
-            setPreferredSource(mutation.id, mutation.source)
+            setPreferredSource(mutation.id, tree.id, mutation.source)
           }
 
           return savedDocument
         }
     ),
-    [engine, selectedMutation]
+    [engine, selectedMutation, tree]
   )
 
   const handleGetConnectedAccountsNet = useCallback(

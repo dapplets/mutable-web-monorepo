@@ -8,16 +8,23 @@ export function useSetPreferredSource() {
   const { engine } = useEngine()
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: ({ mutationId, source }: { mutationId: string; source: EntitySourceType | null }) =>
-      engine.mutationService.setPreferredSource(mutationId, source),
-    onSuccess: (_, { mutationId, source }) => {
-      queryClient.setQueryData(['preferredSource', mutationId], source)
+    mutationFn: ({
+      mutationId,
+      contextId,
+      source,
+    }: {
+      mutationId: string
+      contextId: string
+      source: EntitySourceType | null
+    }) => engine.mutationService.setPreferredSource(mutationId, contextId, source),
+    onSuccess: (_, { mutationId, contextId, source }) => {
+      queryClient.setQueryData(['preferredSource', mutationId, contextId], source)
     },
   })
 
   const setPreferredSource = useCallback(
-    (mutationId: string, source: EntitySourceType | null) => {
-      mutate({ mutationId, source })
+    (mutationId: string, contextId: string, source: EntitySourceType | null) => {
+      mutate({ mutationId, contextId, source })
     },
     [mutate]
   )

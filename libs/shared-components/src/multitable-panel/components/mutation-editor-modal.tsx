@@ -244,7 +244,7 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
-  const { onSwitchMutation, loggedInAccountId } = useEngine()
+  const { onSwitchMutation, loggedInAccountId, tree } = useEngine()
   const { setPreferredSource } = useSetPreferredSource()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
@@ -326,12 +326,15 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
   }
 
   const handleSaveLocallyClick = () => {
+    const hostname = tree?.id
+    if (!hostname) throw new Error('No root context ID found')
+
     const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
 
     saveMutation(localMutation)
       .then(({ id }) => {
         onSwitchMutation(id)
-        setPreferredSource(id, EntitySourceType.Local)
+        setPreferredSource(id, hostname, EntitySourceType.Local)
       })
       .then(onClose)
   }

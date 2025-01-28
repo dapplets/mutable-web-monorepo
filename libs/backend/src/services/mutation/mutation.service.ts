@@ -14,10 +14,18 @@ import { NotificationCreateDto } from '../notification/dtos/notification-create.
 import { IRepository } from '../base/repository.interface'
 import { SettingsSerivce } from '../settings/settings.service'
 import { NearSigner } from '../near-signer/near-signer.service'
+import { EventService } from '../event/event.service'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
   askOriginToApplyChanges?: boolean
+}
+
+export type MutationEvents = {
+  mutationCreated: { mutationId: string }
+  mutationEdited: { mutationId: string }
+  mutationSaved: { mutationId: string }
+  mutationDeleted: { mutationId: string }
 }
 
 export class MutationService {
@@ -25,6 +33,7 @@ export class MutationService {
     private mutationRepository: IRepository<Mutation>,
     private settingsService: SettingsSerivce,
     private notificationService: NotificationService,
+    private eventService: EventService<MutationEvents>,
     private unitOfWorkService: UnitOfWorkService,
     private nearConfig: { defaultMutationId: string },
     private nearSigner: NearSigner
@@ -87,18 +96,29 @@ export class MutationService {
     }
   }
 
-  async setFavoriteMutation(mutationId: string | null): Promise<void> {
-    return this.settingsService.setFavoriteMutation(mutationId)
+  async setFavoriteMutation(contextId: string, mutationId: string | null): Promise<void> {
+    return this.settingsService.setFavoriteMutation(contextId, mutationId)
   }
 
-  async getFavoriteMutation(): Promise<string | null> {
-    const value = await this.settingsService.getFavoriteMutation()
+  async getFavoriteMutation(contextId: string): Promise<string | null> {
+    const value = await this.settingsService.getFavoriteMutation(contextId)
     return value ?? null
   }
 
-  async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
-    const value = await this.settingsService.getPreferredSource(mutationId)
+  async getPreferredSource(
+    mutationId: string,
+    contextId: string
+  ): Promise<EntitySourceType | null> {
+    const value = await this.settingsService.getPreferredSource(mutationId, contextId)
     return value ?? null
+  }
+
+  async setPreferredSource(
+    mutationId: string,
+    contextId: string,
+    source: EntitySourceType | null
+  ): Promise<void> {
+    return this.settingsService.setPreferredSource(mutationId, contextId, source)
   }
 
   async getMutationVersion(mutationId: string): Promise<string | null> {
@@ -108,10 +128,6 @@ export class MutationService {
 
   async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
     return this.settingsService.setMutationVersion(mutationId, version)
-  }
-
-  async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
-    return this.settingsService.setPreferredSource(mutationId, source)
   }
 
   async createMutation(
@@ -138,6 +154,8 @@ export class MutationService {
     } else {
       throw new Error('Invalid entity source')
     }
+
+    this.eventService.emit('mutationCreated', { mutationId: mutation.id })
 
     return mutation.toDto()
   }
@@ -183,6 +201,8 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
+    this.eventService.emit('mutationEdited', { mutationId: mutation.id })
+
     return editedMutation.toDto()
   }
 
@@ -220,11 +240,14 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
+    this.eventService.emit('mutationSaved', { mutationId: mutation.id })
+
     return mutation.toDto()
   }
 
   async deleteMutation(mutationId: EntityId): Promise<void> {
     await this.mutationRepository.deleteItem(mutationId)
+    this.eventService.emit('mutationDeleted', { mutationId })
   }
 
   async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
@@ -258,6 +281,9 @@ export class MutationService {
       ])
     )
 
+    // ToDo: move to repository?
+    this.eventService.emit('mutationEdited', { mutationId: targetMutationId })
+
     return freshNotification
   }
 
@@ -286,7 +312,7 @@ export class MutationService {
 
   async removeMutationFromRecents(mutationId: MutationId, context: IContextNode): Promise<void> {
     if (!context.id) return
-    await this.settingsService.setMutationLastUsage(mutationId, null, context.id)
+    await this.settingsService.setMutationLastUsage(mutationId, context.id, null)
   }
 
   public async getMutationLastUsage(

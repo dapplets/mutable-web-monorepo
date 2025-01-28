@@ -1,11 +1,9 @@
 import { AppId } from '../application/application.entity'
 import { Transaction } from '../unit-of-work/transaction'
 import { DocumentCommitDto } from './dtos/document-commit.dto'
-import { LinkDbService } from '../link-db/link-db.service'
 import { MutationId } from '../mutation/mutation.entity'
 import { MutationService } from '../mutation/mutation.service'
 import { Document, DocumentId } from './document.entity'
-import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { DocumentDto } from './dtos/document.dto'
 import { DocumentCreateDto } from './dtos/document-create.dto'
 import { IRepository } from '../base/repository.interface'
@@ -17,7 +15,6 @@ export class DocumentSerivce {
   constructor(
     private documentRepository: IRepository<Document>,
     private mutationService: MutationService,
-    private unitOfWorkService: UnitOfWorkService,
     private nearSigner: NearSigner
   ) {}
 

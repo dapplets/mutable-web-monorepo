@@ -2,7 +2,7 @@ import React from 'react'
 import { FC } from 'react'
 import styled from 'styled-components'
 import { AppSwitcher } from '../app-switcher'
-import { useMutation, useMutationApps } from '@mweb/react-engine'
+import { useGetMutationVersion, useMutation, useMutationApps, usePreferredSource } from '@mweb/react-engine'
 import { useEngine } from '../../contexts/engine-context'
 
 const AppsWrapper = styled.div`
@@ -44,8 +44,10 @@ const AppsWrapper = styled.div`
 `
 
 const Applications: FC = () => {
-  const { selectedMutationId } = useEngine()
-  const { mutation } = useMutation(selectedMutationId)
+  const { selectedMutationId, tree } = useEngine()
+  const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
+  const { mutationVersion } = useGetMutationVersion(selectedMutationId)
+  const { mutation } = useMutation(selectedMutationId, preferredSource, mutationVersion)
   const { mutationApps } = useMutationApps(mutation)
 
   if (!selectedMutationId) return null

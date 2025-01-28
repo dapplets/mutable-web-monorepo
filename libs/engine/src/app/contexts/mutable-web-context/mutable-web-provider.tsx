@@ -30,14 +30,15 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
   const { engine } = useEngine()
 
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
-  const { preferredSource } = usePreferredSource(selectedMutationId)
+  const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
 
   // ToDo: merge mutationId, source, version to one state
 
   // ToDo: move to @mweb/react-engine
   const getMutationToBeLoaded = useCallback(async () => {
-    const favoriteMutation = await engine.mutationService.getFavoriteMutation()
+    if (!tree.id) throw new Error('No root context ID found')
+    const favoriteMutation = await engine.mutationService.getFavoriteMutation(tree.id)
     const lastUsedMutation = tree ? await engine.mutationService.getLastUsedMutation(tree) : null
 
     return lastUsedMutation ?? favoriteMutation
@@ -45,8 +46,8 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   const { mutation: selectedMutation, isMutationLoading: isSelectedMutationLoading } = useMutation(
     selectedMutationId,
-    selectedMutationId ? preferredSource : undefined,
-    selectedMutationId ? mutationVersion : undefined
+    preferredSource,
+    mutationVersion
   )
 
   useEffect(() => {

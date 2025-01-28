@@ -1,6 +1,7 @@
 import { useQueries } from '@tanstack/react-query'
 import { useEngine } from '../engine'
 import { IContextNode } from '@mweb/core'
+import { useEffect } from 'react'
 
 export const useMutationsLastUsage = (mutationIds: string[], context: IContextNode | null) => {
   const { engine } = useEngine()
@@ -16,6 +17,16 @@ export const useMutationsLastUsage = (mutationIds: string[], context: IContextNo
       enabled: !!context,
     })),
   })
+
+  useEffect(() => {
+    const sub = engine.eventService.on('mutationLastUsageChanged', (event) => {
+      if (mutationIds.includes(event.mutationId)) {
+        queries[mutationIds.indexOf(event.mutationId)].refetch()
+      }
+    })
+
+    return () => sub.remove()
+  }, [engine, queries, mutationIds])
 
   return queries
 }

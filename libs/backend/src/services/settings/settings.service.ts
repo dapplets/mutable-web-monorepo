@@ -1,5 +1,6 @@
 import { AppInstanceId } from '../application/application.entity'
 import { EntitySourceType } from '../base/base.entity'
+import { EventService } from '../event/event.service'
 import { LocalDbService } from '../local-db/local-db.service'
 
 // Local DB
@@ -9,41 +10,65 @@ const MUTATION_LAST_USAGE = 'mutation-last-usage'
 const STOPPED_APPS = 'stopped-apps'
 const MUTATION_VERSION = 'mutation-version'
 
-export class SettingsSerivce {
-  constructor(private localDb: LocalDbService) {}
+export type SettingsEvents = {
+  favoriteMutationChanged: { contextId: string; mutationId: string | null | undefined }
+  preferredSourceChanged: { contextId: string; mutationId: string; source: EntitySourceType | null }
+  mutationVersionChanged: { mutationId: string; version: string | null }
+  appEnabledStatusChanged: { mutationId: string; appInstanceId: AppInstanceId; isEnabled: boolean }
+  mutationLastUsageChanged: { contextId: string; mutationId: string; value: string | null }
+}
 
-  async getFavoriteMutation(): Promise<string | null | undefined> {
-    const key = LocalDbService.makeKey(FAVORITE_MUTATION, window.location.hostname)
+export class SettingsSerivce {
+  constructor(
+    private eventService: EventService<SettingsEvents>,
+    private localDb: LocalDbService
+  ) {}
+
+  async getFavoriteMutation(contextId: string): Promise<string | null | undefined> {
+    const key = LocalDbService.makeKey(FAVORITE_MUTATION, contextId)
     return this.localDb.getItem(key)
   }
 
-  async setFavoriteMutation(mutationId: string | null | undefined): Promise<void> {
-    const key = LocalDbService.makeKey(FAVORITE_MUTATION, window.location.hostname)
-    return this.localDb.setItem(key, mutationId)
+  async setFavoriteMutation(
+    contextId: string,
+    mutationId: string | null | undefined
+  ): Promise<void> {
+    const key = LocalDbService.makeKey(FAVORITE_MUTATION, contextId)
+    await this.localDb.setItem(key, mutationId)
+    this.eventService.emit('favoriteMutationChanged', { mutationId, contextId })
   }
 
-  async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
-    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, window.location.hostname)
+  async getPreferredSource(
+    mutationId: string,
+    contextId: string
+  ): Promise<EntitySourceType | null> {
+    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, contextId)
     return (await this.localDb.getItem(key)) ?? null
   }
 
-  async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
-    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, window.location.hostname)
-    return this.localDb.setItem(key, source)
+  async setPreferredSource(
+    mutationId: string,
+    contextId: string,
+    source: EntitySourceType | null
+  ): Promise<void> {
+    const key = LocalDbService.makeKey(PREFERRED_SOURCE, mutationId, contextId)
+    await this.localDb.setItem(key, source)
+    this.eventService.emit('preferredSourceChanged', { mutationId, contextId, source })
   }
 
-  async getMutationLastUsage(mutationId: string, hostname: string): Promise<string | null> {
-    const key = LocalDbService.makeKey(MUTATION_LAST_USAGE, mutationId, hostname)
+  async getMutationLastUsage(mutationId: string, contextId: string): Promise<string | null> {
+    const key = LocalDbService.makeKey(MUTATION_LAST_USAGE, mutationId, contextId)
     return (await this.localDb.getItem(key)) ?? null
   }
 
   async setMutationLastUsage(
     mutationId: string,
-    value: string | null,
-    hostname: string
+    contextId: string,
+    value: string | null
   ): Promise<void> {
-    const key = LocalDbService.makeKey(MUTATION_LAST_USAGE, mutationId, hostname)
-    return this.localDb.setItem(key, value)
+    const key = LocalDbService.makeKey(MUTATION_LAST_USAGE, mutationId, contextId)
+    await this.localDb.setItem(key, value)
+    this.eventService.emit('mutationLastUsageChanged', { mutationId, contextId, value })
   }
 
   async getAppEnabledStatus(mutationId: string, appInstanceId: AppInstanceId): Promise<boolean> {
@@ -57,7 +82,12 @@ export class SettingsSerivce {
     isEnabled: boolean
   ): Promise<void> {
     const key = LocalDbService.makeKey(STOPPED_APPS, mutationId, appInstanceId)
-    return this.localDb.setItem(key, isEnabled)
+    await this.localDb.setItem(key, isEnabled)
+    this.eventService.emit('appEnabledStatusChanged', {
+      mutationId,
+      appInstanceId,
+      isEnabled,
+    })
   }
 
   async getMutationVersion(mutationId: string): Promise<string | null> {
@@ -67,6 +97,7 @@ export class SettingsSerivce {
 
   async setMutationVersion(mutationId: string, version: string | null = null): Promise<void> {
     const key = LocalDbService.makeKey(MUTATION_VERSION, mutationId)
-    return this.localDb.setItem(key, version)
+    await this.localDb.setItem(key, version)
+    this.eventService.emit('mutationVersionChanged', { mutationId, version })
   }
 }

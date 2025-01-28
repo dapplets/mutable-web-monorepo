@@ -246,7 +246,7 @@ export const ModalConfirm: FC<Props> = ({
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
   const { mutations } = useMutations()
-  const { onSwitchMutation } = useEngine()
+  const { onSwitchMutation, tree } = useEngine()
   const { setPreferredSource } = useSetPreferredSource()
 
   const [mode, setMode] = useState(
@@ -308,6 +308,10 @@ export const ModalConfirm: FC<Props> = ({
       return
     }
 
+    const hostname = tree?.id
+
+    if (!hostname) throw new Error('No root context ID found')
+
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
         const createdMutation = await createMutation(
@@ -317,7 +321,7 @@ export const ModalConfirm: FC<Props> = ({
             : undefined
         )
         onSwitchMutation(createdMutation.id)
-        setPreferredSource(createdMutation.id, EntitySourceType.Origin)
+        setPreferredSource(createdMutation.id, hostname, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
@@ -335,7 +339,7 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
-        setPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
+        setPreferredSource(mutationToPublish.id, hostname, EntitySourceType.Origin)
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {

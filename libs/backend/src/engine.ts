@@ -5,7 +5,7 @@ import { SocialDbService } from './services/social-db/social-db.service'
 import { IStorage } from './services/local-db/local-storage'
 import { LocalDbService } from './services/local-db/local-db.service'
 import { LocalStorage } from './services/local-db/local-storage'
-import { MutationService } from './services/mutation/mutation.service'
+import { MutationEvents, MutationService } from './services/mutation/mutation.service'
 import { ApplicationService } from './services/application/application.service'
 import { UserLinkService } from './services/user-link/user-link.service'
 import { ParserConfigService } from './services/parser-config/parser-config.service'
@@ -13,7 +13,7 @@ import { LinkDbService } from './services/link-db/link-db.service'
 import { DocumentSerivce } from './services/document/document.service'
 import { UnitOfWorkService } from './services/unit-of-work/unit-of-work.service'
 import { NotificationService } from './services/notification/notification.service'
-import { SettingsSerivce } from './services/settings/settings.service'
+import { SettingsEvents, SettingsSerivce } from './services/settings/settings.service'
 import { BaseRepository } from './services/base/base.repository'
 import { Mutation } from './services/mutation/mutation.entity'
 import { AppMetadata } from './services/application/application.entity'
@@ -26,6 +26,8 @@ import { Resolution } from './services/notification/resolution.entity'
 import { BaseLocalRepository } from './services/base/base-local.repository'
 import { BaseAggRepository } from './services/base/base-agg.repository'
 import { ConnectedAccountsService } from './services/connected-accounts/connected-accounts.service'
+import { EventService } from './services/event/event.service'
+import { EventEmitter as NEventEmitter } from 'events'
 
 export type EngineConfig = {
   networkId: string
@@ -34,11 +36,13 @@ export type EngineConfig = {
   storage?: IStorage
   bosElementName?: string
   bosElementStyleSrc?: string
+  eventEmitter?: NEventEmitter
 }
 
 export class Engine {
   #selector: WalletSelector
 
+  eventService: EventService<MutationEvents & SettingsEvents>
   linkDbService: LinkDbService
   mutationService: MutationService
   applicationService: ApplicationService
@@ -58,10 +62,12 @@ export class Engine {
     this.#selector = this.config.selector
     const nearConfig = getNearConfig(this.config.networkId)
 
+    this.eventService = new EventService(this.config.eventEmitter)
+
     const localDb = new LocalDbService(storage)
     const nearSigner = new NearSigner(this.#selector, localDb, nearConfig)
     const socialDb = new SocialDbService(nearSigner, nearConfig.contractName)
-    const settingsService = new SettingsSerivce(localDb)
+    const settingsService = new SettingsSerivce(this.eventService, localDb)
     const unitOfWorkService = new UnitOfWorkService(socialDb)
 
     const mutationRemoteRepository = new BaseRepository(Mutation, socialDb)
@@ -123,6 +129,7 @@ export class Engine {
       mutationRepository,
       settingsService,
       this.notificationService,
+      this.eventService,
       unitOfWorkService,
       nearConfig,
       nearSigner
@@ -134,12 +141,7 @@ export class Engine {
       nearSigner
     )
     this.parserConfigService = new ParserConfigService(parserConfigRepository)
-    this.documentService = new DocumentSerivce(
-      documentRepository,
-      this.mutationService,
-      unitOfWorkService,
-      nearSigner
-    )
+    this.documentService = new DocumentSerivce(documentRepository, this.mutationService, nearSigner)
     this.connectedAccountsService = new ConnectedAccountsService(
       nearSigner,
       nearConfig.connectedAccountsContractAddress

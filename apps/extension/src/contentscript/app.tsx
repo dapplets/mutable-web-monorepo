@@ -1,5 +1,4 @@
 import { EngineConfig } from '@mweb/backend'
-import { Core } from '@mweb/core'
 import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
 import { useInitNear } from 'near-social-vm'
 import React, { FC, useEffect } from 'react'
@@ -8,6 +7,7 @@ import { ExtensionStorage } from '../common/extension-storage'
 import { networkConfigs } from '../common/networks'
 import { useWallet } from '../common/wallet-context'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
+import { WildcardEventEmitter } from '../common/wildcard-event-emitter'
 
 export const App: FC<{
   defaultMutationId?: string | null
@@ -37,6 +37,8 @@ export const App: FC<{
 
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
 
+  const eventEmitter = new WildcardEventEmitter()
+
   // ToDo: move to MutableWebContext
   const engineConfig: EngineConfig = {
     networkId,
@@ -44,6 +46,7 @@ export const App: FC<{
     selector,
     storage: new ExtensionStorage(`mweb:${networkId}`),
     bosElementStyleSrc: bootstrapCssUrl,
+    eventEmitter,
   }
 
   return (

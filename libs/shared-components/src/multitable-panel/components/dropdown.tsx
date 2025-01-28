@@ -56,7 +56,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   const navigate = useNavigate()
   const { tree, selectedMutationId, onSwitchMutation } = useEngine()
   const { mutations } = useMutations(tree)
-  const { favoriteMutationId } = useFavoriteMutation()
+  const { favoriteMutationId } = useFavoriteMutation(tree?.id)
   const { setFavoriteMutation } = useSetFavoriteMutation()
 
   const { deleteLocalMutation } = useDeleteLocalMutation()
@@ -112,7 +112,9 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   }
 
   const handleFavoriteButtonClick = (mutationId: string) => {
-    setFavoriteMutation(mutationId === favoriteMutationId ? null : mutationId)
+    const contextId = tree?.id
+    if (!contextId) throw new Error('No root context ID found')
+    setFavoriteMutation(contextId, mutationId === favoriteMutationId ? null : mutationId)
   }
 
   const handleOriginalButtonClick = () => {

@@ -2,6 +2,8 @@ import { IContextNode, PureContextNode, TransferableContextNode } from '@mweb/co
 import { useCallback, useEffect, useRef, useState } from 'react'
 import browser from 'webextension-polyfill'
 import ContentScript from '../common/content-script'
+import { WildcardEventEmitter } from '../common/wildcard-event-emitter'
+import { createEventEmitterToPort } from '../common/create-event-emitter-to-port'
 
 async function getCurrentTabId(): Promise<number | null> {
   const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true })
@@ -11,6 +13,7 @@ async function getCurrentTabId(): Promise<number | null> {
 export const useCurrentTab = () => {
   const [tree, setTree] = useState<IContextNode | null>(null)
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
+  const [eventEmitter, setEventEmitter] = useState<WildcardEventEmitter | null>(null)
   const portRef = useRef<browser.Runtime.Port | null>(null)
 
   useEffect(() => {
@@ -20,6 +23,7 @@ export const useCurrentTab = () => {
 
       setTree(null)
       setSelectedMutationId(null)
+      setEventEmitter(null)
 
       if (!tabId) return
 
@@ -31,6 +35,10 @@ export const useCurrentTab = () => {
       if (!isAlive) return
 
       portRef.current = browser.tabs.connect(tabId, { name: 'sp-to-cs' })
+
+      const { eventEmitter, destroy } = createEventEmitterToPort(portRef.current)
+
+      setEventEmitter(eventEmitter)
 
       portRef.current.onMessage.addListener((msg: any) => {
         // ToDo: handle childContextRemoved, contextChanged
@@ -69,6 +77,7 @@ export const useCurrentTab = () => {
       })
 
       portRef.current.onDisconnect.addListener(() => {
+        destroy()
         // Delay before reconnecting to prevent immediate retries in rapid succession
         // ToDo: find a better solution
         setTimeout(() => {
@@ -110,5 +119,5 @@ export const useCurrentTab = () => {
     portRef.current.postMessage({ type: 'switchMutation', data: mutationId })
   }, [])
 
-  return { tree, selectedMutationId, switchMutation }
+  return { tree, selectedMutationId, switchMutation, eventEmitter }
 }

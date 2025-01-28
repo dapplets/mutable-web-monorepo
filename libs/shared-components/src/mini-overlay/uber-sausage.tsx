@@ -1,6 +1,11 @@
 import { EntitySourceType } from '@mweb/backend'
-import { useMutation, useMutationApps } from '@mweb/react-engine'
-import React, { CSSProperties } from 'react'
+import {
+  useGetMutationVersion,
+  useMutation,
+  useMutationApps,
+  usePreferredSource,
+} from '@mweb/react-engine'
+import React, { CSSProperties, useEffect } from 'react'
 import styled from 'styled-components'
 import { Badge } from '../common/Badge'
 import { Image } from '../common/image'
@@ -121,8 +126,14 @@ interface ISidePanelProps {
 }
 
 export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
-  const { selectedMutationId, loggedInAccountId } = useEngine()
-  const { mutation: selectedMutation } = useMutation(selectedMutationId)
+  const { selectedMutationId, loggedInAccountId, tree } = useEngine()
+  const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
+  const { mutationVersion } = useGetMutationVersion(selectedMutationId)
+  const { mutation: selectedMutation } = useMutation(
+    selectedMutationId,
+    preferredSource,
+    mutationVersion
+  )
   const { mutationApps } = useMutationApps(selectedMutation)
 
   const isMutationIconButton = !!loggedInAccountId

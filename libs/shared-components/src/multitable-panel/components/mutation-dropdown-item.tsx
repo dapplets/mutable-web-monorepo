@@ -1,6 +1,6 @@
 import { ArrowDownOutlined, DeleteOutlined } from '@ant-design/icons'
 import { EntitySourceType, MutationDto } from '@mweb/backend'
-import React, { FC } from 'react'
+import React, { FC, useCallback } from 'react'
 import {
   AuthorMutation,
   ImageBlock,
@@ -12,7 +12,8 @@ import {
 import { StarMutationList, StarMutationListDefault } from '../assets/vectors'
 import { Badge } from './badge'
 import { Image } from './image'
-import { usePreferredSource } from '@mweb/react-engine'
+import { usePreferredSource, useSetPreferredSource } from '@mweb/react-engine'
+import { useEngine } from '../../contexts/engine-context'
 
 export const MutationDropdownItem: FC<{
   local?: MutationDto
@@ -35,12 +36,24 @@ export const MutationDropdownItem: FC<{
 }) => {
   const mutationId = origin?.id ?? local?.id ?? null
 
-  const { preferredSource } = usePreferredSource(mutationId)
+  const { tree } = useEngine()
+  const { preferredSource } = usePreferredSource(mutationId, tree?.id)
+  const { setPreferredSource } = useSetPreferredSource()
 
   const mut = preferredSource === EntitySourceType.Local ? local : origin
 
   if (!local && !origin) return null
   if (!mut) return null
+
+  const handleToggleSource = useCallback(() => {
+    if (!mutationId) throw new Error('No mutation ID found')
+    if (!tree?.id) throw new Error('No root context ID found')
+
+    const newSource =
+      preferredSource === EntitySourceType.Local ? EntitySourceType.Origin : EntitySourceType.Local
+
+    setPreferredSource(mutationId, tree.id, newSource)
+  }, [mutationId, preferredSource, tree])
 
   return (
     <InputBlock data-testid={mutationId} key={mutationId} isActive={isSelected}>
@@ -56,9 +69,14 @@ export const MutationDropdownItem: FC<{
           {mut.metadata ? mut.metadata.name : ''}{' '}
           {local && origin ? (
             mut.source === EntitySourceType.Local ? (
-              <Badge margin="0 0 0 4px" text="local on" theme="blue" />
+              <Badge margin="0 0 0 4px" text="local on" theme="blue" onClick={handleToggleSource} />
             ) : (
-              <Badge margin="0 0 0 4px" text="local off" theme="yellow" />
+              <Badge
+                margin="0 0 0 4px"
+                text="local off"
+                theme="yellow"
+                onClick={handleToggleSource}
+              />
             )
           ) : mut.source === EntitySourceType.Local ? (
             <Badge margin="0 0 0 4px" text="local" theme="blue" />

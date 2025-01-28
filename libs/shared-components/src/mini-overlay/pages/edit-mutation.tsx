@@ -10,8 +10,9 @@ const EditMutation: FC = () => {
   const params = useParams()
   const mutationId = `${params.authorId}/mutation/${params.localId}`
 
+  const { tree } = useEngine()
   const { applications } = useApplications()
-  const { preferredSource } = usePreferredSource(mutationId)
+  const { preferredSource } = usePreferredSource(mutationId, tree?.id)
   const { mutation: baseMutation } = useMutation(mutationId, preferredSource ?? undefined) // ToDo: fix
   const { mutations, isLoading } = useMutations(null) // ToDo: need context?
 

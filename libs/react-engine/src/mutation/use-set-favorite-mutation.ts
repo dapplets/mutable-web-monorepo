@@ -1,17 +1,25 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEngine } from '../engine'
+import { useCallback } from 'react'
 
 export function useSetFavoriteMutation() {
   const queryClient = useQueryClient()
   const { engine } = useEngine()
 
   const { mutate, isPending, error } = useMutation({
-    mutationFn: (mutationId: string | null) =>
-      engine.mutationService.setFavoriteMutation(mutationId),
-    onSuccess: (_, mutationId) => {
-      queryClient.setQueryData(['favoriteMutationId'], mutationId)
+    mutationFn: ({ contextId, mutationId }: { contextId: string; mutationId: string | null }) =>
+      engine.mutationService.setFavoriteMutation(contextId, mutationId),
+    onSuccess: (_, { mutationId, contextId }) => {
+      queryClient.setQueryData(['favoriteMutationId', contextId], mutationId)
     },
   })
 
-  return { setFavoriteMutation: mutate, isLoading: isPending, error }
+  const setFavoriteMutation = useCallback(
+    (contextId: string, mutationId: string | null) => {
+      mutate({ contextId, mutationId })
+    },
+    [mutate]
+  )
+
+  return { setFavoriteMutation, isLoading: isPending, error }
 }
