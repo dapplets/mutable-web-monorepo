@@ -42,9 +42,6 @@ export const MutationDropdownItem: FC<{
 
   const mut = preferredSource === EntitySourceType.Local ? local : origin
 
-  if (!local && !origin) return null
-  if (!mut) return null
-
   const handleToggleSource = useCallback(() => {
     if (!mutationId) throw new Error('No mutation ID found')
     if (!tree?.id) throw new Error('No root context ID found')
@@ -54,6 +51,9 @@ export const MutationDropdownItem: FC<{
 
     setPreferredSource(mutationId, tree.id, newSource)
   }, [mutationId, preferredSource, tree])
+
+  if (!local && !origin) return null
+  if (!mut) return null
 
   return (
     <InputBlock data-testid={mutationId} key={mutationId} isActive={isSelected}>
