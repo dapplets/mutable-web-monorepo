@@ -3,22 +3,8 @@ import { useEffect, useState } from 'react'
 import browser from 'webextension-polyfill'
 import { EventEmitter as NEventEmitter } from 'events'
 import { useMutableWeb } from '@mweb/engine'
-import { createEventEmitterFromPort } from '../../common/create-event-emitter-from-port'
 import { WildcardEventEmitter } from '../../common/wildcard-event-emitter'
-
-function forwardEvents({ from, to }: { from: WildcardEventEmitter; to: WildcardEventEmitter }) {
-  const listener = (event: string, ...args: any[]) => {
-    to.emit(event, ...args)
-  }
-
-  from.on('*', listener)
-
-  return {
-    stop: () => {
-      from.off('*', listener)
-    },
-  }
-}
+import { connectEventEmitterWithPort } from '../../common/connect-event-emitter-with-port'
 
 export const useSidePanel = () => {
   const { engine, tree, selectedMutationId, switchMutation } = useMutableWeb()
@@ -50,12 +36,10 @@ export const useSidePanel = () => {
         return
       }
 
-      const { eventEmitter, destroy } = createEventEmitterFromPort(port)
-
-      const { stop } = forwardEvents({
-        from: eventEmitter,
-        to: engine.eventService.emitter,
-      })
+      const { disconnect } = connectEventEmitterWithPort(
+        port,
+        engine.eventService.emitter as WildcardEventEmitter
+      )
 
       const handleChildContextAdded = (data: IContextNode) =>
         port.postMessage({ type: 'childContextAdded', data })
@@ -76,8 +60,7 @@ export const useSidePanel = () => {
       })
 
       port.onDisconnect.addListener(() => {
-        destroy()
-        stop()
+        disconnect()
         ee.removeListener('childContextAdded', handleChildContextAdded)
         ee.removeListener('childContextRemoved', handleChildContextRemoved)
         ee.removeListener('contextChanged', handleContextChanged)

@@ -5,4 +5,11 @@ export class WildcardEventEmitter extends NEventEmitter {
     super.emit('*', event, ...args)
     return super.emit(event, ...args)
   }
+
+  /**
+   * prevents endless loop when two EventEmitters synchronized
+   */
+  emitQuitely(event: string, ...args: any[]): boolean {
+    return super.emit(event, ...args)
+  }
 }

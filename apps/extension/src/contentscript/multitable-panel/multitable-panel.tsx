@@ -1,6 +1,6 @@
 import { useMutableWeb } from '@mweb/engine'
 import { EngineProvider, UberSausage } from '@mweb/shared-components'
-import React, { FC, useEffect } from 'react'
+import React, { FC } from 'react'
 import { useConnectWallet, useDisconnectWallet, useWallet } from '../../common/wallet-context'
 import { useSidePanel } from '../hooks/use-side-panel'
 import styled from 'styled-components'
@@ -16,10 +16,11 @@ const UberSausageWrapper = styled.div`
 
 export const MultitablePanel: FC = () => {
   useSidePanel()
+
   const { accountId, networkId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { tree, selectedMutationId, switchMutation, engine } = useMutableWeb()
+  const { tree, selectedMutationId, switchMutation } = useMutableWeb()
 
   const handleToggleOverlay = () => {
     Background.toggleSidePanel()

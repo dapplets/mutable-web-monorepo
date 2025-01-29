@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import browser from 'webextension-polyfill'
 import ContentScript from '../common/content-script'
 import { WildcardEventEmitter } from '../common/wildcard-event-emitter'
-import { createEventEmitterToPort } from '../common/create-event-emitter-to-port'
+import { connectEventEmitterWithPort } from '../common/connect-event-emitter-with-port'
 
 async function getCurrentTabId(windowId: number): Promise<number | null> {
   const [currentTab] = await browser.tabs.query({ active: true, windowId })
@@ -36,7 +36,9 @@ export const useCurrentTab = (windowId: number) => {
 
       portRef.current = browser.tabs.connect(tabId, { name: 'sp-to-cs' })
 
-      const { eventEmitter, destroy } = createEventEmitterToPort(portRef.current)
+      const eventEmitter = new WildcardEventEmitter()
+
+      const { disconnect } = connectEventEmitterWithPort(portRef.current, eventEmitter)
 
       setEventEmitter(eventEmitter)
 
@@ -77,7 +79,7 @@ export const useCurrentTab = (windowId: number) => {
       })
 
       portRef.current.onDisconnect.addListener(() => {
-        destroy()
+        disconnect()
         // Delay before reconnecting to prevent immediate retries in rapid succession
         // ToDo: find a better solution
         setTimeout(() => {
