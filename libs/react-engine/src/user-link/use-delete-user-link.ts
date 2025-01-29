@@ -25,7 +25,7 @@ export const useDeleteUserLink = (
       ]
 
       queryClient.setQueryData(key, (prev: BosUserLinkWithInstance[]) =>
-        prev.filter((link) => link.id !== linkId)
+        prev ? prev.filter((link) => link.id !== linkId) : undefined
       )
     },
   })

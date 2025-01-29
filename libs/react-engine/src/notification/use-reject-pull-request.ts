@@ -9,8 +9,8 @@ export const useRejectPullRequest = (notificationId: EntityId) => {
   const { mutateAsync, isPending, error } = useMutation({
     mutationFn: () => engine.mutationService.rejectPullRequest(notificationId),
     onSuccess: (notification) => {
-      queryClient.setQueryData(['notifications'], (prev: NotificationDto[]) =>
-        prev.map((item) => (item.id === notification.id ? notification : item))
+      queryClient.setQueryData(['notifications'], (prev: NotificationDto[] | undefined) =>
+        prev ? prev.map((item) => (item.id === notification.id ? notification : item)) : undefined
       )
     },
   })

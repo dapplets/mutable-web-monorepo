@@ -16,7 +16,9 @@ export function useCreateMutation() {
       options?: SaveMutationOptions
     }) => engine.mutationService.createMutation(creatingMutation, options),
     onSuccess: (mutation) => {
-      queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => [...prev, mutation])
+      queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
+        prev ? [...prev, mutation] : undefined
+      )
     },
   })
 

@@ -10,9 +10,12 @@ export function useDeleteLocalMutation() {
     mutationFn: (mutationId: EntityId) => engine.mutationService.deleteMutation(mutationId),
     onSuccess: (_, mutationId: EntityId) => {
       queryClient.setQueryData(['mutations'], (prev: any[]) =>
-        prev.filter(
-          (mutation) => !(mutation.id === mutationId && mutation.source === EntitySourceType.Local)
-        )
+        prev
+          ? prev.filter(
+              (mutation) =>
+                !(mutation.id === mutationId && mutation.source === EntitySourceType.Local)
+            )
+          : undefined
       )
     },
   })

@@ -35,10 +35,9 @@ export const useCreateUserLink = (
         appInstanceId: instance.instanceId,
       }))
 
-      queryClient.setQueryData(key, (prev: BosUserLinkWithInstance[]) => [
-        ...prev,
-        ...linkWithInstance,
-      ])
+      queryClient.setQueryData(key, (prev: BosUserLinkWithInstance[]) =>
+        prev ? [...prev, ...linkWithInstance] : undefined
+      )
     },
   })
 

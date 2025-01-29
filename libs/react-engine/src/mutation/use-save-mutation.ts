@@ -16,6 +16,8 @@ export function useSaveMutation() {
     }) => engine.mutationService.saveMutation(savingMutation, options),
     onSuccess: (savedMutation) => {
       queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
+        if (!prev) return undefined
+
         const mutationExists = prev.some(
           (mut) => mut.id === savedMutation.id && mut.source === savedMutation.source
         )

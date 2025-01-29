@@ -11,7 +11,7 @@ export const useViewNotification = (notificationId: EntityId) => {
     mutationFn: () => engine.notificationService.viewNotification(notificationId),
     onSuccess: (notification) => {
       queryClient.setQueryData(['notifications'], (prev: NotificationDto[]) =>
-        prev.map((item) => (item.id === notification.id ? notification : item))
+        prev ? prev.map((item) => (item.id === notification.id ? notification : item)) : undefined
       )
     },
   })

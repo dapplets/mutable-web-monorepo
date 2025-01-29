@@ -16,11 +16,13 @@ export function useEditMutation() {
     }) => engine.mutationService.editMutation(editingMutation, options),
     onSuccess: (editedMutation) => {
       queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
-        prev.map((mut) =>
-          mut.id === editedMutation.id && mut.source === editedMutation.source
-            ? editedMutation
-            : mut
-        )
+        prev
+          ? prev.map((mut) =>
+              mut.id === editedMutation.id && mut.source === editedMutation.source
+                ? editedMutation
+                : mut
+            )
+          : undefined
       )
     },
   })
