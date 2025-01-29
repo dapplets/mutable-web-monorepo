@@ -330,7 +330,7 @@ export class MutationService {
     if (!context.id) throw new Error('Context ID is not defined')
     // save last usage
     const currentDate = new Date().toISOString()
-    await this.settingsService.setMutationLastUsage(mutationId, currentDate, context.id)
+    await this.settingsService.setMutationLastUsage(mutationId, context.id, currentDate)
     return currentDate
   }
 
