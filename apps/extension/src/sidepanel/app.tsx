@@ -19,6 +19,10 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
 
   if (!selector) return null
 
+  if (!tree) {
+    return <div>No connection to the tab</div>
+  }
+
   // ToDo: move to MutableWebContext
   const engineConfig: EngineConfig = {
     networkId,
