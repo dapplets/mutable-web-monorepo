@@ -168,15 +168,18 @@ const Main = styled.div<{ $disabled?: boolean }>`
 
 const Text = styled.p<{ $type: string }>`
   font-family: var(--font-default);
-  color: ${(props) => (props.$type === 'error' ? 'var(--error)' : 'var(--gray)')};
+  color: ${(props) =>
+    props.$type === 'error' || props.$type === 'warning' ? 'var(--error)' : 'var(--gray)'};
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 150%;
   transition:
     height 0.3s ease,
     transform 0.1s ease;
-  height: ${(props) => (props.$type === 'error' ? '20px' : '0')};
-  transform: ${(props) => (props.$type === 'error' ? 'scaleY(1)' : 'scaleY(0)')};
+  height: ${(props) =>
+    props.$type === 'error' ? 'auto' : props.$type === 'warning' ? '36px' : '0'};
+  transform: ${(props) =>
+    props.$type === 'error' || props.$type === 'warning' ? 'scaleY(1)' : 'scaleY(0)'};
 `
 
 type AccountListItemProps = {

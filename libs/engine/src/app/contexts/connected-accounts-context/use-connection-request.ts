@@ -52,7 +52,7 @@ export const useConnectionRequest = () => {
     const firstOriginId = origin.toLowerCase()
     const secondAccountId = loggedInAccountId
     const secondOriginId = 'near/' + nearNetwork.toLowerCase()
-    const firstProofUrl = `https://${origin.toLowerCase()}.com/` + name
+    const firstProofUrl = `https://${origin.toLowerCase()}.com/` + name // ToDo: can be different URLs + less secure
     try {
       const sameTypeRequestPayloads = requests
         .filter((request) => request.type === (isUnlink ? 'disconnect' : 'connect'))
@@ -101,6 +101,10 @@ export const useConnectionRequest = () => {
                   ...r,
                   status:
                     requestStatus === 'approved' ? RequestStatus.SUCCESS : RequestStatus.FAILED,
+                  message:
+                    requestStatus === 'rejected'
+                      ? 'The transaction was rejected. Go to your social network profile and check if the connection condition is met.'
+                      : undefined,
                 }
               : r
           )
@@ -108,7 +112,7 @@ export const useConnectionRequest = () => {
         setTimeout(async () => {
           await Promise.all([updateConnectedAccountsNet(), updateConnectedAccountsPairs()])
           setRequests((requests) => requests.filter((request) => request.id !== newRequestId))
-        }, 3000)
+        }, 5000)
       }
     } catch (err) {
       console.log(err)

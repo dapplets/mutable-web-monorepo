@@ -107,6 +107,7 @@ type ConnectModuleProps = {
     name: string
     origin: string
     fullname: string
+    websiteName: string
   } | null
 }
 
@@ -115,14 +116,17 @@ const ConnectModule: FC<ConnectModuleProps> = ({
   loggedInAccountId,
   socialAccount,
 }) => {
-  const { connectedAccountsNet, requests } = useConnectedAccounts()
+  const { connectedAccountsNet, requests, socialNetworkConnectionCondition } =
+    useConnectedAccounts()
   const { makeConnectionRequest } = useConnectionRequest()
   const [showConnectModule, setShowConnectModule] = useState(false)
   const [accountToConnect, setAccountToConnect] = useState<{
     name: string
     origin: string
     fullname: string
+    websiteName: string
   } | null>(null)
+  const [isConditionDone, setIsConditionDone] = useState(false)
 
   useEffect(() => {
     if (
@@ -131,6 +135,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
     ) {
       setAccountToConnect(null)
       setShowConnectModule(false)
+      setIsConditionDone(false)
       return
     }
 
@@ -142,6 +147,17 @@ const ConnectModule: FC<ConnectModuleProps> = ({
     ) {
       setAccountToConnect({ ...socialAccount })
       setShowConnectModule(true)
+      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: can be different URLs + less secure
+      setIsConditionDone(() =>
+        !!loggedInAccountId
+          ? socialNetworkConnectionCondition({
+              socNet_id: socialAccount.name,
+              near_id: loggedInAccountId,
+              url: proofUrl,
+              fullname: socialAccount.fullname,
+            })
+          : true
+      )
     }
   }, [socialAccount, connectedAccountsNet])
 
@@ -180,7 +196,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
                 loggedInAccountId,
               })
             }
-            disabled={!loggedInAccountId}
+            disabled={!isConditionDone || !loggedInAccountId}
           />
         )}
       </AccountListItem>
@@ -189,7 +205,9 @@ const ConnectModule: FC<ConnectModuleProps> = ({
           ? 'To link your source account, you need to connect your wallet first.'
           : request?.message
             ? 'The transaction is rejected' // ToDo: process diffenent messages
-            : 'You are on a website for which account linking is available. Do you want to link your account to your current cryptocurrency wallet?'}
+            : !isConditionDone
+              ? `You are on a website for which account linking is available. Copy your logged-in NEAR address and add it to your ${accountToConnect.websiteName} account name.`
+              : `The condition for account linking is met. Click on the Link button above to connect your ${accountToConnect.websiteName} account to your current NEAR wallet.`}
       </Text>
     </Wrapper>
   )

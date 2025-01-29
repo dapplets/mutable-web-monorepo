@@ -68,7 +68,7 @@ export function useConnectAccounts() {
       )
       setTimeout(
         () => setRequests((requests) => requests.filter((request) => request.id !== newRequestId)),
-        3000
+        5000
       )
       // throw err // ToDo: handle error???
       return null

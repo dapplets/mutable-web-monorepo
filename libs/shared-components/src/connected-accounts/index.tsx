@@ -562,6 +562,7 @@ export const ConnectedAccount: FC<{
     name: string
     origin: string
     fullname: string
+    websiteName: string
   } | null>(null)
   const [contextInfoNode, setContextInfoNode] = useState<IContextNode | null>(null)
   const core = useCore()
@@ -577,7 +578,7 @@ export const ConnectedAccount: FC<{
     if (!node) setSocialAccount(null)
     else {
       const { username, fullname, websiteName } = node.parsedContext
-      setSocialAccount({ name: username, fullname, origin: websiteName.toLowerCase() })
+      setSocialAccount({ name: username, fullname, origin: websiteName.toLowerCase(), websiteName })
     }
   }
 
@@ -663,10 +664,7 @@ export const ConnectedAccount: FC<{
                   }
                   nearNetwork={nearNetwork}
                   loggedInAccountId={loggedInAccountId}
-                  isActive={
-                    x.secondAccount.name === socialAccount?.name &&
-                    x.secondAccount.origin === socialAccount?.origin
-                  }
+                  socialAccount={socialAccount}
                 />
               ))}
             </div>

@@ -7,7 +7,7 @@ import {
 } from '@mweb/engine'
 import { Spin } from 'antd'
 import cn from 'classnames'
-import React, { FC, useRef, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { useOutside } from '../hooks/use-outside'
 import useCopied from '../hooks/useCopyed'
 import AccountListItem from './account-list-item'
@@ -21,7 +21,12 @@ type CAListProps = {
   openListUp?: boolean
   nearNetwork: NearNetworks
   loggedInAccountId: string
-  isActive: boolean
+  socialAccount: {
+    name: string
+    origin: string
+    fullname: string
+    websiteName: string
+  } | null
 }
 
 const CAListItem: FC<CAListProps> = ({
@@ -31,10 +36,17 @@ const CAListItem: FC<CAListProps> = ({
   openListUp,
   nearNetwork,
   loggedInAccountId,
-  isActive,
+  socialAccount,
 }) => {
+  const [isActive, setIsActive] = useState<boolean>(
+    !!user &&
+      !!socialAccount &&
+      user.name === socialAccount.name &&
+      user.origin === socialAccount.origin
+  )
+  const [isConditionDone, setIsConditionDone] = useState(true)
   const { makeConnectionRequest } = useConnectionRequest()
-  const { requests } = useConnectedAccounts()
+  const { requests, socialNetworkConnectionCondition } = useConnectedAccounts()
   const request = requests.find(
     (r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`)
   )
@@ -45,6 +57,40 @@ const CAListItem: FC<CAListProps> = ({
   const ref = useRef(null)
   useOutside(ref, () => setIsListOpened(false), trackingRefs)
   const useCopiedResult = user?.name && useCopied(user.name)
+  useEffect(() => {
+    setIsActive(
+      !!user &&
+        !!socialAccount &&
+        user.name === socialAccount.name &&
+        user.origin === socialAccount.origin
+    )
+    setIsConditionDone(true)
+  }, [user, socialAccount])
+
+  const handleClickDisconnect = async () => {
+    if (!user || !loggedInAccountId) return
+    setIsListOpened(false)
+    if (isActive && socialAccount) {
+      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: can be different URLs + less secure
+      const isConditionMet = socialNetworkConnectionCondition({
+        socNet_id: socialAccount.name,
+        near_id: loggedInAccountId,
+        url: proofUrl,
+        fullname: socialAccount.fullname,
+      })
+      if (!isConditionMet) {
+        setIsConditionDone(false)
+        return
+      }
+    }
+    makeConnectionRequest({
+      name: user.name,
+      origin: user.origin,
+      isUnlink: true,
+      nearNetwork,
+      loggedInAccountId,
+    })
+  }
 
   return (
     <AccountListItem
@@ -54,7 +100,14 @@ const CAListItem: FC<CAListProps> = ({
       disabled={status === RequestStatus.CLAIMING || status === RequestStatus.VERIFICATION}
       isActive={isActive}
       message={
-        request?.message ? { text: 'The transaction is rejected', type: 'error' } : undefined // ToDo: process different messages
+        request?.message
+          ? { text: request.message, type: 'error' }
+          : !isConditionDone && !!socialAccount
+            ? {
+                text: `To unlink the account, copy your logged-in NEAR address and add it to your ${socialAccount.websiteName} account name.`,
+                type: 'warning',
+              }
+            : undefined // ToDo: process different messages
       }
     >
       {user?.accountActive ? <div className="mainAccount">Main</div> : null}
@@ -86,19 +139,7 @@ const CAListItem: FC<CAListProps> = ({
               </button>
             </li>
             <li>
-              <button
-                className="listItem"
-                onClick={() => {
-                  setIsListOpened(false)
-                  makeConnectionRequest({
-                    name: user.name,
-                    origin: user.origin,
-                    isUnlink: true,
-                    nearNetwork,
-                    loggedInAccountId,
-                  })
-                }}
-              >
+              <button className="listItem" onClick={handleClickDisconnect}>
                 Unlink account
               </button>
             </li>
