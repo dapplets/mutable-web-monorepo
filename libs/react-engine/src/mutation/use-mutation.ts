@@ -1,14 +1,12 @@
 import { EntityId, EntitySourceType, MutationDto } from '@mweb/backend'
 import { useEngine } from '../engine'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 export const useMutation = (
   mutationId: EntityId | null = null,
   source: EntitySourceType | null = null,
   version: string | null = null
 ) => {
-  const queryClient = useQueryClient()
   const { engine } = useEngine()
 
   const {
@@ -24,6 +22,6 @@ export const useMutation = (
     enabled: !!mutationId,
     initialData: null,
   })
-
+  
   return { mutation, isMutationLoading, mutationError }
 }

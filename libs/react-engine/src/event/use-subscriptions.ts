@@ -12,13 +12,17 @@ export const useSubscriptions = () => {
   useEffect(() => {
     const subs = [
       engine.eventService.on('mutationCreated', ({ mutation }) => {
-        queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => [...prev, mutation])
+        queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
+          prev ? [...prev, mutation] : undefined
+        )
       }),
       engine.eventService.on('mutationEdited', ({ mutation: editedMut }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
-          prev.map((mut) =>
-            mut.id === editedMut.id && mut.source === editedMut.source ? editedMut : mut
-          )
+          prev
+            ? prev.map((mut) =>
+                mut.id === editedMut.id && mut.source === editedMut.source ? editedMut : mut
+              )
+            : undefined
         )
         queryClient.setQueryData(
           [
@@ -45,6 +49,8 @@ export const useSubscriptions = () => {
       }),
       engine.eventService.on('mutationSaved', ({ mutation: savedMut }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
+          if (!prev) return undefined
+
           const existingMutationIndex = prev.findIndex(
             (mut) => mut.id === savedMut.id && mut.source === savedMut.source
           )
@@ -80,18 +86,24 @@ export const useSubscriptions = () => {
       }),
       engine.eventService.on('mutationDeleted', ({ mutationId }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
-          prev.filter((mut) => !(mut.id === mutationId && mut.source === EntitySourceType.Local))
+          prev
+            ? prev.filter(
+                (mut) => !(mut.id === mutationId && mut.source === EntitySourceType.Local)
+              )
+            : undefined
         )
       }),
       engine.eventService.on('appEnabledStatusChanged', (event) => {
         queryClient.setQueryData(
           ['mutationApps', { mutationId: event.mutationId }],
           (apps: AppInstanceWithSettings[]) =>
-            apps.map((app) =>
-              app.instanceId === event.appInstanceId
-                ? { ...app, settings: { ...app.settings, isEnabled: event.isEnabled } }
-                : app
-            )
+            apps
+              ? apps.map((app) =>
+                  app.instanceId === event.appInstanceId
+                    ? { ...app, settings: { ...app.settings, isEnabled: event.isEnabled } }
+                    : app
+                )
+              : undefined
         )
       }),
       engine.eventService.on('favoriteMutationChanged', (event) => {

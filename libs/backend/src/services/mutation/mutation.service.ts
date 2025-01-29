@@ -44,7 +44,11 @@ export class MutationService {
     source?: EntitySourceType | null,
     version?: string
   ): Promise<MutationDto | null> {
-    const mutation = await this.mutationRepository.getItem({ id: mutationId, source, version })
+    const mutation = await this.mutationRepository.getItem({
+      id: mutationId,
+      source: source ?? undefined,
+      version,
+    })
     return mutation?.toDto() ?? null
   }
 
