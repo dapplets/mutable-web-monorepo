@@ -47,6 +47,7 @@ export {
   NearNetworks,
   ChainTypes,
   TConnectedAccountsVerificationRequestInfo,
+  ConnectedAccountsRequestStatus,
 } from './services/connected-accounts/types'
 export { ConnectedAccountsService } from './services/connected-accounts/connected-accounts.service'
 

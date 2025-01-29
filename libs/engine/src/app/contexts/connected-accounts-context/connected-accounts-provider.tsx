@@ -1,11 +1,9 @@
-import { ChainTypes, IConnectedAccountsPair } from '@mweb/backend'
-import { useAccountId } from 'near-social-vm'
-import React, { FC, ReactNode } from 'react'
-import { useQuery } from '../../hooks/use-query'
-import { useMutableWeb } from '../mutable-web-context'
+import React, { FC, ReactNode, useState } from 'react'
 import {
+  CARequest,
   ConnectedAccountsContext,
   ConnectedAccountsContextState,
+  ISocialNetworkConnectionCondition,
 } from './connected-accounts-context'
 import { useGetCANet } from './use-get-ca-net'
 import { useGetCAPairs } from './use-get-ca-pairs'
@@ -14,29 +12,24 @@ type Props = {
   children?: ReactNode
 }
 
+const socialNetworkConnectionCondition = (props: ISocialNetworkConnectionCondition) => {
+  const { socNet_id, near_id, url, fullname } = props
+  return url.includes(socNet_id) && fullname.includes(near_id)
+}
+
 const ConnectedAccountsProvider: FC<Props> = ({ children }) => {
-  const { engine } = useMutableWeb()
-  const { connectedAccountsNet, setConnectedAccountsNet } = useGetCANet()
-  const { connectedAccountsPairs, setConnectedAccountsPairs } = useGetCAPairs()
+  const [requests, setRequests] = useState<CARequest[]>([])
+  const { connectedAccountsNet, updateConnectedAccountsNet } = useGetCANet()
+  const { connectedAccountsPairs, updateConnectedAccountsPairs } = useGetCAPairs()
 
   const state: ConnectedAccountsContextState = {
     pairs: connectedAccountsPairs,
     connectedAccountsNet,
-
-    setConnectedAccountsNet,
-    setConnectedAccountsPairs,
-
-    // ToDo: add isLoading-s and error-s
-    // ToDo: implement following methods. Sepaate to hooks
-    getConnectedAccounts: engine.connectedAccountsService.getConnectedAccounts,
-    getMinStakeAmount: engine.connectedAccountsService.getMinStakeAmount,
-    getPendingRequests: engine.connectedAccountsService.getPendingRequests,
-    getVerificationRequest: engine.connectedAccountsService.getVerificationRequest,
-    getStatus: engine.connectedAccountsService.getStatus,
-    areConnected: engine.connectedAccountsService.areConnected,
-    getMainAccount: engine.connectedAccountsService.getMainAccount,
-    getRequestStatus: engine.connectedAccountsService.getRequestStatus,
-    requestVerification: engine.connectedAccountsService.requestVerification,
+    updateConnectedAccountsNet,
+    updateConnectedAccountsPairs,
+    requests,
+    setRequests,
+    socialNetworkConnectionCondition,
   }
 
   return (

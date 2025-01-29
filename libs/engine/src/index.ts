@@ -11,4 +11,12 @@ export {
   useChangeCAStatus,
   useGetCANet,
   useGetCAPairs,
+  useConnectAccounts,
+  getMinStakeAmount,
+  useGetPendingRequests,
+  useGetVerificationRequest,
+  useGetRequestStatus,
+  useConnectionRequest,
+  RequestVerificationProps,
+  RequestStatus,
 } from './app/contexts/connected-accounts-context'

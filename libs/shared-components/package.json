@@ -33,6 +33,7 @@
     "@mweb/engine": "workspace:*",
     "@mweb/core": "workspace:*",
     "@mweb/react-engine": "workspace:*",
+    "@mweb/react": "workspace:*",
     "@uiw/codemirror-extensions-langs": "^4.23.3",
     "@uiw/react-codemirror": "^4.23.3",
     "antd": "^5.18.3",
