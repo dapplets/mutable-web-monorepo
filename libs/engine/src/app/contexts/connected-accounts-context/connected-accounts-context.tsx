@@ -14,6 +14,7 @@ export type CARequest = {
   type: string
   payload: Set<string>
   status: RequestStatus
+  message?: string
 }
 
 export interface ConnectedAccountsContextState {

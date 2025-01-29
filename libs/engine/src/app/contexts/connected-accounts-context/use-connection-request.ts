@@ -16,7 +16,7 @@ type MakeConnectionRequestProps = {
 export const useConnectionRequest = () => {
   const { updateConnectedAccountsPairs, updateConnectedAccountsNet, requests, setRequests } =
     useConnectedAccounts()
-  const { requestVerification } = useConnectAccounts()
+  const { requestVerification, isLoading } = useConnectAccounts()
   const { minStakeAmount } = getMinStakeAmount()
   const { getRequestStatus } = useGetRequestStatus()
 
@@ -81,6 +81,7 @@ export const useConnectionRequest = () => {
         ])
       }
       const res = await requestVerification(
+        newRequestId,
         {
           firstAccountId,
           firstOriginId,
@@ -92,11 +93,6 @@ export const useConnectionRequest = () => {
         minStakeAmount ?? undefined
       )
       if (res) {
-        setRequests((previousRequests) =>
-          previousRequests.map((r) =>
-            r.id === newRequestId ? { ...r, status: RequestStatus.VERIFICATION } : r
-          )
-        )
         const requestStatus = await waitForRequestResolve(res)
         setRequests((previousRequests) =>
           previousRequests.map((r) =>

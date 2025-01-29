@@ -21,7 +21,12 @@ const Wrapper = styled.div<{ $status: RequestStatus }>`
     0px 4px 20px 0px rgba(11, 87, 111, 0.149),
     0px 4px 5px 0px rgba(45, 52, 60, 0.102);
   transition: all 0.3s ease;
-  gap: ${(props) => (props.$status !== RequestStatus.DEFAULT ? '0' : '10px')};
+  gap: ${(props) =>
+    props.$status === RequestStatus.CLAIMING ||
+    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SUCCESS
+      ? '0'
+      : '10px'};
 `
 
 const Header = styled.div<{ $status: RequestStatus }>`
@@ -32,8 +37,18 @@ const Header = styled.div<{ $status: RequestStatus }>`
   transition:
     height 0.3s ease,
     transform 0.1s ease;
-  height: ${(props) => (props.$status !== RequestStatus.DEFAULT ? '0' : '22px')};
-  transform: ${(props) => (props.$status !== RequestStatus.DEFAULT ? 'scaleY(0)' : 'scaleY(1)')};
+  height: ${(props) =>
+    props.$status === RequestStatus.CLAIMING ||
+    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SUCCESS
+      ? '0'
+      : '22px'};
+  transform: ${(props) =>
+    props.$status === RequestStatus.CLAIMING ||
+    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SUCCESS
+      ? 'scaleY(0)'
+      : 'scaleY(1)'};
 `
 
 const H3 = styled.h3`
@@ -66,15 +81,25 @@ const ButtonClose = styled.button`
 
 const Text = styled.p<{ $status: RequestStatus }>`
   font-family: var(--font-default);
-  color: var(--gray);
+  color: ${({ $status }) => ($status === RequestStatus.FAILED ? 'var(--error)' : 'var(--gray)')};
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 150%;
-  transition:
-    height 0.3s ease,
-    transform 0.1s ease;
-  height: ${(props) => (props.$status !== RequestStatus.DEFAULT ? '0' : '54px')};
-  transform: ${(props) => (props.$status !== RequestStatus.DEFAULT ? 'scaleY(0)' : 'scaleY(1)')};
+  transition: all 0.15s ease;
+  height: ${(props) =>
+    props.$status === RequestStatus.CLAIMING ||
+    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SUCCESS
+      ? '0'
+      : props.$status === RequestStatus.FAILED
+        ? '20px'
+        : '54px'};
+  transform: ${(props) =>
+    props.$status === RequestStatus.CLAIMING ||
+    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SUCCESS
+      ? 'scaleY(0)'
+      : 'scaleY(1)'};
 `
 
 type ConnectModuleProps = {
@@ -144,12 +169,12 @@ const ConnectModule: FC<ConnectModuleProps> = ({ nearNetwork, loggedInAccountId 
 
   if (!showConnectModule || !accountToConnect) return null
 
-  const status =
-    requests.find(
-      (r) =>
-        r.type === 'connect' &&
-        r.payload.has(`${accountToConnect.name}/${accountToConnect.origin.toLowerCase()}`)
-    )?.status ?? RequestStatus.DEFAULT
+  const request = requests.find(
+    (r) =>
+      r.type === 'connect' &&
+      r.payload.has(`${accountToConnect.name}/${accountToConnect.origin.toLowerCase()}`)
+  )
+  const status = request?.status ?? RequestStatus.DEFAULT
 
   return (
     <Wrapper $status={status} data-status={status}>
@@ -184,7 +209,9 @@ const ConnectModule: FC<ConnectModuleProps> = ({ nearNetwork, loggedInAccountId 
       <Text $status={status}>
         {!loggedInAccountId
           ? 'To link your source account, you need to connect your wallet first.'
-          : 'You are on a website for which account linking is available. Do you want to link your account to your current cryptocurrency wallet?'}
+          : request?.message
+            ? 'The transaction is rejected' // ToDo: process diffenent messages
+            : 'You are on a website for which account linking is available. Do you want to link your account to your current cryptocurrency wallet?'}
       </Text>
     </Wrapper>
   )

@@ -1,7 +1,9 @@
 import { NearNetworks } from '@mweb/backend'
 import { useConnectedAccounts } from '@mweb/engine'
+import { IContextNode } from '@mweb/core'
+import { useCore } from '@mweb/react'
 import cn from 'classnames'
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import ConnectModule from './connect-module'
 import CAListItem from './connected-account-list-item'
@@ -556,6 +558,45 @@ export const ConnectedAccount: FC<{
 }> = ({ loggedInAccountId, nearNetwork, trackingRefs }) => {
   // const [isLoadingListDapplets, setLoadingListDapplets] = useState(true)
   const { pairs } = useConnectedAccounts()
+  const [socialAccount, setSocialAccount] = useState<{
+    name: string
+    origin: string
+    fullname: string
+  } | null>(null)
+  const [contextInfoNode, setContextInfoNode] = useState<IContextNode | null>(null)
+  const core = useCore()
+
+  const getSocialAccount = () => {
+    const siteSpecificContexts = core.tree?.children.filter(
+      (c) => c.namespace !== 'engine' && c.namespace !== 'mweb'
+    )
+    const node = siteSpecificContexts?.find(
+      (c) => c.parsedContext?.username && c.parsedContext?.fullname && c.parsedContext?.websiteName
+    )
+    if (node !== contextInfoNode) setContextInfoNode(node ?? null)
+    if (!node) setSocialAccount(null)
+    else {
+      const { username, fullname, websiteName } = node.parsedContext
+      setSocialAccount({ name: username, fullname, origin: websiteName.toLowerCase() })
+    }
+  }
+
+  useEffect(() => {
+    getSocialAccount()
+    const contextChangedSubscription = core.tree?.on('contextChanged', () => getSocialAccount())
+    const childContextAddedSubscription = core.tree?.on('childContextAdded', () =>
+      getSocialAccount()
+    )
+    return () => {
+      contextChangedSubscription?.remove()
+      childContextAddedSubscription?.remove()
+    }
+  }, [core?.tree])
+
+  useEffect(() => {
+    const subscription = contextInfoNode?.on('contextChanged', () => getSocialAccount())
+    return () => subscription?.remove()
+  }, [contextInfoNode])
 
   // const getCAPendingRequest = async (
   //   accountGId: string
@@ -618,6 +659,10 @@ export const ConnectedAccount: FC<{
                   }
                   nearNetwork={nearNetwork}
                   loggedInAccountId={loggedInAccountId}
+                  isActive={
+                    x.secondAccount.name === socialAccount?.name &&
+                    x.secondAccount.origin === socialAccount?.origin
+                  }
                 />
               ))}
             </div>

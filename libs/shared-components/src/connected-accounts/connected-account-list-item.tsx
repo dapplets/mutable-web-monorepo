@@ -21,6 +21,7 @@ type CAListProps = {
   openListUp?: boolean
   nearNetwork: NearNetworks
   loggedInAccountId: string
+  isActive: boolean
 }
 
 const CAListItem: FC<CAListProps> = ({
@@ -30,12 +31,14 @@ const CAListItem: FC<CAListProps> = ({
   openListUp,
   nearNetwork,
   loggedInAccountId,
+  isActive,
 }) => {
   const { makeConnectionRequest } = useConnectionRequest()
   const { requests } = useConnectedAccounts()
-  const status =
-    requests.find((r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`))
-      ?.status ?? RequestStatus.DEFAULT
+  const request = requests.find(
+    (r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`)
+  )
+  const status = request?.status ?? RequestStatus.DEFAULT
   const { changeCAStatus } = useChangeCAStatus()
   const [isListOpened, setIsListOpened] = useState(false)
   const [isWaiting, setIsWaiting] = useState(false)
@@ -49,6 +52,10 @@ const CAListItem: FC<CAListProps> = ({
       origin={user?.origin}
       maxLength={user?.accountActive ? maxLength - 6 : maxLength}
       disabled={status === RequestStatus.CLAIMING || status === RequestStatus.VERIFICATION}
+      isActive={isActive}
+      message={
+        request?.message ? { text: 'The transaction is rejected', type: 'error' } : undefined // ToDo: process different messages
+      }
     >
       {user?.accountActive ? <div className="mainAccount">Main</div> : null}
 

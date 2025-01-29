@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useMutableWeb } from '../mutable-web-context'
+import { RequestStatus } from './connected-accounts-context'
+import { useConnectedAccounts } from './use-connected-accounts'
 
 export type RequestVerificationProps = {
   firstAccountId: string
@@ -11,11 +13,13 @@ export type RequestVerificationProps = {
 }
 
 export function useConnectAccounts() {
+  const { requests, setRequests } = useConnectedAccounts()
   const { engine } = useMutableWeb()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const requestVerification = async (
+    newRequestId: number,
     {
       firstAccountId,
       firstOriginId,
@@ -39,6 +43,11 @@ export function useConnectAccounts() {
         },
         stake
       )
+      setRequests((requests) =>
+        requests.map((request) =>
+          request.id !== newRequestId ? request : { ...request, status: RequestStatus.VERIFICATION }
+        )
+      )
       return result
     } catch (err) {
       if (err instanceof Error) {
@@ -46,7 +55,23 @@ export function useConnectAccounts() {
       } else {
         setError('Unknown error')
       }
-      throw err
+      setRequests((requests) =>
+        requests.map((request) =>
+          request.id !== newRequestId
+            ? request
+            : {
+                ...request,
+                status: RequestStatus.FAILED,
+                message: (err as Error)?.message ?? 'Unknown error',
+              }
+        )
+      )
+      setTimeout(
+        () => setRequests((requests) => requests.filter((request) => request.id !== newRequestId)),
+        3000
+      )
+      // throw err // ToDo: handle error???
+      return null
     } finally {
       setIsLoading(false)
     }
