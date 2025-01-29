@@ -11,13 +11,9 @@ export function useEnableApp(mutationId: string, appInstanceId: string) {
       engine.applicationService.enableAppInstanceInMutation(mutationId, appInstanceId),
     onSuccess: () => {
       queryClient.setQueryData(
-        ['mutationApps', { mutationId }],
-        (apps: AppInstanceWithSettings[]) =>
-          apps.map((app) =>
-            app.instanceId === appInstanceId
-              ? { ...app, settings: { ...app.settings, isEnabled: true } }
-              : app
-          )
+        ['mutationApp', mutationId, appInstanceId],
+        (app: AppInstanceWithSettings | undefined) =>
+          app ? { ...app, settings: { ...app.settings, isEnabled: true } } : undefined
       )
     },
   })

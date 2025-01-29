@@ -78,7 +78,10 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     })
   }, [getMutationToBeLoaded, defaultMutationId, modalApi])
 
-  const { mutationApps, isLoading: isMutationAppsLoading } = useMutationApps(selectedMutation)
+  const { mutationApps, isLoading: isMutationAppsLoading } = useMutationApps(
+    selectedMutation?.id,
+    selectedMutation?.apps ?? []
+  )
 
   const activeApps = useMemo(
     () => mutationApps.filter((app) => app.settings.isEnabled),

@@ -66,6 +66,6 @@ export const utils = {
   isTargetMet: TargetService.isTargetMet.bind(TargetService),
   getRootContext: TargetService.getRootContext.bind(TargetService),
   findContextByTarget: TargetService.findContextByTarget.bind(TargetService),
-  constructAppInstanceId: ApplicationService.constructAppInstanceId.bind(TargetService),
+  constructAppInstanceId: ApplicationService.constructAppInstanceId.bind(ApplicationService),
   isMutationMetContext: MutationService.isMutationMetContext.bind(MutationService),
 }

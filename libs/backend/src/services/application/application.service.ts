@@ -35,7 +35,7 @@ export class ApplicationService {
 
   public async getAppsFromMutation(mutation: MutationDto): Promise<AppInstanceWithSettings[]> {
     return Promise.all(
-      mutation.apps.map((appInstance) => this._getAppInstanceWithSettings(mutation.id, appInstance))
+      mutation.apps.map((appInstance) => this.getAppInstanceWithSettings(mutation.id, appInstance))
     ).then((apps) => apps.filter((app) => app !== null) as AppInstanceWithSettings[])
   }
 
@@ -72,13 +72,13 @@ export class ApplicationService {
   public async disableAppInstanceInMutation(mutationId: MutationId, appInstanceId: AppInstanceId) {
     await this.settingsService.setAppEnabledStatus(mutationId, appInstanceId, false)
   }
-
+  
   public static constructAppInstanceId({ appId, documentId }: AppInMutation): AppInstanceId {
     // ToDo: instance id is a concatenation of app id and document id
     return documentId ? `${appId}/${documentId}` : appId
   }
 
-  private async _getAppInstanceWithSettings(mutationId: MutationId, appInstance: AppInMutation) {
+  public async getAppInstanceWithSettings(mutationId: MutationId, appInstance: AppInMutation) {
     const instanceId = ApplicationService.constructAppInstanceId(appInstance)
 
     // ToDo: local or remote?

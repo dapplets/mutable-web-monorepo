@@ -8,6 +8,8 @@ export const useSubscriptions = () => {
   const queryClient = useQueryClient()
 
   // ToDo: unify events
+  // Backend emits events with changed entity to prevent refetching from the smart contract
+  // Smart-contract state propagation takes time
   // Inspired by https://tkdodo.eu/blog/using-web-sockets-with-react-query#consuming-data
   useEffect(() => {
     const subs = [
@@ -43,9 +45,6 @@ export const useSubscriptions = () => {
           ['mutation', { mutationId: editedMut.id, source: null, version: editedMut.version }],
           editedMut
         )
-        queryClient.invalidateQueries({
-          queryKey: ['mutationApps', { mutationId: editedMut.id }],
-        })
       }),
       engine.eventService.on('mutationSaved', ({ mutation: savedMut }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
@@ -80,9 +79,6 @@ export const useSubscriptions = () => {
           ['mutation', { mutationId: savedMut.id, source: null, version: savedMut.version }],
           savedMut
         )
-        queryClient.invalidateQueries({
-          queryKey: ['mutationApps', { mutationId: savedMut.id }],
-        })
       }),
       engine.eventService.on('mutationDeleted', ({ mutationId }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
@@ -95,15 +91,9 @@ export const useSubscriptions = () => {
       }),
       engine.eventService.on('appEnabledStatusChanged', (event) => {
         queryClient.setQueryData(
-          ['mutationApps', { mutationId: event.mutationId }],
-          (apps: AppInstanceWithSettings[]) =>
-            apps
-              ? apps.map((app) =>
-                  app.instanceId === event.appInstanceId
-                    ? { ...app, settings: { ...app.settings, isEnabled: event.isEnabled } }
-                    : app
-                )
-              : undefined
+          ['mutationApp', event.mutationId, event.appInstanceId],
+          (app: AppInstanceWithSettings | undefined) =>
+            app ? { ...app, settings: { ...app.settings, isEnabled: event.isEnabled } } : undefined
         )
       }),
       engine.eventService.on('favoriteMutationChanged', (event) => {

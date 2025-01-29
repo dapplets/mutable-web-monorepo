@@ -11,13 +11,9 @@ export function useDisableApp(mutationId: string, appInstanceId: string) {
       engine.applicationService.disableAppInstanceInMutation(mutationId, appInstanceId),
     onSuccess: () => {
       queryClient.setQueryData(
-        ['mutationApps', { mutationId }],
-        (apps: AppInstanceWithSettings[]) =>
-          apps.map((app) =>
-            app.instanceId === appInstanceId
-              ? { ...app, settings: { ...app.settings, isEnabled: false } }
-              : app
-          )
+        ['mutationApp', mutationId, appInstanceId],
+        (app: AppInstanceWithSettings | undefined) =>
+          app ? { ...app, settings: { ...app.settings, isEnabled: false } } : undefined
       )
     },
   })

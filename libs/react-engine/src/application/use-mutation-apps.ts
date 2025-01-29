@@ -1,16 +1,26 @@
-import { AppInstanceWithSettings, MutationDto } from '@mweb/backend'
-import { useQuery } from '@tanstack/react-query'
+import { AppInMutation, AppInstanceWithSettings } from '@mweb/backend'
+import { useQueries } from '@tanstack/react-query'
 import { useEngine } from '../engine'
+import { utils } from '@mweb/backend'
 
-export const useMutationApps = (mutation?: MutationDto | null) => {
+export const useMutationApps = (mutationId: string | null = null, apps: AppInMutation[] = []) => {
   const { engine } = useEngine()
 
-  const { data, isLoading, error } = useQuery<AppInstanceWithSettings[]>({
-    queryKey: ['mutationApps', { mutationId: mutation?.id }],
-    queryFn: () =>
-      mutation ? engine.applicationService.getAppsFromMutation(mutation) : Promise.resolve([]),
-    initialData: [],
+  const queries = useQueries({
+    queries: mutationId
+      ? apps.map((app) => ({
+          queryKey: ['mutationApp', mutationId, utils.constructAppInstanceId(app)],
+          queryFn: () => engine.applicationService.getAppInstanceWithSettings(mutationId, app),
+          initialData: null,
+        }))
+      : [],
   })
 
-  return { mutationApps: data, isLoading, error }
+  const isLoading = queries.some((query) => query.isFetching)
+  const mutationApps = isLoading
+    ? []
+    : (queries.map((query) => query.data) as AppInstanceWithSettings[])
+  const error = queries.find((query) => query.isError)?.error
+
+  return { mutationApps, isLoading, error }
 }

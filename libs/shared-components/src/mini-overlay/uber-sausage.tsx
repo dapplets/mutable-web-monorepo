@@ -134,7 +134,7 @@ export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style 
     preferredSource,
     mutationVersion
   )
-  const { mutationApps } = useMutationApps(selectedMutation)
+  const { mutationApps } = useMutationApps(selectedMutation?.id, selectedMutation?.apps ?? [])
 
   const isMutationIconButton = !!loggedInAccountId
 

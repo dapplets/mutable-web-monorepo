@@ -22,6 +22,6 @@ export const useMutation = (
     enabled: !!mutationId,
     initialData: null,
   })
-  
+
   return { mutation, isMutationLoading, mutationError }
 }
