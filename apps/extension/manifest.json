@@ -28,7 +28,9 @@
         "https://*.social.testnet.apps.dapplets.org/*",
         "http://localhost/*",
         "http://127.0.0.1:3000/*",
-        "https://augm.link/*"
+        "https://augm.link/*",
+        "https://app.mynearwallet.com/*",
+        "https://testnet.mynearwallet.com/*"
       ],
       "js": ["custom-elements.min.js", "contentscript.js"],
       "run_at": "document_idle"
