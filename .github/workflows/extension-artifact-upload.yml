@@ -2,11 +2,11 @@ name: Extension Artifact Upload
 on:
   pull_request:
     branches: [develop]
-  paths-ignore:
-    - 'apps/crawler-agent/**'
-    - 'apps/crawler-backend/**'
-    - 'apps/crawler-dashboard/**'
-    - 'apps/crawler-extension/**'
+    paths-ignore:
+      - 'apps/crawler-agent/**'
+      - 'apps/crawler-backend/**'
+      - 'apps/crawler-dashboard/**'
+      - 'apps/crawler-extension/**'
 jobs:
   create-artifact:
     name: Test build
