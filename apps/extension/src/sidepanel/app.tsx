@@ -9,10 +9,10 @@ import { useConnectWallet } from '../common/wallet-context/use-connect-wallet'
 import { useDisconnectWallet } from '../common/wallet-context/use-disconnect-wallet'
 import { useCurrentTab } from './use-current-tab'
 
-export const App: React.FC = () => {
+export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
 
-  const { tree, selectedMutationId, switchMutation, eventEmitter } = useCurrentTab()
+  const { tree, selectedMutationId, switchMutation, eventEmitter } = useCurrentTab(windowId)
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()

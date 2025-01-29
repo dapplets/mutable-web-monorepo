@@ -5,12 +5,12 @@ import ContentScript from '../common/content-script'
 import { WildcardEventEmitter } from '../common/wildcard-event-emitter'
 import { createEventEmitterToPort } from '../common/create-event-emitter-to-port'
 
-async function getCurrentTabId(): Promise<number | null> {
-  const [currentTab] = await browser.tabs.query({ active: true, currentWindow: true })
+async function getCurrentTabId(windowId: number): Promise<number | null> {
+  const [currentTab] = await browser.tabs.query({ active: true, windowId })
   return currentTab?.id ?? null
 }
 
-export const useCurrentTab = () => {
+export const useCurrentTab = (windowId: number) => {
   const [tree, setTree] = useState<IContextNode | null>(null)
   const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const [eventEmitter, setEventEmitter] = useState<WildcardEventEmitter | null>(null)
@@ -81,24 +81,26 @@ export const useCurrentTab = () => {
         // Delay before reconnecting to prevent immediate retries in rapid succession
         // ToDo: find a better solution
         setTimeout(() => {
-          getCurrentTabId().then(connectToTab)
+          getCurrentTabId(windowId).then(connectToTab)
         }, 1000)
       })
     }
 
-    getCurrentTabId().then(connectToTab)
+    getCurrentTabId(windowId).then(connectToTab)
 
     const handleTabUpdated = (
       tabId: number,
       changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
       tab: browser.Tabs.Tab
     ) => {
+      if (tab.windowId !== windowId) return
       if (changeInfo.status && tab.active && tab.status === 'complete') {
         connectToTab(tabId)
       }
     }
 
     const handleTabActivated = (activeInfo: browser.Tabs.OnActivatedActiveInfoType) => {
+      if (activeInfo.windowId !== windowId) return
       connectToTab(activeInfo.tabId)
     }
 
@@ -111,7 +113,7 @@ export const useCurrentTab = () => {
       portRef.current?.disconnect()
       portRef.current = null
     }
-  }, [])
+  }, [windowId])
 
   const switchMutation = useCallback((mutationId: string | null) => {
     if (!portRef.current) return

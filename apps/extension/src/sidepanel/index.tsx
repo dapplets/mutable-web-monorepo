@@ -7,12 +7,16 @@ import './index.css'
 import { setupMessageListener } from '../common/messenger'
 
 async function main() {
+  const window = await browser.windows.getCurrent()
+
+  if (!window.id) throw new Error('Window ID is not defined')
+
   const container = document.getElementById('app')
 
   if (container) {
     createRoot(container).render(
       <WalletProvider>
-        <App />
+        <App windowId={window.id} />
       </WalletProvider>
     )
   } else {
