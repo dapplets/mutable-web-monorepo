@@ -40,7 +40,8 @@ export const MutationDropdownItem: FC<{
   const { preferredSource } = usePreferredSource(mutationId, tree?.id)
   const { setPreferredSource } = useSetPreferredSource()
 
-  const mut = preferredSource === EntitySourceType.Local ? local : origin
+  // if preferred source is local, but local is deleted, use origin
+  const mut = preferredSource === EntitySourceType.Local ? local ?? origin : origin
 
   const handleToggleSource = useCallback(() => {
     if (!mutationId) throw new Error('No mutation ID found')
@@ -55,6 +56,17 @@ export const MutationDropdownItem: FC<{
   if (!local && !origin) return null
   if (!mut) return null
 
+  const handleSelectClick = () => {
+    // if preferred source is local, but local is deleted, use origin
+    if (preferredSource === EntitySourceType.Local && !local) {
+      if (!mutationId) return
+      if (!tree?.id) return
+      setPreferredSource(mutationId, tree.id, EntitySourceType.Origin)
+    }
+
+    onSelect()
+  }
+
   return (
     <InputBlock data-testid={mutationId} key={mutationId} isActive={isSelected}>
       <ImageBlock>
@@ -63,7 +75,7 @@ export const MutationDropdownItem: FC<{
           // fallbackUrl={defaultIcon}
         />
       </ImageBlock>
-      <InputInfoWrapper onClick={onSelect}>
+      <InputInfoWrapper onClick={handleSelectClick}>
         {/* todo: mocked classname */}
         <InputMutation className={isSelected ? 'inputMutationSelected' : ''}>
           {mut.metadata ? mut.metadata.name : ''}{' '}

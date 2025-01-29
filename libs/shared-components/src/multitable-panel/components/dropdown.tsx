@@ -7,6 +7,7 @@ import {
   useSetFavoriteMutation,
   useMutationsLastUsage,
   useUpdateMutationLastUsage,
+  useSetPreferredSource,
 } from '@mweb/react-engine'
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -62,6 +63,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   const { deleteLocalMutation } = useDeleteLocalMutation()
   const { removeMutationFromRecents } = useRemoveMutationFromRecents()
   const { updateMutationLastUsage } = useUpdateMutationLastUsage()
+  const { setPreferredSource } = useSetPreferredSource()
 
   const mutationsById = useMemo(() => Object.groupBy(mutations, (mut) => mut.id), [mutations])
   const mutationIds = useMemo(() => Object.keys(mutationsById), [mutationsById])
@@ -97,7 +99,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   )
 
   const handleMutationClick = (mutationId: string) => {
-    if (!tree) return
+    if (!tree?.id) return
     onSwitchMutation(mutationId)
     updateMutationLastUsage({ mutationId, context: tree })
   }
@@ -126,6 +128,21 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
     removeMutationFromRecents({ mutationId, context: tree })
   }
 
+  const handleConfirmDeleteClick = async () => {
+    if (!mutationIdToDelete) return
+    await deleteLocalMutation(mutationIdToDelete)
+
+    if (mutationIdToDelete === favoriteMutationId) {
+      handleFavoriteButtonClick(mutationIdToDelete)
+    }
+
+    if (tree?.id) {
+      await setPreferredSource(mutationIdToDelete, tree.id, null)
+    }
+
+    setMutationIdToDelete(null)
+  }
+
   return (
     <MutationsList>
       <ButtonListBlock>
@@ -152,8 +169,8 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
             {Object.entries(recentlyUsedMutations).map(([mutationId, muts]) => (
               <MutationDropdownItem
                 key={mutationId}
-                local={muts?.find((mut) => mut.source === EntitySourceType.Local)}
-                origin={muts?.find((mut) => mut.source === EntitySourceType.Origin)}
+                local={muts.find((mut) => mut.source === EntitySourceType.Local)}
+                origin={muts.find((mut) => mut.source === EntitySourceType.Origin)}
                 isSelected={mutationId === selectedMutationId}
                 isFavorite={mutationId === favoriteMutationId}
                 onFavoriteClick={() => handleFavoriteButtonClick(mutationId)}
@@ -225,12 +242,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
       {mutationIdToDelete && (
         <ModalConfirmBackground>
           <ModalDelete
-            onAction={async () => {
-              await deleteLocalMutation(mutationIdToDelete)
-              if (mutationIdToDelete === favoriteMutationId)
-                handleFavoriteButtonClick(mutationIdToDelete)
-              setMutationIdToDelete(null)
-            }}
+            onAction={handleConfirmDeleteClick}
             onCloseCurrent={() => setMutationIdToDelete(null)}
           />
         </ModalConfirmBackground>
