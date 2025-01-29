@@ -1,7 +1,5 @@
 import { NearNetworks } from '@mweb/backend'
-import { IContextNode } from '@mweb/core'
 import { RequestStatus, useConnectedAccounts, useConnectionRequest } from '@mweb/engine'
-import { useCore } from '@mweb/react'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Close } from '../mini-overlay/assets/icons'
@@ -105,32 +103,31 @@ const Text = styled.p<{ $status: RequestStatus }>`
 type ConnectModuleProps = {
   nearNetwork: NearNetworks
   loggedInAccountId: string
+  socialAccount: {
+    name: string
+    origin: string
+    fullname: string
+  } | null
 }
 
-const ConnectModule: FC<ConnectModuleProps> = ({ nearNetwork, loggedInAccountId }) => {
-  const core = useCore()
+const ConnectModule: FC<ConnectModuleProps> = ({
+  nearNetwork,
+  loggedInAccountId,
+  socialAccount,
+}) => {
   const { connectedAccountsNet, requests } = useConnectedAccounts()
   const { makeConnectionRequest } = useConnectionRequest()
   const [showConnectModule, setShowConnectModule] = useState(false)
-  const [contextInfoNode, setContextInfoNode] = useState<IContextNode | null>(null)
-  const [accountToConnect, setAccountToConnect] = useState<{ name: string; origin: string } | null>(
-    null
-  )
+  const [accountToConnect, setAccountToConnect] = useState<{
+    name: string
+    origin: string
+    fullname: string
+  } | null>(null)
 
-  const updateConnectModule = () => {
-    const siteSpecificContexts = core.tree?.children.filter(
-      (c) => c.namespace !== 'engine' && c.namespace !== 'mweb'
-    )
-    const node = siteSpecificContexts?.find(
-      (c) => c.parsedContext?.username && c.parsedContext?.fullname && c.parsedContext?.websiteName
-    )
-
-    if (node !== contextInfoNode) setContextInfoNode(node ?? null)
+  useEffect(() => {
     if (
-      !node ||
-      connectedAccountsNet?.includes(
-        `${node.parsedContext.username}/${node.parsedContext.websiteName.toLowerCase()}`
-      )
+      !socialAccount ||
+      connectedAccountsNet?.includes(`${socialAccount.name}/${socialAccount.origin}`)
     ) {
       setAccountToConnect(null)
       setShowConnectModule(false)
@@ -138,34 +135,15 @@ const ConnectModule: FC<ConnectModuleProps> = ({ nearNetwork, loggedInAccountId 
     }
 
     if (
-      node.parsedContext.username !== accountToConnect?.name ||
-      node.parsedContext.websiteName !== accountToConnect?.origin
+      !accountToConnect ||
+      socialAccount.name !== accountToConnect.name ||
+      socialAccount.origin !== accountToConnect.origin ||
+      socialAccount.fullname !== accountToConnect.fullname
     ) {
-      setAccountToConnect({
-        name: node.parsedContext.username,
-        origin: node.parsedContext.websiteName,
-      })
+      setAccountToConnect({ ...socialAccount })
       setShowConnectModule(true)
     }
-  }
-
-  useEffect(updateConnectModule, [loggedInAccountId, nearNetwork, connectedAccountsNet, core?.tree])
-
-  useEffect(() => {
-    const subscription = contextInfoNode?.on('contextChanged', () => updateConnectModule())
-    return () => subscription?.remove()
-  }, [contextInfoNode])
-
-  useEffect(() => {
-    const contextChangedSubscription = core.tree?.on('contextChanged', () => updateConnectModule())
-    const childContextAddedSubscription = core.tree?.on('childContextAdded', () =>
-      updateConnectModule()
-    )
-    return () => {
-      contextChangedSubscription?.remove()
-      childContextAddedSubscription?.remove()
-    }
-  }, [core])
+  }, [socialAccount, connectedAccountsNet])
 
   if (!showConnectModule || !accountToConnect) return null
 

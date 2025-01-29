@@ -624,7 +624,11 @@ export const ConnectedAccount: FC<{
       {nearNetwork === NearNetworks.Testnet && (
         <div className="warningInfo">Connected Accounts are using a test network</div>
       )}
-      <ConnectModule nearNetwork={nearNetwork} loggedInAccountId={loggedInAccountId} />
+      <ConnectModule
+        nearNetwork={nearNetwork}
+        loggedInAccountId={loggedInAccountId}
+        socialAccount={socialAccount}
+      />
       {/* {isLoadingListDapplets ? (
         <TabLoader />
       ) : ( */}
