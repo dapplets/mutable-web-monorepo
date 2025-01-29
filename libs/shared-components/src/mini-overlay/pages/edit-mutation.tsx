@@ -11,15 +11,23 @@ const EditMutation: FC = () => {
   const mutationId = `${params.authorId}/mutation/${params.localId}`
 
   const { tree } = useEngine()
-  const { applications } = useApplications()
-  const { preferredSource } = usePreferredSource(mutationId, tree?.id)
-  const { mutation: baseMutation } = useMutation(mutationId, preferredSource ?? undefined) // ToDo: fix
-  const { mutations, isLoading } = useMutations(null) // ToDo: need context?
+  const { applications, isLoading: areAppsLoading } = useApplications()
+  const { preferredSource, isLoading: isSourceLoading } = usePreferredSource(mutationId, tree?.id)
+  const { mutation: baseMutation, isMutationLoading: isBaseMutationHookLoading } = useMutation(
+    mutationId,
+    preferredSource ?? undefined
+  ) // ToDo: fix
+  const { mutations, isLoading: areMutationsLoading } = useMutations(null) // ToDo: need context?
 
   const localMutations = useMemo(
     () => mutations.filter((m) => m.source === EntitySourceType.Local),
     [mutations]
   )
+
+  // must not render MutationEditorModal if there is no base mutation
+  const isBaseMutationLoading = isBaseMutationHookLoading || (mutationId && !baseMutation)
+  const isLoading =
+    areAppsLoading || isBaseMutationLoading || areMutationsLoading || isSourceLoading
 
   if (isLoading) {
     // ToDo: loader
