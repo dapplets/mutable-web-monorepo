@@ -25,6 +25,8 @@ export const useCommitDocumentToMutation = () => {
         await new Promise((res) => setTimeout(res, 3000))
 
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
+          if (!prev) return undefined
+
           const index = prev.findIndex((m) => m.id === mutation.id && m.source === mutation.source)
           if (index === -1) {
             return [...prev, mutation]
