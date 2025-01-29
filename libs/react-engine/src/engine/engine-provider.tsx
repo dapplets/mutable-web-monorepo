@@ -13,6 +13,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false, // default: true
+      staleTime: Infinity, // data will be updated by events
     },
   },
 })

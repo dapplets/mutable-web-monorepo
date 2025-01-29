@@ -13,8 +13,7 @@ export const usePreferredSource = (
       mutationId && contextId
         ? engine.mutationService.getPreferredSource(mutationId, contextId)
         : Promise.resolve(null),
-    initialData: null,
   })
 
-  return { preferredSource: data, isLoading, error }
+  return { preferredSource: data ?? null, isLoading, error }
 }

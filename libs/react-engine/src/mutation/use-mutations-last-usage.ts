@@ -12,7 +12,6 @@ export const useMutationsLastUsage = (mutationIds: string[], context: IContextNo
         context
           ? engine.mutationService.getMutationLastUsage(mutationId, context)
           : Promise.resolve(null),
-      initialData: null,
       enabled: !!context,
     })),
   })

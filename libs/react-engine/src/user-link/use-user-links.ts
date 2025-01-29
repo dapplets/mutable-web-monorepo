@@ -29,8 +29,7 @@ export const useUserLinks = (
             .getAllLinksForContext(apps, mutationId, context)
             .then((links) => (links.length > 0 ? links : NoLinks))
         : Promise.resolve(NoLinks),
-    initialData: NoLinks,
   })
 
-  return { links: data }
+  return { links: data ?? NoLinks }
 }

@@ -109,6 +109,15 @@ export class MutationService {
     return value ?? null
   }
 
+  async setSelectedMutation(contextId: string, mutationId: string | null): Promise<void> {
+    return this.settingsService.setSelectedMutation(contextId, mutationId)
+  }
+
+  async getSelectedMutation(contextId: string): Promise<string | null> {
+    const value = await this.settingsService.getSelectedMutation(contextId)
+    return value ?? null
+  }
+
   async getPreferredSource(
     mutationId: string,
     contextId: string

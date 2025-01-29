@@ -9,6 +9,7 @@ const PREFERRED_SOURCE = 'preferred-source'
 const MUTATION_LAST_USAGE = 'mutation-last-usage'
 const STOPPED_APPS = 'stopped-apps'
 const MUTATION_VERSION = 'mutation-version'
+const SELECTED_MUTATION = 'selected-mutation'
 
 export type SettingsEvents = {
   favoriteMutationChanged: { contextId: string; mutationId: string | null | undefined }
@@ -16,6 +17,7 @@ export type SettingsEvents = {
   mutationVersionChanged: { mutationId: string; version: string | null }
   appEnabledStatusChanged: { mutationId: string; appInstanceId: AppInstanceId; isEnabled: boolean }
   mutationLastUsageChanged: { contextId: string; mutationId: string; value: string | null }
+  selectedMutationChanged: { contextId: string; mutationId: string | null | undefined }
 }
 
 export class SettingsSerivce {
@@ -36,6 +38,20 @@ export class SettingsSerivce {
     const key = LocalDbService.makeKey(FAVORITE_MUTATION, contextId)
     await this.localDb.setItem(key, mutationId)
     this.eventService.emit('favoriteMutationChanged', { mutationId, contextId })
+  }
+
+  async getSelectedMutation(contextId: string): Promise<string | null | undefined> {
+    const key = LocalDbService.makeKey(SELECTED_MUTATION, contextId)
+    return this.localDb.getItem(key)
+  }
+
+  async setSelectedMutation(
+    contextId: string,
+    mutationId: string | null | undefined
+  ): Promise<void> {
+    const key = LocalDbService.makeKey(SELECTED_MUTATION, contextId)
+    await this.localDb.setItem(key, mutationId)
+    this.eventService.emit('selectedMutationChanged', { mutationId, contextId })
   }
 
   async getPreferredSource(

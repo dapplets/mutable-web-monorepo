@@ -8,8 +8,7 @@ export const useFavoriteMutation = (contextId: string | null | undefined) => {
     queryKey: ['favoriteMutationId', contextId],
     queryFn: () =>
       contextId ? engine.mutationService.getFavoriteMutation(contextId) : Promise.resolve(null),
-    initialData: null,
   })
 
-  return { favoriteMutationId: data, isLoading, error }
+  return { favoriteMutationId: data ?? null, isLoading, error }
 }

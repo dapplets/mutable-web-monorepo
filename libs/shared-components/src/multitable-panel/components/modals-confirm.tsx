@@ -5,6 +5,8 @@ import {
   useEditMutation,
   useMutations,
   useSetPreferredSource,
+  useSetSelectedMutation,
+  useUpdateMutationLastUsage,
 } from '@mweb/react-engine'
 import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -246,8 +248,9 @@ export const ModalConfirm: FC<Props> = ({
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
   const { mutations } = useMutations()
-  const { onSwitchMutation, tree } = useEngine()
+  const { tree } = useEngine()
   const { setPreferredSource } = useSetPreferredSource()
+  const { setSelectedMutationId } = useSetSelectedMutation()
 
   const [mode, setMode] = useState(
     !editingMutation.authorId // Newly created local mutation doesn't have author
@@ -265,6 +268,7 @@ export const ModalConfirm: FC<Props> = ({
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const { updateMutationLastUsage } = useUpdateMutationLastUsage()
 
   const isFormDisabled = isCreating || isEditing
 
@@ -320,9 +324,10 @@ export const ModalConfirm: FC<Props> = ({
             ? { askOriginToApplyChanges: isApplyToOriginChecked }
             : undefined
         )
-        onSwitchMutation(createdMutation.id)
+        setSelectedMutationId(hostname, createdMutation.id)
         setPreferredSource(createdMutation.id, hostname, EntitySourceType.Origin)
-        await deleteLocalMutation(mutationToPublish.id)
+        updateMutationLastUsage({ mutationId: createdMutation.id, context: tree })
+        deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         console.error(error)
@@ -341,7 +346,7 @@ export const ModalConfirm: FC<Props> = ({
             : undefined
         )
         setPreferredSource(mutationToPublish.id, hostname, EntitySourceType.Origin)
-        await deleteLocalMutation(mutationToPublish.id)
+        deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         console.error(error)

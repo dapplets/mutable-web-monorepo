@@ -1,6 +1,6 @@
 import { EntityId, EntitySourceType, MutationDto } from '@mweb/backend'
-import { useEngine } from '../engine'
 import { useQuery } from '@tanstack/react-query'
+import { useEngine } from '../engine'
 
 export const useMutation = (
   mutationId: EntityId | null = null,
@@ -19,9 +19,7 @@ export const useMutation = (
       mutationId
         ? engine.mutationService.getMutation(mutationId, source ?? undefined, version ?? undefined)
         : Promise.resolve(null),
-    enabled: !!mutationId,
-    initialData: null,
   })
 
-  return { mutation, isMutationLoading, mutationError }
+  return { mutation: mutation ?? null, isMutationLoading, mutationError }
 }

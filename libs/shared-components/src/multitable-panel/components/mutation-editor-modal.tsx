@@ -1,5 +1,5 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
-import { useSaveMutation, useSetPreferredSource } from '@mweb/react-engine'
+import { useSaveMutation, useSetPreferredSource, useSetSelectedMutation } from '@mweb/react-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { cloneDeep, mergeDeep } from '../../helpers'
@@ -244,8 +244,9 @@ const alerts: { [name: string]: IAlert } = {
 }
 
 export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
-  const { onSwitchMutation, loggedInAccountId, tree } = useEngine()
+  const { loggedInAccountId, tree } = useEngine()
   const { setPreferredSource } = useSetPreferredSource()
+  const { setSelectedMutationId } = useSetSelectedMutation()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
@@ -333,7 +334,7 @@ export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutati
 
     saveMutation(localMutation)
       .then(({ id }) => {
-        onSwitchMutation(id)
+        setSelectedMutationId(hostname, id)
         setPreferredSource(id, hostname, EntitySourceType.Local)
       })
       .then(onClose)

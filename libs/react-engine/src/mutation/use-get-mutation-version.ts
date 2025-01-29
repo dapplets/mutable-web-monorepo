@@ -8,8 +8,7 @@ export const useGetMutationVersion = (mutationId: string | null) => {
     queryKey: ['selectedMutationVersion', mutationId],
     queryFn: () =>
       mutationId ? engine.mutationService.getMutationVersion(mutationId) : Promise.resolve(null),
-    initialData: null,
   })
 
-  return { mutationVersion: data, isLoading, error }
+  return { mutationVersion: data ?? null, isLoading, error }
 }

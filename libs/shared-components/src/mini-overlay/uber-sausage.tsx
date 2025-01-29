@@ -1,6 +1,7 @@
 import { EntitySourceType } from '@mweb/backend'
 import {
   useGetMutationVersion,
+  useGetSelectedMutation,
   useMutation,
   useMutationApps,
   usePreferredSource,
@@ -126,7 +127,8 @@ interface ISidePanelProps {
 }
 
 export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
-  const { selectedMutationId, loggedInAccountId, tree } = useEngine()
+  const { loggedInAccountId, tree } = useEngine()
+  const { selectedMutationId } = useGetSelectedMutation(tree?.id)
   const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
   const { mutation: selectedMutation } = useMutation(

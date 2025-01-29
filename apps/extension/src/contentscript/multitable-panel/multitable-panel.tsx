@@ -20,7 +20,7 @@ export const MultitablePanel: FC = () => {
   const { accountId, networkId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { tree, selectedMutationId, switchMutation } = useMutableWeb()
+  const { tree } = useMutableWeb()
 
   const handleToggleOverlay = () => {
     Background.toggleSidePanel()
@@ -34,8 +34,6 @@ export const MultitablePanel: FC = () => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
-        selectedMutationId={selectedMutationId}
-        onSwitchMutation={switchMutation}
       >
         <UberSausageWrapper>
           <UberSausage onToggleOverlay={handleToggleOverlay} />

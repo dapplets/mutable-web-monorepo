@@ -7,7 +7,7 @@ import { WildcardEventEmitter } from '../../common/wildcard-event-emitter'
 import { connectEventEmitterWithPort } from '../../common/connect-event-emitter-with-port'
 
 export const useSidePanel = () => {
-  const { engine, tree, selectedMutationId, switchMutation } = useMutableWeb()
+  const { engine, tree } = useMutableWeb()
   const [port, setPort] = useState<browser.Runtime.Port | null>(null)
 
   useEffect(() => {
@@ -53,12 +53,6 @@ export const useSidePanel = () => {
       ee.on('contextChanged', handleContextChanged)
       ee.on('disconnect', () => port.disconnect())
 
-      port.onMessage.addListener((message: any) => {
-        if (message.type === 'switchMutation') {
-          switchMutation(message.data)
-        }
-      })
-
       port.onDisconnect.addListener(() => {
         disconnect()
         ee.removeListener('childContextAdded', handleChildContextAdded)
@@ -80,10 +74,6 @@ export const useSidePanel = () => {
       ee.removeAllListeners('contextChanged')
     }
   }, [tree])
-
-  useEffect(() => {
-    port?.postMessage({ type: 'setSelectedMutationId', data: selectedMutationId })
-  }, [port, selectedMutationId])
 
   useEffect(() => {
     port?.postMessage({ type: 'contextTree', data: tree?.toTransferable({ dir: 'down' }) })

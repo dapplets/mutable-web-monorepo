@@ -12,11 +12,32 @@ export const useSubscriptions = () => {
   // Smart-contract state propagation takes time
   // Inspired by https://tkdodo.eu/blog/using-web-sockets-with-react-query#consuming-data
   useEffect(() => {
+    const handleSaveMutation = (mut: MutationDto) => {
+      queryClient.setQueryData(
+        ['mutation', { mutationId: mut.id, source: mut.source, version: mut.version }],
+        mut
+      )
+      queryClient.setQueryData(
+        ['mutation', { mutationId: mut.id, source: mut.source, version: null }],
+        mut
+      )
+      queryClient.setQueryData(
+        ['mutation', { mutationId: mut.id, source: null, version: null }],
+        mut
+      )
+      queryClient.setQueryData(
+        ['mutation', { mutationId: mut.id, source: null, version: mut.version }],
+        mut
+      )
+    }
+
     const subs = [
       engine.eventService.on('mutationCreated', ({ mutation }) => {
+        // ToDo: potential bug: mutation will be added twice (see useCreateMutation hook)
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
           prev ? [...prev, mutation] : undefined
         )
+        handleSaveMutation(mutation)
       }),
       engine.eventService.on('mutationEdited', ({ mutation: editedMut }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
@@ -26,25 +47,7 @@ export const useSubscriptions = () => {
               )
             : undefined
         )
-        queryClient.setQueryData(
-          [
-            'mutation',
-            { mutationId: editedMut.id, source: editedMut.source, version: editedMut.version },
-          ],
-          editedMut
-        )
-        queryClient.setQueryData(
-          ['mutation', { mutationId: editedMut.id, source: editedMut.source, version: null }],
-          editedMut
-        )
-        queryClient.setQueryData(
-          ['mutation', { mutationId: editedMut.id, source: null, version: null }],
-          editedMut
-        )
-        queryClient.setQueryData(
-          ['mutation', { mutationId: editedMut.id, source: null, version: editedMut.version }],
-          editedMut
-        )
+        handleSaveMutation(editedMut)
       }),
       engine.eventService.on('mutationSaved', ({ mutation: savedMut }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {
@@ -60,25 +63,7 @@ export const useSubscriptions = () => {
             return prev.map((mut, i) => (i === existingMutationIndex ? savedMut : mut))
           }
         })
-        queryClient.setQueryData(
-          [
-            'mutation',
-            { mutationId: savedMut.id, source: savedMut.source, version: savedMut.version },
-          ],
-          savedMut
-        )
-        queryClient.setQueryData(
-          ['mutation', { mutationId: savedMut.id, source: savedMut.source, version: null }],
-          savedMut
-        )
-        queryClient.setQueryData(
-          ['mutation', { mutationId: savedMut.id, source: null, version: null }],
-          savedMut
-        )
-        queryClient.setQueryData(
-          ['mutation', { mutationId: savedMut.id, source: null, version: savedMut.version }],
-          savedMut
-        )
+        handleSaveMutation(savedMut)
       }),
       engine.eventService.on('mutationDeleted', ({ mutationId }) => {
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) =>
@@ -113,6 +98,9 @@ export const useSubscriptions = () => {
           ['preferredSource', event.mutationId, event.contextId],
           event.source
         )
+      }),
+      engine.eventService.on('selectedMutationChanged', (event) => {
+        queryClient.setQueryData(['selectedMutationId', event.contextId], event.mutationId)
       }),
     ]
 

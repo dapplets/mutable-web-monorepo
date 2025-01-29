@@ -7,9 +7,6 @@ export type EngineContextState = {
   nearNetwork: string
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
-
-  selectedMutationId: string | null
-  onSwitchMutation: (mutationId: string | null) => void
 }
 
 export const contextDefaultValues: EngineContextState = {
@@ -18,8 +15,6 @@ export const contextDefaultValues: EngineContextState = {
   nearNetwork: '',
   onConnectWallet: async () => {},
   onDisconnectWallet: async () => {},
-  selectedMutationId: null,
-  onSwitchMutation: () => {},
 }
 
 export const EngineContext = createContext<EngineContextState>(contextDefaultValues)

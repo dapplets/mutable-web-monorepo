@@ -8,8 +8,7 @@ export const useAppDocuments = (appId: AppId) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['documents', appId],
     queryFn: () => engine.documentService.getDocumentsByAppId(appId),
-    initialData: [],
   })
 
-  return { documents: data, isLoading, error }
+  return { documents: data ?? [], isLoading, error }
 }

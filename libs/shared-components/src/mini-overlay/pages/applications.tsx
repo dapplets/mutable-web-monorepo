@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { AppSwitcher } from '../app-switcher'
 import {
   useGetMutationVersion,
+  useGetSelectedMutation,
   useMutation,
   useMutationApps,
   usePreferredSource,
@@ -49,7 +50,8 @@ const AppsWrapper = styled.div`
 `
 
 const Applications: FC = () => {
-  const { selectedMutationId, tree } = useEngine()
+  const { tree } = useEngine()
+  const { selectedMutationId } = useGetSelectedMutation(tree?.id)
   const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
   const { mutation } = useMutation(selectedMutationId, preferredSource, mutationVersion)

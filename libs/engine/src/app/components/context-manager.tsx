@@ -100,9 +100,9 @@ interface LayoutManagerProps {
 }
 
 export const ContextManager: FC = () => {
-  const { selectedMutation } = useMutableWeb()
+  const { selectedMutation, isEngineLoading } = useMutableWeb()
 
-  if (!selectedMutation) return null
+  if (!selectedMutation || isEngineLoading) return null
 
   return <ContextTree children={ContextHandler} />
 }

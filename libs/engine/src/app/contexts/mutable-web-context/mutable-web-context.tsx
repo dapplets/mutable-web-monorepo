@@ -12,8 +12,7 @@ export type MutableWebContextState = {
   activeApps: AppInstanceWithSettings[]
   selectedMutation: MutationDto | null
   selectedMutationId: string | null
-  isLoading: boolean
-  switchMutation: (mutationId: string | null) => void
+  isEngineLoading: boolean
 }
 
 export const contextDefaultValues: MutableWebContextState = {
@@ -21,10 +20,9 @@ export const contextDefaultValues: MutableWebContextState = {
   engine: null as any as Engine, // ToDo
   tree: null,
   activeApps: [],
-  isLoading: false,
+  isEngineLoading: false,
   selectedMutation: null,
   selectedMutationId: null,
-  switchMutation: () => undefined,
 }
 
 export const MutableWebContext = createContext<MutableWebContextState>(contextDefaultValues)

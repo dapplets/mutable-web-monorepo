@@ -3,12 +3,14 @@ import { useCore } from '@mweb/react'
 import {
   useEngine,
   useGetMutationVersion,
+  useGetSelectedMutation,
   useMutation,
   useMutationApps,
   useMutationParsers,
   usePreferredSource,
+  useSetSelectedMutation,
 } from '@mweb/react-engine'
-import React, { FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { FC, ReactNode, useEffect, useMemo, useRef } from 'react'
 import { ModalContextState } from '../modal-context/modal-context'
 import { MutableWebContext, MutableWebContextState } from './mutable-web-context'
 import { mutationDisabled, mutationSwitched } from './notifications'
@@ -29,20 +31,13 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
 
   const { engine } = useEngine()
 
-  const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
-  const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
+  const { selectedMutationId, isLoading: isSelectedMutIdLoading } = useGetSelectedMutation(tree.id)
+  const { preferredSource } = usePreferredSource(selectedMutationId, tree.id)
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
 
+  const { setSelectedMutationId } = useSetSelectedMutation()
+
   // ToDo: merge mutationId, source, version to one state
-
-  // ToDo: move to @mweb/react-engine
-  const getMutationToBeLoaded = useCallback(async () => {
-    if (!tree.id) throw new Error('No root context ID found')
-    const favoriteMutation = await engine.mutationService.getFavoriteMutation(tree.id)
-    const lastUsedMutation = tree ? await engine.mutationService.getLastUsedMutation(tree) : null
-
-    return lastUsedMutation ?? favoriteMutation
-  }, [engine, tree])
 
   const { mutation: selectedMutation, isMutationLoading: isSelectedMutationLoading } = useMutation(
     selectedMutationId,
@@ -50,33 +45,40 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     mutationVersion
   )
 
-  useEffect(() => {
-    // ToDo: move to @mweb/react-engine
-    getMutationToBeLoaded().then((favoriteMutationId) => {
-      // ToDo: move it to the separate useEffect ?
-      if (defaultMutationId && favoriteMutationId && defaultMutationId !== favoriteMutationId) {
-        engine.mutationService.getMutation(defaultMutationId).then((mutationToSwitch) => {
-          if (mutationToSwitch) {
-            modalApi.notify(
-              mutationSwitched({
-                fromMutationId: favoriteMutationId,
-                toMutationId: defaultMutationId,
-                onBack: () => setSelectedMutationId(favoriteMutationId),
-              })
-            )
-          } else {
-            modalApi.notify(
-              mutationDisabled({
-                onBack: () => setSelectedMutationId(favoriteMutationId),
-              })
-            )
-          }
-        })
-      }
+  const defaultMutationProcessingRef = useRef(false)
 
-      setSelectedMutationId(defaultMutationId ?? favoriteMutationId)
-    })
-  }, [getMutationToBeLoaded, defaultMutationId, modalApi])
+  // defaultMutationId is used for augm.link
+  // example url: https://augm.link/mutate/?t=https%3A%2F%2Ftwitter.com%2FMrConCreator&m=bos.dapplets.testnet%2Fmutation%2FZoo
+  useEffect(() => {
+    if (defaultMutationProcessingRef.current) return
+
+    const contextId = tree.id
+    if (!contextId) throw new Error('No root context ID found')
+
+    if (defaultMutationId && selectedMutationId && defaultMutationId !== selectedMutationId) {
+      engine.mutationService.getMutation(defaultMutationId).then((mutationToSwitch) => {
+        defaultMutationProcessingRef.current = true
+
+        setSelectedMutationId(contextId, defaultMutationId)
+
+        if (mutationToSwitch) {
+          modalApi.notify(
+            mutationSwitched({
+              fromMutationId: selectedMutationId,
+              toMutationId: defaultMutationId,
+              onBack: () => setSelectedMutationId(contextId, selectedMutationId),
+            })
+          )
+        } else {
+          modalApi.notify(
+            mutationDisabled({
+              onBack: () => setSelectedMutationId(contextId, selectedMutationId),
+            })
+          )
+        }
+      })
+    }
+  }, [selectedMutationId, defaultMutationId, modalApi, setSelectedMutationId, tree])
 
   const { mutationApps, isLoading: isMutationAppsLoading } = useMutationApps(
     selectedMutation?.id,
@@ -115,7 +117,11 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     }
   }, [parserConfigs, tree])
 
-  const isLoading = isMutationAppsLoading || isMutationParsersLoading || isSelectedMutationLoading
+  const isEngineLoading =
+    isSelectedMutIdLoading ||
+    isMutationAppsLoading ||
+    isMutationParsersLoading ||
+    isSelectedMutationLoading
 
   const state: MutableWebContextState = {
     config: nearConfig,
@@ -124,8 +130,7 @@ const MutableWebProvider: FC<Props> = ({ config, defaultMutationId, modalApi, ch
     activeApps,
     selectedMutation,
     selectedMutationId,
-    isLoading,
-    switchMutation: setSelectedMutationId,
+    isEngineLoading,
   }
 
   return (

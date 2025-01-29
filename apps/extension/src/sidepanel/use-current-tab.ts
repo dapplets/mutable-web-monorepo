@@ -12,7 +12,6 @@ async function getCurrentTabId(windowId: number): Promise<number | null> {
 
 export const useCurrentTab = (windowId: number) => {
   const [tree, setTree] = useState<IContextNode | null>(null)
-  const [selectedMutationId, setSelectedMutationId] = useState<string | null>(null)
   const [eventEmitter, setEventEmitter] = useState<WildcardEventEmitter | null>(null)
   const portRef = useRef<browser.Runtime.Port | null>(null)
 
@@ -22,7 +21,6 @@ export const useCurrentTab = (windowId: number) => {
       portRef.current = null
 
       setTree(null)
-      setSelectedMutationId(null)
       setEventEmitter(null)
 
       if (!tabId) return
@@ -44,9 +42,7 @@ export const useCurrentTab = (windowId: number) => {
 
       portRef.current.onMessage.addListener((msg: any) => {
         // ToDo: handle childContextRemoved, contextChanged
-        if (msg.type === 'setSelectedMutationId') {
-          setSelectedMutationId(msg.data)
-        } else if (msg.type === 'contextTree') {
+        if (msg.type === 'contextTree') {
           setTree(PureContextNode.fromTransferable(msg.data))
         } else if (msg.type === 'childContextAdded') {
           function updateTree(node: TransferableContextNode): IContextNode | null {
@@ -117,11 +113,5 @@ export const useCurrentTab = (windowId: number) => {
     }
   }, [windowId])
 
-  const switchMutation = useCallback((mutationId: string | null) => {
-    if (!portRef.current) return
-
-    portRef.current.postMessage({ type: 'switchMutation', data: mutationId })
-  }, [])
-
-  return { tree, selectedMutationId, switchMutation, eventEmitter }
+  return { tree, eventEmitter }
 }

@@ -14,11 +14,11 @@ export const useMutations = (context?: IContextNode | null) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['mutations'],
     queryFn: () => engine.mutationService.getMutationsForContext(null),
-    initialData: [],
   })
 
   const filteredData = useMemo(
-    () => (context ? data.filter((mut) => utils.isMutationMetContext(mut, context)) : data),
+    () =>
+      data ? (context ? data.filter((mut) => utils.isMutationMetContext(mut, context)) : data) : [],
     [context, data]
   )
 

@@ -12,7 +12,7 @@ import { useCurrentTab } from './use-current-tab'
 export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
 
-  const { tree, selectedMutationId, switchMutation, eventEmitter } = useCurrentTab(windowId)
+  const { tree, eventEmitter } = useCurrentTab(windowId)
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
@@ -43,8 +43,6 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
-        selectedMutationId={selectedMutationId}
-        onSwitchMutation={switchMutation}
       >
         <SidePanel />
       </EngineProvider>

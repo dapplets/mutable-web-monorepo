@@ -11,7 +11,6 @@ export const useMutationApps = (mutationId: string | null = null, apps: AppInMut
       ? apps.map((app) => ({
           queryKey: ['mutationApp', mutationId, utils.constructAppInstanceId(app)],
           queryFn: () => engine.applicationService.getAppInstanceWithSettings(mutationId, app),
-          initialData: null,
         }))
       : [],
   })

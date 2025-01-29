@@ -8,8 +8,7 @@ export const useApplications = () => {
   const { data, isLoading, error } = useQuery<ApplicationDto[]>({
     queryKey: ['applications'],
     queryFn: () => engine.applicationService.getApplications(),
-    initialData: [],
   })
 
-  return { applications: data, isLoading, error }
+  return { applications: data ?? [], isLoading, error }
 }

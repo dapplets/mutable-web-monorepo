@@ -9,8 +9,7 @@ export const useMutationParsers = (apps: ApplicationDto[]) => {
     queryKey: ['mutationParsers', { apps: apps.map((app) => app.id) }],
     // ToDo: apps is not scalar
     queryFn: () => engine.parserConfigService.getParserConfigsForApps(apps),
-    initialData: [],
   })
 
-  return { parserConfigs: data, isLoading, error }
+  return { parserConfigs: data ?? [], isLoading, error }
 }

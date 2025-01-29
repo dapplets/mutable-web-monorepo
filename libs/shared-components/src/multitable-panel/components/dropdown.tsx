@@ -8,6 +8,8 @@ import {
   useMutationsLastUsage,
   useUpdateMutationLastUsage,
   useSetPreferredSource,
+  useGetSelectedMutation,
+  useSetSelectedMutation,
 } from '@mweb/react-engine'
 import React, { FC, useMemo, useState } from 'react'
 import styled from 'styled-components'
@@ -55,8 +57,9 @@ export type DropdownProps = {}
 
 export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   const navigate = useNavigate()
-  const { tree, selectedMutationId, onSwitchMutation } = useEngine()
+  const { tree } = useEngine()
   const { mutations } = useMutations(tree)
+  const { selectedMutationId } = useGetSelectedMutation(tree?.id)
   const { favoriteMutationId } = useFavoriteMutation(tree?.id)
   const { setFavoriteMutation } = useSetFavoriteMutation()
 
@@ -64,6 +67,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   const { removeMutationFromRecents } = useRemoveMutationFromRecents()
   const { updateMutationLastUsage } = useUpdateMutationLastUsage()
   const { setPreferredSource } = useSetPreferredSource()
+  const { setSelectedMutationId } = useSetSelectedMutation()
 
   const mutationsById = useMemo(() => Object.groupBy(mutations, (mut) => mut.id), [mutations])
   const mutationIds = useMemo(() => Object.keys(mutationsById), [mutationsById])
@@ -100,7 +104,7 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
 
   const handleMutationClick = (mutationId: string) => {
     if (!tree?.id) return
-    onSwitchMutation(mutationId)
+    setSelectedMutationId(tree.id, mutationId)
     updateMutationLastUsage({ mutationId, context: tree })
   }
 
@@ -120,7 +124,8 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
   }
 
   const handleOriginalButtonClick = () => {
-    onSwitchMutation(null)
+    if (!tree?.id) throw new Error('No root context ID found')
+    setSelectedMutationId(tree.id, null)
   }
 
   const handleRemoveFromRecentlyUsedClick = (mutationId: string) => {
@@ -130,15 +135,16 @@ export const Dropdown: FC<DropdownProps> = ({}: DropdownProps) => {
 
   const handleConfirmDeleteClick = async () => {
     if (!mutationIdToDelete) return
-    await deleteLocalMutation(mutationIdToDelete)
 
     if (mutationIdToDelete === favoriteMutationId) {
       handleFavoriteButtonClick(mutationIdToDelete)
     }
 
     if (tree?.id) {
-      await setPreferredSource(mutationIdToDelete, tree.id, null)
+      setPreferredSource(mutationIdToDelete, tree.id, EntitySourceType.Origin)
     }
+
+    deleteLocalMutation(mutationIdToDelete)
 
     setMutationIdToDelete(null)
   }
