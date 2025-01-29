@@ -22,9 +22,9 @@ export type SaveMutationOptions = {
 }
 
 export type MutationEvents = {
-  mutationCreated: { mutationId: string }
-  mutationEdited: { mutationId: string }
-  mutationSaved: { mutationId: string }
+  mutationCreated: { mutation: MutationDto }
+  mutationEdited: { mutation: MutationDto }
+  mutationSaved: { mutation: MutationDto }
   mutationDeleted: { mutationId: string }
 }
 
@@ -41,7 +41,7 @@ export class MutationService {
 
   async getMutation(
     mutationId: string,
-    source?: EntitySourceType,
+    source?: EntitySourceType | null,
     version?: string
   ): Promise<MutationDto | null> {
     const mutation = await this.mutationRepository.getItem({ id: mutationId, source, version })
@@ -155,9 +155,11 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    this.eventService.emit('mutationCreated', { mutationId: mutation.id })
+    const createdDto = mutation.toDto()
 
-    return mutation.toDto()
+    this.eventService.emit('mutationCreated', { mutation: createdDto })
+
+    return createdDto
   }
 
   async editMutation(
@@ -201,9 +203,11 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    this.eventService.emit('mutationEdited', { mutationId: mutation.id })
+    const editedDto = editedMutation.toDto()
 
-    return editedMutation.toDto()
+    this.eventService.emit('mutationEdited', { mutation: editedDto })
+
+    return editedDto
   }
 
   async saveMutation(
@@ -240,9 +244,11 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    this.eventService.emit('mutationSaved', { mutationId: mutation.id })
+    const savedDto = mutation.toDto()
 
-    return mutation.toDto()
+    this.eventService.emit('mutationSaved', { mutation: savedDto })
+
+    return savedDto
   }
 
   async deleteMutation(mutationId: EntityId): Promise<void> {
@@ -273,16 +279,17 @@ export class MutationService {
       throw new Error('Source mutation is not fork of target mutation')
     }
 
-    const [, freshNotification] = await this.unitOfWorkService.runInTransaction((tx) =>
-      Promise.all([
-        this._applyChangesToOrigin(sourceMutation, tx),
-        this.notificationService.acceptNotification(notificationId, tx),
-        this._notifyAboutAcceptedPullRequest(sourceMutationId, targetMutationId, tx),
-      ])
+    const [editedMutation, freshNotification] = await this.unitOfWorkService.runInTransaction(
+      (tx) =>
+        Promise.all([
+          this._applyChangesToOrigin(sourceMutation, tx),
+          this.notificationService.acceptNotification(notificationId, tx),
+          this._notifyAboutAcceptedPullRequest(sourceMutationId, targetMutationId, tx),
+        ])
     )
 
     // ToDo: move to repository?
-    this.eventService.emit('mutationEdited', { mutationId: targetMutationId })
+    this.eventService.emit('mutationEdited', { mutation: editedMutation.toDto() })
 
     return freshNotification
   }

@@ -325,7 +325,8 @@ export const ModalConfirm: FC<Props> = ({
         await deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
-        if (error?.message === 'Mutation with that ID already exists') {
+        console.error(error)
+        if (error?.message === 'Item with that ID already exists') {
           setAlert(alerts.idIsNotUnique)
         }
       }

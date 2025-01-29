@@ -21,7 +21,7 @@ export const useCommitDocumentToMutation = () => {
     onSuccess: async ({ mutation }) => {
       // is mutation changed?
       if (mutation) {
-        // ToDo: workaround to wait when blockchain changes will be propagated
+        // ToDo: workaround to wait when blockchain changes will be propagated, remove?
         await new Promise((res) => setTimeout(res, 3000))
 
         queryClient.setQueryData(['mutations'], (prev: MutationDto[]) => {

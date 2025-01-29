@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEngine } from '../engine'
-import { useEffect } from 'react'
 
-export const usePreferredSource = (mutationId: string | null, contextId: string | null | undefined) => {
+export const usePreferredSource = (
+  mutationId: string | null,
+  contextId: string | null | undefined
+) => {
   const { engine } = useEngine()
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['preferredSource', mutationId, contextId],
     queryFn: () =>
       mutationId && contextId
@@ -13,16 +15,6 @@ export const usePreferredSource = (mutationId: string | null, contextId: string 
         : Promise.resolve(null),
     initialData: null,
   })
-
-  useEffect(() => {
-    const sub = engine.eventService.on('preferredSourceChanged', (event) => {
-      if (event.mutationId === mutationId && event.contextId === contextId) {
-        refetch()
-      }
-    })
-
-    return () => sub.remove()
-  }, [engine, mutationId, refetch])
 
   return { preferredSource: data, isLoading, error }
 }
