@@ -117,7 +117,7 @@ export const MutationDropdownItem: FC<{
         <InputIconWrapper onClick={onDeleteClick}>
           <DeleteOutlined />
         </InputIconWrapper>
-      ) : !isSelected && !isFavorite && !preferredSource ? (
+      ) : !isSelected && !isFavorite && !local ? (
         <InputIconWrapper onClick={onRemoveFromRecentClick}>
           <ArrowDownOutlined />
         </InputIconWrapper>
