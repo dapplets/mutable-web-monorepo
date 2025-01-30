@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEngine } from '../engine'
 
-export function useMinStakeAmount() {
+export function useGetMinStake() {
   const { engine } = useEngine()
 
   const {
