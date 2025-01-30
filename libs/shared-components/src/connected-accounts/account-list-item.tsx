@@ -130,40 +130,6 @@ const Main = styled.div<{ $disabled?: boolean }>`
       }
     }
   }
-
-  .list {
-    position: absolute;
-    top: calc(100% - 2px);
-    right: 6px;
-    z-index: 1;
-    padding: 8px;
-    background: var(--pure-white);
-    border-radius: 8px;
-    box-shadow:
-      0px 4px 20px 0px rgba(11, 87, 111, 0.149),
-      0px 4px 5px 0px rgba(45, 52, 60, 0.102);
-
-    &.openListUp {
-      top: unset;
-      bottom: calc(100% - 2px);
-    }
-
-    button {
-      border: none;
-      background: none;
-      margin: 4px;
-      padding: 2px;
-      transition: color 0.1s ease;
-
-      :hover {
-        color: var(--primary-hover);
-      }
-
-      :active {
-        color: var(--primary-pressed);
-      }
-    }
-  }
 `
 
 const Text = styled.p<{ $type: string }>`

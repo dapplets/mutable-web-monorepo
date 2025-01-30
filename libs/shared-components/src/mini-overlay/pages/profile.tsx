@@ -6,11 +6,51 @@ import { ArrowIcon } from '../assets/icons'
 import { ConnectedAccount } from '../../connected-accounts'
 
 const ProfileContainer = styled.div`
+  --primary: oklch(53% 0.26 269.37); // rgb(56, 75, 255)
+  --primary-hover: oklch(47.4% 0.2613 267.51); // rgb(36, 55, 235)
+  --primary-pressed: oklch(42.2% 0.2585 265.62); // rgb(16, 35, 215)
+  --pure-white: white;
+
   width: 100%;
   display: flex;
   flex-direction: column;
   margin: 0;
   gap: 10px;
+
+  .list {
+    position: absolute;
+    right: 6px;
+    z-index: 1;
+    padding: 8px;
+    background: var(--pure-white);
+    border-radius: 8px;
+    box-shadow:
+      0px 4px 20px 0px rgba(11, 87, 111, 0.149),
+      0px 4px 5px 0px rgba(45, 52, 60, 0.102);
+
+    ul,
+    li {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    button {
+      border: none;
+      background: none;
+      margin: 4px;
+      padding: 2px;
+      transition: color 0.1s ease;
+
+      :hover {
+        color: var(--primary-hover);
+      }
+
+      :active {
+        color: var(--primary-pressed);
+      }
+    }
+  }
 `
 
 const Header = styled.div`
@@ -62,8 +102,9 @@ const Profile: FC<{
   nearNetwork: string
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }> = ({ navigate, loggedInAccountId, nearNetwork, trackingRefs }) => {
+  const profileRef = React.useRef<HTMLDivElement>(null)
   return (
-    <ProfileContainer data-testid="profile-page">
+    <ProfileContainer ref={profileRef} data-testid="profile-page">
       <Header>
         <BackButton onClick={() => navigate('/system/main')}>
           <ArrowIcon />
@@ -74,6 +115,7 @@ const Profile: FC<{
         loggedInAccountId={loggedInAccountId}
         nearNetwork={nearNetwork as NearNetworks}
         trackingRefs={trackingRefs}
+        profileRef={profileRef}
       />
     </ProfileContainer>
   )

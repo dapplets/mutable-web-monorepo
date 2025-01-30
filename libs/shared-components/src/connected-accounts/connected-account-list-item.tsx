@@ -6,19 +6,18 @@ import {
   useConnectionRequest,
 } from '@mweb/engine'
 import { Spin } from 'antd'
-import cn from 'classnames'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { useOutside } from '../hooks/use-outside'
 import useCopied from '../hooks/useCopyed'
 import AccountListItem from './account-list-item'
 import { MoreHoriz } from './assets/icons'
 import { StatusBadge } from './status-badge'
+import { createPortal } from 'react-dom'
 
 type CAListProps = {
   user?: IConnectedAccountUser
   maxLength?: number
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  openListUp?: boolean
   nearNetwork: NearNetworks
   loggedInAccountId: string
   socialAccount: {
@@ -27,16 +26,17 @@ type CAListProps = {
     fullname: string
     websiteName: string
   } | null
+  profileRef: React.RefObject<HTMLDivElement>
 }
 
 const CAListItem: FC<CAListProps> = ({
   user,
   maxLength = 32,
   trackingRefs,
-  openListUp,
   nearNetwork,
   loggedInAccountId,
   socialAccount,
+  profileRef,
 }) => {
   const [isActive, setIsActive] = useState<boolean>(
     !!user &&
@@ -53,8 +53,9 @@ const CAListItem: FC<CAListProps> = ({
   const status = request?.status ?? RequestStatus.DEFAULT
   const { changeCAStatus } = useChangeCAStatus()
   const [isListOpened, setIsListOpened] = useState(false)
+  const [burgerRects, setBurgerRects] = useState<DOMRectList | null>(null)
   const [isWaiting, setIsWaiting] = useState(false)
-  const ref = useRef(null)
+  const ref = useRef<HTMLDivElement>(null)
   useOutside(ref, () => setIsListOpened(false), trackingRefs)
   const useCopiedResult = user?.name && useCopied(user.name)
   useEffect(() => {
@@ -118,48 +119,65 @@ const CAListItem: FC<CAListProps> = ({
         <button
           className="copyButton"
           disabled={isWaiting}
-          onClick={() => !isListOpened && setIsListOpened(true)}
+          onClick={(e) => {
+            !isListOpened && setIsListOpened(true)
+            setBurgerRects((e.currentTarget as HTMLButtonElement)?.getClientRects())
+            ref.current?.focus()
+          }}
         >
           {isWaiting ? <Spin size="small" /> : <MoreHoriz />}
         </button>
       )}
 
-      {isListOpened && user ? (
-        <div className={cn('list', { openListUp })} ref={ref}>
-          <ul>
-            <li>
-              <button
-                className="listItem"
-                onClick={() => {
-                  useCopiedResult && useCopiedResult[1]()
-                  setIsListOpened(false)
-                }}
-              >
-                Copy address
-              </button>
-            </li>
-            <li>
-              <button className="listItem" onClick={handleClickDisconnect}>
-                Unlink account
-              </button>
-            </li>
-            <li>
-              <button
-                className="listItem"
-                onClick={async () => {
-                  setIsListOpened(false)
-                  setIsWaiting(true)
-                  await changeCAStatus(user.name, user.origin)
-                    .catch((e) => console.log(e))
-                    .finally(() => setIsWaiting(false))
-                }}
-              >
-                {user?.accountActive ? 'Reset main' : 'Set as main'}
-              </button>
-            </li>
-          </ul>
-        </div>
-      ) : null}
+      {isListOpened && user
+        ? createPortal(
+            <div
+              className="list"
+              style={{
+                top: burgerRects
+                  ? window.innerHeight - burgerRects[0].bottom > 120
+                    ? burgerRects[0].bottom - 50
+                    : burgerRects[0].bottom - 186
+                  : 100,
+              }}
+              ref={ref}
+            >
+              <ul>
+                <li>
+                  <button
+                    className="listItem"
+                    onClick={() => {
+                      useCopiedResult && useCopiedResult[1]()
+                      setIsListOpened(false)
+                    }}
+                  >
+                    Copy address
+                  </button>
+                </li>
+                <li>
+                  <button className="listItem" onClick={handleClickDisconnect}>
+                    Unlink account
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="listItem"
+                    onClick={async () => {
+                      setIsListOpened(false)
+                      setIsWaiting(true)
+                      await changeCAStatus(user.name, user.origin)
+                        .catch((e) => console.log(e))
+                        .finally(() => setIsWaiting(false))
+                    }}
+                  >
+                    {user?.accountActive ? 'Reset main' : 'Set as main'}
+                  </button>
+                </li>
+              </ul>
+            </div>,
+            profileRef.current ?? document.body
+          )
+        : null}
     </AccountListItem>
   )
 }
