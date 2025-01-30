@@ -555,7 +555,8 @@ export const ConnectedAccount: FC<{
   loggedInAccountId: string
   nearNetwork: NearNetworks
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-}> = ({ loggedInAccountId, nearNetwork, trackingRefs }) => {
+  profileRef: React.RefObject<HTMLDivElement>
+}> = ({ loggedInAccountId, nearNetwork, trackingRefs, profileRef }) => {
   // const [isLoadingListDapplets, setLoadingListDapplets] = useState(true)
   const { pairs } = useConnectedAccounts()
   const [socialAccount, setSocialAccount] = useState<{
@@ -658,13 +659,10 @@ export const ConnectedAccount: FC<{
                   key={x.secondAccount.name + x.secondAccount.origin}
                   user={x.secondAccount}
                   trackingRefs={trackingRefs}
-                  openListUp={
-                    (pairs.length > 4 && i >= pairs.length - 2) ||
-                    (pairs.length === 3 && i === pairs.length - 1)
-                  }
                   nearNetwork={nearNetwork}
                   loggedInAccountId={loggedInAccountId}
                   socialAccount={socialAccount}
+                  profileRef={profileRef}
                 />
               ))}
             </div>
