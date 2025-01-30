@@ -13,7 +13,6 @@ export {
   useGetCAPairs,
   useConnectAccounts,
   getMinStakeAmount,
-  useGetPendingRequests,
   useGetRequestStatus,
   useConnectionRequest,
   RequestVerificationProps,
