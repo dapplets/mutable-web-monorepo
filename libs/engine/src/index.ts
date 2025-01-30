@@ -14,7 +14,6 @@ export {
   useConnectAccounts,
   getMinStakeAmount,
   useGetPendingRequests,
-  useGetVerificationRequest,
   useGetRequestStatus,
   useConnectionRequest,
   RequestVerificationProps,

@@ -1,4 +1,5 @@
 export * from './application'
+export * from './connected-accounts'
 export * from './document'
 export * from './engine'
 export * from './mutation'
