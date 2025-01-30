@@ -18,19 +18,15 @@ export type CARequest = {
 }
 
 export interface ConnectedAccountsContextState {
-  pairs: IConnectedAccountsPair[] | null
   connectedAccountsNet: string[] | null
-  updateConnectedAccountsPairs: () => Promise<void>
   updateConnectedAccountsNet: () => Promise<void>
   requests: CARequest[]
   setRequests: React.Dispatch<React.SetStateAction<CARequest[]>>
 }
 
 export const contextDefaultValues: ConnectedAccountsContextState = {
-  pairs: null,
   connectedAccountsNet: null,
   updateConnectedAccountsNet: () => new Promise(() => null),
-  updateConnectedAccountsPairs: () => new Promise(() => null),
   requests: [],
   setRequests: () => {},
 }

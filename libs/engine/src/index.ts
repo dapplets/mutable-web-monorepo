@@ -8,9 +8,7 @@ export { App as MutableWebProvider } from './app/app'
 export {
   ConnectedAccountsProvider,
   useConnectedAccounts,
-  useChangeCAStatus,
   useGetCANet,
-  useGetCAPairs,
   useConnectAccounts,
   useGetRequestStatus,
   useConnectionRequest,

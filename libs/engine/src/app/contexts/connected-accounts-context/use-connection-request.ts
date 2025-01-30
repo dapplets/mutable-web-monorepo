@@ -14,8 +14,7 @@ type MakeConnectionRequestProps = {
 }
 
 export const useConnectionRequest = () => {
-  const { updateConnectedAccountsPairs, updateConnectedAccountsNet, requests, setRequests } =
-    useConnectedAccounts()
+  const { updateConnectedAccountsNet, requests, setRequests } = useConnectedAccounts()
   const { requestVerification, isLoading } = useConnectAccounts()
   const { minStakeAmount } = useGetMinStake()
   const { getRequestStatus } = useGetRequestStatus()
@@ -110,7 +109,11 @@ export const useConnectionRequest = () => {
           )
         )
         setTimeout(async () => {
-          await Promise.all([updateConnectedAccountsNet(), updateConnectedAccountsPairs()])
+
+          // await Promise.all([updateConnectedAccountsNet(), updateConnectedAccountsPairs()])
+          // ToDo: invalidate queries
+
+
           setRequests((requests) => requests.filter((request) => request.id !== newRequestId))
         }, 5000)
       }

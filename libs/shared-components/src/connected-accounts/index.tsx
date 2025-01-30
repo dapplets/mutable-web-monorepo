@@ -1,5 +1,5 @@
 import { NearNetworks } from '@mweb/backend'
-import { useConnectedAccounts } from '@mweb/engine'
+import { useGetCAPairs } from '@mweb/react-engine'
 import { IContextNode } from '@mweb/core'
 import { useCore } from '@mweb/react'
 import cn from 'classnames'
@@ -558,7 +558,7 @@ export const ConnectedAccount: FC<{
   profileRef: React.RefObject<HTMLDivElement>
 }> = ({ loggedInAccountId, nearNetwork, trackingRefs, profileRef }) => {
   // const [isLoadingListDapplets, setLoadingListDapplets] = useState(true)
-  const { pairs } = useConnectedAccounts()
+  const { connectedAccountsPairs: pairs } = useGetCAPairs()
   const [socialAccount, setSocialAccount] = useState<{
     name: string
     origin: string

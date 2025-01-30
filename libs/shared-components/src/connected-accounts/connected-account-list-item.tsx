@@ -1,10 +1,6 @@
 import { IConnectedAccountUser, NearNetworks } from '@mweb/backend'
-import {
-  RequestStatus,
-  useChangeCAStatus,
-  useConnectedAccounts,
-  useConnectionRequest,
-} from '@mweb/engine'
+import { RequestStatus, useConnectedAccounts, useConnectionRequest } from '@mweb/engine'
+import { useChangeCAStatus } from '@mweb/react-engine'
 import { Spin } from 'antd'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { useOutside } from '../hooks/use-outside'
@@ -52,10 +48,9 @@ const CAListItem: FC<CAListProps> = ({
     (r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`)
   )
   const status = request?.status ?? RequestStatus.DEFAULT
-  const { changeCAStatus } = useChangeCAStatus()
+  const { changeCAStatus, isLoading: isWaiting } = useChangeCAStatus()
   const [isListOpened, setIsListOpened] = useState(false)
   const [burgerRects, setBurgerRects] = useState<DOMRectList | null>(null)
-  const [isWaiting, setIsWaiting] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   useOutside(ref, () => setIsListOpened(false), trackingRefs)
   const useCopiedResult = user?.name && useCopied(user.name)
@@ -165,10 +160,7 @@ const CAListItem: FC<CAListProps> = ({
                     className="listItem"
                     onClick={async () => {
                       setIsListOpened(false)
-                      setIsWaiting(true)
-                      await changeCAStatus(user.name, user.origin)
-                        .catch((e) => console.log(e))
-                        .finally(() => setIsWaiting(false))
+                      changeCAStatus(user.name, user.origin)
                     }}
                   >
                     {user?.accountActive ? 'Reset main' : 'Set as main'}
