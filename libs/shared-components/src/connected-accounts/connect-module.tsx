@@ -7,6 +7,7 @@ import AccountListItem from './account-list-item'
 import LinkButton from './link-button'
 import { StatusBadge } from './status-badge'
 import { socialNetworkConnectionCondition } from './utils'
+import { useGetCANet } from '@mweb/react-engine'
 
 const Wrapper = styled.div<{ $status: RequestStatus }>`
   display: flex;
@@ -117,7 +118,8 @@ const ConnectModule: FC<ConnectModuleProps> = ({
   loggedInAccountId,
   socialAccount,
 }) => {
-  const { connectedAccountsNet, requests } = useConnectedAccounts()
+  const { connectedAccountsNet } = useGetCANet()
+  const { requests } = useConnectedAccounts()
   const { makeConnectionRequest } = useConnectionRequest()
   const [showConnectModule, setShowConnectModule] = useState(false)
   const [accountToConnect, setAccountToConnect] = useState<{

@@ -4,7 +4,6 @@ import {
   ConnectedAccountsContext,
   ConnectedAccountsContextState,
 } from './connected-accounts-context'
-import { useGetCANet } from './use-get-ca-net'
 
 type Props = {
   children?: ReactNode
@@ -12,11 +11,8 @@ type Props = {
 
 const ConnectedAccountsProvider: FC<Props> = ({ children }) => {
   const [requests, setRequests] = useState<CARequest[]>([])
-  const { connectedAccountsNet, updateConnectedAccountsNet } = useGetCANet()
 
   const state: ConnectedAccountsContextState = {
-    connectedAccountsNet,
-    updateConnectedAccountsNet,
     requests,
     setRequests,
   }

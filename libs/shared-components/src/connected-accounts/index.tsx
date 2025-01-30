@@ -558,7 +558,10 @@ export const ConnectedAccount: FC<{
   profileRef: React.RefObject<HTMLDivElement>
 }> = ({ loggedInAccountId, nearNetwork, trackingRefs, profileRef }) => {
   // const [isLoadingListDapplets, setLoadingListDapplets] = useState(true)
-  const { connectedAccountsPairs: pairs } = useGetCAPairs()
+  const { connectedAccountsPairs: pairs } = useGetCAPairs({
+    networkId: nearNetwork,
+    accountId: loggedInAccountId,
+  })
   const [socialAccount, setSocialAccount] = useState<{
     name: string
     origin: string

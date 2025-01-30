@@ -13,7 +13,7 @@ export type RequestVerificationProps = {
 }
 
 export function useConnectAccounts() {
-  const { requests, setRequests } = useConnectedAccounts()
+  const { setRequests } = useConnectedAccounts()
   const { engine } = useMutableWeb()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
