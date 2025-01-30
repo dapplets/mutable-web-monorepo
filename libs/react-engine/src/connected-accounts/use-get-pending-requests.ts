@@ -9,5 +9,5 @@ export function useGetPendingRequests() {
     queryFn: () => engine.connectedAccountsService.getPendingRequests(),
   })
 
-  return { pendingRequests: data, isLoading, error }
+  return { pendingRequests: data ?? [], isLoading, error }
 }

@@ -1,9 +1,9 @@
 import { ConnectedAccountsRequestStatus, NearNetworks } from '@mweb/backend'
-import { RequestStatus } from './connected-accounts-context'
+import { useGetRequests, RequestStatus, CARequest } from './use-get-requests'
+import { useGetMinStake } from './use-get-min-stake'
 import { useConnectAccounts } from './use-connect-accounts'
-import { useConnectedAccounts } from './use-connected-accounts'
-import { useGetMinStake } from '@mweb/react-engine'
 import { useGetRequestStatus } from './use-get-request-status'
+import { useQueryClient } from '@tanstack/react-query'
 
 type MakeConnectionRequestProps = {
   name: string
@@ -14,8 +14,10 @@ type MakeConnectionRequestProps = {
 }
 
 export const useConnectionRequest = () => {
-  const { requests, setRequests } = useConnectedAccounts()
-  const { requestVerification, isLoading } = useConnectAccounts()
+  const queryClient = useQueryClient()
+
+  const { requests } = useGetRequests()
+  const { requestVerificationAsync, isLoading } = useConnectAccounts()
   const { minStakeAmount } = useGetMinStake()
   const { getRequestStatus } = useGetRequestStatus()
 
@@ -52,6 +54,7 @@ export const useConnectionRequest = () => {
     const secondAccountId = loggedInAccountId
     const secondOriginId = 'near/' + nearNetwork.toLowerCase()
     const firstProofUrl = `https://${origin.toLowerCase()}.com/` + name // ToDo: can be different URLs + less secure
+
     try {
       const sameTypeRequestPayloads = requests
         .filter((request) => request.type === (isUnlink ? 'disconnect' : 'connect'))
@@ -66,20 +69,24 @@ export const useConnectionRequest = () => {
       ) {
         // ToDo: what?
       } else {
-        setRequests((previousRequests) => [
-          ...previousRequests,
-          {
-            id: newRequestId,
-            type: isUnlink ? 'disconnect' : 'connect',
-            payload: new Set([
-              `${firstAccountId}/${firstOriginId}`,
-              `${secondAccountId}/${secondOriginId}`,
-            ]),
-            status: RequestStatus.CLAIMING,
-          },
-        ])
+        queryClient.setQueryData(['requests'], (previousRequests: CARequest[] | undefined) =>
+          previousRequests
+            ? [
+                ...previousRequests,
+                {
+                  id: newRequestId,
+                  type: isUnlink ? 'disconnect' : 'connect',
+                  payload: new Set([
+                    `${firstAccountId}/${firstOriginId}`,
+                    `${secondAccountId}/${secondOriginId}`,
+                  ]),
+                  status: RequestStatus.CLAIMING,
+                },
+              ]
+            : undefined
+        )
       }
-      const res = await requestVerification(
+      const res = await requestVerificationAsync(
         newRequestId,
         {
           firstAccountId,
@@ -93,26 +100,37 @@ export const useConnectionRequest = () => {
       )
       if (res) {
         const requestStatus = await waitForRequestResolve(res)
-        setRequests((previousRequests) =>
-          previousRequests.map((r) =>
-            r.id === newRequestId
-              ? {
-                  ...r,
-                  status:
-                    requestStatus === 'approved' ? RequestStatus.SUCCESS : RequestStatus.FAILED,
-                  message:
-                    requestStatus === 'rejected'
-                      ? 'The transaction was rejected. Go to your social network profile and check if the connection condition is met.'
-                      : undefined,
-                }
-              : r
-          )
+        queryClient.setQueryData(['requests'], (previousRequests: CARequest[] | undefined) =>
+          previousRequests
+            ? previousRequests.map((r) =>
+                r.id === newRequestId
+                  ? {
+                      ...r,
+                      status:
+                        requestStatus === 'approved' ? RequestStatus.SUCCESS : RequestStatus.FAILED,
+                      message:
+                        requestStatus === 'rejected'
+                          ? 'The transaction was rejected. Go to your social network profile and check if the connection condition is met.'
+                          : undefined,
+                    }
+                  : r
+              )
+            : undefined
         )
         setTimeout(async () => {
-          // await Promise.all([updateConnectedAccountsNet(), updateConnectedAccountsPairs()])
-          // ToDo: invalidate queries
+          // ToDo: invalidate respecting {originId, accountId}
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'connectedAccountsNet',
+          })
 
-          setRequests((requests) => requests.filter((request) => request.id !== newRequestId))
+          // ToDo: invalidate respecting {originId, accountId}
+          queryClient.invalidateQueries({
+            predicate: (query) => query.queryKey[0] === 'connectedAccountsPairs',
+          })
+
+          queryClient.setQueryData(['requests'], (previousRequests: CARequest[] | undefined) =>
+            previousRequests ? requests.filter((request) => request.id !== newRequestId) : undefined
+          )
         }, 5000)
       }
     } catch (err) {

@@ -1,5 +1,5 @@
 import { IConnectedAccountUser, NearNetworks } from '@mweb/backend'
-import { RequestStatus, useConnectedAccounts, useConnectionRequest } from '@mweb/engine'
+import { RequestStatus, useConnectionRequest, useGetRequests } from '@mweb/react-engine'
 import { useChangeCAStatus } from '@mweb/react-engine'
 import { Spin } from 'antd'
 import React, { FC, useEffect, useRef, useState } from 'react'
@@ -43,7 +43,7 @@ const CAListItem: FC<CAListProps> = ({
   )
   const [isConditionDone, setIsConditionDone] = useState(true)
   const { makeConnectionRequest } = useConnectionRequest()
-  const { requests } = useConnectedAccounts()
+  const { requests } = useGetRequests()
   const request = requests.find(
     (r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`)
   )

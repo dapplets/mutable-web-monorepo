@@ -1,9 +1,9 @@
 import { ConnectedAccountsRequestStatus } from '@mweb/backend'
 import { useState } from 'react'
-import { useMutableWeb } from '../mutable-web-context'
+import { useEngine } from '../engine'
 
 export function useGetRequestStatus() {
-  const { engine } = useMutableWeb()
+  const { engine } = useEngine()
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)

@@ -9,5 +9,5 @@ export function useGetVerificationRequest(id: number) {
     queryFn: () => engine.connectedAccountsService.getVerificationRequest(id),
   })
 
-  return { verificationRequest: data, isLoading, error }
+  return { verificationRequest: data ?? null, isLoading, error }
 }

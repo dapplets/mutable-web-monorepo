@@ -1,5 +1,5 @@
 import { NearNetworks } from '@mweb/backend'
-import { RequestStatus, useConnectedAccounts, useConnectionRequest } from '@mweb/engine'
+import { RequestStatus, useGetRequests, useConnectionRequest } from '@mweb/react-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Close } from '../mini-overlay/assets/icons'
@@ -118,8 +118,11 @@ const ConnectModule: FC<ConnectModuleProps> = ({
   loggedInAccountId,
   socialAccount,
 }) => {
-  const { connectedAccountsNet } = useGetCANet()
-  const { requests } = useConnectedAccounts()
+  const { connectedAccountsNet } = useGetCANet({
+    networkId: nearNetwork,
+    accountId: loggedInAccountId,
+  })
+  const { requests } = useGetRequests()
   const { makeConnectionRequest } = useConnectionRequest()
   const [showConnectModule, setShowConnectModule] = useState(false)
   const [accountToConnect, setAccountToConnect] = useState<{

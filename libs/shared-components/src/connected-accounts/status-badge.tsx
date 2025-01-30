@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { RequestStatus } from '@mweb/engine'
+import { RequestStatus } from '@mweb/react-engine'
 
 const Loader = styled.div`
   width: 10px;

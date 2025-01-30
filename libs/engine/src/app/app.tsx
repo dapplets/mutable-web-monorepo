@@ -5,7 +5,6 @@ import React, { FC, Fragment, ReactNode, useRef, useState } from 'react'
 import { ContextHighlighter } from './components/context-highlighter'
 import { ContextManager } from './components/context-manager'
 import { ContextPicker } from './components/context-picker'
-import { ConnectedAccountsProvider } from './contexts/connected-accounts-context'
 import { DevProvider } from './contexts/dev-context'
 import { HighlighterProvider } from './contexts/highlighter-context'
 import { ModalProvider } from './contexts/modal-context'
@@ -51,16 +50,14 @@ export const App: FC<{
                   defaultMutationId={defaultMutationId}
                   modalApi={modalApi}
                 >
-                  <ConnectedAccountsProvider>
-                    <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
-                      <ModalProvider onModalApiReady={setModalApi}>
-                        <ContextPicker />
-                        <ContextManager />
-                        <ContextHighlighter />
-                      </ModalProvider>
-                    </ViewportProvider>
-                    <Fragment>{children}</Fragment>
-                  </ConnectedAccountsProvider>
+                  <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
+                    <ModalProvider onModalApiReady={setModalApi}>
+                      <ContextPicker />
+                      <ContextManager />
+                      <ContextHighlighter />
+                    </ModalProvider>
+                  </ViewportProvider>
+                  <Fragment>{children}</Fragment>
                 </MutableWebProvider>
               </HighlighterProvider>
             </PickerProvider>

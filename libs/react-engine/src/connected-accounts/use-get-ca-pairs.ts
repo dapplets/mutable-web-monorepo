@@ -20,18 +20,14 @@ export function useGetCAPairs({ networkId, accountId }: { networkId: string; acc
     })
   }
 
-  const {
-    data: connectedAccountsPairs,
-    isLoading,
-    error,
-  } = useQuery<IConnectedAccountsPair[] | null>({
+  const { data, isLoading, error } = useQuery<IConnectedAccountsPair[] | null>({
     queryKey: ['connectedAccountsPairs', originId, accountId],
     queryFn: fetch,
     enabled: !!accountId && !!networkId, // Ensure the query only runs when both `accountId` and `networkId` are provided
   })
 
   return {
-    connectedAccountsPairs,
+    connectedAccountsPairs: data ?? null,
     isLoading,
     error,
   }

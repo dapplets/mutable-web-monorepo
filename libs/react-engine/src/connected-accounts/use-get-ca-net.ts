@@ -4,11 +4,7 @@ import { useEngine } from '../engine'
 export function useGetCANet({ networkId, accountId }: { networkId: string; accountId: string }) {
   const { engine } = useEngine()
 
-  const {
-    data: connectedAccountsNet,
-    isLoading,
-    error,
-  } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['connectedAccountsNet', networkId, accountId],
     queryFn: async () => {
       if (!accountId || !networkId) return null
@@ -17,5 +13,5 @@ export function useGetCANet({ networkId, accountId }: { networkId: string; accou
     enabled: !!accountId && !!networkId, // Only fetch when both values exist
   })
 
-  return { connectedAccountsNet, isLoading, error }
+  return { connectedAccountsNet: data ?? null, isLoading, error }
 }
