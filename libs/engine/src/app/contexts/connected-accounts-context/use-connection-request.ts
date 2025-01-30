@@ -2,7 +2,7 @@ import { ConnectedAccountsRequestStatus, NearNetworks } from '@mweb/backend'
 import { RequestStatus } from './connected-accounts-context'
 import { useConnectAccounts } from './use-connect-accounts'
 import { useConnectedAccounts } from './use-connected-accounts'
-import { getMinStakeAmount } from './use-get-min-stake'
+import { useMinStakeAmount } from '@mweb/react-engine'
 import { useGetRequestStatus } from './use-get-request-status'
 
 type MakeConnectionRequestProps = {
@@ -17,7 +17,7 @@ export const useConnectionRequest = () => {
   const { updateConnectedAccountsPairs, updateConnectedAccountsNet, requests, setRequests } =
     useConnectedAccounts()
   const { requestVerification, isLoading } = useConnectAccounts()
-  const { minStakeAmount } = getMinStakeAmount()
+  const { minStakeAmount } = useMinStakeAmount()
   const { getRequestStatus } = useGetRequestStatus()
 
   const waitForRequestResolve = async (

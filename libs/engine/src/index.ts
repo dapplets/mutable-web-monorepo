@@ -12,7 +12,6 @@ export {
   useGetCANet,
   useGetCAPairs,
   useConnectAccounts,
-  getMinStakeAmount,
   useGetRequestStatus,
   useConnectionRequest,
   RequestVerificationProps,
