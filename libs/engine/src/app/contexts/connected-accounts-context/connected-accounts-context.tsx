@@ -1,13 +1,6 @@
 import { IConnectedAccountsPair } from '@mweb/backend'
 import React, { createContext } from 'react'
 
-export interface ISocialNetworkConnectionCondition {
-  socNet_id: string
-  near_id: string
-  url: string
-  fullname: string
-}
-
 export enum RequestStatus {
   CLAIMING = 'claiming',
   VERIFICATION = 'verification',
@@ -31,7 +24,6 @@ export interface ConnectedAccountsContextState {
   updateConnectedAccountsNet: () => Promise<void>
   requests: CARequest[]
   setRequests: React.Dispatch<React.SetStateAction<CARequest[]>>
-  socialNetworkConnectionCondition: (props: ISocialNetworkConnectionCondition) => boolean
 }
 
 export const contextDefaultValues: ConnectedAccountsContextState = {
@@ -41,7 +33,6 @@ export const contextDefaultValues: ConnectedAccountsContextState = {
   updateConnectedAccountsPairs: () => new Promise(() => null),
   requests: [],
   setRequests: () => {},
-  socialNetworkConnectionCondition: () => false,
 }
 
 export const ConnectedAccountsContext =

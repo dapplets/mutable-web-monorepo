@@ -13,6 +13,7 @@ import AccountListItem from './account-list-item'
 import { MoreHoriz } from './assets/icons'
 import { StatusBadge } from './status-badge'
 import { createPortal } from 'react-dom'
+import { socialNetworkConnectionCondition } from './utils'
 
 type CAListProps = {
   user?: IConnectedAccountUser
@@ -46,7 +47,7 @@ const CAListItem: FC<CAListProps> = ({
   )
   const [isConditionDone, setIsConditionDone] = useState(true)
   const { makeConnectionRequest } = useConnectionRequest()
-  const { requests, socialNetworkConnectionCondition } = useConnectedAccounts()
+  const { requests } = useConnectedAccounts()
   const request = requests.find(
     (r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`)
   )

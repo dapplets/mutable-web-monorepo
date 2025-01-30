@@ -3,18 +3,12 @@ import {
   CARequest,
   ConnectedAccountsContext,
   ConnectedAccountsContextState,
-  ISocialNetworkConnectionCondition,
 } from './connected-accounts-context'
 import { useGetCANet } from './use-get-ca-net'
 import { useGetCAPairs } from './use-get-ca-pairs'
 
 type Props = {
   children?: ReactNode
-}
-
-const socialNetworkConnectionCondition = (props: ISocialNetworkConnectionCondition) => {
-  const { socNet_id, near_id, url, fullname } = props
-  return url.includes(socNet_id) && fullname.includes(near_id)
 }
 
 const ConnectedAccountsProvider: FC<Props> = ({ children }) => {
@@ -29,7 +23,6 @@ const ConnectedAccountsProvider: FC<Props> = ({ children }) => {
     updateConnectedAccountsPairs,
     requests,
     setRequests,
-    socialNetworkConnectionCondition,
   }
 
   return (

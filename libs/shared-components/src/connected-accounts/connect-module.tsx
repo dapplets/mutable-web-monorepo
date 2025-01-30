@@ -6,6 +6,7 @@ import { Close } from '../mini-overlay/assets/icons'
 import AccountListItem from './account-list-item'
 import LinkButton from './link-button'
 import { StatusBadge } from './status-badge'
+import { socialNetworkConnectionCondition } from './utils'
 
 const Wrapper = styled.div<{ $status: RequestStatus }>`
   display: flex;
@@ -116,8 +117,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
   loggedInAccountId,
   socialAccount,
 }) => {
-  const { connectedAccountsNet, requests, socialNetworkConnectionCondition } =
-    useConnectedAccounts()
+  const { connectedAccountsNet, requests } = useConnectedAccounts()
   const { makeConnectionRequest } = useConnectionRequest()
   const [showConnectModule, setShowConnectModule] = useState(false)
   const [accountToConnect, setAccountToConnect] = useState<{
