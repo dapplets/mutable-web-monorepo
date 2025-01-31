@@ -9,8 +9,8 @@ export interface ISocialNetworkConnectionCondition {
 }
 
 export enum RequestStatus {
-  CLAIMING = 'claiming',
-  VERIFICATION = 'verification',
+  SIGNING = 'signing',
+  VERIFYING = 'verifying',
   SUCCESS = 'success',
   FAILED = 'failed',
   DEFAULT = 'default',

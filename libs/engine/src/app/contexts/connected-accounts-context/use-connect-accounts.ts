@@ -45,7 +45,7 @@ export function useConnectAccounts() {
       )
       setRequests((requests) =>
         requests.map((request) =>
-          request.id !== newRequestId ? request : { ...request, status: RequestStatus.VERIFICATION }
+          request.id !== newRequestId ? request : { ...request, status: RequestStatus.VERIFYING }
         )
       )
       return result

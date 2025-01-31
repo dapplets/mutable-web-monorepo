@@ -20,8 +20,8 @@ const Wrapper = styled.div<{ $status: RequestStatus }>`
     0px 4px 5px 0px rgba(45, 52, 60, 0.102);
   transition: all 0.3s ease;
   gap: ${(props) =>
-    props.$status === RequestStatus.CLAIMING ||
-    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SIGNING ||
+    props.$status === RequestStatus.VERIFYING ||
     props.$status === RequestStatus.SUCCESS
       ? '0'
       : '10px'};
@@ -32,18 +32,22 @@ const Header = styled.div<{ $status: RequestStatus }>`
   justify-content: space-between;
   align-items: center;
   padding: 10px 15px;
-  transition:
-    height 0.3s ease,
-    transform 0.1s ease;
+  transition: all 0.15s ease;
+  opacity: ${({ $status }) =>
+    $status === RequestStatus.SIGNING ||
+    $status === RequestStatus.VERIFYING ||
+    $status === RequestStatus.SUCCESS
+      ? 0
+      : 1};
   height: ${(props) =>
-    props.$status === RequestStatus.CLAIMING ||
-    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SIGNING ||
+    props.$status === RequestStatus.VERIFYING ||
     props.$status === RequestStatus.SUCCESS
-      ? '0'
-      : '22px'};
+      ? 0
+      : 22};
   transform: ${(props) =>
-    props.$status === RequestStatus.CLAIMING ||
-    props.$status === RequestStatus.VERIFICATION ||
+    props.$status === RequestStatus.SIGNING ||
+    props.$status === RequestStatus.VERIFYING ||
     props.$status === RequestStatus.SUCCESS
       ? 'scaleY(0)'
       : 'scaleY(1)'};
@@ -77,25 +81,31 @@ const ButtonClose = styled.button`
   }
 `
 
-const Text = styled.p<{ $status: RequestStatus }>`
+const Text = styled.div<{ $status: RequestStatus }>`
   font-family: var(--font-default);
   color: ${({ $status }) => ($status === RequestStatus.FAILED ? 'var(--error)' : 'var(--gray)')};
   font-size: 12px !important;
   font-weight: 400 !important;
   line-height: 150%;
   transition: all 0.15s ease;
-  height: ${(props) =>
-    props.$status === RequestStatus.CLAIMING ||
-    props.$status === RequestStatus.VERIFICATION ||
-    props.$status === RequestStatus.SUCCESS
-      ? '0'
-      : props.$status === RequestStatus.FAILED
-        ? '20px'
-        : '54px'};
-  transform: ${(props) =>
-    props.$status === RequestStatus.CLAIMING ||
-    props.$status === RequestStatus.VERIFICATION ||
-    props.$status === RequestStatus.SUCCESS
+  opacity: ${({ $status }) =>
+    $status === RequestStatus.SIGNING ||
+    $status === RequestStatus.VERIFYING ||
+    $status === RequestStatus.SUCCESS
+      ? 0
+      : 1};
+  height: ${({ $status }) =>
+    $status === RequestStatus.SIGNING ||
+    $status === RequestStatus.VERIFYING ||
+    $status === RequestStatus.SUCCESS
+      ? 0
+      : $status === RequestStatus.FAILED
+        ? 20
+        : 'auto'};
+  transform: ${({ $status }) =>
+    $status === RequestStatus.SIGNING ||
+    $status === RequestStatus.VERIFYING ||
+    $status === RequestStatus.SUCCESS
       ? 'scaleY(0)'
       : 'scaleY(1)'};
 `
@@ -182,7 +192,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
       <AccountListItem
         name={accountToConnect.name}
         origin={accountToConnect.origin.toLowerCase()}
-        disabled={status === RequestStatus.CLAIMING || status === RequestStatus.VERIFICATION}
+        disabled={status === RequestStatus.SIGNING || status === RequestStatus.VERIFYING}
       >
         {status !== RequestStatus.DEFAULT ? (
           <StatusBadge status={status} />
@@ -202,13 +212,29 @@ const ConnectModule: FC<ConnectModuleProps> = ({
         )}
       </AccountListItem>
       <Text $status={status}>
-        {!loggedInAccountId
-          ? 'To link your source account, you need to connect your wallet first.'
-          : request?.message
-            ? 'The transaction is rejected' // ToDo: process diffenent messages
-            : !isConditionDone
-              ? `You are on a website for which account linking is available. Copy your logged-in NEAR address and add it to your ${accountToConnect.websiteName} account name.`
-              : `The condition for account linking is met. Click on the Link button above to connect your ${accountToConnect.websiteName} account to your current NEAR wallet.`}
+        {!loggedInAccountId ? (
+          <p>To link your source account, you need to connect your wallet first.</p>
+        ) : request?.message ? (
+          <p>The transaction is rejected</p> // ToDo: process diffenent messages
+        ) : !isConditionDone ? (
+          <>
+            <p>
+              You are on a website for which account linking is available. Copy your logged-in NEAR
+              address and add it to your {accountToConnect.websiteName} account name.
+            </p>
+            <p>
+              For example:{' '}
+              <b>
+                {accountToConnect.fullname} ({loggedInAccountId})
+              </b>
+            </p>
+          </>
+        ) : (
+          <p>
+            The condition for account linking is met. Click on the Link button above to connect your
+            {accountToConnect.websiteName} account to your current NEAR wallet.
+          </p>
+        )}
       </Text>
     </Wrapper>
   )
