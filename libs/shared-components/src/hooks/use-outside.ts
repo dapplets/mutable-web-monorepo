@@ -22,15 +22,15 @@ export function useOutside(
       }
     }
     // Bind the event listener
-    document.addEventListener('click', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside)
     trackingRefs?.forEach((trackingRef) =>
-      trackingRef?.current?.addEventListener('click', handleClickOutside)
+      trackingRef?.current?.addEventListener('mousedown', handleClickOutside)
     )
     return () => {
       // Unbind the event listener on clean up
-      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('mousedown', handleClickOutside)
       trackingRefs?.forEach((trackingRef) =>
-        trackingRef?.current?.removeEventListener('click', handleClickOutside)
+        trackingRef?.current?.removeEventListener('mousedown', handleClickOutside)
       )
     }
   }, [ref, callback, trackingRefs])
