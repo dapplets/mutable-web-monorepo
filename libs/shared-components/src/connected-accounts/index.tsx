@@ -1,13 +1,13 @@
 import { NearNetworks } from '@mweb/backend'
 import { useGetCAPairs } from '@mweb/react-engine'
 import { IContextNode } from '@mweb/core'
-import { useCore } from '@mweb/react'
 import cn from 'classnames'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import ConnectModule from './connect-module'
 import CAListItem from './connected-account-list-item'
 import { Message } from './message'
+import { useEngine } from '../contexts/engine-context'
 // import { TabLoader } from './tab-loader'
 
 const ConnectedAccountsContainer = styled.div`
@@ -569,10 +569,10 @@ export const ConnectedAccount: FC<{
     websiteName: string
   } | null>(null)
   const [contextInfoNode, setContextInfoNode] = useState<IContextNode | null>(null)
-  const core = useCore()
+  const { tree } = useEngine()
 
   const getSocialAccount = () => {
-    const siteSpecificContexts = core.tree?.children.filter(
+    const siteSpecificContexts = tree?.children.filter(
       (c) => c.namespace !== 'engine' && c.namespace !== 'mweb'
     )
     const node = siteSpecificContexts?.find(
@@ -588,15 +588,13 @@ export const ConnectedAccount: FC<{
 
   useEffect(() => {
     getSocialAccount()
-    const contextChangedSubscription = core.tree?.on('contextChanged', () => getSocialAccount())
-    const childContextAddedSubscription = core.tree?.on('childContextAdded', () =>
-      getSocialAccount()
-    )
+    const contextChangedSubscription = tree?.on('contextChanged', () => getSocialAccount())
+    const childContextAddedSubscription = tree?.on('childContextAdded', () => getSocialAccount())
     return () => {
       contextChangedSubscription?.remove()
       childContextAddedSubscription?.remove()
     }
-  }, [core?.tree])
+  }, [tree])
 
   useEffect(() => {
     const subscription = contextInfoNode?.on('contextChanged', () => getSocialAccount())
