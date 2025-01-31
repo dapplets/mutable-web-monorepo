@@ -36,9 +36,7 @@ export const StatusBadge: React.FC<{ status: RequestStatus }> = ({ status }) => 
         borderColor: `var(${status === RequestStatus.SUCCESS ? '--success' : status === RequestStatus.FAILED ? '--error' : '--primary'})`,
       }}
     >
-      {status === RequestStatus.CLAIMING || status === RequestStatus.VERIFICATION ? (
-        <Loader />
-      ) : null}
+      {status === RequestStatus.SIGNING || status === RequestStatus.VERIFYING ? <Loader /> : null}
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </div>
   )

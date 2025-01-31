@@ -94,7 +94,7 @@ const CAListItem: FC<CAListProps> = ({
       name={user?.name}
       origin={user?.origin}
       maxLength={user?.accountActive ? maxLength - 6 : maxLength}
-      disabled={status === RequestStatus.CLAIMING || status === RequestStatus.VERIFICATION}
+      disabled={status === RequestStatus.SIGNING || status === RequestStatus.VERIFYING}
       isActive={isActive}
       message={
         request?.message

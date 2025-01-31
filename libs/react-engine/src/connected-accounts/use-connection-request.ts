@@ -80,7 +80,7 @@ export const useConnectionRequest = () => {
                     `${firstAccountId}/${firstOriginId}`,
                     `${secondAccountId}/${secondOriginId}`,
                   ]),
-                  status: RequestStatus.CLAIMING,
+                  status: RequestStatus.SIGNING,
                 },
               ]
             : undefined

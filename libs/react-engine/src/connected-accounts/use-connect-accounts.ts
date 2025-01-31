@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEngine } from '../engine'
 import { useCallback } from 'react'
+import { CARequest, RequestStatus } from './use-get-requests'
 
 export type RequestVerificationProps = {
   firstAccountId: string
@@ -27,20 +28,20 @@ export function useConnectAccounts() {
       return engine.connectedAccountsService.requestVerification(verificationProps, stake)
     },
     onSuccess: (_, { newRequestId }) => {
-      queryClient.setQueryData(['requests'], (oldRequests: any) =>
-        oldRequests?.map((request: any) =>
-          request.id !== newRequestId ? request : { ...request, status: 'VERIFICATION' }
+      queryClient.setQueryData(['requests'], (oldRequests: CARequest[] | undefined) =>
+        oldRequests?.map((request) =>
+          request.id !== newRequestId ? request : { ...request, status: RequestStatus.VERIFYING }
         )
       )
     },
     onError: (err, { newRequestId }) => {
-      queryClient.setQueryData(['requests'], (oldRequests: any) =>
-        oldRequests?.map((request: any) =>
+      queryClient.setQueryData(['requests'], (oldRequests: CARequest[] | undefined) =>
+        oldRequests?.map((request) =>
           request.id !== newRequestId
             ? request
             : {
                 ...request,
-                status: 'FAILED',
+                status: RequestStatus.FAILED,
                 message: (err as Error)?.message ?? 'Unknown error',
               }
         )
@@ -48,7 +49,7 @@ export function useConnectAccounts() {
 
       // Remove failed request after 5 seconds
       setTimeout(() => {
-        queryClient.setQueryData(['requests'], (oldRequests: any) =>
+        queryClient.setQueryData(['requests'], (oldRequests: CARequest[] | undefined) =>
           oldRequests?.filter((request: any) => request.id !== newRequestId)
         )
       }, 5000)

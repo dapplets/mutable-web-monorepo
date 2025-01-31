@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 // import { useEngine } from '../engine'
 
 export enum RequestStatus {
-  CLAIMING = 'claiming',
-  VERIFICATION = 'verification',
+  SIGNING = 'signing',
+  VERIFYING = 'verifying',
   SUCCESS = 'success',
   FAILED = 'failed',
   DEFAULT = 'default',
