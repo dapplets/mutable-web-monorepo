@@ -135,11 +135,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
     ) {
       setAccountToConnect(null)
       setShowConnectModule(false)
-      setIsConditionDone(false)
-      return
-    }
-
-    if (
+    } else if (
       !accountToConnect ||
       socialAccount.name !== accountToConnect.name ||
       socialAccount.origin !== accountToConnect.origin ||
@@ -147,19 +143,24 @@ const ConnectModule: FC<ConnectModuleProps> = ({
     ) {
       setAccountToConnect({ ...socialAccount })
       setShowConnectModule(true)
+    }
+  }, [socialAccount, connectedAccountsNet, loggedInAccountId])
+
+  useEffect(() => {
+    if (!socialAccount || !loggedInAccountId) {
+      setIsConditionDone(false)
+    } else {
       const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: can be different URLs + less secure
       setIsConditionDone(() =>
-        !!loggedInAccountId
-          ? socialNetworkConnectionCondition({
-              socNet_id: socialAccount.name,
-              near_id: loggedInAccountId,
-              url: proofUrl,
-              fullname: socialAccount.fullname,
-            })
-          : true
+        socialNetworkConnectionCondition({
+          socNet_id: socialAccount.name,
+          near_id: loggedInAccountId,
+          url: proofUrl,
+          fullname: socialAccount.fullname,
+        })
       )
     }
-  }, [socialAccount, connectedAccountsNet])
+  }, [socialAccount, loggedInAccountId])
 
   if (!showConnectModule || !accountToConnect) return null
 
