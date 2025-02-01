@@ -18,11 +18,11 @@ export function useGetCAPairs() {
     try {
       setIsLoading(true)
       setError(null)
-      const status = await engine.connectedAccountsService.getStatus(accountId, `near/${networkId}`)
+      const status = await engine.connectedAccountsService.getStatus(accountId, `near/${networkId}`) // ToDo: hardcoded
       const pairs = await engine.connectedAccountsService.getPairs({
         receiver: {
           account: accountId,
-          chain: networkId === 'testnet' ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET,
+          chain: networkId === 'testnet' ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET, // ToDo: hardcoded; use enum
           accountActive: status,
         },
         prevPairs: null,

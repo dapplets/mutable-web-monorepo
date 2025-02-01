@@ -16,7 +16,7 @@ export function useGetCANet() {
     try {
       setIsLoading(true)
       setError(null)
-      const net = await engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`)
+      const net = await engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`) // ToDo: hardcoded
       setConnectedAccountsNet(net)
       setIsLoading(false)
     } catch (err) {

@@ -72,7 +72,7 @@ const CAListItem: FC<CAListProps> = ({
     if (!user || !loggedInAccountId) return
     setIsListOpened(false)
     if (isActive && socialAccount) {
-      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: can be different URLs + less secure
+      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: hardcoded: can be different URLs + less secure
       const isConditionMet = socialNetworkConnectionCondition({
         socNet_id: socialAccount.name,
         near_id: loggedInAccountId,

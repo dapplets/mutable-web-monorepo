@@ -14,7 +14,7 @@ type Props = {
 
 const socialNetworkConnectionCondition = (props: ISocialNetworkConnectionCondition) => {
   const { socNet_id, near_id, url, fullname } = props
-  return url.includes(socNet_id) && fullname.includes(near_id)
+  return url.includes(socNet_id) && fullname.includes(near_id) // ToDo: hardcoded: will be different conditions
 }
 
 const ConnectedAccountsProvider: FC<Props> = ({ children }) => {
