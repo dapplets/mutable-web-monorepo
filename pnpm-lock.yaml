@@ -1218,6 +1218,9 @@ importers:
       '@mweb/engine':
         specifier: workspace:*
         version: link:../engine
+      '@mweb/react':
+        specifier: workspace:*
+        version: link:../react
       '@mweb/react-engine':
         specifier: workspace:*
         version: link:../react-engine

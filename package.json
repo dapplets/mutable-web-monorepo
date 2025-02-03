@@ -18,7 +18,6 @@
     "build:crawler-backend": "turbo run build --filter=@mweb/crawler-backend",
     "build:crawler-dashboard": "turbo run build --filter=@mweb/crawler-dashboard",
     "dev": "turbo run dev --concurrency 13",
-    "dev:extension": "turbo run dev --concurrency 8 --filter=!@mweb/gateway --filter=!@mweb/crawler-economy --filter=!@mweb/crawler-backend --filter=!@mweb/crawler-dashboard --filter=!@mweb/crawler-extension --filter=!@mweb/crawler-sdk",
     "dev:mweb": "turbo run dev --concurrency 9 --filter=!@mweb/crawler-*",
     "dev:crawler": "turbo run dev --filter=@mweb/crawler-*",
     "clean": "turbo run clean",

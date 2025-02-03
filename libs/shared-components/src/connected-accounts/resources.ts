@@ -11,17 +11,23 @@ export interface Resources {
 }
 
 export const resources: Resources = {
+  x: {
+    title: 'X',
+    type: 'social',
+    icon: XIcon,
+    proofUrl: (name) => 'https://x.com/' + name, // ToDo: should use it!!!
+  },
   twitter: {
     title: 'X',
     type: 'social',
     icon: XIcon,
-    proofUrl: (name) => 'https://x.com/' + name,
+    proofUrl: (name) => 'https://x.com/' + name, // ToDo: should use it!!!
   },
   github: {
     title: 'GitHub',
     type: 'social',
     icon: GithubIcon,
-    proofUrl: (name) => 'https://github.com/' + name,
+    proofUrl: (name) => 'https://github.com/' + name, // ToDo: should use it!!!
   },
   'near/testnet': {
     title: 'NEAR Testnet',

@@ -40,13 +40,16 @@ export const useCurrentTab = (windowId: number) => {
 
       setEventEmitter(eventEmitter)
 
+      let currentTree: IContextNode | null = null
+
       portRef.current.onMessage.addListener((msg: any) => {
         // ToDo: handle childContextRemoved, contextChanged
         if (msg.type === 'contextTree') {
-          setTree(PureContextNode.fromTransferable(msg.data))
+          currentTree = PureContextNode.fromTransferable(msg.data)
+          setTree(currentTree)
         } else if (msg.type === 'childContextAdded') {
           function updateTree(node: TransferableContextNode): IContextNode | null {
-            if (!node.parentNode) return tree
+            if (!node.parentNode) return currentTree
 
             const clonedParentNode = updateTree(node.parentNode)
 

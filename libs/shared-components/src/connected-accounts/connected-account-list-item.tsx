@@ -1,264 +1,144 @@
-import { IConnectedAccountUser } from '@mweb/backend'
+import { IConnectedAccountUser, NearNetworks } from '@mweb/backend'
+import { RequestStatus, useConnectionRequest, useGetRequests } from '@mweb/react-engine'
+import { useChangeCAStatus } from '@mweb/react-engine'
 import { Spin } from 'antd'
-import cn from 'classnames'
-import React, { useRef, useState } from 'react'
-import styled from 'styled-components'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { useOutside } from '../hooks/use-outside'
 import useCopied from '../hooks/use-copied'
+import AccountListItem from './account-list-item'
 import { MoreHoriz } from './assets/icons'
-import { GithubIcon, XIcon } from './assets/resources/social'
-import { resources } from './resources'
+import { StatusBadge } from './status-badge'
+import { createPortal } from 'react-dom'
+import { socialNetworkConnectionCondition } from './utils'
 
-const CAListItemWrapper = styled.div`
-  --primary: rgba(56, 75, 255, 1);
-  --primary-pressed: rgba(56, 75, 255, 0.4);
-  --pure-white: #fff;
-  --web-bg: #eaf0f0;
-  --main-black: #02193a;
-
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: auto;
-  padding: 4px 10px !important;
-  border-radius: 12px;
-  background-color: rgb(248, 249, 255);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-
-  &.pointer {
-    cursor: pointer;
-  }
-
-  &.info {
-    width: 250px;
-    background: none;
-  }
-
-  .imgUser {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-
-    /* width: 22px;
-    height: 22px; */
-
-    /* background-color: white;
-    filter: drop-shadow(0 2px 2px rgb(0 0 0 / 10%));
-    border-radius: 50%; */
-
-    /* &.empty {
-      background-color: var(--web-bg);
-    } */
-
-    svg {
-      width: 14px;
-      height: 14px;
-    }
-  }
-
-  &.info .imgUser svg {
-    width: 22px;
-    height: 22px;
-    fill: #636363;
-  }
-
-  .nameUser {
-    flex-grow: 1;
-    font-size: 14px;
-    font-weight: 400;
-    font-style: normal;
-    line-height: 150%;
-    color: var(--main-black);
-    text-align: left;
-  }
-
-  &.info .nameUser {
-    width: calc(100% - 22px);
-    color: #636363;
-    word-wrap: break-word;
-  }
-
-  &.nameUserActive {
-    background: var(--primary) !important;
-
-    .nameUser {
-      color: var(--pure-white);
-    }
-  }
-
-  .mainAccount {
-    display: flex;
-    align-items: center;
-    border: #7a818b solid 1px;
-    border-radius: 6px;
-    padding: 0 4px;
-    font-size: 12px;
-    line-height: 136%;
-    color: #5e646d;
-  }
-
-  .copyButton {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: none;
-    color: #7a818b;
-    transition: all 0.15s ease;
-
-    &:hover {
-      color: #6e757e;
-      background-color: #dae1ea;
-    }
-
-    &:active {
-      color: #5e646d;
-      background-color: #c9d2dd;
-    }
-
-    &:disabled {
-      cursor: default;
-      color: #c9d2dd;
-
-      &:hover {
-        color: #c9d2dd;
-        background: none;
-      }
-
-      &:active {
-        color: #c9d2dd;
-        background: none;
-      }
-    }
-  }
-
-  .list {
-    position: absolute;
-    top: calc(100% - 2px);
-    right: 6px;
-    z-index: 1;
-    padding: 8px;
-    background: white;
-    border-radius: 8px;
-    box-shadow:
-      0px 4px 20px 0px #0b576f26,
-      0px 4px 5px 0px #2d343c1a;
-
-    &.openListUp {
-      top: unset;
-      bottom: calc(100% - 2px);
-    }
-
-    button {
-      border: none;
-      background: none;
-      margin: 4px;
-      padding: 2px;
-      transition: color 0.1s ease;
-
-      :hover {
-        color: #4096ff;
-      }
-
-      :active {
-        color: #0958d9;
-      }
-    }
-  }
-`
-
-const iconForSocial = {
-  twitter: XIcon,
-  x: XIcon,
-  github: GithubIcon,
+type CAListProps = {
+  user?: IConnectedAccountUser
+  maxLength?: number
+  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
+  nearNetwork: NearNetworks
+  loggedInAccountId: string
+  socialAccount: {
+    name: string
+    origin: string
+    fullname: string
+    websiteName: string
+  } | null
+  profileRef: React.RefObject<HTMLDivElement>
 }
 
-export const CAListItem = ({
+const CAListItem: FC<CAListProps> = ({
   user,
-  onClick,
   maxLength = 32,
-  copyButton = false,
-  info = false,
   trackingRefs,
-  openListUp,
-}: {
-  user?: IConnectedAccountUser
-  onClick?: (account: IConnectedAccountUser) => Promise<void>
-  maxLength?: number
-  copyButton?: boolean
-  info?: boolean
-  trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  openListUp?: boolean
+  nearNetwork,
+  loggedInAccountId,
+  socialAccount,
+  profileRef,
 }) => {
+  const [isActive, setIsActive] = useState<boolean>(
+    !!user &&
+      !!socialAccount &&
+      user.name === socialAccount.name &&
+      user.origin === socialAccount.origin
+  )
+  const [isConditionDone, setIsConditionDone] = useState(true)
+  const { makeConnectionRequest } = useConnectionRequest()
+  const { requests } = useGetRequests()
+  const request = requests.find(
+    (r) => r.type === 'disconnect' && r.payload.has(`${user?.name}/${user?.origin}`)
+  )
+  const status = request?.status ?? RequestStatus.DEFAULT
+  const { changeCAStatus, isLoading: isWaiting } = useChangeCAStatus()
   const [isListOpened, setIsListOpened] = useState(false)
-  const [isWaiting, setIsWaiting] = useState(false)
-  const ref = useRef(null)
+  const [burgerRects, setBurgerRects] = useState<DOMRectList | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
   useOutside(ref, () => setIsListOpened(false), trackingRefs)
   const useCopiedResult = user?.name && useCopied(user.name)
-  const InfoIcon = info && user?.origin && iconForSocial[user.origin as keyof typeof iconForSocial]
-  const ResourceIcon = user && resources[user.origin].icon
+  useEffect(() => {
+    setIsActive(
+      !!user &&
+        !!socialAccount &&
+        user.name === socialAccount.name &&
+        user.origin === socialAccount.origin
+    )
+    setIsConditionDone(true)
+  }, [user, socialAccount])
+
+  const handleClickDisconnect = async () => {
+    if (!user || !loggedInAccountId) return
+    setIsListOpened(false)
+    if (isActive && socialAccount) {
+      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: hardcoded: can be different URLs + less secure
+      const isConditionMet = socialNetworkConnectionCondition({
+        socNet_id: socialAccount.name,
+        near_id: loggedInAccountId,
+        url: proofUrl,
+        fullname: socialAccount.fullname,
+      })
+      if (!isConditionMet) {
+        setIsConditionDone(false)
+        return
+      }
+    }
+    makeConnectionRequest({
+      name: user.name,
+      origin: user.origin,
+      isUnlink: true,
+      nearNetwork,
+      loggedInAccountId,
+    })
+  }
 
   return (
-    <CAListItemWrapper
-      className={cn({
-        info: info,
-      })}
+    <AccountListItem
+      name={user?.name}
+      origin={user?.origin}
+      maxLength={user?.accountActive ? maxLength - 6 : maxLength}
+      disabled={status === RequestStatus.SIGNING || status === RequestStatus.VERIFYING}
+      isActive={isActive}
+      message={
+        request?.message
+          ? { text: request.message, type: 'error' }
+          : !isConditionDone && !!socialAccount
+            ? {
+                text: `To unlink the account, copy your logged-in NEAR address and add it to your ${socialAccount.websiteName} account name.`,
+                type: 'warning',
+              }
+            : undefined // ToDo: process different messages
+      }
     >
-      {user && ResourceIcon ? (
-        <>
-          {info && InfoIcon ? (
-            <div className="imgUser">
-              <InfoIcon />
-            </div>
-          ) : (
-            <div className="imgUser">
-              <ResourceIcon />
-            </div>
-          )}
-          <h4 className="nameUser">
-            {!info && user.name.length > (user?.accountActive ? maxLength - 6 : maxLength)
-              ? user.name.slice(0, ((user?.accountActive ? maxLength - 6 : maxLength) - 2) / 2) +
-                '...' +
-                user.name.slice(-((user?.accountActive ? maxLength - 6 : maxLength) - 4) / 2)
-              : user.name}
-          </h4>
+      {user?.accountActive ? <div className="mainAccount">Main</div> : null}
 
-          {user?.accountActive ? <div className="mainAccount">Main</div> : null}
+      {status !== RequestStatus.DEFAULT ? (
+        <StatusBadge status={status} />
+      ) : (
+        <button
+          className="copyButton"
+          disabled={isWaiting}
+          onClick={(e) => {
+            !isListOpened && setIsListOpened(true)
+            setBurgerRects((e.currentTarget as HTMLButtonElement)?.getClientRects())
+            ref.current?.focus()
+          }}
+        >
+          {isWaiting ? <Spin size="small" /> : <MoreHoriz />}
+        </button>
+      )}
 
-          <button
-            className="copyButton"
-            disabled={isWaiting}
-            onClick={() => !isListOpened && setIsListOpened(true)}
-          >
-            {isWaiting ? <Spin size="small" /> : <MoreHoriz />}
-          </button>
-
-          {isListOpened ? (
-            <div className={cn('list', { openListUp })} ref={ref}>
+      {isListOpened && user
+        ? createPortal(
+            <div
+              className="list"
+              style={{
+                top: burgerRects
+                  ? window.innerHeight - burgerRects[0].bottom > 120
+                    ? burgerRects[0].bottom - 50
+                    : burgerRects[0].bottom - 186
+                  : 100,
+              }}
+              ref={ref}
+            >
               <ul>
-                <li>
-                  <button
-                    className="listItem"
-                    onClick={
-                      onClick && user
-                        ? async () => {
-                            setIsListOpened(false)
-                            setIsWaiting(true)
-                            await onClick(user)
-                              .catch((e) => console.log(e))
-                              .finally(() => setIsWaiting(false))
-                          }
-                        : undefined
-                    }
-                  >
-                    {user?.accountActive ? 'Reset main' : 'Set as main'}
-                  </button>
-                </li>
                 <li>
                   <button
                     className="listItem"
@@ -270,16 +150,29 @@ export const CAListItem = ({
                     Copy address
                   </button>
                 </li>
+                <li>
+                  <button className="listItem" onClick={handleClickDisconnect}>
+                    Unlink account
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="listItem"
+                    onClick={async () => {
+                      setIsListOpened(false)
+                      changeCAStatus(user.name, user.origin)
+                    }}
+                  >
+                    {user?.accountActive ? 'Reset main' : 'Set as main'}
+                  </button>
+                </li>
               </ul>
-            </div>
-          ) : null}
-        </>
-      ) : (
-        <>
-          <div className={cn('imgUser', 'empty')}></div>
-          <h4 className="nameUser">None</h4>
-        </>
-      )}
-    </CAListItemWrapper>
+            </div>,
+            profileRef.current ?? document.body
+          )
+        : null}
+    </AccountListItem>
   )
 }
+
+export default CAListItem
