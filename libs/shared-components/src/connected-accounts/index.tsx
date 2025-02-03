@@ -576,7 +576,7 @@ export const ConnectedAccount: FC<{
       (c) => c.namespace !== 'engine' && c.namespace !== 'mweb'
     )
     const node = siteSpecificContexts?.find(
-      (c) => c.parsedContext?.username && c.parsedContext?.fullname && c.parsedContext?.websiteName
+      (c) => c.parsedContext?.username && c.parsedContext?.fullname && c.parsedContext?.websiteName // ToDo: think about the logic: there can be several adapter configs, including malicious ones
     )
     if (node !== contextInfoNode) setContextInfoNode(node ?? null)
     if (!node) setSocialAccount(null)
@@ -644,7 +644,7 @@ export const ConnectedAccount: FC<{
               <p>
                 {!loggedInAccountId
                   ? 'Connect your wallet to see connected accounts'
-                  : 'Connection of new accounts will be available soon'}
+                  : 'You can connect your X and GitHub accounts. Go to these resources and follow the instructions.'}
               </p>
             }
           />

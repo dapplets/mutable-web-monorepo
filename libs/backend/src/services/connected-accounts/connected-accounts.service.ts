@@ -162,7 +162,7 @@ export class ConnectedAccountsService {
 
     const receiverOrigin =
       receiver.chain === ChainTypes.ETHEREUM_SEPOLIA || receiver.chain === ChainTypes.ETHEREUM_XDAI
-        ? 'ethereum'
+        ? 'ethereum' // ToDo: hardcoded
         : receiver.chain
     const receiverConnectedAccountUser: IConnectedAccountUser = {
       name: receiver.account,
@@ -186,7 +186,7 @@ export class ConnectedAccountsService {
           accountActive: accStatus,
         },
         statusName: ConnectedAccountsPairStatus.Processing,
-        statusMessage: 'Processing',
+        statusMessage: 'Processing', // ToDo: use enum
         closeness: 1,
         pendingRequestId,
       })
@@ -223,7 +223,7 @@ export class ConnectedAccountsService {
             accountActive: ca.status.isMain,
           },
           statusName: ConnectedAccountsPairStatus.Connected,
-          statusMessage: 'Connected',
+          statusMessage: 'Connected', // ToDo: use enum
           closeness: i + 1,
         })
       })
@@ -266,8 +266,8 @@ export class ConnectedAccountsService {
             statusName: ConnectedAccountsPairStatus.Error,
             statusMessage:
               newPairsLengthBeforeFilter === newPairs.length
-                ? 'Connection rejected'
-                : 'Disconnection rejected',
+                ? 'Connection rejected' // ToDo: use enum ???
+                : 'Disconnection rejected', // ToDo: use enum ???
             closeness: 1,
           })
         }

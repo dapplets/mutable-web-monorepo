@@ -165,7 +165,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
     if (!socialAccount || !loggedInAccountId) {
       setIsConditionDone(false)
     } else {
-      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: can be different URLs + less secure
+      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: hardcoded: can be different URLs + less secure
       setIsConditionDone(() =>
         socialNetworkConnectionCondition({
           socNet_id: socialAccount.name,

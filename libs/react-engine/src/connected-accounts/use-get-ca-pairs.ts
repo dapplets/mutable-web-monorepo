@@ -5,7 +5,7 @@ import { useEngine } from '../engine'
 export function useGetCAPairs({ networkId, accountId }: { networkId: string; accountId: string }) {
   const { engine } = useEngine()
 
-  const originId = `near/${networkId}`
+  const originId = `near/${networkId}` // ToDo: hardcoded
 
   const fetch = async () => {
     if (!accountId || !networkId) return null
@@ -13,7 +13,7 @@ export function useGetCAPairs({ networkId, accountId }: { networkId: string; acc
     return engine.connectedAccountsService.getPairs({
       receiver: {
         account: accountId,
-        chain: networkId === 'testnet' ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET,
+        chain: networkId === 'testnet' ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET, // ToDo: hardcoded; use enum
         accountActive: status,
       },
       prevPairs: null,

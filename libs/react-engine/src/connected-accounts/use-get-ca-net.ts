@@ -8,7 +8,7 @@ export function useGetCANet({ networkId, accountId }: { networkId: string; accou
     queryKey: ['connectedAccountsNet', networkId, accountId],
     queryFn: async () => {
       if (!accountId || !networkId) return null
-      return engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`)
+      return engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`) // ToDo: hardcoded
     },
     enabled: !!accountId && !!networkId, // Only fetch when both values exist
   })
