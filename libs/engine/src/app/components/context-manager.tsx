@@ -24,14 +24,20 @@ import { filterAndDiscriminate } from '../common/filter-and-discriminate'
 import { memoize } from '../common/memoize'
 import { buildTransferableContext } from '../common/transferable-context'
 import { ShadowDomWrapper } from '../components/shadow-dom-wrapper'
-import { useEngine } from '../contexts/engine-context'
-import { Portal } from '../contexts/engine-context/engine-context'
 import { useModal } from '../contexts/modal-context'
 import { ModalProps } from '../contexts/modal-context/modal-context'
 import { useMutableWeb } from '../contexts/mutable-web-context'
-import { useAppControllers } from '../contexts/mutable-web-context/use-app-controllers'
-import { useContextApps } from '../contexts/mutable-web-context/use-context-apps'
-import { useUserLinks } from '../contexts/mutable-web-context/use-user-links'
+import { usePortal, Portal } from '../contexts/portal-context'
+import { useDev } from '../contexts/dev-context'
+import {
+  useAppControllers,
+  useCommitDocumentToMutation,
+  useContextApps,
+  useCreateUserLink,
+  useDeleteUserLink,
+  useSetPreferredSource,
+  useUserLinks,
+} from '@mweb/react-engine'
 
 interface WidgetProps {
   context: TransferableContext
@@ -94,6 +100,10 @@ interface LayoutManagerProps {
 }
 
 export const ContextManager: FC = () => {
+  const { selectedMutation, isEngineLoading } = useMutableWeb()
+
+  if (!selectedMutation || isEngineLoading) return null
+
   return <ContextTree children={ContextHandler} />
 }
 
@@ -101,11 +111,19 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
   context,
   insPoints,
 }) => {
-  const { controllers } = useAppControllers(context)
-  const { links, createUserLink, deleteUserLink } = useUserLinks(context)
-  const { apps } = useContextApps(context)
-  const { engine, selectedMutation, refreshMutation, activeApps } = useMutableWeb()
-  const { portals } = useEngine()
+  const { engine, selectedMutation, activeApps, tree } = useMutableWeb()
+
+  if (!selectedMutation) throw new Error('No selected mutation')
+  if (!tree) throw new Error('Context tree is not initialized')
+
+  const { setPreferredSource } = useSetPreferredSource()
+  const { controllers } = useAppControllers(selectedMutation.id, context, activeApps)
+  const { links } = useUserLinks(selectedMutation.id, context, activeApps)
+  const { createUserLink } = useCreateUserLink(selectedMutation.id, context, activeApps)
+  const { deleteUserLink } = useDeleteUserLink(selectedMutation.id, context, activeApps)
+  const { commitDocumentToMutation } = useCommitDocumentToMutation()
+  const { apps } = useContextApps(context, activeApps)
+  const { portals } = usePortal()
 
   const portalComponents = useMemo(() => {
     return Array.from(portals.values())
@@ -181,6 +199,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
           if (!appInstance) throw new Error('The app is not active')
 
+          // ToDo: move to @mweb/react-engine
           return engine.linkDbService.get(
             selectedMutation.id,
             appInstance.appId,
@@ -208,6 +227,7 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
           )
           if (!appInstance) throw new Error('The app is not active')
 
+          // ToDo: move to @mweb/react-engine
           return engine.linkDbService.set(
             selectedMutation.id,
             appInstance.appId,
@@ -278,28 +298,25 @@ const ContextHandler: FC<{ context: IContextNode; insPoints: InsertionPointWithE
             (app) => utils.constructAppInstanceId(app) === appInstanceId
           )
           if (!appInstance) throw new Error('The app is not active')
+          if (!tree.id) throw new Error('No root context id')
 
           // ToDo: show fork dialog
 
-          const { mutation, document: savedDocument } =
-            await engine.documentService.commitDocumentToMutation(
-              selectedMutation.id,
-              appInstance.appId,
-              document
-            )
+          const { mutation, document: savedDocument } = await commitDocumentToMutation({
+            mutationId: selectedMutation.id,
+            appId: appInstance.appId,
+            document,
+          })
 
-          // mutation changed
-          if (mutation) {
-            // ToDo: workaround to wait when blockchain changes will be propagated
-            await new Promise((resolve) => setTimeout(resolve, 3000))
-
-            await refreshMutation(mutation)
+          // is mutation changed?
+          if (mutation && mutation.id === selectedMutation.id) {
+            setPreferredSource(mutation.id, tree.id, mutation.source)
           }
 
           return savedDocument
         }
     ),
-    [engine, selectedMutation, refreshMutation]
+    [engine, selectedMutation, tree]
   )
 
   const handleGetConnectedAccountsNet = useCallback(
@@ -450,7 +467,7 @@ const InsPointHandler: FC<{
   onDeleteDocumentCurry,
   onGetConnectedAccountsNet,
 }) => {
-  const { redirectMap, isDevServerLoading } = useEngine()
+  const { redirectMap, isDevServerLoading } = useDev()
   const { config, engine } = useMutableWeb()
   const { notify } = useModal()
 
@@ -614,7 +631,7 @@ const ControllerHandler: FC<{
   onDeleteDocumentCurry,
   onGetConnectedAccountsNet,
 }) => {
-  const { redirectMap, isDevServerLoading } = useEngine()
+  const { redirectMap, isDevServerLoading } = useDev()
   const { notify } = useModal()
 
   if (isDevServerLoading) {

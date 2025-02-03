@@ -1,6 +1,6 @@
 export { Engine } from './engine'
 export { EntityId, EntitySourceType } from './services/base/base.entity'
-export { MutationWithSettings, AppInMutation } from './services/mutation/mutation.entity'
+export { AppInMutation } from './services/mutation/mutation.entity'
 export { MutationDto } from './services/mutation/dtos/mutation.dto'
 export { SaveMutationOptions } from './services/mutation/mutation.service'
 export { MutationCreateDto } from './services/mutation/dtos/mutation-create.dto'
@@ -57,6 +57,7 @@ export { ParserConfig } from './services/parser-config/parser-config.entity'
 export { BosRedirectMap, getRedirectMap } from './services/dev-server-service'
 
 import { ApplicationService } from './services/application/application.service'
+import { MutationService } from './services/mutation/mutation.service'
 import { TargetService } from './services/target/target.service'
 
 export { InMemoryStorage } from './services/local-db/in-memory-storage'
@@ -65,5 +66,6 @@ export const utils = {
   isTargetMet: TargetService.isTargetMet.bind(TargetService),
   getRootContext: TargetService.getRootContext.bind(TargetService),
   findContextByTarget: TargetService.findContextByTarget.bind(TargetService),
-  constructAppInstanceId: ApplicationService.constructAppInstanceId.bind(TargetService),
+  constructAppInstanceId: ApplicationService.constructAppInstanceId.bind(ApplicationService),
+  isMutationMetContext: MutationService.isMutationMetContext.bind(MutationService),
 }

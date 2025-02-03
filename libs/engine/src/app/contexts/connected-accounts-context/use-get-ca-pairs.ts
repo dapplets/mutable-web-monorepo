@@ -5,7 +5,7 @@ import { ChainTypes, IConnectedAccountsPair } from '@mweb/backend'
 
 export function useGetCAPairs() {
   const { engine, config } = useMutableWeb()
-  const accountId = useAccountId()
+  const accountId = useAccountId() // ToDo: use accountId as hook parameter
   const networkId = config.networkId
 
   const {

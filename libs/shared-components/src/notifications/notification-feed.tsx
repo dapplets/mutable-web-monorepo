@@ -1,4 +1,4 @@
-import { useNotifications, useViewAllNotifications } from '@mweb/engine'
+import { useNotifications, useViewAllNotifications } from '@mweb/react-engine'
 import { Button, Flex, Space, Spin, Typography } from 'antd'
 import React, { FC, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
@@ -36,13 +36,12 @@ const Loader = () => (
 
 const NotificationFeed: FC<{
   loggedInAccountId: string
-  connectWallet: (() => Promise<void>) | undefined
-  modalContainerRef: React.RefObject<HTMLElement>
-}> = ({ loggedInAccountId, connectWallet, modalContainerRef }) => {
+  onConnectWallet: (() => Promise<void>) | undefined
+}> = ({ loggedInAccountId, onConnectWallet }) => {
   const [isWaiting, setWaiting] = useState(false)
-  const { notifications, isLoading } = useNotifications()
+  const { notifications, isLoading } = useNotifications(loggedInAccountId)
   const overlayRef = useRef<HTMLDivElement>(null)
-  const { viewAllNotifcations, isLoading: isViewAllLoading } =
+  const { viewAllNotifications, isLoading: isViewAllLoading } =
     useViewAllNotifications(loggedInAccountId)
 
   const viewedNotifications = useMemo(
@@ -58,7 +57,7 @@ const NotificationFeed: FC<{
   const handleSignIn = async () => {
     setWaiting(true)
     try {
-      connectWallet && (await connectWallet())
+      onConnectWallet && (await onConnectWallet())
     } finally {
       setWaiting(false)
     }
@@ -70,7 +69,7 @@ const NotificationFeed: FC<{
         <Loader />
       ) : !loggedInAccountId ? (
         <Text type="secondary">
-          {!!connectWallet ? (
+          {!!onConnectWallet ? (
             <Button style={{ padding: ' 4px 4px' }} type="link" onClick={handleSignIn}>
               Login
             </Button>
@@ -89,7 +88,7 @@ const NotificationFeed: FC<{
               {newNotifications.length ? (
                 <Button
                   style={{ float: 'right' }}
-                  onClick={() => viewAllNotifcations()}
+                  onClick={() => viewAllNotifications()}
                   type="link"
                 >
                   Mark all as read
@@ -101,7 +100,6 @@ const NotificationFeed: FC<{
                 <NotificationsResolver
                   key={notification.id + i}
                   notification={notification}
-                  modalContainerRef={modalContainerRef}
                   loggedInAccountId={loggedInAccountId}
                 />
               ))}
@@ -118,7 +116,6 @@ const NotificationFeed: FC<{
                 <NotificationsResolver
                   key={i + notification.id}
                   notification={notification}
-                  modalContainerRef={modalContainerRef}
                   loggedInAccountId={loggedInAccountId}
                 />
               ))}

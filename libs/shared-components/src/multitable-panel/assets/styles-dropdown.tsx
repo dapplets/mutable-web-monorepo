@@ -1,56 +1,24 @@
 import styled from 'styled-components'
 
-export const WrapperDropdown = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  border-radius: 10px;
-  border: 1px solid #e2e2e5;
-  overflow: hidden;
-  box-sizing: border-box;
-
-  &::-webkit-scrollbar {
-    width: 0;
-  }
-`
-
 export const MutationsList = styled.div`
-  outline: none;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  padding: 0;
-  border-radius: 0px 0px 10px 10px;
-  opacity: 1;
-
-  &::-webkit-scrollbar {
-    width: 0;
-  }
+  align-items: stretch;
+  border-radius: 10px;
+  border: 1px solid #e2e2e5;
 `
 
 export const MutationsListWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
   padding: 6px;
   gap: 10px;
-  position: relative;
-
-  &::-webkit-scrollbar {
-    width: 0;
-  }
 `
+
 export const ButtonListBlock = styled.div`
   display: flex;
-  border-radius: 0px, 0px, 10px, 10px;
-  height: 40px;
   justify-content: space-evenly;
-  width: 100%;
   align-items: center;
-  top: 42px;
-  left: 0;
-  background: #f8f9ff;
 `
 
 export const ButtonBack = styled.div`
@@ -104,7 +72,6 @@ export const ButtonMutation = styled.div`
 `
 
 export const ListMutations = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -118,8 +85,8 @@ export const InputBlock = styled.div<{ isActive?: boolean }>`
   cursor: pointer;
 
   align-items: center;
-  width: 100%;
 
+  background: ${(props) => (props.isActive ? '#e9e9ea' : undefined)};
   color: ${(props) => (props.isActive ? '#384BFF' : '#7A818B')};
   border-radius: 4px;
 
@@ -207,7 +174,6 @@ export const ImageBlock = styled.div`
 `
 
 export const AvalibleMutations = styled.div`
-  width: 100%;
   background: #f8f9ff;
   border-radius: 10px;
   gap: 10px;
@@ -219,7 +185,6 @@ export const AvalibleMutations = styled.div`
 
   .avalibleMutationsInput {
     background: rgba(248, 249, 255, 1);
-    width: 100%;
     border-radius: 4px;
     padding: 2px 4px;
     margin-bottom: 3px;
@@ -235,7 +200,6 @@ export const AvalibleLableBlock = styled.div`
   cursor: pointer;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
   .iconRotate {
     svg {
       transform: rotate(0deg);

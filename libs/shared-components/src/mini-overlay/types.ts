@@ -1,5 +1,5 @@
 export interface IWalletConnect {
-  nearNetwork: 'mainnet' | 'testnet'
-  connectWallet: () => Promise<void>
-  disconnectWallet: () => Promise<void>
+  nearNetwork: string
+  onConnectWallet: () => Promise<void>
+  onDisconnectWallet: () => Promise<void>
 }

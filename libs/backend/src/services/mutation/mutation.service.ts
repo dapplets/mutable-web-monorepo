@@ -1,6 +1,6 @@
 import { IContextNode } from '@mweb/core'
 import { TargetService } from '../target/target.service'
-import { Mutation, MutationId, MutationWithSettings } from './mutation.entity'
+import { Mutation, MutationId } from './mutation.entity'
 import { Transaction } from '../unit-of-work/transaction'
 import { UnitOfWorkService } from '../unit-of-work/unit-of-work.service'
 import { NotificationService } from '../notification/notification.service'
@@ -14,10 +14,18 @@ import { NotificationCreateDto } from '../notification/dtos/notification-create.
 import { IRepository } from '../base/repository.interface'
 import { SettingsSerivce } from '../settings/settings.service'
 import { NearSigner } from '../near-signer/near-signer.service'
+import { EventService } from '../event/event.service'
 
 export type SaveMutationOptions = {
   applyChangesToOrigin?: boolean
   askOriginToApplyChanges?: boolean
+}
+
+export type MutationEvents = {
+  mutationCreated: { mutation: MutationDto }
+  mutationEdited: { mutation: MutationDto }
+  mutationSaved: { mutation: MutationDto }
+  mutationDeleted: { mutationId: string }
 }
 
 export class MutationService {
@@ -25,6 +33,7 @@ export class MutationService {
     private mutationRepository: IRepository<Mutation>,
     private settingsService: SettingsSerivce,
     private notificationService: NotificationService,
+    private eventService: EventService<MutationEvents>,
     private unitOfWorkService: UnitOfWorkService,
     private nearConfig: { defaultMutationId: string },
     private nearSigner: NearSigner
@@ -32,10 +41,14 @@ export class MutationService {
 
   async getMutation(
     mutationId: string,
-    source?: EntitySourceType,
+    source?: EntitySourceType | null,
     version?: string
   ): Promise<MutationDto | null> {
-    const mutation = await this.mutationRepository.getItem({ id: mutationId, source, version })
+    const mutation = await this.mutationRepository.getItem({
+      id: mutationId,
+      source: source ?? undefined,
+      version,
+    })
     return mutation?.toDto() ?? null
   }
 
@@ -47,28 +60,25 @@ export class MutationService {
     return versions.map((v) => ({ version: v }))
   }
 
-  async getMutationsForContext(context: IContextNode): Promise<MutationDto[]> {
+  async getMutationsForContext(context: IContextNode | null): Promise<MutationDto[]> {
     const mutations = await this.mutationRepository.getItems()
-    return mutations
-      .filter((mutation) =>
-        mutation.targets.some((target) => TargetService.isTargetMet(target, context))
-      )
-      .map((mutation) => mutation.toDto())
-  }
+    const dtos = mutations.map((mutation) => mutation.toDto())
 
-  async getMutationsWithSettings(context: IContextNode): Promise<MutationWithSettings[]> {
-    const mutations = await this.getMutationsForContext(context)
+    if (!context) return dtos
 
-    return Promise.all(mutations.map((mut) => this.populateMutationWithSettings(mut)))
+    return dtos.filter((mutation) => MutationService.isMutationMetContext(mutation, context))
   }
 
   getLastUsedMutation = async (context: IContextNode): Promise<string | null> => {
-    const allMutations = await this.getMutationsWithSettings(context)
-    const hostname = window.location.hostname
+    if (!context.id) return null
+    const contextId = context.id
+
+    // ToDo: refactor it, too complicated
+    const allMutations = await this.getMutationsForContext(context)
     const lastUsedData = await Promise.all(
       allMutations.map(async (m) => ({
         id: m.id,
-        lastUsage: await this.settingsService.getMutationLastUsage(m.id, hostname),
+        lastUsage: await this.settingsService.getMutationLastUsage(m.id, contextId),
       }))
     )
     const usedMutationsData = lastUsedData
@@ -90,18 +100,38 @@ export class MutationService {
     }
   }
 
-  async setFavoriteMutation(mutationId: string | null): Promise<void> {
-    return this.settingsService.setFavoriteMutation(mutationId)
+  async setFavoriteMutation(contextId: string, mutationId: string | null): Promise<void> {
+    return this.settingsService.setFavoriteMutation(contextId, mutationId)
   }
 
-  async getFavoriteMutation(): Promise<string | null> {
-    const value = await this.settingsService.getFavoriteMutation()
+  async getFavoriteMutation(contextId: string): Promise<string | null> {
+    const value = await this.settingsService.getFavoriteMutation(contextId)
     return value ?? null
   }
 
-  async getPreferredSource(mutationId: string): Promise<EntitySourceType | null> {
-    const value = await this.settingsService.getPreferredSource(mutationId)
+  async setSelectedMutation(contextId: string, mutationId: string | null): Promise<void> {
+    return this.settingsService.setSelectedMutation(contextId, mutationId)
+  }
+
+  async getSelectedMutation(contextId: string): Promise<string | null> {
+    const value = await this.settingsService.getSelectedMutation(contextId)
     return value ?? null
+  }
+
+  async getPreferredSource(
+    mutationId: string,
+    contextId: string
+  ): Promise<EntitySourceType | null> {
+    const value = await this.settingsService.getPreferredSource(mutationId, contextId)
+    return value ?? null
+  }
+
+  async setPreferredSource(
+    mutationId: string,
+    contextId: string,
+    source: EntitySourceType | null
+  ): Promise<void> {
+    return this.settingsService.setPreferredSource(mutationId, contextId, source)
   }
 
   async getMutationVersion(mutationId: string): Promise<string | null> {
@@ -113,17 +143,13 @@ export class MutationService {
     return this.settingsService.setMutationVersion(mutationId, version)
   }
 
-  async setPreferredSource(mutationId: string, source: EntitySourceType | null): Promise<void> {
-    return this.settingsService.setPreferredSource(mutationId, source)
-  }
-
   async createMutation(
     dto: MutationCreateDto,
     options: SaveMutationOptions = {
       applyChangesToOrigin: false,
       askOriginToApplyChanges: false,
     }
-  ): Promise<MutationWithSettings> {
+  ): Promise<MutationDto> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
     const mutation = await this._fixMutationErrors(await this.mutationRepository.constructItem(dto))
@@ -142,7 +168,11 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(mutation.toDto())
+    const createdDto = mutation.toDto()
+
+    this.eventService.emit('mutationCreated', { mutation: createdDto })
+
+    return createdDto
   }
 
   async editMutation(
@@ -152,7 +182,7 @@ export class MutationService {
       askOriginToApplyChanges: false,
     },
     tx?: Transaction
-  ): Promise<MutationWithSettings> {
+  ): Promise<MutationDto> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
     const mutation = await this._fixMutationErrors(Mutation.create(dto))
@@ -186,7 +216,11 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(editedMutation.toDto())
+    const editedDto = editedMutation.toDto()
+
+    this.eventService.emit('mutationEdited', { mutation: editedDto })
+
+    return editedDto
   }
 
   async saveMutation(
@@ -196,7 +230,7 @@ export class MutationService {
       askOriginToApplyChanges: false,
     },
     tx?: Transaction
-  ): Promise<MutationWithSettings> {
+  ): Promise<MutationDto> {
     const { applyChangesToOrigin, askOriginToApplyChanges } = options
 
     const mutation = await this._fixMutationErrors(
@@ -223,11 +257,16 @@ export class MutationService {
       throw new Error('Invalid entity source')
     }
 
-    return this.populateMutationWithSettings(mutation.toDto())
+    const savedDto = mutation.toDto()
+
+    this.eventService.emit('mutationSaved', { mutation: savedDto })
+
+    return savedDto
   }
 
   async deleteMutation(mutationId: EntityId): Promise<void> {
     await this.mutationRepository.deleteItem(mutationId)
+    this.eventService.emit('mutationDeleted', { mutationId })
   }
 
   async acceptPullRequest(notificationId: EntityId): Promise<NotificationDto> {
@@ -253,13 +292,17 @@ export class MutationService {
       throw new Error('Source mutation is not fork of target mutation')
     }
 
-    const [, freshNotification] = await this.unitOfWorkService.runInTransaction((tx) =>
-      Promise.all([
-        this._applyChangesToOrigin(sourceMutation, tx),
-        this.notificationService.acceptNotification(notificationId, tx),
-        this._notifyAboutAcceptedPullRequest(sourceMutationId, targetMutationId, tx),
-      ])
+    const [editedMutation, freshNotification] = await this.unitOfWorkService.runInTransaction(
+      (tx) =>
+        Promise.all([
+          this._applyChangesToOrigin(sourceMutation, tx),
+          this.notificationService.acceptNotification(notificationId, tx),
+          this._notifyAboutAcceptedPullRequest(sourceMutationId, targetMutationId, tx),
+        ])
     )
+
+    // ToDo: move to repository?
+    this.eventService.emit('mutationEdited', { mutation: editedMutation.toDto() })
 
     return freshNotification
   }
@@ -287,34 +330,32 @@ export class MutationService {
     return freshNotification
   }
 
-  async removeMutationFromRecents(mutationId: MutationId): Promise<void> {
-    await this.settingsService.setMutationLastUsage(mutationId, null, window.location.hostname)
+  async removeMutationFromRecents(mutationId: MutationId, context: IContextNode): Promise<void> {
+    if (!context.id) return
+    await this.settingsService.setMutationLastUsage(mutationId, context.id, null)
   }
 
-  public async updateMutationLastUsage(mutationId: MutationId, hostname: string): Promise<string> {
+  public async getMutationLastUsage(
+    mutationId: MutationId,
+    context: IContextNode
+  ): Promise<string | null> {
+    if (!context.id) return null
+    return this.settingsService.getMutationLastUsage(mutationId, context.id)
+  }
+
+  public async updateMutationLastUsage(
+    mutationId: MutationId,
+    context: IContextNode
+  ): Promise<string> {
+    if (!context.id) throw new Error('Context ID is not defined')
     // save last usage
     const currentDate = new Date().toISOString()
-    await this.settingsService.setMutationLastUsage(mutationId, currentDate, hostname)
+    await this.settingsService.setMutationLastUsage(mutationId, context.id, currentDate)
     return currentDate
   }
 
-  async getMutationWithSettings(
-    mutationId: string,
-    source?: EntitySourceType,
-    version?: string
-  ): Promise<MutationWithSettings | null> {
-    const mutation = await this.getMutation(mutationId, source, version)
-    return mutation ? this.populateMutationWithSettings(mutation) : null
-  }
-
-  public async populateMutationWithSettings(mutation: MutationDto): Promise<MutationWithSettings> {
-    const lastUsage = await this.settingsService.getMutationLastUsage(
-      mutation.id,
-      window.location.hostname
-    )
-
-    // ToDo: do not mix MutationWithSettings and Mutation
-    return { ...mutation, settings: { lastUsage } }
+  public static isMutationMetContext(mutation: MutationDto, context: IContextNode): boolean {
+    return mutation.targets.some((target) => TargetService.isTargetMet(target, context))
   }
 
   private async _applyChangesToOrigin(forkedMutation: Mutation, tx?: Transaction) {

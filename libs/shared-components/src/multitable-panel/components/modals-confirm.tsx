@@ -1,20 +1,24 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
-import styled from 'styled-components'
+import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
 import {
   useCreateMutation,
-  useEditMutation,
-  useMutableWeb,
   useDeleteLocalMutation,
-} from '@mweb/engine'
-import { EntitySourceType, MutationCreateDto, MutationDto } from '@mweb/backend'
-import { Image } from './image'
+  useEditMutation,
+  useMutations,
+  useSetPreferredSource,
+  useSetSelectedMutation,
+  useUpdateMutationLastUsage,
+} from '@mweb/react-engine'
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react'
+import styled from 'styled-components'
+import { useEngine } from '../../contexts/engine-context'
+import { cloneDeep } from '../../helpers'
 import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { Button } from './button'
-import { InputImage } from './upload-image'
-import { cloneDeep } from '../../helpers'
-import { DropdownButton } from './dropdown-button'
 import { ButtonsGroup } from './buttons-group'
+import { DropdownButton } from './dropdown-button'
+import { Image } from './image'
+import { InputImage } from './upload-image'
 
 enum MutationModalMode {
   Editing = 'editing',
@@ -243,7 +247,10 @@ export const ModalConfirm: FC<Props> = ({
   const [newDescription, setDescription] = useState<string>(description ?? '')
   const [isApplyToOriginChecked, setIsApplyToOriginChecked] = useState<boolean>(false) // ToDo: separate checkboxes
   const [alert, setAlert] = useState<IAlert | null>(null)
-  const { mutations, switchMutation, switchPreferredSource } = useMutableWeb()
+  const { mutations } = useMutations()
+  const { tree } = useEngine()
+  const { setPreferredSource } = useSetPreferredSource()
+  const { setSelectedMutationId } = useSetSelectedMutation()
 
   const [mode, setMode] = useState(
     !editingMutation.authorId // Newly created local mutation doesn't have author
@@ -261,6 +268,7 @@ export const ModalConfirm: FC<Props> = ({
   const { createMutation, isLoading: isCreating } = useCreateMutation()
   const { editMutation, isLoading: isEditing } = useEditMutation()
   const { deleteLocalMutation } = useDeleteLocalMutation()
+  const { updateMutationLastUsage } = useUpdateMutationLastUsage()
 
   const isFormDisabled = isCreating || isEditing
 
@@ -304,20 +312,26 @@ export const ModalConfirm: FC<Props> = ({
       return
     }
 
+    const hostname = tree?.id
+
+    if (!hostname) throw new Error('No root context ID found')
+
     if (mode === MutationModalMode.Creating || mode === MutationModalMode.Forking) {
       try {
-        const id = await createMutation(
+        const createdMutation = await createMutation(
           mutationToPublish,
           mode === MutationModalMode.Forking
             ? { askOriginToApplyChanges: isApplyToOriginChecked }
             : undefined
         )
-        switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Origin)
-        await deleteLocalMutation(mutationToPublish.id)
+        setSelectedMutationId(hostname, createdMutation.id)
+        setPreferredSource(createdMutation.id, hostname, EntitySourceType.Origin)
+        updateMutationLastUsage({ mutationId: createdMutation.id, context: tree })
+        deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
-        if (error?.message === 'Mutation with that ID already exists') {
+        console.error(error)
+        if (error?.message === 'Item with that ID already exists') {
           setAlert(alerts.idIsNotUnique)
         }
       }
@@ -331,8 +345,8 @@ export const ModalConfirm: FC<Props> = ({
               : { askOriginToApplyChanges: true }
             : undefined
         )
-        switchPreferredSource(mutationToPublish.id, EntitySourceType.Origin)
-        await deleteLocalMutation(mutationToPublish.id)
+        setPreferredSource(mutationToPublish.id, hostname, EntitySourceType.Origin)
+        deleteLocalMutation(mutationToPublish.id)
         onCloseAll()
       } catch (error: any) {
         console.error(error)

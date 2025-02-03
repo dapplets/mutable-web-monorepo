@@ -2,6 +2,7 @@ const { merge } = require('webpack-merge')
 const common = require('./webpack.common.js')
 const webpack = require('webpack')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const UnicodeEscapePlugin = require('@dapplets/unicode-escape-webpack-plugin')
 
 module.exports = merge(common, {
   mode: 'development',
@@ -21,5 +22,8 @@ module.exports = merge(common, {
         },
       ],
     }),
+    // fixes codemirror
+    // https://stackoverflow.com/questions/49979397/chrome-says-my-content-script-isnt-utf-8
+    new UnicodeEscapePlugin(),
   ],
 })

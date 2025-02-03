@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Widget } from 'near-social-vm'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import * as nearAPI from 'near-api-js'
 import { NetworkId } from '../data/widgets'
 import ls from 'local-storage'
@@ -18,7 +18,7 @@ const WalletSelectorAuthKey = 'near_app_wallet_auth_key'
 
 export default function SignInPage(props) {
   const [params, setParams] = useState({})
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const currentUrl = window.location.href
@@ -71,7 +71,7 @@ export default function SignInPage(props) {
             <button
               className="btn btn-lg w-100 btn-danger"
               onClick={() => {
-                history.push('/')
+                navigate('/')
               }}
             >
               Reject

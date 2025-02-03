@@ -1,5 +1,5 @@
 import { ApplicationDto, DocumentDto, EntitySourceType, MutationDto } from '@mweb/backend'
-// import { useAccountId } from 'near-social-vm'
+import { useSaveMutation, useSetPreferredSource, useSetSelectedMutation } from '@mweb/react-engine'
 import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { cloneDeep, mergeDeep } from '../../helpers'
@@ -7,30 +7,17 @@ import { useEscape } from '../../hooks/use-escape'
 import { Alert, AlertProps } from './alert'
 import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-card'
 import { Button } from './button'
-import { DocumentsModal } from './documents-modal'
-import { ModalConfirm } from './modals-confirm'
-import { AppInMutation } from '@mweb/backend'
-import { Image } from './image'
-import { useSaveMutation, useMutableWeb } from '@mweb/engine'
 import { ButtonsGroup } from './buttons-group'
+import { DocumentsModal } from './documents-modal'
+import { Image } from './image'
+import { ModalConfirm } from './modals-confirm'
+import { useEngine } from '../../contexts/engine-context'
 
 const SelectedMutationEditorWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 20px;
   gap: 10px;
-  border-radius: 10px;
-  font-family: sans-serif;
-  border: 1px solid #02193a;
   background: #f8f9ff;
-  width: 400px;
-  max-height: 70vh;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 `
 
 const Close = styled.span`
@@ -198,6 +185,7 @@ const EMPTY_MUTATION_ID = '/mutation/NewMutation'
 
 const createEmptyMutation = (): MutationDto => ({
   authorId: null,
+  version: '0',
   blockNumber: 0,
   id: EMPTY_MUTATION_ID,
   localId: 'NewMutation',
@@ -221,7 +209,6 @@ export interface Props {
   baseMutation: MutationDto | null
   localMutations: MutationDto[]
   onClose: () => void
-  loggedInAccountId: string
 }
 
 interface IAlert extends AlertProps {
@@ -256,15 +243,10 @@ const alerts: { [name: string]: IAlert } = {
   },
 }
 
-export const MutationEditorModal: FC<Props> = ({
-  apps,
-  baseMutation,
-  localMutations,
-  onClose,
-  loggedInAccountId,
-}) => {
-  const { switchMutation, switchPreferredSource } = useMutableWeb()
-  // const loggedInAccountId = useAccountId()
+export const MutationEditorModal: FC<Props> = ({ apps, baseMutation, localMutations, onClose }) => {
+  const { loggedInAccountId, tree } = useEngine()
+  const { setPreferredSource } = useSetPreferredSource()
+  const { setSelectedMutationId } = useSetSelectedMutation()
   const [isModified, setIsModified] = useState(true)
   const [appIdToOpenDocsModal, setAppIdToOpenDocsModal] = useState<string | null>(null)
   const [docsForModal, setDocsForModal] = useState<DocumentDto[] | null>(null)
@@ -345,12 +327,15 @@ export const MutationEditorModal: FC<Props> = ({
   }
 
   const handleSaveLocallyClick = () => {
+    const hostname = tree?.id
+    if (!hostname) throw new Error('No root context ID found')
+
     const localMutation = mergeDeep(cloneDeep(editingMutation), { source: EntitySourceType.Local })
 
     saveMutation(localMutation)
       .then(({ id }) => {
-        switchMutation(id)
-        switchPreferredSource(id, EntitySourceType.Local)
+        setSelectedMutationId(hostname, id)
+        setPreferredSource(id, hostname, EntitySourceType.Local)
       })
       .then(onClose)
   }

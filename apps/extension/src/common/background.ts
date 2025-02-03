@@ -1,4 +1,4 @@
-import { initBGFunctions } from 'chrome-extension-message-wrapper'
+import { initBGFunctions } from './messenger'
 import browser from 'webextension-polyfill'
 import { BgFunctions } from '../background'
 
@@ -9,7 +9,7 @@ const Background: BgFunctions = new Proxy(
       return (...args: unknown[]) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        return initBGFunctions(browser).then((bg: BgFunctions) => bg[prop](...args))
+        return initBGFunctions(browser, { handlerName: 'bg' }).then((bg) => bg[prop](...args))
       }
     },
   }

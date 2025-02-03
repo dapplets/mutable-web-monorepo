@@ -1,9 +1,4 @@
 import type { Account, Action, SignInParams, Transaction } from '@near-wallet-selector/core'
-import {
-  BridgeWallet,
-  WalletBehaviourFactory,
-  WalletModuleFactory,
-} from '@near-wallet-selector/core'
 import { createAction } from '@near-wallet-selector/wallet-utils'
 import * as nearAPI from 'near-api-js'
 import { Near } from 'near-api-js'
@@ -150,6 +145,7 @@ export class WalletImpl {
     const appKeyPrefix = networkId
     const authDataKey = appKeyPrefix + LOCAL_STORAGE_KEY_SUFFIX
     const authData = JSON.parse(
+      // @ts-ignore
       (await browser.storage.local.get(authDataKey))[authDataKey] ?? 'null'
     )
 

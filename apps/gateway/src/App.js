@@ -6,7 +6,7 @@ import 'react-bootstrap-typeahead/css/Typeahead.css'
 import 'react-bootstrap-typeahead/css/Typeahead.bs5.css'
 import 'bootstrap/dist/js/bootstrap.bundle'
 import 'App.scss'
-import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom'
+import { BrowserRouter as Router, Link, Route, Routes } from 'react-router-dom'
 import EditorPage from './pages/EditorPage'
 import ViewPage from './pages/ViewPage'
 import { setupWalletSelector } from '@near-wallet-selector/core'
@@ -87,8 +87,8 @@ function App(props) {
       (window.location.hostname === 'near.social'
         ? 'https://rpc.fastnear.com'
         : NetworkId === 'mainnet'
-          ? 'https://mainnet.near.dapplets.org'
-          : 'https://testnet.near.dapplets.org')
+        ? 'https://mainnet.near.dapplets.org'
+        : 'https://testnet.near.dapplets.org')
     if (injectedConfig?.skipConfirmations) {
       features.commitModalBypass = {
         bypassAll: true,
@@ -235,29 +235,47 @@ function App(props) {
       <MutableWebProvider config={engineConfig} devServerUrl={devServerUrl}>
         <EthersProviderContext.Provider value={ethersProviderContext}>
           <Router basename={process.env.PUBLIC_URL}>
-            <Switch>
-              <Route path={'/signin'}>
-                <NavigationWrapper {...passProps} />
-                <SignInPage {...passProps} />
-              </Route>
-              <Route path={'/options'}>
-                <NavigationWrapper {...passProps} />
-                <OptionsPage {...passProps} />
-              </Route>
-              <Route path={'/embed/:widgetSrc*'}>
-                <EmbedPage {...passProps} />
-              </Route>
-              <Route path={'/edit/:widgetSrc*'}>
-                <NavigationWrapper {...passProps} />
-                <EditorPage {...passProps} />
-              </Route>
-              <Route path={'/:widgetSrc*'}>
-                <NavigationWrapper {...passProps} />
-                <ViewPage {...passProps} />
-              </Route>
-            </Switch>
+            <Routes>
+              <Route
+                path={'/signin'}
+                element={
+                  <>
+                    <NavigationWrapper {...passProps} />
+                    <SignInPage {...passProps} />
+                  </>
+                }
+              />
+              <Route
+                path={'/options'}
+                element={
+                  <>
+                    <NavigationWrapper {...passProps} />
+                    <OptionsPage {...passProps} />
+                  </>
+                }
+              />
+              <Route path={'/embed/:widgetSrc?'} element={<EmbedPage {...passProps} />} />
+              <Route
+                path={'/edit/:widgetSrc?'}
+                element={
+                  <>
+                    <NavigationWrapper {...passProps} />
+                    <EditorPage {...passProps} />
+                  </>
+                }
+              />
+              <Route
+                path={'/:widgetSrc?'}
+                element={
+                  <>
+                    <NavigationWrapper {...passProps} />
+                    <ViewPage {...passProps} />
+                  </>
+                }
+              />
+            </Routes>
           </Router>
-          <MutableOverlayContainer />
+          <MutableOverlayContainer {...passProps} />
         </EthersProviderContext.Provider>
       </MutableWebProvider>
     </div>

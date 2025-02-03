@@ -5,8 +5,6 @@ declare module 'near-social-vm' {
   export function useInitNear(): { initNear: (config: any) => void }
 }
 
-declare module 'chrome-extension-message-wrapper'
-
 declare module '*.svg' {
   const content: string
   export default content

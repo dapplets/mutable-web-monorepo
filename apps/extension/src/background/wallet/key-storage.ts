@@ -24,7 +24,8 @@ export class WebExtensionKeyStorage extends keyStores.KeyStore {
     if (!result || !result[key]) {
       throw new Error(`No key for ${accountId} account`)
     }
-
+    
+    // @ts-ignore
     return KeyPair.fromString(result[key])
   }
 

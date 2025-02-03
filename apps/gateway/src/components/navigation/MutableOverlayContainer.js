@@ -1,31 +1,23 @@
 import React from 'react'
-import { useMutableWeb, useMutationApp } from '@mweb/engine'
-import { MiniOverlay, AppSwitcher } from '@mweb/shared-components'
-import styled from 'styled-components'
+import { useMutableWeb } from '@mweb/engine'
+import { MiniOverlay, EngineProvider } from '@mweb/shared-components'
+import { NetworkId } from '../../data/widgets'
 
-const MiniOverlayContainer = styled(MiniOverlay)`
-  div[data-mweb-context-type="mweb-overlay"] {
-    top: 80px;
-  }
-`
+function MutableOverlayContainer(props) {
+  const { selectedMutationId, switchMutation, tree } = useMutableWeb()
 
-function AppSwitcherContainer({ app }) {
-  // ToDo: move to @mweb/engine
-  const { enableApp, disableApp, isLoading } = useMutationApp(app.instanceId)
   return (
-    <AppSwitcher app={app} enableApp={enableApp} disableApp={disableApp} isLoading={isLoading} />
-  )
-}
-
-function MutableOverlayContainer() {
-  // ToDo: move to @mweb/engine
-  const { selectedMutation, mutationApps } = useMutableWeb()
-  return (
-    <MiniOverlayContainer baseMutation={selectedMutation} mutationApps={mutationApps}>
-      {mutationApps.map((app) => (
-        <AppSwitcherContainer key={app.id} app={app} />
-      ))}
-    </MiniOverlayContainer>
+    <EngineProvider
+      tree={tree}
+      loggedInAccountId={props.signedAccountId}
+      nearNetwork={NetworkId}
+      onConnectWallet={() => props.requestSignIn()}
+      onDisconnectWallet={() => props.logOut()}
+      selectedMutationId={selectedMutationId}
+      onSwitchMutation={switchMutation}
+    >
+      <MiniOverlay />
+    </EngineProvider>
   )
 }
 

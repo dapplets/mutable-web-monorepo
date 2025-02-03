@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import ls from 'local-storage'
 import prettier, { check } from 'prettier'
 import parserBabel from 'prettier/parser-babel'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Editor, { useMonaco } from '@monaco-editor/react'
 import { Widget, useCache, useNear, CommitButton, useAccountId } from 'near-social-vm'
 import { Nav, OverlayTrigger, Tooltip } from 'react-bootstrap'
@@ -36,7 +36,7 @@ export default function EditorPage(props) {
   useHashRouterLegacy()
   const { widgetSrc } = useParams()
   const [localWidgetSrc, setLocalWidgetSrc] = useState(widgetSrc)
-  const history = useHistory()
+  const navigate = useNavigate()
   const setWidgetSrc = props.setWidgetSrc
 
   const [loading, setLoading] = useState(false)
@@ -398,7 +398,7 @@ export default function EditorPage(props) {
       } else {
         loadFile(widgetSrc)
       }
-      history.replace(`/edit/`)
+      navigate(`/edit/`, { replace: true })
     } else if (path === undefined) {
       if (files.length === 0) {
         createFile(Filetype.Widget)

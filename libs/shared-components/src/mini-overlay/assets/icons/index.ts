@@ -17,6 +17,7 @@ import Person from './person'
 import Home from './home'
 import Info from './info'
 import LoaderSettings from './loader-settings'
+import Bell from './bell'
 
 export {
   MutationFallbackIcon,
@@ -38,4 +39,5 @@ export {
   Home,
   Info,
   LoaderSettings,
+  Bell,
 }

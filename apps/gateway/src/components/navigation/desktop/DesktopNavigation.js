@@ -8,7 +8,6 @@ import { SignInButton } from '../SignInButton'
 import { UserDropdown } from './UserDropdown'
 import { DevActionsDropdown } from './DevActionsDropdown'
 import { NotificationWidget } from '../NotificationWidget'
-import { MutationDropdown } from './MutationDropdown'
 import { StarButton } from '../StarButton'
 
 const StyledNavigation = styled.div`
@@ -18,7 +17,7 @@ const StyledNavigation = styled.div`
   right: 0;
   width: 100%;
   background-color: var(--slate-dark-1);
-  z-index: 5000;
+  z-index: 900;
   padding: 12px 0;
 
   .user-section {
@@ -59,13 +58,6 @@ const StyledNavigation = styled.div`
     .arrow-up-right {
       margin-left: 4px;
     }
-
-    .mutable-section {
-      margin-left: auto;
-      transform: translate(-16px);
-      flex: 1;
-      max-width: 292px;
-    }
   }
 `
 
@@ -89,9 +81,6 @@ export function DesktopNavigation(props) {
             Docs
             <ArrowUpRight />
           </NavigationButton>
-        </div>
-        <div className="mutable-section">
-          <MutationDropdown imageSrc={props.widgets.image} />
         </div>
         <div className="user-section">
           <StarButton {...props} />

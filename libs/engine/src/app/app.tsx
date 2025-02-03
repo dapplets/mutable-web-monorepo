@@ -1,18 +1,20 @@
-import React, { ReactElement, Fragment, ReactNode, useState } from 'react'
-import { FC } from 'react'
+import { Engine, EngineConfig } from '@mweb/backend'
 import { CoreProvider } from '@mweb/react'
-import { EngineConfig } from '@mweb/backend'
-import { EngineProvider } from './contexts/engine-context'
-import { MutableWebProvider } from './contexts/mutable-web-context'
-import { ViewportProvider } from './contexts/viewport-context'
-import { ContextPicker } from './components/context-picker'
-import { ContextManager } from './components/context-manager'
-import { ModalProvider } from './contexts/modal-context'
-import { PickerProvider } from './contexts/picker-context'
+import { EngineProvider } from '@mweb/react-engine'
+import React, { FC, Fragment, ReactNode, useRef, useState } from 'react'
 import { ContextHighlighter } from './components/context-highlighter'
-import { HighlighterProvider } from './contexts/highlighter-context'
-import { ModalContextState } from './contexts/modal-context/modal-context'
+import { ContextManager } from './components/context-manager'
+import { ContextPicker } from './components/context-picker'
 import { ConnectedAccountsProvider } from './contexts/connected-accounts-context'
+import { DevProvider } from './contexts/dev-context'
+import { HighlighterProvider } from './contexts/highlighter-context'
+import { ModalProvider } from './contexts/modal-context'
+import { ModalContextState } from './contexts/modal-context/modal-context'
+import { MutableWebProvider } from './contexts/mutable-web-context'
+import { PickerProvider } from './contexts/picker-context'
+import { PortalProvider } from './contexts/portal-context'
+import { ViewportProvider } from './contexts/viewport-context'
+import { Core } from '@mweb/core'
 
 export const App: FC<{
   config: EngineConfig
@@ -26,29 +28,44 @@ export const App: FC<{
     notify: () => console.log('notify'),
   })
 
+  const coreRef = useRef<Core | null>(null)
+  if (!coreRef.current) {
+    coreRef.current = new Core()
+  }
+
+  const engineRef = useRef<Engine | null>(null)
+  if (!engineRef.current) {
+    engineRef.current = new Engine(config)
+    console.log('[MutableWeb] Engine initialized', engineRef.current)
+  }
+
   return (
-    <CoreProvider>
-      <EngineProvider devServerUrl={devServerUrl}>
-        <PickerProvider>
-          <HighlighterProvider>
-            <MutableWebProvider
-              config={config}
-              defaultMutationId={defaultMutationId}
-              modalApi={modalApi}
-            >
-              <ConnectedAccountsProvider>
-                <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
-                  <ModalProvider onModalApiReady={setModalApi}>
-                    <ContextPicker />
-                    <ContextManager />
-                    <ContextHighlighter />
-                  </ModalProvider>
-                </ViewportProvider>
-                <Fragment>{children}</Fragment>
-              </ConnectedAccountsProvider>
-            </MutableWebProvider>
-          </HighlighterProvider>
-        </PickerProvider>
+    <CoreProvider core={coreRef.current}>
+      <EngineProvider engine={engineRef.current}>
+        <DevProvider devServerUrl={devServerUrl}>
+          <PortalProvider>
+            <PickerProvider>
+              <HighlighterProvider>
+                <MutableWebProvider
+                  config={config}
+                  defaultMutationId={defaultMutationId}
+                  modalApi={modalApi}
+                >
+                  <ConnectedAccountsProvider>
+                    <ViewportProvider stylesheetSrc={config.bosElementStyleSrc}>
+                      <ModalProvider onModalApiReady={setModalApi}>
+                        <ContextPicker />
+                        <ContextManager />
+                        <ContextHighlighter />
+                      </ModalProvider>
+                    </ViewportProvider>
+                    <Fragment>{children}</Fragment>
+                  </ConnectedAccountsProvider>
+                </MutableWebProvider>
+              </HighlighterProvider>
+            </PickerProvider>
+          </PortalProvider>
+        </DevProvider>
       </EngineProvider>
     </CoreProvider>
   )

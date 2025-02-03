@@ -50,16 +50,16 @@ function handleInsertStyles(element) {
 
 module.exports = {
   entry: {
+    sidepanel: path.join(__dirname, 'src/sidepanel/index.tsx'),
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
     contentscript: path.join(__dirname, 'src/contentscript/index.tsx'),
     options: path.join(__dirname, 'src/options/index.tsx'),
-    popup: path.join(__dirname, 'src/popup/index.tsx'),
   },
   output: {
     path: path.join(__dirname, 'build'),
     filename: '[name].js',
     publicPath: '',
-    chunkFormat: false
+    chunkFormat: false,
   },
   module: {
     rules: [
@@ -141,8 +141,8 @@ module.exports = {
           to: 'options.html',
         },
         {
-          from: 'src/popup/index.html',
-          to: 'popup.html',
+          from: 'src/sidepanel/index.html',
+          to: 'sidepanel.html',
         },
         {
           from: 'manifest.json',

@@ -100,7 +100,7 @@ export class CustomWalletConnection {
       })
     }
 
-    const tab = await browser.tabs.create({ url: newUrl.toString() })
+    const tab = await this._openWalletPage(newUrl.toString())
 
     if (!tab?.id || !tab?.windowId) {
       throw new Error('Cannot create tab')
@@ -166,13 +166,13 @@ export class CustomWalletConnection {
 
     if (meta) newUrl.searchParams.set('meta', meta)
 
-    const signingInTab = await browser.tabs.create({ url: newUrl.toString() })
+    const tab = await this._openWalletPage(newUrl.toString())
 
-    if (!signingInTab?.id || !signingInTab?.windowId) {
+    if (!tab?.id || !tab?.windowId) {
       throw new Error('Cannot create tab')
     }
 
-    await waitClosingTab(signingInTab.id, signingInTab.windowId)
+    await waitClosingTab(tab.id, tab.windowId)
   }
 
   async completeSignIn(accountId: string, publicKey: string, allKeys: string[]) {
@@ -225,5 +225,23 @@ export class CustomWalletConnection {
       )
     }
     return this._connectedAccount
+  }
+
+  private async _openWalletPage(url: string) {
+    const window = await browser.windows.create({
+      url,
+      type: 'popup',
+      focused: true,
+      height: 720,
+      width: 450,
+      top: 100,
+      left: 300,
+    })
+
+    const [tab] = window.tabs ?? []
+    
+    // const tab = await browser.tabs.create({ url })
+
+    return tab
   }
 }

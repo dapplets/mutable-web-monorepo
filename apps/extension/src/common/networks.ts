@@ -1,4 +1,13 @@
-export const networkConfigs = {
+export type NetworkConfig = {
+  networkId: string
+  nodeUrl: string
+  walletUrl: string
+  helperUrl: string
+  explorerUrl: string
+  socialDbContract: string
+}
+
+export const networkConfigs: Record<string, NetworkConfig> = {
   mainnet: {
     networkId: 'mainnet',
     nodeUrl: 'https://mainnet.near.dapplets.org',

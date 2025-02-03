@@ -11,13 +11,12 @@
     "type": "module"
   },
   "minimum_chrome_version": "95",
-  "action": {
-    "default_icon": {
-      "128": "icons/icon128.png"
-    }
-  },
   "icons": {
     "128": "icons/icon128.png"
+  },
+  "side_panel": {
+    "default_title": "Mutable Web",
+    "default_path": "sidepanel.html"
   },
   "options_page": "options.html",
   "content_scripts": [
@@ -29,7 +28,9 @@
         "https://*.social.testnet.apps.dapplets.org/*",
         "http://localhost/*",
         "http://127.0.0.1:3000/*",
-        "https://augm.link/*"
+        "https://augm.link/*",
+        "https://app.mynearwallet.com/*",
+        "https://testnet.mynearwallet.com/*"
       ],
       "js": ["custom-elements.min.js", "contentscript.js"],
       "run_at": "document_idle"
@@ -47,6 +48,6 @@
       "matches": ["*://*/*"]
     }
   ],
-  "permissions": ["storage", "tabs", "contextMenus"],
+  "permissions": ["storage", "tabs", "contextMenus", "sidePanel"],
   "host_permissions": ["*://localhost/*", "http://*/*", "https://*/*"]
 }
