@@ -14,10 +14,6 @@
   "icons": {
     "128": "icons/icon128.png"
   },
-  "side_panel": {
-    "default_title": "Mutable Web",
-    "default_path": "sidepanel.html"
-  },
   "options_page": "options.html",
   "content_scripts": [
     {

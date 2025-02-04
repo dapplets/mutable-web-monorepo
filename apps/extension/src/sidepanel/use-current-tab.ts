@@ -1,5 +1,5 @@
 import { IContextNode, PureContextNode, TransferableContextNode } from '@mweb/core'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import browser from 'webextension-polyfill'
 import ContentScript from '../common/content-script'
 import { WildcardEventEmitter } from '../common/wildcard-event-emitter'
@@ -89,28 +89,7 @@ export const useCurrentTab = (windowId: number) => {
 
     getCurrentTabId(windowId).then(connectToTab)
 
-    const handleTabUpdated = (
-      tabId: number,
-      changeInfo: browser.Tabs.OnUpdatedChangeInfoType,
-      tab: browser.Tabs.Tab
-    ) => {
-      if (tab.windowId !== windowId) return
-      if (changeInfo.status && tab.active && tab.status === 'complete') {
-        connectToTab(tabId)
-      }
-    }
-
-    const handleTabActivated = (activeInfo: browser.Tabs.OnActivatedActiveInfoType) => {
-      if (activeInfo.windowId !== windowId) return
-      connectToTab(activeInfo.tabId)
-    }
-
-    browser.tabs.onActivated.addListener(handleTabActivated)
-    browser.tabs.onUpdated.addListener(handleTabUpdated) // ToDo: add active check
-
     return () => {
-      browser.tabs.onActivated.removeListener(handleTabActivated)
-      browser.tabs.onUpdated.removeListener(handleTabUpdated)
       portRef.current?.disconnect()
       portRef.current = null
     }

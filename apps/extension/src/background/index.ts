@@ -74,8 +74,9 @@ const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
 
 const toggleSidePanel = async (req?: any) => {
   const windowId: number = req?.sender?.tab?.windowId
+  const tabId: number = req?.sender?.tab?.id
 
-  if (!windowId) return
+  if (!windowId || !tabId) return
 
   // !!! Workaround for user gesture error
   // We don't wait for the promise to resolve
@@ -87,7 +88,14 @@ const toggleSidePanel = async (req?: any) => {
   // Open the side panel in any way
   // Don't wait for promise here too
   // @ts-ignore
-  browser.sidePanel.open({ windowId })
+  browser.sidePanel.open({ tabId })
+
+  // @ts-ignore
+  browser.sidePanel.setOptions({
+    tabId: tabId,
+    path: 'sidepanel.html',
+    enabled: true,
+  })
 
   const isAlive = await isAlivePromise
 
