@@ -14,6 +14,11 @@
   "icons": {
     "128": "icons/icon128.png"
   },
+  "action": {
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  },
   "options_page": "options.html",
   "content_scripts": [
     {

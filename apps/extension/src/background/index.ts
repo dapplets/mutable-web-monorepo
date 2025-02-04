@@ -72,12 +72,7 @@ const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
   await browser.storage.local.set({ devServerUrl })
 }
 
-const toggleSidePanel = async (req?: any) => {
-  const windowId: number = req?.sender?.tab?.windowId
-  const tabId: number = req?.sender?.tab?.id
-
-  if (!windowId || !tabId) return
-
+const _toggleSidePanel = async (tabId: number) => {
   // !!! Workaround for user gesture error
   // We don't wait for the promise to resolve
   const isAlivePromise = SidePanel()
@@ -103,6 +98,14 @@ const toggleSidePanel = async (req?: any) => {
   if (isAlive) {
     await SidePanel().close()
   }
+}
+
+const toggleSidePanel = async (req?: any) => {
+  const tabId: number = req?.sender?.tab?.id
+
+  if (!tabId) return
+
+  await _toggleSidePanel(tabId)
 }
 
 const bgFunctions = {
@@ -325,10 +328,6 @@ browser.runtime.onInstalled.addListener(async () => {
 browser.tabs.onActivated.addListener(({ tabId }) => mutationLinkListener(tabId))
 browser.tabs.onUpdated.addListener((tabId) => mutationLinkListener(tabId))
 
-// Allows users to open the side panel by clicking on the action toolbar icon
-// @ts-ignore
-browser.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(console.error)
-
 const portConnectListener = async (port: browser.Runtime.Port) => {
   if (port.name === 'port-from-page') {
     const signInListener = (params: any) => port.postMessage({ type: 'signedIn', params })
@@ -345,3 +344,37 @@ const portConnectListener = async (port: browser.Runtime.Port) => {
 }
 
 browser.runtime.onConnect.addListener(portConnectListener)
+
+async function handleActionClick(tab: browser.Tabs.Tab) {
+  if (!tab.id) return
+  await _toggleSidePanel(tab.id)
+}
+
+const updateAction = async (tabId: number) => {
+  const tab = await browser.tabs.get(tabId)
+  // A normal site where the extension can work
+  if (tab.id && (tab?.url?.startsWith('https://') || tab?.url?.startsWith('http://'))) {
+    // The script may not be injected if the extension was just installed
+    const isContentScriptInjected = await ContentScript(tabId)
+      .isAlive()
+      .then(() => true)
+      .catch(() => false)
+
+    if (isContentScriptInjected) {
+      await browser.action.setPopup({ tabId, popup: '' })
+      browser.action.onClicked.addListener(handleActionClick)
+    } else {
+      const popupUrl = browser.runtime.getURL('popup.html?page=no-cs-injected')
+      await browser.action.setPopup({ tabId, popup: popupUrl })
+      browser.action.onClicked.removeListener(handleActionClick)
+    }
+  } else {
+    // If it's a system tab where the extension doesn't work
+    const popupUrl = browser.runtime.getURL('popup.html?page=unsupported-page')
+    await browser.action.setPopup({ tabId, popup: popupUrl })
+    browser.action.onClicked.removeListener(handleActionClick)
+  }
+}
+
+browser.tabs.onActivated.addListener(({ tabId }) => updateAction(tabId))
+browser.tabs.onUpdated.addListener((tabId) => updateAction(tabId))
