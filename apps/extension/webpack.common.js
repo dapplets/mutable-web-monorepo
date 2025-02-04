@@ -54,6 +54,7 @@ module.exports = {
     'service-worker': path.join(__dirname, 'src/background/index.ts'),
     contentscript: path.join(__dirname, 'src/contentscript/index.tsx'),
     options: path.join(__dirname, 'src/options/index.tsx'),
+    popup: path.join(__dirname, 'src/popup/index.tsx'),
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -143,6 +144,10 @@ module.exports = {
         {
           from: 'src/sidepanel/index.html',
           to: 'sidepanel.html',
+        },
+        {
+          from: 'src/popup/index.html',
+          to: 'popup.html',
         },
         {
           from: 'manifest.json',
