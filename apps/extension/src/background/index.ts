@@ -80,17 +80,17 @@ const _toggleSidePanel = async (tabId: number) => {
     .then(() => true)
     .catch(() => false)
 
-  // Open the side panel in any way
-  // Don't wait for promise here too
-  // @ts-ignore
-  browser.sidePanel.open({ tabId })
-
   // @ts-ignore
   browser.sidePanel.setOptions({
     tabId: tabId,
     path: 'sidepanel.html',
     enabled: true,
   })
+
+  // Open the side panel in any way
+  // Don't wait for promise here too
+  // @ts-ignore
+  browser.sidePanel.open({ tabId })
 
   const isAlive = await isAlivePromise
 
