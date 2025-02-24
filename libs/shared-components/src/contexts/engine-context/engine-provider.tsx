@@ -8,6 +8,9 @@ type Props = {
   nearNetwork: string
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
+  onConnectEthWallet: () => Promise<void>
+  onDisconnectEthWallet: () => Promise<void>
+  address: string | null
   children?: ReactNode
 }
 
@@ -17,6 +20,9 @@ const EngineProvider: FC<Props> = ({
   nearNetwork,
   onConnectWallet,
   onDisconnectWallet,
+  onConnectEthWallet,
+  onDisconnectEthWallet,
+  address,
   children,
 }) => {
   const state: EngineContextState = {
@@ -25,6 +31,9 @@ const EngineProvider: FC<Props> = ({
     nearNetwork,
     onConnectWallet,
     onDisconnectWallet,
+    onConnectEthWallet,
+    onDisconnectEthWallet,
+    address,
   }
 
   return <EngineContext.Provider value={state}>{children}</EngineContext.Provider>

@@ -5,10 +5,11 @@ import { MUTATION_LINK_URL } from '../common/constants'
 import { DefaultNetworkId, NearNetworkId, networkConfigs } from '../common/networks'
 import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
-import { WalletImpl } from './wallet'
 import { EventEmitter as NEventEmitter } from 'events'
 import ContentScript from '../common/content-script'
 import SidePanel from '../common/sidepanel'
+import Wallet from './wallets'
+import { ChainTypes, WalletTypes } from '@mweb/backend'
 
 const eventEmitter = new NEventEmitter()
 
@@ -32,7 +33,7 @@ const tabStateService = new TabStateService()
 
 // NEAR wallet
 
-const near = new WalletImpl(networkConfigPromise)
+const near = new Wallet[ChainTypes.NEAR_MAINNET][WalletTypes.MYNEARWALLET](networkConfigPromise)
 
 const connectWallet = async (): Promise<void> => {
   const { socialDbContract } = await networkConfigPromise
@@ -62,6 +63,16 @@ const disconnectWallet = async (): Promise<void> => {
   updateMenuForDisconnectedState()
 }
 
+// Ethereum Sepolia wallet
+
+const ethereum = new Wallet[ChainTypes.ETHEREUM_SEPOLIA][WalletTypes.METAMASK](
+  ChainTypes.ETHEREUM_SEPOLIA
+)
+
+console.log('ethereum', ethereum)
+
+// Dev server
+
 const getDevServerUrl = async (): Promise<string | null> => {
   const { devServerUrl } = await browser.storage.local.get('devServerUrl')
   // @ts-ignore
@@ -71,6 +82,8 @@ const getDevServerUrl = async (): Promise<string | null> => {
 const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
   await browser.storage.local.set({ devServerUrl })
 }
+
+// Side panel
 
 const _toggleSidePanel = async (tabId: number) => {
   // !!! Workaround for user gesture error
@@ -118,6 +131,12 @@ const bgFunctions = {
   connectWallet,
   disconnectWallet,
   getCurrentNetwork,
+  connectEthWallet: ethereum.connectWallet.bind(ethereum),
+  disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
+  getEthAddress: ethereum.getAddress.bind(ethereum),
+  signEthMessage: ethereum.signMessage.bind(ethereum),
+  sendEthTransaction: ethereum.sendTransaction.bind(ethereum),
+  sendEthCustomRequest: ethereum.sendCustomRequest.bind(ethereum),
   getDevServerUrl,
   setDevServerUrl,
   toggleSidePanel,

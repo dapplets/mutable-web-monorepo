@@ -8,6 +8,7 @@ import { useWallet } from '../common/wallet-context'
 import { useConnectWallet } from '../common/wallet-context/use-connect-wallet'
 import { useDisconnectWallet } from '../common/wallet-context/use-disconnect-wallet'
 import { useCurrentTab } from './use-current-tab'
+import { useWallet as useEthWallet } from '../common/wallet-ethereum'
 
 export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const bootstrapCssUrl = browser.runtime.getURL('bootstrap.min.css')
@@ -16,6 +17,9 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
+  const { useConnectEthWallet, useDisconnectEthWallet, address } = useEthWallet()
+  const { connectWallet: connectEthWallet } = useConnectEthWallet()
+  const { disconnectWallet: disconnectEthWallet } = useDisconnectEthWallet()
 
   if (!selector) return null
 
@@ -43,6 +47,9 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
+        onConnectEthWallet={connectEthWallet}
+        onDisconnectEthWallet={disconnectEthWallet}
+        address={address}
       >
         <SidePanel />
       </EngineProvider>

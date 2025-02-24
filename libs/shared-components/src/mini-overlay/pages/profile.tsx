@@ -100,7 +100,9 @@ const H1 = styled.h1`
 const Profile: FC<{
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }> = ({ trackingRefs }) => {
-  const { loggedInAccountId, nearNetwork } = useEngine()
+  const { loggedInAccountId, nearNetwork, address, onConnectEthWallet, onDisconnectEthWallet } =
+    useEngine()
+  console.log('address', address)
   const navigate = useNavigate()
   const profileRef = React.useRef<HTMLDivElement>(null)
 
@@ -112,6 +114,13 @@ const Profile: FC<{
         </BackButton>
         <H1>Profile</H1>
       </Header>
+      <div>
+        {!address ? (
+          <button onClick={onConnectEthWallet}>Connect Ethereum</button>
+        ) : (
+          <button onClick={onDisconnectEthWallet}>Disconnect Ethereum</button>
+        )}
+      </div>
       {loggedInAccountId ? (
         <ConnectedAccount
           loggedInAccountId={loggedInAccountId}
