@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ContextDto, StoreContextDto } from './dtos/store-context.dto';
 import { CRAWLER_PRIVATE_KEY } from '../env';
 import stringify from 'json-stringify-deterministic';
@@ -15,6 +15,7 @@ import { BorshSchema, borshSerialize } from 'borsher';
 import { ContextNode, ContextEdge } from './entities/context.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SchedulerService } from 'src/scheduler/scheduler.service';
 
 function base64ToBytes(base64: string): Uint8Array {
   const binString = atob(base64);
@@ -38,6 +39,8 @@ export class ContextService {
     private contextNodeRepository: Repository<ContextNode>,
     @InjectRepository(ContextEdge)
     private contextEdgeRepository: Repository<ContextEdge>,
+    @Inject(SchedulerService)
+    private schedulerService: SchedulerService,
   ) {
     const rootContext = {
       id: 'root',
@@ -185,13 +188,18 @@ export class ContextService {
 
     // skip existing nodes => only the first parser will be rewarded
 
-    await this.contextNodeRepository.save({
+    const contextToStore = {
       hash,
       namespace: clonedNode.namespace,
       contextType: clonedNode.contextType,
       id: clonedNode.id,
       parsedContext: clonedNode.parsedContext,
-    });
+    };
+
+    await this.contextNodeRepository.save(contextToStore);
+
+    // ToDo: don't wait
+    this.schedulerService.processContext(contextToStore);
 
     onStore(hash);
 
