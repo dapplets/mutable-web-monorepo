@@ -1,1 +1,1 @@
-textblob
+nltk

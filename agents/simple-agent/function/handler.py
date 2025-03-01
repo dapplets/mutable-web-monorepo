@@ -1,5 +1,8 @@
-from textblob import TextBlob
 import json
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+nltk.download("vader_lexicon")
 
 
 def handle(req):
@@ -23,21 +26,23 @@ def handle(req):
     }
     """
 
-    # Sentiment Analysis
-    sentiment = TextBlob(input["context"]["parsedContext"]["text"]).sentiment
+    text = input["context"]["parsedContext"]["text"]
 
-    # Summary Output
+    analyzer = SentimentIntensityAnalyzer()
+    sentiment_scores = analyzer.polarity_scores(text)
+
     output = {
         "context": {
             "namespace": "dapplets.near/agent/simple-agent",
             "contextType": "sentiment",
-            "id": input["context"]["id"],  # copy context id from input
+            "id": input["context"]["id"],
             "parsedContext": {
-                "polarity": sentiment.polarity,
-                "subjectivity": sentiment.subjectivity,
+                "negative": sentiment_scores["neg"],
+                "neutral": sentiment_scores["neu"],
+                "positive": sentiment_scores["pos"],
+                "compound": sentiment_scores["compound"],
             },
         }
     }
 
-    # serialize output
     return json.dumps(output)

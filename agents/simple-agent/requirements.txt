@@ -2,4 +2,4 @@ flask
 waitress
 tox==3.*
 
-textblob
+nltk
