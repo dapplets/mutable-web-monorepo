@@ -1,5 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ContextDto, StoreContextDto } from './dtos/store-context.dto';
+import {
+  ContextDto,
+  InvokeAgentDto,
+  StoreContextDto,
+} from './dtos/store-context.dto';
 import { CRAWLER_PRIVATE_KEY } from '../env';
 import stringify from 'json-stringify-deterministic';
 import {
@@ -71,6 +75,52 @@ export class ContextService {
 
     // ToDo: await
     this.indexerService.addContext(this._rootContext);
+  }
+
+  async invokeAgent(dto: InvokeAgentDto): Promise<{ context: any }> {
+    const { hash: inputContextHash } = this._prepareNode(dto.context);
+
+    // check cache
+    const edges = await this.contextEdgeRepository.find({
+      where: {
+        namespace: dto.agentId,
+        type: 'reply',
+        source: inputContextHash,
+      },
+      take: 1,
+    });
+
+    // return cached response
+    if (edges.length > 0) {
+      const edge = edges[0];
+
+      // ToDo: uuid and hash should be the same
+      const uuid = ContextService._generateUUIDFromString(edge.target);
+      const node = await this.getContextNodeById(uuid);
+
+      if (node) {
+        return {
+          context: {
+            namespace: node.metadata.namespace,
+            contextType: node.metadata.contextType,
+            id: node.metadata.id,
+            parsedContext: node.content,
+          },
+        };
+      }
+    }
+
+    // store context and invoke agent
+    if (dto.receiverId) {
+      await this.storeContextForRewards({
+        context: dto.context,
+        receiverId: dto.receiverId,
+      });
+    } else {
+      await this.saveContextTree(dto.context);
+    }
+
+    return { context: null };
   }
 
   async storeContextForRewards(dto: StoreContextDto): Promise<
@@ -184,6 +234,7 @@ export class ContextService {
     // @ts-expect-error methods are not typed
     const isPaid = await contract.is_paid_data({ data_hash: hash });
 
+    // ToDo: uuid and hash should be the same
     const uuid = ContextService._generateUUIDFromString(hash);
 
     const context = await this.contextNodeRepository.findOne({
@@ -268,13 +319,13 @@ export class ContextService {
   // ToDo: refactor onStore
   private async saveContextTree(
     node: ContextDto,
-    onStore: (hash: string) => void,
+    onStore?: (hash: string) => void,
   ): Promise<string> {
     const savedContext = await this.saveContextNode(node);
 
     const hash = savedContext.metadata.hash;
 
-    onStore(hash);
+    onStore?.(hash);
 
     const parentHash = node.parentNode
       ? await this.saveContextTree(node.parentNode, onStore)

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Param, Query } from '@nestjs/common';
 import { ContextService } from './context.service';
-import { StoreContextDto } from './dtos/store-context.dto';
+import { InvokeAgentDto, StoreContextDto } from './dtos/store-context.dto';
 
 @Controller('context')
 export class ContextController {
@@ -9,6 +9,11 @@ export class ContextController {
   @Post()
   async storeContext(@Body() storeContextDto: StoreContextDto) {
     return this.contextService.storeContextForRewards(storeContextDto);
+  }
+
+  @Post('invoke-agent')
+  async invokeAgent(@Body() invokeAgentDto: InvokeAgentDto) {
+    return this.contextService.invokeAgent(invokeAgentDto);
   }
 
   @Get()

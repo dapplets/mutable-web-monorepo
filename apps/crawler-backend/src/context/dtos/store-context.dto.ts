@@ -39,3 +39,16 @@ export class StoreContextDto {
   @IsString()
   receiverId: string;
 }
+
+export class InvokeAgentDto {
+  @ValidateNested()
+  @Type(() => ContextDto)
+  context: ContextDto;
+
+  @IsString()
+  @IsOptional()
+  receiverId?: string;
+
+  @IsString()
+  agentId: string;
+}
