@@ -34,7 +34,7 @@ export const OrdersPage: FC = () => {
     >
       {/* Page Title */}
       <Title level={3} style={{ marginBottom: '24px' }}>
-        Orders Management
+        Agent Scheduler
       </Title>
 
       {/* Create Order Button */}
@@ -43,7 +43,7 @@ export const OrdersPage: FC = () => {
         onClick={() => navigate('/orders/create')}
         style={{ marginBottom: '24px' }}
       >
-        Create Order
+        Create Job
       </Button>
 
       {/* Orders Content */}
