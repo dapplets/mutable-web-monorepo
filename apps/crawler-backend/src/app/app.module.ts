@@ -11,6 +11,7 @@ import { SchedulerModule } from 'src/scheduler/scheduler.module';
 import { SchemaModule } from 'src/schema/schema.module';
 import { ContextModule } from '../context/context.module';
 import { RunnerModule } from 'src/runner/runner.module';
+import { Job as SchedulerJob } from 'src/scheduler/entities/job.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { RunnerModule } from 'src/runner/runner.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: CRAWLER_DATABASE_URL,
-      entities: [Order, Job, Step, ContextNode, ContextEdge],
+      entities: [Order, Job, Step, ContextNode, ContextEdge, SchedulerJob],
       synchronize: true,
     }),
     GraphileWorkerModule.forRoot({

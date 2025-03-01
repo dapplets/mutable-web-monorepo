@@ -2,6 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AgentService } from 'src/agent/agent.service';
 import { ContextNode } from 'src/context/entities/context.entity';
 import { WorkerService } from 'nestjs-graphile-worker';
+import { Repository } from 'typeorm';
+import { Job } from './entities/job.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class SchedulerService {
@@ -11,6 +14,9 @@ export class SchedulerService {
 
     @Inject(WorkerService)
     private readonly graphileWorker: WorkerService,
+
+    @InjectRepository(Job)
+    private jobRepository: Repository<Job>,
   ) {}
 
   async processContext(context: ContextNode) {
@@ -23,5 +29,11 @@ export class SchedulerService {
         contextId: context.id,
       });
     }
+  }
+
+  async getJobs() {
+    return this.jobRepository.find({
+      take: 100,
+    });
   }
 }
