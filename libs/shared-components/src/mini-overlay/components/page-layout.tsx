@@ -10,6 +10,7 @@ const Container = styled.div`
   --pure-white: white;
 
   width: 100%;
+  position: relative;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -84,8 +85,8 @@ const BackButton = styled.button`
 
 const H1 = styled.h1`
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: system-ui, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
   color: #02193a;
   font-size: 22px;
   font-weight: 600;

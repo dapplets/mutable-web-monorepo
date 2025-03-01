@@ -59,8 +59,6 @@ const Applications: FC = () => {
   const { mutationApps } = useMutationApps(mutation?.id, mutation?.apps ?? [])
   const appsRef = React.useRef<HTMLDivElement>(null)
 
-  console.log('mutationApps', mutationApps)
-
   if (!selectedMutationId) return null
 
   return (
