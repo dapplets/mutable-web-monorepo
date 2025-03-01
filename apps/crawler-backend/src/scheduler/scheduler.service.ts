@@ -34,7 +34,7 @@ export class SchedulerService {
           contextId: context.id,
         },
         {
-          maxAttempts: 2,
+          maxAttempts: 1,
           queueName: agent.id,
         },
       );
@@ -60,7 +60,13 @@ export class SchedulerService {
           public.agent
         where
           id = j.queue_name),
-        0) as consumption
+        0) as consumption,
+        max(j.run_at) as max_run_at,
+        min(j.run_at) as min_run_at,
+        max(j.created_at) as max_created_at,
+        min(j.created_at) as min_created_at,
+        max(j.locked_at) as max_locked_at,
+        min(j.locked_at) as min_locked_at
       from
         graphile_worker.jobs as j
       group by
@@ -76,6 +82,12 @@ export class SchedulerService {
         rate: agent.rate,
         total: (agent.rate * item.consumption) / 1000 / 60 / 60,
         jobsCount: Number(item.jobs_count),
+        maxRunAt: item.max_run_at,
+        minRunAt: item.min_run_at,
+        maxCreatedAt: item.max_created_at,
+        minCreatedAt: item.min_created_at,
+        maxLockedAt: item.max_locked_at,
+        minLockedAt: item.min_locked_at,
       };
     });
   }
