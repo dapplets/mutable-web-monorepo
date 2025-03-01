@@ -22,7 +22,7 @@ const SentimentAnalysis: Agent = {
     name: 'Sentiment Analysis',
     description: 'Simple Agent for Crawler',
     image: {
-      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+      ipfs_cid: 'bafkreiewyhqbg3jbfpyqnbxqlgr44xsojda3lb7k3owgzz6b3emoibfa7y',
     },
   },
   type: 'openfaas',
@@ -56,7 +56,7 @@ const FakeDetector: Agent = {
   metadata: {
     name: 'Fake Detector',
     image: {
-      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+      ipfs_cid: 'bafkreicoxkzxvf4ic4qcmkte3sdqykzwdyfyyiklfnygl7ujqy2izu7ig4',
     },
   },
   type: 'openfaas',
@@ -90,7 +90,7 @@ const NearAiFakeDetectorAgent: Agent = {
   metadata: {
     name: 'NEAR AI Fake Detector',
     image: {
-      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+      ipfs_cid: 'bafkreihwh62hu635x34i2cm373e3o332ikbuvublen7oc5epiophx3gdoy',
     },
   },
   type: 'nearai',
@@ -124,7 +124,7 @@ const CrawlerAgent: Agent = {
   metadata: {
     name: 'AI Crawler Agent',
     image: {
-      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+      ipfs_cid: 'bafkreihnq7xmeohi2qdgryt2wtyk3rtfcaid67kj3kj6iwiqix53eybmdy',
     },
   },
   type: 'openfaas',
@@ -143,7 +143,7 @@ const AssociativeSummarizer: Agent = {
   metadata: {
     name: 'Associative Summarizer',
     image: {
-      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+      ipfs_cid: 'bafkreifsik7injgqttmem6clzu5xjowp3hytc2xrvpgfnbjis7b2yteq7e',
     },
   },
   type: 'openfaas',
