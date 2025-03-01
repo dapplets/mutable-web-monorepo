@@ -13,9 +13,11 @@ import { SchemaModule } from '../schema/schema.module';
 import { ContextModule } from '../context/context.module';
 import { RunnerModule } from '../runner/runner.module';
 import { Job as SchedulerJob } from '../scheduler/entities/job.entity';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     ContextModule,
     OrderModule,

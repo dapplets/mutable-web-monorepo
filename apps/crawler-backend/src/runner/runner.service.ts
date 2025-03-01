@@ -31,9 +31,10 @@ export class RunnerService {
       return;
     }
 
-    const context = await this.contextService.getContextNodeById(contextId);
+    const inputContext =
+      await this.contextService.getContextNodeById(contextId);
 
-    if (!context) {
+    if (!inputContext) {
       this.logger.error(`Context ${contextId} not found`);
       return;
     }
@@ -46,25 +47,34 @@ export class RunnerService {
     }
 
     try {
-      const result = await runner.run({ agent, context });
+      const result = await runner.run({ agent, context: inputContext });
 
-      if (!result?.context) {
+      if (!result?.context && !result?.contexts) {
         this.logger.error(`Agent ${agent.id}: no context returned`);
         return;
       }
 
-      const savedContext = await this.contextService.saveContextNode(
-        result.context,
-      );
-
-      await this.contextService.saveEdge({
-        source: context.metadata.hash,
-        target: savedContext.metadata.hash,
-        namespace: agentId,
-        type: 'reply',
-      });
+      const outputContexts = result.contexts
+        ? result.contexts
+        : [result.context];
 
       this.logger.debug(`Agent ${agent.id} executed successfully`);
+
+      for (const outputContext of outputContexts) {
+        try {
+          const savedContext =
+            await this.contextService.saveContextNode(outputContext);
+
+          await this.contextService.saveEdge({
+            source: inputContext.metadata.hash,
+            target: savedContext.metadata.hash,
+            namespace: agentId,
+            type: 'reply',
+          });
+        } catch (error) {
+          this.logger.error(`Error saving context: ${error}`);
+        }
+      }
 
       // return response;
     } catch (errorResponse) {

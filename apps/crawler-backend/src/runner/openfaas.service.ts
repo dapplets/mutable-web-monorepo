@@ -26,6 +26,7 @@ export class OpenFaasService implements IRunnerService {
     this.options = {
       headers: {
         Authorization: `Basic ${btoa(`${username}:${password}`)}`,
+        'Content-Type': 'application/json',
       },
     };
 
