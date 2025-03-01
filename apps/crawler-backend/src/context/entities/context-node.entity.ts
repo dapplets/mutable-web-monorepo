@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'context_node', synchronize: false })
 export class ContextNode {
@@ -15,13 +15,4 @@ export class ContextNode {
 
   @Column({ type: 'simple-json', name: 'content' })
   content: any;
-}
-
-@Entity({ name: 'context_edge' })
-export class ContextEdge {
-  @PrimaryColumn()
-  parent: string;
-
-  @PrimaryColumn()
-  child: string;
 }

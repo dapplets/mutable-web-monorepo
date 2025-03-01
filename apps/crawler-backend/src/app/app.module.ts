@@ -2,16 +2,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphileWorkerModule } from 'nestjs-graphile-worker';
-import { AgentModule } from 'src/agent/agent.module';
-import { ContextEdge, ContextNode } from 'src/context/entities/context.entity';
-import { CRAWLER_DATABASE_URL } from 'src/env';
-import { Job, Order, Step } from 'src/order/entities/order.entity';
-import { OrderModule } from 'src/order/order.module';
-import { SchedulerModule } from 'src/scheduler/scheduler.module';
-import { SchemaModule } from 'src/schema/schema.module';
+import { AgentModule } from '../agent/agent.module';
+import { ContextNode } from '../context/entities/context-node.entity';
+import { ContextEdge } from '../context/entities/context-edge.entity';
+import { CRAWLER_DATABASE_URL } from '../env';
+import { Job, Order, Step } from '../order/entities/order.entity';
+import { OrderModule } from '../order/order.module';
+import { SchedulerModule } from '../scheduler/scheduler.module';
+import { SchemaModule } from '../schema/schema.module';
 import { ContextModule } from '../context/context.module';
-import { RunnerModule } from 'src/runner/runner.module';
-import { Job as SchedulerJob } from 'src/scheduler/entities/job.entity';
+import { RunnerModule } from '../runner/runner.module';
+import { Job as SchedulerJob } from '../scheduler/entities/job.entity';
 
 @Module({
   imports: [

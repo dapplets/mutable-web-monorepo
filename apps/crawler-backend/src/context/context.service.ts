@@ -11,7 +11,8 @@ import {
   keyStores,
 } from 'near-api-js';
 import { BorshSchema, borshSerialize } from 'borsher';
-import { ContextNode, ContextEdge } from './entities/context.entity';
+import { ContextNode } from './entities/context-node.entity';
+import { ContextEdge } from './entities/context-edge.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SchedulerService } from 'src/scheduler/scheduler.service';

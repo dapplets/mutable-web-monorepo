@@ -1,6 +1,6 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
 import { Injectable, Logger } from '@nestjs/common';
-import { ContextNode } from './entities/context.entity';
+import { ContextNode } from './entities/context-node.entity';
 import type { Document } from '@langchain/core/documents';
 import { OPENAI_API_KEY, OPENAI_BASE_URL, CRAWLER_DATABASE_URL } from '../env';
 import {

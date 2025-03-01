@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AgentService } from 'src/agent/agent.service';
-import { ContextNode } from 'src/context/entities/context.entity';
+import { ContextNode } from 'src/context/entities/context-node.entity';
 import { WorkerService } from 'nestjs-graphile-worker';
 import { Repository } from 'typeorm';
 import { Job } from './entities/job.entity';

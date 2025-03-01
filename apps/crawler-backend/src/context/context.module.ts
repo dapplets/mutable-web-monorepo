@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ContextController } from './context.controller';
 import { ContextService } from './context.service';
-import { ContextNode, ContextEdge } from './entities/context.entity';
+import { ContextNode } from './entities/context-node.entity';
+import { ContextEdge } from './entities/context-edge.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SchedulerModule } from 'src/scheduler/scheduler.module';
 import { IndexerService } from './indexer.service';

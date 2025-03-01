@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ContextNode } from 'src/context/entities/context.entity';
+import { ContextNode } from 'src/context/entities/context-node.entity';
 import { utils } from '@mweb/backend';
 
 const SimpleAgent = {
