@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ContextDto, StoreContextDto } from './dtos/store-context.dto';
 import { CRAWLER_PRIVATE_KEY } from '../env';
 import stringify from 'json-stringify-deterministic';
-import { sha256 } from '@noble/hashes/sha256';
 import {
   utils,
   Contract,
@@ -16,6 +15,9 @@ import { ContextNode, ContextEdge } from './entities/context.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SchedulerService } from 'src/scheduler/scheduler.service';
+import { IndexerService } from './indexer.service';
+import crypto from 'crypto';
+import { sha256 } from '@noble/hashes/sha256';
 
 function base64ToBytes(base64: string): Uint8Array {
   const binString = atob(base64);
@@ -41,6 +43,8 @@ export class ContextService {
     private contextEdgeRepository: Repository<ContextEdge>,
     @Inject(SchedulerService)
     private schedulerService: SchedulerService,
+    @Inject(IndexerService)
+    private indexerService: IndexerService,
   ) {
     const rootContext = {
       id: 'root',
@@ -53,11 +57,19 @@ export class ContextService {
 
     const { hash } = this._prepareNode(rootContext);
 
+    const rootDocument = {
+      id: ContextService._generateUUIDFromString(hash),
+      metadata: {
+        namespace: rootContext.namespace,
+        contextType: rootContext.contextType,
+        id: rootContext.id,
+        hash: hash,
+      },
+      content: rootContext.parsedContext,
+    };
+
     // ToDo: await
-    this.contextNodeRepository.save({
-      ...rootContext,
-      hash,
-    });
+    this.indexerService.addContext(rootDocument);
 
     this._rootHash = hash;
   }
@@ -120,7 +132,7 @@ export class ContextService {
     // ToDo: parallel
 
     const nodes = await this.contextNodeRepository.find({
-      select: { hash: true },
+      select: { metadata: { hash: true, contextType: true, id: true } },
     });
 
     const edges = await this.contextEdgeRepository.find({
@@ -128,9 +140,9 @@ export class ContextService {
     });
 
     return {
-      nodes: nodes.map(({ hash }) => ({
-        id: hash,
-        label: hash.substring(0, 10),
+      nodes: nodes.map(({ metadata }) => ({
+        id: metadata.hash,
+        label: `${metadata.contextType}\n${metadata.id}`,
       })),
       edges: edges.map(({ parent, child }) => ({
         id: `${parent}-${child}`,
@@ -158,7 +170,11 @@ export class ContextService {
     // @ts-expect-error methods are not typed
     const isPaid = await contract.is_paid_data({ data_hash: hash });
 
-    const context = await this.contextNodeRepository.findOneBy({ hash });
+    const uuid = ContextService._generateUUIDFromString(hash);
+
+    const context = await this.contextNodeRepository.findOne({
+      where: { id: uuid },
+    });
 
     // ToDo
     if (!context) {
@@ -168,10 +184,22 @@ export class ContextService {
       };
     }
 
+    const dto = {
+      hash: context.metadata.hash,
+      namespace: context.metadata.namespace,
+      contextType: context.metadata.contextType,
+      id: context.metadata.id,
+      parsedContext: context.content,
+    };
+
     return {
-      context: isPaid ? context : null,
+      context: isPaid ? dto : null,
       status: isPaid ? 'paid' : 'unpaid',
     };
+  }
+
+  async getSimilarContexts(query: string, limit: number) {
+    return this.indexerService.getSimilarContexts(query, limit);
   }
 
   // ToDo: refactor onStore
@@ -188,18 +216,29 @@ export class ContextService {
 
     // skip existing nodes => only the first parser will be rewarded
 
-    const contextToStore = {
-      hash,
-      namespace: clonedNode.namespace,
-      contextType: clonedNode.contextType,
-      id: clonedNode.id,
-      parsedContext: clonedNode.parsedContext,
-    };
+    const uuid = ContextService._generateUUIDFromString(hash);
 
-    await this.contextNodeRepository.save(contextToStore);
+    const exists = await this.contextNodeRepository.exists({
+      where: { id: uuid },
+    });
 
-    // ToDo: don't wait
-    this.schedulerService.processContext(contextToStore);
+    if (!exists) {
+      const contextToStore = {
+        id: uuid,
+        metadata: {
+          namespace: clonedNode.namespace,
+          contextType: clonedNode.contextType,
+          id: clonedNode.id,
+          hash: hash,
+        },
+        content: clonedNode.parsedContext,
+      };
+
+      await this.indexerService.addContext(contextToStore);
+
+      // ToDo: don't wait
+      await this.schedulerService.processContext(contextToStore);
+    }
 
     onStore(hash);
 
@@ -225,5 +264,22 @@ export class ContextService {
     const json = stringify(node);
     const hash = bytesToBase64(new Uint8Array(sha256(json)));
     return { node, hash };
+  }
+
+  private static _generateUUIDFromString(input) {
+    // Hash the input string using SHA-256
+    const hash = crypto.createHash('sha256').update(input).digest('hex');
+
+    // Use the first 128 bits (32 hex characters) of the hash to construct a UUID
+    const uuid = [
+      hash.substr(0, 8),
+      hash.substr(8, 4),
+      '4' + hash.substr(12, 3), // UUID version 4
+      ((parseInt(hash.substr(16, 1), 16) & 0x3) | 0x8).toString(16) +
+        hash.substr(17, 3), // Variant
+      hash.substr(20, 12),
+    ].join('-');
+
+    return uuid;
   }
 }

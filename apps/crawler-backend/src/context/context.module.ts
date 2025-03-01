@@ -4,6 +4,7 @@ import { ContextService } from './context.service';
 import { ContextNode, ContextEdge } from './entities/context.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SchedulerModule } from 'src/scheduler/scheduler.module';
+import { IndexerService } from './indexer.service';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { SchedulerModule } from 'src/scheduler/scheduler.module';
     SchedulerModule, // ToDo: circular dep
   ],
   controllers: [ContextController],
-  providers: [ContextService],
+  providers: [ContextService, IndexerService],
   exports: [ContextService],
 })
 export class ContextModule {}

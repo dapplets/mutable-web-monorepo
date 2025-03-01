@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphileWorkerModule } from 'nestjs-graphile-worker';
 import { AgentModule } from 'src/agent/agent.module';
@@ -12,6 +13,7 @@ import { ContextModule } from '../context/context.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     ContextModule,
     OrderModule,
     SchedulerModule,

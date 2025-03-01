@@ -1,21 +1,20 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'context_node' })
+@Entity({ name: 'context_node', synchronize: false })
 export class ContextNode {
   @Column({ primary: true })
-  hash: string;
-
-  @Column()
-  namespace: string;
-
-  @Column({ name: 'type' })
-  contextType: string;
-
-  @Column()
   id: string;
 
-  @Column({ type: 'json', name: 'parsed' })
-  parsedContext: any;
+  @Column({ type: 'json' })
+  metadata: {
+    namespace: string;
+    contextType: string;
+    id: string;
+    hash: string;
+  };
+
+  @Column({ type: 'simple-json', name: 'content' })
+  content: any;
 }
 
 @Entity({ name: 'context_edge' })

@@ -5,3 +5,6 @@ export const CRAWLER_PRIVATE_KEY =
 export const CRAWLER_DATABASE_URL =
   process.env.CRAWLER_DATABASE_URL ??
   'postgres://user:password@localhost:5432/mweb';
+export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+export const OPENAI_BASE_URL =
+  process.env.OPENAI_BASE_URL ?? 'https://api.openai.com/v1';

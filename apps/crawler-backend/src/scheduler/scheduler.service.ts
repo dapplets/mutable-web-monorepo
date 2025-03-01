@@ -19,7 +19,7 @@ export class SchedulerService {
 
   async processContext(context: ContextNode) {
     // ToDo: add schema to context
-    if (context.contextType === 'post') {
+    if (context.metadata.contextType === 'post') {
       const agents = await this.agentService.getAgentsByInputSchema(
         'dapplets.near/schema/post',
       );

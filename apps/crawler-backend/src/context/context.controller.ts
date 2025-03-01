@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Query } from '@nestjs/common';
 import { ContextService } from './context.service';
 import { StoreContextDto } from './dtos/store-context.dto';
 
@@ -16,8 +16,16 @@ export class ContextController {
     return this.contextService.getContexts();
   }
 
-  @Get(':hash')
-  async getContext(@Param() params: any) {
-    return this.contextService.getContext(params.hash);
+  @Get('similar')
+  async getSimilarContexts(
+    @Query('query') query: string,
+    @Query('limit') limit: number,
+  ) {
+    return this.contextService.getSimilarContexts(query, limit);
+  }
+
+  @Get(':hash(*)')
+  async getContext(@Param('hash') hash: string) {
+    return this.contextService.getContext(hash);
   }
 }
