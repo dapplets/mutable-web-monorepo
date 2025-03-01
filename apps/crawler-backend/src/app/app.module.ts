@@ -1,20 +1,23 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ContextModule } from '../context/context.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrderModule } from 'src/order/order.module';
 import { Job, Order, Step } from 'src/order/entities/order.entity';
+import { ContextNode, ContextEdge } from 'src/context/entities/context.entity';
 
 @Module({
   imports: [
     ContextModule,
     OrderModule,
     TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: ':memory:',
-      dropSchema: true,
-      entities: [Order, Job, Step],
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'user',
+      password: 'password',
+      entities: [Order, Job, Step, ContextNode, ContextEdge],
+      database: 'mweb',
       synchronize: true,
-      logging: false,
     }),
   ],
 })

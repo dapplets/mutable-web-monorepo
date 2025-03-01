@@ -12,6 +12,9 @@ import {
   keyStores,
 } from 'near-api-js';
 import { BorshSchema, borshSerialize } from 'borsher';
+import { ContextNode, ContextEdge } from './entities/context.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 function base64ToBytes(base64: string): Uint8Array {
   const binString = atob(base64);
@@ -27,23 +30,31 @@ function bytesToBase64(bytes: Uint8Array): string {
 
 @Injectable()
 export class ContextService {
-  nodes = new Map<string, any>();
-  edges = new Map<string, string>();
-
   private _rootHash: string;
   private _keyPair = new utils.KeyPairEd25519(CRAWLER_PRIVATE_KEY);
 
-  constructor() {
-    const { node, hash } = this._prepareNode({
+  constructor(
+    @InjectRepository(ContextNode)
+    private contextNodeRepository: Repository<ContextNode>,
+    @InjectRepository(ContextEdge)
+    private contextEdgeRepository: Repository<ContextEdge>,
+  ) {
+    const rootContext = {
       id: 'root',
       namespace: 'root',
       contextType: 'root',
       parsedContext: {
         id: 'root',
       },
-    });
+    };
 
-    this.nodes.set(hash, node);
+    const { hash } = this._prepareNode(rootContext);
+
+    // ToDo: await
+    this.contextNodeRepository.save({
+      ...rootContext,
+      hash,
+    });
 
     this._rootHash = hash;
   }
@@ -66,7 +77,7 @@ export class ContextService {
 
     const storedHashes: string[] = [];
 
-    this.storeNode(dto.context, (hash) => storedHashes.push(hash));
+    await this.storeNode(dto.context, (hash) => storedHashes.push(hash));
 
     const schema = BorshSchema.Struct({
       data_hash: BorshSchema.Vec(BorshSchema.u8),
@@ -103,15 +114,25 @@ export class ContextService {
     nodes: { id: string; label: string }[];
     edges: { id: string; source: string; target: string }[];
   }> {
+    // ToDo: parallel
+
+    const nodes = await this.contextNodeRepository.find({
+      select: { hash: true },
+    });
+
+    const edges = await this.contextEdgeRepository.find({
+      select: { parent: true, child: true },
+    });
+
     return {
-      nodes: Array.from(this.nodes.entries()).map(([id]) => ({
-        id,
-        label: id.substring(0, 10),
+      nodes: nodes.map(({ hash }) => ({
+        id: hash,
+        label: hash.substring(0, 10),
       })),
-      edges: Array.from(this.edges.entries()).map(([source, target]) => ({
-        id: `${source}-${target}`,
-        source,
-        target,
+      edges: edges.map(({ parent, child }) => ({
+        id: `${parent}-${child}`,
+        source: parent,
+        target: child,
       })),
     };
   }
@@ -134,14 +155,27 @@ export class ContextService {
     // @ts-expect-error methods are not typed
     const isPaid = await contract.is_paid_data({ data_hash: hash });
 
+    const context = await this.contextNodeRepository.findOneBy({ hash });
+
+    // ToDo
+    if (!context) {
+      return {
+        context: null,
+        status: 'unpaid',
+      };
+    }
+
     return {
-      context: isPaid ? this.nodes.get(hash) : null,
+      context: isPaid ? context : null,
       status: isPaid ? 'paid' : 'unpaid',
     };
   }
 
   // ToDo: refactor onStore
-  private storeNode(node: ContextDto, onStore: (hash: string) => void): string {
+  private async storeNode(
+    node: ContextDto,
+    onStore: (hash: string) => void,
+  ): Promise<string> {
     const { node: clonedNode, hash } = this._prepareNode({
       namespace: node.namespace,
       contextType: node.contextType,
@@ -150,19 +184,25 @@ export class ContextService {
     });
 
     // skip existing nodes => only the first parser will be rewarded
-    if (this.nodes.has(hash)) {
-      return hash;
-    }
 
-    this.nodes.set(hash, clonedNode);
+    await this.contextNodeRepository.save({
+      hash,
+      namespace: clonedNode.namespace,
+      contextType: clonedNode.contextType,
+      id: clonedNode.id,
+      parsedContext: clonedNode.parsedContext,
+    });
+
     onStore(hash);
 
     const parentHash = node.parentNode
-      ? this.storeNode(node.parentNode, onStore)
+      ? await this.storeNode(node.parentNode, onStore)
       : this._rootHash;
 
-    // this.edges.set(parentHash, hash);
-    this.edges.set(hash, parentHash);
+    await this.contextEdgeRepository.save({
+      parent: parentHash,
+      child: hash,
+    });
 
     return hash;
   }
