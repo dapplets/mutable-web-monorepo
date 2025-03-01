@@ -29,7 +29,7 @@ export class NearAiService implements IRunnerService {
     this.logger.debug(`✅ Agent started. Run ID: ${runId}`);
 
     // Wait for agent to process
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    // await new Promise((resolve) => setTimeout(resolve, 10000));
 
     const response = await this.getMessageContent(runId);
 
@@ -64,11 +64,12 @@ export class NearAiService implements IRunnerService {
       body: JSON.stringify(payload),
     });
 
+    const data = await response.text();
+
     if (!response.ok) {
-      throw new Error(`Error starting agent: ${response.statusText}`);
+      throw new Error(`Error starting agent: ${data}`);
     }
 
-    const data = await response.text();
     return data.trim().replace(/"/g, '');
   }
 

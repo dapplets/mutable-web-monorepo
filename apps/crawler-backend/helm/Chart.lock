@@ -1,0 +1,6 @@
+dependencies:
+- name: openfaas
+  repository: https://openfaas.github.io/faas-netes/
+  version: 14.2.93
+digest: sha256:d8e92079e06d9b71134e9dd662cc0dbe05803e55f6ea91178e92fff674ecc228
+generated: "2025-02-26T14:05:39.426279+03:00"

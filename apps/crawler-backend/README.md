@@ -1,5 +1,22 @@
 # Backend
 
+## Install with Helm
+
+Create `values.yaml` with the following secrets:
+
+```yaml
+openaiApiKey: sk-proj-example-key
+nearAiApiKey: '{"account_id":"example.near","signature":"example==","public_key":"ed25519:example","callback_url":"http://localhost:54875/capture","nonce":"1234567890","recipient":"ai.near","message":"Welcome to NEAR AI","on_behalf_of":null}'
+```
+
+Install helm chart from GitHub Registry:
+
+```sh
+helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./values.yaml
+```
+
+Aigency will be available at `http://localhost:30001`
+
 ## Development
 
 ### Run PostgreSQL
@@ -49,7 +66,7 @@ Visit `http://127.0.0.1:31112/`
 ```sh
 cd mutable-web-monorepo
 docker buildx create --use # if you didn't it before
-docker buildx build --platform linux/amd64,linux/arm64 -f apps/crawler-backend/Dockerfile . --tag ghcr.io/dapplets/crawler-backend:latest --push 
+docker buildx build --platform linux/amd64,linux/arm64 -f apps/crawler-backend/Dockerfile . --tag ghcr.io/dapplets/crawler-backend:latest --push
 ```
 
 ## Deploy to Kubernetes
@@ -57,5 +74,5 @@ docker buildx build --platform linux/amd64,linux/arm64 -f apps/crawler-backend/D
 Use the hash from the previous step
 
 ```sh
-helm upgrade aigency ./helm --install --create-namespace --namespace aigency --set tag=latest -f ./helm/values.yaml
+helm upgrade aigency ./helm --install --create-namespace --namespace aigency -f ./helm/values.yaml
 ```
