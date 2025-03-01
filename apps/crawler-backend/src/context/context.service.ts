@@ -152,7 +152,20 @@ export class ContextService {
     };
   }
 
-  async getContext(
+  async getContextNodeById(uuid: string): Promise<ContextNode | null> {
+    const context = await this.contextNodeRepository.findOne({
+      where: { id: uuid },
+    });
+
+    // ToDo
+    if (!context) {
+      return null;
+    }
+
+    return context;
+  }
+
+  async getPaidContext(
     hash: string,
   ): Promise<{ context: ContextDto | null; status: 'paid' | 'unpaid' }> {
     const keyStore = new keyStores.InMemoryKeyStore();
@@ -218,6 +231,7 @@ export class ContextService {
 
     const uuid = ContextService._generateUUIDFromString(hash);
 
+    // ToDo: remove
     const exists = await this.contextNodeRepository.exists({
       where: { id: uuid },
     });

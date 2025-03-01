@@ -10,6 +10,7 @@ import { OrderModule } from 'src/order/order.module';
 import { SchedulerModule } from 'src/scheduler/scheduler.module';
 import { SchemaModule } from 'src/schema/schema.module';
 import { ContextModule } from '../context/context.module';
+import { RunnerModule } from 'src/runner/runner.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ContextModule } from '../context/context.module';
     ContextModule,
     OrderModule,
     SchedulerModule,
+    RunnerModule,
     AgentModule,
     SchemaModule,
     TypeOrmModule.forRoot({
@@ -27,7 +29,7 @@ import { ContextModule } from '../context/context.module';
     }),
     GraphileWorkerModule.forRoot({
       connectionString: CRAWLER_DATABASE_URL,
-      concurrency: 3,
+      concurrency: 1,
       logger: null,
     }),
   ],

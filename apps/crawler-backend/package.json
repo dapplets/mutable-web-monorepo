@@ -42,7 +42,9 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "@mweb/openfaas-client": "workspace:*",
+    "@mweb/backend": "workspace:*"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

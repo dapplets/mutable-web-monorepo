@@ -26,6 +26,6 @@ export class ContextController {
 
   @Get(':hash(*)')
   async getContext(@Param('hash') hash: string) {
-    return this.contextService.getContext(hash);
+    return this.contextService.getPaidContext(hash);
   }
 }

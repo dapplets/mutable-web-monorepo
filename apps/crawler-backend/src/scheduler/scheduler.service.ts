@@ -13,21 +13,15 @@ export class SchedulerService {
     private readonly graphileWorker: WorkerService,
   ) {}
 
-  private async _addRunAgentJob(image: string, context: ContextNode) {
-    await this.graphileWorker.addJob('run-agent', { image, context });
-  }
-
   async processContext(context: ContextNode) {
-    // ToDo: add schema to context
-    if (context.metadata.contextType === 'post') {
-      const agents = await this.agentService.getAgentsByInputSchema(
-        'dapplets.near/schema/post',
-      );
+    const agents = await this.agentService.getAgentsForContext(context);
 
-      // ToDo: make queue
-      for (const agent of agents) {
-        await this._addRunAgentJob(agent.image, context);
-      }
+    // ToDo: make queue
+    for (const agent of agents) {
+      await this.graphileWorker.addJob('run-agent', {
+        agentId: agent.id,
+        contextId: context.id,
+      });
     }
   }
 }

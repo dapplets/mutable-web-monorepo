@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { SchedulerService } from './scheduler.service';
-import { AgentRunnerService } from './agent-runner.service';
 import { AgentModule } from 'src/agent/agent.module';
-import { RunAgentTask } from './run-agent.task';
-// import { ContextModule } from 'src/context/context.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [AgentModule],
+  imports: [AgentModule, ConfigModule],
   controllers: [],
-  providers: [SchedulerService, AgentRunnerService, RunAgentTask],
+  providers: [SchedulerService],
   exports: [SchedulerService],
 })
 export class SchedulerModule {}

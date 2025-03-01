@@ -14,7 +14,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throws an error for non-whitelisted properties
     }),
   );
-  app.get(WorkerService).run();
+  await app.get(WorkerService).run();
   await app.listen(CRAWLER_API_PORT);
 }
 bootstrap();

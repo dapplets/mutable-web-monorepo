@@ -8,12 +8,17 @@ import {
   DistanceStrategy,
 } from '@langchain/community/vectorstores/pgvector';
 import { PoolConfig } from 'pg';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class IndexerService {
   private vectorStorePromise: Promise<PGVectorStore>;
 
-  constructor() {
+  constructor(
+    @InjectRepository(ContextNode)
+    private contextNodeRepository: Repository<ContextNode>,
+  ) {
     const embeddings = new OpenAIEmbeddings({
       model: 'text-embedding-3-small',
       configuration: {
@@ -43,6 +48,12 @@ export class IndexerService {
   }
 
   async addContext(context: ContextNode) {
+    const isExist = await this.contextNodeRepository.exists({
+      where: { id: context.id },
+    });
+
+    if (isExist) return;
+
     const document: Document = {
       pageContent: JSON.stringify(context.content),
       metadata: {
