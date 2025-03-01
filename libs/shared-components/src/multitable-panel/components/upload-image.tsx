@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import { ipfsUpload } from '../../helpers'
-import { Image } from './image'
+import { Image } from '../../common/image'
 
 const InputContainer = styled.div`
   display: flex;

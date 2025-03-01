@@ -8,7 +8,7 @@ import {
 } from '@mweb/react-engine'
 import React, { CSSProperties, useEffect } from 'react'
 import styled from 'styled-components'
-import { Badge } from '../common/Badge'
+import { Badge } from '../common/badge'
 import { Image } from '../common/image'
 import { useEngine } from '../contexts/engine-context'
 import { MutationFallbackIcon } from './assets/icons'
