@@ -7,6 +7,9 @@ export type Agent = {
   metadata: {
     name: string;
     description?: string;
+    image?: {
+      ipfs_cid?: string;
+    };
   };
   type: 'openfaas' | 'nearai';
   image: string;
@@ -16,8 +19,11 @@ export type Agent = {
 const SentimentAnalysis: Agent = {
   id: 'dapplets.near/agent/sentiment-analysis',
   metadata: {
-    name: 'Simple Agent',
+    name: 'Sentiment Analysis',
     description: 'Simple Agent for Crawler',
+    image: {
+      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+    },
   },
   type: 'openfaas',
   image: 'ghcr.io/dapplets/sentiment-analysis-agent:latest',
@@ -49,6 +55,9 @@ const FakeDetector: Agent = {
   id: 'dapplets.near/agent/fake-detector',
   metadata: {
     name: 'Fake Detector',
+    image: {
+      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+    },
   },
   type: 'openfaas',
   image: 'ghcr.io/dapplets/fake-detector-agent:latest',
@@ -76,10 +85,13 @@ const FakeDetector: Agent = {
   ],
 };
 
-const NearAiExampleAgent: Agent = {
+const NearAiFakeDetectorAgent: Agent = {
   id: 'dapplets.near/agent/nearai-fake-detector',
   metadata: {
-    name: 'NEAR Example Agent',
+    name: 'NEAR AI Fake Detector',
+    image: {
+      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+    },
   },
   type: 'nearai',
   image: 'dapplets.near/nearai-fake-detector/latest',
@@ -110,7 +122,10 @@ const NearAiExampleAgent: Agent = {
 const CrawlerAgent: Agent = {
   id: 'dapplets.near/agent/crawler',
   metadata: {
-    name: 'Crawler Agent',
+    name: 'AI Crawler Agent',
+    image: {
+      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+    },
   },
   type: 'openfaas',
   image: 'ghcr.io/dapplets/crawler-agent:latest',
@@ -127,6 +142,9 @@ const AssociativeSummarizer: Agent = {
   id: 'dapplets.near/agent/associative-summarizer',
   metadata: {
     name: 'Associative Summarizer',
+    image: {
+      ipfs_cid: 'bafkreifw5rwd7r2k7sk6xo45wc7g2y3pe5wewqztlnipo2wnjatz6fsp34',
+    },
   },
   type: 'openfaas',
   image: 'ghcr.io/dapplets/associative-summarizer-agent:latest',
@@ -157,7 +175,7 @@ const AssociativeSummarizer: Agent = {
 const AllAgents = [
   SentimentAnalysis,
   FakeDetector,
-  NearAiExampleAgent,
+  NearAiFakeDetectorAgent,
   CrawlerAgent,
   AssociativeSummarizer,
 ];
