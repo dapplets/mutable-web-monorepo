@@ -24,10 +24,17 @@ export class SchedulerService {
 
     // ToDo: make queue
     for (const agent of agents) {
-      await this.graphileWorker.addJob('run-agent', {
-        agentId: agent.id,
-        contextId: context.id,
-      });
+      await this.graphileWorker.addJob(
+        'run-agent',
+        {
+          agentId: agent.id,
+          contextId: context.id,
+        },
+        {
+          maxAttempts: 2,
+          queueName: agent.id,
+        },
+      );
     }
   }
 

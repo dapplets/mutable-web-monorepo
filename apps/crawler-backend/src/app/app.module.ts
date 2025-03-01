@@ -31,7 +31,7 @@ import { Job as SchedulerJob } from '../scheduler/entities/job.entity';
     }),
     GraphileWorkerModule.forRoot({
       connectionString: CRAWLER_DATABASE_URL,
-      concurrency: 1,
+      concurrency: 2,
       logger: null,
     }),
   ],
