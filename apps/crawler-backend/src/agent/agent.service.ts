@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ContextNode } from 'src/context/entities/context-node.entity';
 import { utils } from '@mweb/backend';
 
-const SimpleAgent = {
+const SentimentAnalysis = {
   id: 'dapplets.near/agent/sentiment-analysis',
   metadata: {
     name: 'Simple Agent',
@@ -23,12 +23,32 @@ const SimpleAgent = {
   ],
 };
 
-const AllAgents = [SimpleAgent];
+const FakeDetector = {
+  id: 'dapplets.near/agent/fake-detector',
+  metadata: {
+    name: 'Fake Detector',
+  },
+  image: 'ghcr.io/dapplets/fake-detector-agent:latest',
+  targets: [
+    {
+      namespace: 'bos.dapplets.near/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+  ],
+};
+
+const AllAgents = [SentimentAnalysis, FakeDetector];
 
 @Injectable()
 export class AgentService {
   async getAgents() {
-    return [SimpleAgent];
+    return AllAgents;
   }
 
   async getAgentById(id: string) {
