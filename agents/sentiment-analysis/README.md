@@ -19,6 +19,6 @@ Make HTTP request to `http://localhost:5000` to call your function.
 Build and push the agent:
 
 ```sh
-docker build -t ghcr.io/dapplets/simple-agent .
-docker push ghcr.io/dapplets/simple-agent
+docker build -t ghcr.io/dapplets/sentiment-analysis-agent .
+docker push ghcr.io/dapplets/sentiment-analysis-agent
 ```

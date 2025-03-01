@@ -3,12 +3,12 @@ import { ContextNode } from 'src/context/entities/context.entity';
 import { utils } from '@mweb/backend';
 
 const SimpleAgent = {
-  id: 'dapplets.near/agent/simple-agent',
+  id: 'dapplets.near/agent/sentiment-analysis',
   metadata: {
     name: 'Simple Agent',
     description: 'Simple Agent for Crawler',
   },
-  image: 'ghcr.io/dapplets/simple-agent:latest',
+  image: 'ghcr.io/dapplets/sentiment-analysis-agent:latest',
   targets: [
     {
       namespace: 'bos.dapplets.near/parser/twitter',

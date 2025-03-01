@@ -33,7 +33,7 @@ def handle(req):
 
     output = {
         "context": {
-            "namespace": "dapplets.near/agent/simple-agent",
+            "namespace": "dapplets.near/agent/sentiment-analysis",
             "contextType": "sentiment",
             "id": input["context"]["id"],
             "parsedContext": {
