@@ -1,5 +1,5 @@
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ContextNode } from './entities/context.entity';
 import type { Document } from '@langchain/core/documents';
 import { OPENAI_API_KEY, OPENAI_BASE_URL, CRAWLER_DATABASE_URL } from '../env';
@@ -13,6 +13,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class IndexerService {
+  private logger = new Logger(IndexerService.name);
   private vectorStorePromise: Promise<PGVectorStore>;
 
   constructor(
@@ -67,9 +68,18 @@ export class IndexerService {
     const vectorStore = await this.vectorStorePromise;
 
     try {
+      const startTime = performance.now();
+
+      // ToDo: queue
       await vectorStore.addDocuments([document], {
         ids: [context.id],
       });
+
+      const duration = performance.now() - startTime;
+
+      this.logger.log(
+        `Context indexed ${context.metadata.namespace}:${context.metadata.contextType}:${context.metadata.id} for ${duration} ms`,
+      );
     } catch (_) {}
   }
 

@@ -116,7 +116,7 @@ export class RunnerService {
         child: savedContext.metadata.hash,
       });
 
-      this.logger.log(`Agent ${agent.id} executed successfully`);
+      // this.logger.log(`Agent ${agent.id} executed successfully`);
 
       // return response;
     } catch (errorResponse) {
