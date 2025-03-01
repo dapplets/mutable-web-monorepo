@@ -43,7 +43,27 @@ const FakeDetector = {
   ],
 };
 
-const AllAgents = [SentimentAnalysis, FakeDetector];
+const AssociativeSummarizer = {
+  id: 'dapplets.near/agent/associative-summarizer',
+  metadata: {
+    name: 'Associative Summarizer',
+  },
+  image: 'ghcr.io/dapplets/associative-summarizer-agent:latest',
+  targets: [
+    {
+      namespace: 'bos.dapplets.near/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+  ],
+};
+
+const AllAgents = [SentimentAnalysis, FakeDetector, AssociativeSummarizer];
 
 @Injectable()
 export class AgentService {
