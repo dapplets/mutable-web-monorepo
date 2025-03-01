@@ -1,7 +1,3 @@
-import React from 'react'
-import { FC } from 'react'
-import styled from 'styled-components'
-import { AppSwitcher } from '../app-switcher'
 import {
   useGetMutationVersion,
   useGetSelectedMutation,
@@ -9,16 +5,21 @@ import {
   useMutationApps,
   usePreferredSource,
 } from '@mweb/react-engine'
+import React, { FC } from 'react'
+import styled from 'styled-components'
 import { useEngine } from '../../contexts/engine-context'
+import AppCard from '../components/app-card'
+import PageLayout from '../components/page-layout'
 
 const AppsWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
-  padding: 5px 6px 5px 7px;
+  width: calc(100% - 20px);
+  padding: 0 10px;
+  margin: 5px 0;
   gap: 10px;
-  max-height: calc(100vh - 300px);
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -56,19 +57,20 @@ const Applications: FC = () => {
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
   const { mutation } = useMutation(selectedMutationId, preferredSource, mutationVersion)
   const { mutationApps } = useMutationApps(mutation?.id, mutation?.apps ?? [])
+  const appsRef = React.useRef<HTMLDivElement>(null)
+
+  console.log('mutationApps', mutationApps)
 
   if (!selectedMutationId) return null
 
   return (
-    <AppsWrapper>
-      {mutationApps.map((app) => (
-        <AppSwitcher
-          key={`${app.id}/${app.instanceId}`}
-          mutationId={selectedMutationId}
-          app={app}
-        />
-      ))}
-    </AppsWrapper>
+    <PageLayout ref={appsRef} title={mutation?.metadata.name + ' apps' || ''}>
+      <AppsWrapper>
+        {mutationApps.map((app) => (
+          <AppCard key={`${app.id}/${app.instanceId}`} app={app} mutationId={selectedMutationId} />
+        ))}
+      </AppsWrapper>
+    </PageLayout>
   )
 }
 

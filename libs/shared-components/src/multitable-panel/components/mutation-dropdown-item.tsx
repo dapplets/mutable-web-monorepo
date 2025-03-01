@@ -10,8 +10,8 @@ import {
   InputMutation,
 } from '../assets/styles-dropdown'
 import { StarMutationList, StarMutationListDefault } from '../assets/vectors'
-import { Badge } from './badge'
-import { Image } from './image'
+import { Badge } from '../../common/badgeWithIcon'
+import { Image } from '../../common/image'
 import { usePreferredSource, useSetPreferredSource } from '@mweb/react-engine'
 import { useEngine } from '../../contexts/engine-context'
 
