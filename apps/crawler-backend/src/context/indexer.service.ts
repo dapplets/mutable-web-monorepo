@@ -49,6 +49,9 @@ export class IndexerService {
   }
 
   async addContext(context: ContextNode) {
+    // ToDo: wait for initialization of context_node table
+    const vectorStore = await this.vectorStorePromise;
+
     const isExist = await this.contextNodeRepository.exists({
       where: { id: context.id },
     });
@@ -64,8 +67,6 @@ export class IndexerService {
         hash: context.metadata.hash,
       },
     };
-
-    const vectorStore = await this.vectorStorePromise;
 
     try {
       const startTime = performance.now();

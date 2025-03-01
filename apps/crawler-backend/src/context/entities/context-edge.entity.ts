@@ -3,8 +3,14 @@ import { Entity, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'context_edge' })
 export class ContextEdge {
   @PrimaryColumn()
-  parent: string;
+  source: string;
 
   @PrimaryColumn()
-  child: string;
+  target: string;
+
+  @PrimaryColumn()
+  namespace: string;
+
+  @PrimaryColumn()
+  type: string;
 }

@@ -1,5 +1,6 @@
 import { Column, Entity } from 'typeorm';
 
+// ToDo: table is created by langchain
 @Entity({ name: 'context_node', synchronize: false })
 export class ContextNode {
   @Column({ primary: true })

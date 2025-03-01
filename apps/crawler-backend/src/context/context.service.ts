@@ -34,7 +34,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 
 @Injectable()
 export class ContextService {
-  private _rootHash: string;
+  private _rootContext: ContextNode;
   private _keyPair = new utils.KeyPairEd25519(CRAWLER_PRIVATE_KEY);
 
   constructor(
@@ -58,7 +58,7 @@ export class ContextService {
 
     const { hash } = this._prepareNode(rootContext);
 
-    const rootDocument = {
+    this._rootContext = {
       id: ContextService._generateUUIDFromString(hash),
       metadata: {
         namespace: rootContext.namespace,
@@ -70,9 +70,7 @@ export class ContextService {
     };
 
     // ToDo: await
-    this.indexerService.addContext(rootDocument);
-
-    this._rootHash = hash;
+    this.indexerService.addContext(this._rootContext);
   }
 
   async storeContextForRewards(dto: StoreContextDto): Promise<
@@ -137,18 +135,20 @@ export class ContextService {
     });
 
     const edges = await this.contextEdgeRepository.find({
-      select: { parent: true, child: true },
+      select: { source: true, target: true, type: true },
     });
 
     return {
       nodes: nodes.map(({ metadata }) => ({
         id: metadata.hash,
-        label: `${metadata.contextType}\n${metadata.id}`,
+        label: metadata.id,
+        subLabel: metadata.contextType,
       })),
-      edges: edges.map(({ parent, child }) => ({
-        id: `${parent}-${child}`,
-        source: parent,
-        target: child,
+      edges: edges.map(({ source, target, type }) => ({
+        id: `${source}-${target}`,
+        source: source,
+        target: target,
+        label: type,
       })),
     };
   }
@@ -256,7 +256,12 @@ export class ContextService {
     return existingContext;
   }
 
-  async saveEdge(data: { parent: string; child: string }) {
+  async saveEdge(data: {
+    source: string;
+    target: string;
+    namespace: string;
+    type: string;
+  }) {
     await this.contextEdgeRepository.save(data);
   }
 
@@ -273,11 +278,13 @@ export class ContextService {
 
     const parentHash = node.parentNode
       ? await this.saveContextTree(node.parentNode, onStore)
-      : this._rootHash;
+      : this._rootContext.metadata.hash;
 
     await this.saveEdge({
-      parent: parentHash,
-      child: hash,
+      source: parentHash,
+      target: hash,
+      namespace: node.namespace,
+      type: 'child', // ToDo: parser config should provide relationship types
     });
 
     return hash;

@@ -112,8 +112,10 @@ export class RunnerService {
       );
 
       await this.contextService.saveEdge({
-        parent: context.metadata.hash,
-        child: savedContext.metadata.hash,
+        source: context.metadata.hash,
+        target: savedContext.metadata.hash,
+        namespace: agentId,
+        type: 'reply',
       });
 
       // this.logger.log(`Agent ${agent.id} executed successfully`);

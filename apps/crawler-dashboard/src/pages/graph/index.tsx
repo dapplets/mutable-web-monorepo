@@ -46,6 +46,7 @@ export const GraphPage: FC = () => {
           onNodeClick={onNodeClick}
           edgeArrowPosition="none"
           sizingType="centrality"
+          labelType='all'
         />
       </div>
       <Drawer
