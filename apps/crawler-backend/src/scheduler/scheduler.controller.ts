@@ -9,4 +9,9 @@ export class SchedulerController {
   async getJobs() {
     return this.schedulerService.getJobs();
   }
+
+  @Get('runners')
+  async getAgentsQueue() {
+    return this.schedulerService.getAgentsQueue();
+  }
 }

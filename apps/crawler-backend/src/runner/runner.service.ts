@@ -46,6 +46,8 @@ export class RunnerService {
       return;
     }
 
+    const beginTime = Date.now();
+
     try {
       const result = await runner.run({ agent, context: inputContext });
 
@@ -79,6 +81,10 @@ export class RunnerService {
       // return response;
     } catch (errorResponse) {
       this.logger.error(`Agent running error: ${errorResponse}`);
+    } finally {
+      const endTime = Date.now();
+      const duration = endTime - beginTime;
+      await this.agentService.addAgentConsumption(agentId, duration);
     }
   }
 }

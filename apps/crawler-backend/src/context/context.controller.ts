@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 import { ContextService } from './context.service';
 import {
   InvokeAgentDto,

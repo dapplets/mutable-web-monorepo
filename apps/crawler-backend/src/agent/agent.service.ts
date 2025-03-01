@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ContextNode } from 'src/context/entities/context-node.entity';
 import { utils } from '@mweb/backend';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Agent } from './agent.entity';
+import { Repository } from 'typeorm';
 
-export type Agent = {
+export type MWebAgent = {
   id: string;
   metadata: {
     name: string;
@@ -13,10 +16,11 @@ export type Agent = {
   };
   type: 'openfaas' | 'nearai';
   image: string;
+  rate: number;
   targets: any[];
 };
 
-const SentimentAnalysis: Agent = {
+const SentimentAnalysis: MWebAgent = {
   id: 'dapplets.near/agent/sentiment-analysis',
   metadata: {
     name: 'Sentiment Analysis',
@@ -27,6 +31,7 @@ const SentimentAnalysis: Agent = {
   },
   type: 'openfaas',
   image: 'ghcr.io/dapplets/sentiment-analysis-agent:latest',
+  rate: 0.081, // per hour
   targets: [
     {
       namespace: 'bos.dapplets.near/parser/twitter',
@@ -51,7 +56,7 @@ const SentimentAnalysis: Agent = {
   ],
 };
 
-const FakeDetector: Agent = {
+const FakeDetector: MWebAgent = {
   id: 'dapplets.near/agent/fake-detector',
   metadata: {
     name: 'Fake Detector',
@@ -61,6 +66,7 @@ const FakeDetector: Agent = {
   },
   type: 'openfaas',
   image: 'ghcr.io/dapplets/fake-detector-agent:latest',
+  rate: 0.023, // per hour
   targets: [
     {
       namespace: 'bos.dapplets.near/parser/twitter',
@@ -85,7 +91,7 @@ const FakeDetector: Agent = {
   ],
 };
 
-const NearAiFakeDetectorAgent: Agent = {
+const NearAiFakeDetectorAgent: MWebAgent = {
   id: 'dapplets.near/agent/nearai-fake-detector',
   metadata: {
     name: 'NEAR AI Fake Detector',
@@ -94,6 +100,7 @@ const NearAiFakeDetectorAgent: Agent = {
     },
   },
   type: 'nearai',
+  rate: 0.531, // per hour
   image: 'dapplets.near/nearai-fake-detector/latest',
   targets: [
     {
@@ -119,7 +126,7 @@ const NearAiFakeDetectorAgent: Agent = {
   ],
 };
 
-const CrawlerAgent: Agent = {
+const CrawlerAgent: MWebAgent = {
   id: 'dapplets.near/agent/crawler',
   metadata: {
     name: 'AI Crawler Agent',
@@ -127,6 +134,7 @@ const CrawlerAgent: Agent = {
       ipfs_cid: 'bafkreihnq7xmeohi2qdgryt2wtyk3rtfcaid67kj3kj6iwiqix53eybmdy',
     },
   },
+  rate: 0.09, // per hour
   type: 'openfaas',
   image: 'ghcr.io/dapplets/crawler-agent:latest',
   targets: [
@@ -138,7 +146,7 @@ const CrawlerAgent: Agent = {
   ],
 };
 
-const AssociativeSummarizer: Agent = {
+const AssociativeSummarizer: MWebAgent = {
   id: 'dapplets.near/agent/associative-summarizer',
   metadata: {
     name: 'Associative Summarizer',
@@ -147,6 +155,7 @@ const AssociativeSummarizer: Agent = {
     },
   },
   type: 'openfaas',
+  rate: 0.087, // per hour
   image: 'ghcr.io/dapplets/associative-summarizer-agent:latest',
   targets: [
     {
@@ -182,6 +191,11 @@ const AllAgents = [
 
 @Injectable()
 export class AgentService {
+  constructor(
+    @InjectRepository(Agent)
+    private ordersRepository: Repository<Agent>,
+  ) {}
+
   async getAgents() {
     return AllAgents;
   }
@@ -203,5 +217,22 @@ export class AgentService {
         (target) => utils.isTargetMet(target, contextNodeAsInCore as any), // ToDo: workaround
       ),
     );
+  }
+
+  async addAgentConsumption(agentId: string, consumed: number) {
+    let agent = await this.ordersRepository.findOne({
+      where: { id: agentId },
+    });
+
+    if (!agent) {
+      agent = new Agent();
+      agent.id = agentId;
+      agent.consumption = 0;
+    }
+
+    // add time
+    agent.consumption += consumed;
+
+    return this.ordersRepository.save(agent);
   }
 }

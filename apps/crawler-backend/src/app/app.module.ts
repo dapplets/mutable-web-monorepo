@@ -14,6 +14,7 @@ import { ContextModule } from '../context/context.module';
 import { RunnerModule } from '../runner/runner.module';
 import { Job as SchedulerJob } from '../scheduler/entities/job.entity';
 import { ScheduleModule } from '@nestjs/schedule';
+import { Agent } from 'src/agent/agent.entity';
 
 @Module({
   imports: [
@@ -28,7 +29,15 @@ import { ScheduleModule } from '@nestjs/schedule';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: CRAWLER_DATABASE_URL,
-      entities: [Order, Job, Step, ContextNode, ContextEdge, SchedulerJob],
+      entities: [
+        Order,
+        Job,
+        Step,
+        ContextNode,
+        ContextEdge,
+        SchedulerJob,
+        Agent,
+      ],
       synchronize: true,
     }),
     GraphileWorkerModule.forRoot({

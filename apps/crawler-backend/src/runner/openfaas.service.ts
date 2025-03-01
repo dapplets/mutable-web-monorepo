@@ -5,7 +5,7 @@ import {
   SystemApi as OpenFaasSysApi,
 } from '@mweb/openfaas-client';
 import { ConfigService } from '@nestjs/config';
-import { Agent } from 'src/agent/agent.service';
+import { MWebAgent } from 'src/agent/agent.service';
 import { ContextNode } from 'src/context/entities/context-node.entity';
 import { IRunnerService } from './runner.interface';
 
@@ -47,7 +47,7 @@ export class OpenFaasService implements IRunnerService {
     );
   }
 
-  async run({ agent, context }: { agent: Agent; context: ContextNode }) {
+  async run({ agent, context }: { agent: MWebAgent; context: ContextNode }) {
     const fnName = agent.id.replace(/[^a-zA-Z0-9]+/g, '-'); // ToDo: too naive
 
     const isFnExist = await this._checkFnExistance(fnName);

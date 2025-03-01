@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Agent } from 'src/agent/agent.service';
+import { MWebAgent } from 'src/agent/agent.service';
 import { ContextNode } from 'src/context/entities/context-node.entity';
 import { IRunnerService } from './runner.interface';
 
@@ -14,7 +14,7 @@ export class NearAiService implements IRunnerService {
     this._apiKey = config.getOrThrow('NEARAI_API_KEY');
   }
 
-  async run({ agent, context }: { agent: Agent; context: ContextNode }) {
+  async run({ agent, context }: { agent: MWebAgent; context: ContextNode }) {
     const agentId = agent.image;
     const inputData = JSON.stringify({
       context: {
