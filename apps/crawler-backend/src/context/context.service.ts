@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   ContextDto,
   InvokeAgentDto,
+  QuerySimilarContextDto,
   StoreContextDto,
 } from './dtos/store-context.dto';
 import { CRAWLER_PRIVATE_KEY } from '../env';
@@ -273,8 +274,21 @@ export class ContextService {
     };
   }
 
-  async getSimilarContexts(query: string, limit: number) {
-    return this.indexerService.getSimilarContexts(query, limit);
+  async getSimilarContexts(dto: QuerySimilarContextDto) {
+    const contextNode = await this.saveContextNode(dto.context); // ToDo: GET must not be mutable
+    const similarContextNodes = await this.indexerService.getSimilarContexts(
+      contextNode,
+      dto.limit,
+    );
+
+    return {
+      contexts: similarContextNodes.map((context) => ({
+        namespace: context.metadata.namespace,
+        contextType: context.metadata.contextType,
+        id: context.metadata.id,
+        parsedContext: context.content,
+      })),
+    };
   }
 
   async saveContextNode(node: ContextDto) {

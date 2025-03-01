@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Post, Param, Query } from '@nestjs/common';
 import { ContextService } from './context.service';
-import { InvokeAgentDto, StoreContextDto } from './dtos/store-context.dto';
+import {
+  InvokeAgentDto,
+  QuerySimilarContextDto,
+  StoreContextDto,
+} from './dtos/store-context.dto';
 
 @Controller('context')
 export class ContextController {
@@ -21,12 +25,9 @@ export class ContextController {
     return this.contextService.getContexts();
   }
 
-  @Get('similar')
-  async getSimilarContexts(
-    @Query('query') query: string,
-    @Query('limit') limit: number,
-  ) {
-    return this.contextService.getSimilarContexts(query, limit);
+  @Post('similar')
+  async getSimilarContexts(@Body() dto: QuerySimilarContextDto) {
+    return this.contextService.getSimilarContexts(dto);
   }
 
   @Get(':hash(*)')

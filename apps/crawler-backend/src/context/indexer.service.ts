@@ -98,14 +98,38 @@ export class IndexerService {
     }
   }
 
-  async getSimilarContexts(query: string, limit: number) {
+  async getSimilarContexts(contextNode: ContextNode, limit: number) {
+    if (limit > 50) {
+      throw new Error('Limit must be less than 50');
+    }
+
     const vectorStore = await this.vectorStorePromise;
+
+    const metadata = {
+      namespace: contextNode.metadata.namespace,
+      contextType: contextNode.metadata.contextType,
+    };
+
+    const query = JSON.stringify(contextNode.content);
 
     const searchResults = await vectorStore.similaritySearchWithScore(
       query,
       limit,
+      metadata,
     );
 
-    return searchResults;
+    // ToDo: too much mappings
+    const contextNodes = searchResults.map(([result]) => ({
+      id: result.id,
+      metadata: {
+        namespace: result.metadata.namespace,
+        contextType: result.metadata.contextType,
+        id: result.metadata.id,
+        hash: result.metadata.hash,
+      },
+      content: JSON.parse(result.pageContent),
+    }));
+
+    return contextNodes;
   }
 }
