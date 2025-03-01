@@ -2,12 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { ContextNode } from 'src/context/entities/context-node.entity';
 import { utils } from '@mweb/backend';
 
-const SentimentAnalysis = {
+export type Agent = {
+  id: string;
+  metadata: {
+    name: string;
+    description?: string;
+  };
+  type: 'openfaas' | 'nearai';
+  image: string;
+  targets: any[];
+};
+
+const SentimentAnalysis: Agent = {
   id: 'dapplets.near/agent/sentiment-analysis',
   metadata: {
     name: 'Simple Agent',
     description: 'Simple Agent for Crawler',
   },
+  type: 'openfaas',
   image: 'ghcr.io/dapplets/sentiment-analysis-agent:latest',
   targets: [
     {
@@ -23,12 +35,34 @@ const SentimentAnalysis = {
   ],
 };
 
-const FakeDetector = {
+const FakeDetector: Agent = {
   id: 'dapplets.near/agent/fake-detector',
   metadata: {
     name: 'Fake Detector',
   },
+  type: 'openfaas',
   image: 'ghcr.io/dapplets/fake-detector-agent:latest',
+  targets: [
+    {
+      namespace: 'bos.dapplets.near/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+  ],
+};
+
+const NearAiExampleAgent: Agent = {
+  id: 'dapplets.near/agent/nearai-fake-detector',
+  metadata: {
+    name: 'NEAR Example Agent',
+  },
+  type: 'nearai',
+  image: 'dapplets.near/nearai-fake-detector/latest',
   targets: [
     {
       namespace: 'bos.dapplets.near/parser/twitter',
@@ -65,7 +99,7 @@ const AssociativeSummarizer = {
 };
 */
 
-const AllAgents = [SentimentAnalysis, FakeDetector]; // AssociativeSummarizer
+const AllAgents = [SentimentAnalysis, FakeDetector, NearAiExampleAgent]; // AssociativeSummarizer
 
 @Injectable()
 export class AgentService {

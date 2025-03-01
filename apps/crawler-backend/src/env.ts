@@ -12,3 +12,5 @@ export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 export const OPENAI_BASE_URL =
   process.env.OPENAI_BASE_URL ?? 'https://api.openai.com/v1';
+
+export const NEARAI_API_KEY = process.env.NEARAI_API_KEY;
