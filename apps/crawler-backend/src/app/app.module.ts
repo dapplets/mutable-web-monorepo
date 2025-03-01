@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ContextModule } from '../context/context.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { OrderModule } from 'src/order/order.module';
-import { Job, Order, Step } from 'src/order/entities/order.entity';
-import { ContextNode, ContextEdge } from 'src/context/entities/context.entity';
-import { SchedulerModule } from 'src/scheduler/scheduler.module';
+import { GraphileWorkerModule } from 'nestjs-graphile-worker';
 import { AgentModule } from 'src/agent/agent.module';
+import { ContextEdge, ContextNode } from 'src/context/entities/context.entity';
+import { CRAWLER_DATABASE_URL } from 'src/env';
+import { Job, Order, Step } from 'src/order/entities/order.entity';
+import { OrderModule } from 'src/order/order.module';
+import { SchedulerModule } from 'src/scheduler/scheduler.module';
 import { SchemaModule } from 'src/schema/schema.module';
+import { ContextModule } from '../context/context.module';
 
 @Module({
   imports: [
@@ -17,13 +19,14 @@ import { SchemaModule } from 'src/schema/schema.module';
     SchemaModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'user',
-      password: 'password',
+      url: CRAWLER_DATABASE_URL,
       entities: [Order, Job, Step, ContextNode, ContextEdge],
-      database: 'mweb',
       synchronize: true,
+    }),
+    GraphileWorkerModule.forRoot({
+      connectionString: CRAWLER_DATABASE_URL,
+      concurrency: 3,
+      logger: null,
     }),
   ],
 })

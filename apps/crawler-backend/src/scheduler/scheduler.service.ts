@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AgentService } from 'src/agent/agent.service';
-import { AgentRunnerService } from './agent-runner.service';
 import { ContextNode } from 'src/context/entities/context.entity';
-// import { ContextService } from 'src/context/context.service';
+import { WorkerService } from 'nestjs-graphile-worker';
 
 @Injectable()
 export class SchedulerService {
@@ -10,12 +9,13 @@ export class SchedulerService {
     @Inject(AgentService)
     private agentService: AgentService,
 
-    @Inject(AgentRunnerService)
-    private runnerService: AgentRunnerService,
-
-    // @Inject(ContextService)
-    // private contextService: ContextService,
+    @Inject(WorkerService)
+    private readonly graphileWorker: WorkerService,
   ) {}
+
+  private async _addRunAgentJob(image: string, context: ContextNode) {
+    await this.graphileWorker.addJob('run-agent', { image, context });
+  }
 
   async processContext(context: ContextNode) {
     // ToDo: add schema to context
@@ -26,15 +26,8 @@ export class SchedulerService {
 
       // ToDo: make queue
       for (const agent of agents) {
-        await this._processContextWithAgent(agent.image, context);
+        await this._addRunAgentJob(agent.image, context);
       }
     }
-  }
-
-  async _processContextWithAgent(image: string, context: ContextNode) {
-    const resultContext = await this.runnerService.execute(image, context);
-    console.log({ resultContext });
-    // ToDo: save to db
-    // await this.contextService.storeContext(resultContext);
   }
 }

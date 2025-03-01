@@ -39,14 +39,11 @@ export class AgentRunnerService {
       body: podManifest,
     });
 
-    console.log(`Pod ${agentName} created.`);
-
     return agentName;
   }
 
   async waitForPodReady(podName: string): Promise<void> {
-    console.log(`Waiting for pod ${podName} to be ready...`);
-
+    // ToDo: add timeout
     while (true) {
       const pod = await this.k8sApi.readNamespacedPod({
         name: podName,
@@ -54,7 +51,6 @@ export class AgentRunnerService {
       });
 
       if (pod?.status?.phase === 'Running') {
-        console.log(`Pod ${podName} is ready!`);
         return;
       }
 
@@ -79,14 +75,10 @@ export class AgentRunnerService {
   //   }
 
   async deleteAgentPod(agentName: string): Promise<void> {
-    console.log(`Deleting pod ${agentName}...`);
-
     await this.k8sApi.deleteNamespacedPod({
       name: agentName,
       namespace: this.namespace,
     });
-
-    console.log(`Pod ${agentName} deleted.`);
   }
 
   async execute(image: string, input: any): Promise<any> {
