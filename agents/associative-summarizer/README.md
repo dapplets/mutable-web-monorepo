@@ -19,6 +19,6 @@ Make HTTP request to `http://localhost:5000` to call your function.
 Build and push the agent:
 
 ```sh
-docker build -t ghcr.io/dapplets/associative-summarizer-agent .
-docker push ghcr.io/dapplets/associative-summarizer-agent
+docker buildx create --use # if you didn't it before
+docker buildx build --platform linux/amd64,linux/arm64 . --tag ghcr.io/dapplets/associative-summarizer-agent:latest --push 
 ```

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: {{.Release.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/dapplets/crawler-backend:{{.Values.tag}}
+          env:
+            - name: CRAWLER_API_PORT
+              value: "3000"
+            - name: CRAWLER_DATABASE_URL
+              value: "{{.Values.databaseUrl}}"
+            - name: OPENAI_API_KEY
+              value: "{{.Values.openaiApiKey}}"
+            - name: OPENFAAS_USERNAME
+              value: "{{.Values.openfaas.username}}"
+            - name: OPENFAAS_PASSWORD
+              value: "{{.Values.openfaas.password}}"
+            - name: OPENFAAS_URL
+              value: "{{.Values.openfaas.url}}"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: {{.Release.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: 'pgvector/pgvector:pg16'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: '{{.Values.postgresql.dbName}}'
+            - name: POSTGRES_USER
+              value: '{{.Values.postgresql.username}}'
+            - name: POSTGRES_PASSWORD
+              value: '{{.Values.postgresql.password}}'
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdata
+      volumes:
+        - name: postgresdata
+          persistentVolumeClaim:
+            claimName: postgres-volume-claim

@@ -10,7 +10,7 @@
   "packageManager": "pnpm@9.9.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "turbo run build --filter=!@mweb/crawler-economy",
+    "build": "turbo run build",
     "build:extension": "turbo run build --filter=@mweb/extension",
     "build:gateway": "turbo run build --filter=@mweb/gateway",
     "build:contract": "turbo run build --filter=@mweb/crawler-economy",

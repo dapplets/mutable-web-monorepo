@@ -36,10 +36,27 @@ To retrieve the admin password, run:
 echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
 ```
 
-Fetch your public IP or NodePort via 
+Fetch your public IP or NodePort via
 
 ```sh
 kubectl get svc -n openfaas gateway-external -o wide
 ```
 
 Visit `http://127.0.0.1:31112/`
+
+## Build this project with Docker
+
+```sh
+cd mutable-web-monorepo
+docker buildx create --use # if you didn't it before
+docker buildx build --platform linux/amd64,linux/arm64 -f apps/crawler-backend/Dockerfile . --tag ghcr.io/dapplets/crawler-backend:latest --push 
+docker push ghcr.io/dapplets/crawler-backend:latest
+```
+
+## Deploy to Kubernetes
+
+Use the hash from the previous step
+
+```sh
+helm upgrade aigency ./helm --install --create-namespace --namespace aigency --set tag=latest -f ./helm/values.yaml
+```

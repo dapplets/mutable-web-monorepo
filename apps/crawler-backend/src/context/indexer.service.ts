@@ -52,11 +52,18 @@ export class IndexerService {
     // ToDo: wait for initialization of context_node table
     const vectorStore = await this.vectorStorePromise;
 
+    this.logger.debug('Vector store ready');
+
     const isExist = await this.contextNodeRepository.exists({
       where: { id: context.id },
     });
 
-    if (isExist) return;
+    if (isExist) {
+      this.logger.debug(`Context node exists: ${context.id}`);
+      return;
+    } else {
+      this.logger.debug(`Context node doesn't exist, saving: ${context.id}`);
+    }
 
     const document: Document = {
       pageContent: JSON.stringify(context.content),
@@ -76,12 +83,19 @@ export class IndexerService {
         ids: [context.id],
       });
 
+      this.logger.debug(`Document added to vector store: ${context.id}`);
+
       const duration = performance.now() - startTime;
 
       this.logger.log(
         `Context indexed ${context.metadata.namespace}:${context.metadata.contextType}:${context.metadata.id} for ${duration} ms`,
       );
-    } catch (_) {}
+    } catch (err) {
+      this.logger.error(
+        `Document saving to vector store failed: ${context.id}`,
+        err,
+      );
+    }
   }
 
   async getSimilarContexts(query: string, limit: number) {

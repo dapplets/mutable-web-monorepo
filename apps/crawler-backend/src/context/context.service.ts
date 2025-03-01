@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import {
   ContextDto,
   InvokeAgentDto,
@@ -38,6 +38,8 @@ function bytesToBase64(bytes: Uint8Array): string {
 
 @Injectable()
 export class ContextService {
+  private logger = new Logger(ContextService.name);
+
   private _rootContext: ContextNode;
   private _keyPair = new utils.KeyPairEd25519(CRAWLER_PRIVATE_KEY);
 
@@ -78,6 +80,7 @@ export class ContextService {
   }
 
   async invokeAgent(dto: InvokeAgentDto): Promise<{ context: any }> {
+    this.logger.debug(`Agent invoked: ${dto.context.contextType}`);
     const { hash: inputContextHash } = this._prepareNode(dto.context);
 
     // check cache
@@ -89,6 +92,12 @@ export class ContextService {
       },
       take: 1,
     });
+
+    if (edges.length > 0) {
+      this.logger.debug(`Cache exists: ${dto.context.contextType}`);
+    } else {
+      this.logger.debug(`No cache, executing: ${dto.context.contextType}`);
+    }
 
     // return cached response
     if (edges.length > 0) {
@@ -118,6 +127,7 @@ export class ContextService {
       });
     } else {
       await this.saveContextTree(dto.context);
+      this.logger.debug(`Context tree saved: ${dto.context.contextType}`);
     }
 
     return { context: null };
@@ -284,6 +294,12 @@ export class ContextService {
       where: { id: uuid },
     });
 
+    if (existingContext) {
+      this.logger.debug(`Context node exists: ${uuid}`);
+    } else {
+      this.logger.debug(`Context node doesn't exist, saving: ${uuid}`);
+    }
+
     if (!existingContext) {
       const contextToStore = {
         id: uuid,
@@ -298,8 +314,12 @@ export class ContextService {
 
       await this.indexerService.addContext(contextToStore);
 
+      this.logger.debug(`Context node saved: ${uuid}`);
+
       // ToDo: don't wait
       await this.schedulerService.processContext(contextToStore);
+
+      this.logger.debug(`Context node added to agents queue: ${uuid}`);
 
       return contextToStore;
     }
@@ -323,6 +343,8 @@ export class ContextService {
   ): Promise<string> {
     const savedContext = await this.saveContextNode(node);
 
+    this.logger.debug(`Current context saved`);
+
     const hash = savedContext.metadata.hash;
 
     onStore?.(hash);
@@ -331,12 +353,16 @@ export class ContextService {
       ? await this.saveContextTree(node.parentNode, onStore)
       : this._rootContext.metadata.hash;
 
+    this.logger.debug(`Parent context saved`);
+
     await this.saveEdge({
       source: parentHash,
       target: hash,
       namespace: node.namespace,
       type: 'child', // ToDo: parser config should provide relationship types
     });
+
+    this.logger.debug(`Edge saved`);
 
     return hash;
   }

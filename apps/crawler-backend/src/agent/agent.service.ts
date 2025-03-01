@@ -43,6 +43,7 @@ const FakeDetector = {
   ],
 };
 
+/*
 const AssociativeSummarizer = {
   id: 'dapplets.near/agent/associative-summarizer',
   metadata: {
@@ -62,8 +63,9 @@ const AssociativeSummarizer = {
     },
   ],
 };
+*/
 
-const AllAgents = [SentimentAnalysis, FakeDetector, AssociativeSummarizer];
+const AllAgents = [SentimentAnalysis, FakeDetector]; // AssociativeSummarizer
 
 @Injectable()
 export class AgentService {
