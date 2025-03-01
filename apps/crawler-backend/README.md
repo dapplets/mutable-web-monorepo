@@ -50,7 +50,6 @@ Visit `http://127.0.0.1:31112/`
 cd mutable-web-monorepo
 docker buildx create --use # if you didn't it before
 docker buildx build --platform linux/amd64,linux/arm64 -f apps/crawler-backend/Dockerfile . --tag ghcr.io/dapplets/crawler-backend:latest --push 
-docker push ghcr.io/dapplets/crawler-backend:latest
 ```
 
 ## Deploy to Kubernetes

@@ -29,6 +29,8 @@ spec:
               value: "{{.Values.openfaas.password}}"
             - name: OPENFAAS_URL
               value: "{{.Values.openfaas.url}}"
+            - name: NEARAI_API_KEY
+              value: "{{.Values.nearAiApiKey}}"
 
 ---
 apiVersion: apps/v1
