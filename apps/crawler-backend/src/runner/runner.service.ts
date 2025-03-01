@@ -102,7 +102,21 @@ export class RunnerService {
 
       const result = await response.json();
 
-      console.log(result);
+      if (!result?.context) {
+        this.logger.error(`Agent ${agent.id}: no context returned`);
+        return;
+      }
+
+      const savedContext = await this.contextService.saveContextNode(
+        result.context,
+      );
+
+      await this.contextService.saveEdge({
+        parent: context.metadata.hash,
+        child: savedContext.metadata.hash,
+      });
+
+      this.logger.log(`Agent ${agent.id} executed successfully`);
 
       // return response;
     } catch (errorResponse) {

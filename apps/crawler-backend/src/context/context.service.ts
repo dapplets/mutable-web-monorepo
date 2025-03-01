@@ -74,7 +74,7 @@ export class ContextService {
     this._rootHash = hash;
   }
 
-  async storeContext(dto: StoreContextDto): Promise<
+  async storeContextForRewards(dto: StoreContextDto): Promise<
     {
       receipt: {
         data_hash: string;
@@ -92,7 +92,7 @@ export class ContextService {
 
     const storedHashes: string[] = [];
 
-    await this.storeNode(dto.context, (hash) => storedHashes.push(hash));
+    await this.saveContextTree(dto.context, (hash) => storedHashes.push(hash));
 
     const schema = BorshSchema.Struct({
       data_hash: BorshSchema.Vec(BorshSchema.u8),
@@ -215,11 +215,7 @@ export class ContextService {
     return this.indexerService.getSimilarContexts(query, limit);
   }
 
-  // ToDo: refactor onStore
-  private async storeNode(
-    node: ContextDto,
-    onStore: (hash: string) => void,
-  ): Promise<string> {
+  async saveContextNode(node: ContextDto) {
     const { node: clonedNode, hash } = this._prepareNode({
       namespace: node.namespace,
       contextType: node.contextType,
@@ -232,11 +228,11 @@ export class ContextService {
     const uuid = ContextService._generateUUIDFromString(hash);
 
     // ToDo: remove
-    const exists = await this.contextNodeRepository.exists({
+    const existingContext = await this.contextNodeRepository.findOne({
       where: { id: uuid },
     });
 
-    if (!exists) {
+    if (!existingContext) {
       const contextToStore = {
         id: uuid,
         metadata: {
@@ -252,15 +248,33 @@ export class ContextService {
 
       // ToDo: don't wait
       await this.schedulerService.processContext(contextToStore);
+
+      return contextToStore;
     }
+
+    return existingContext;
+  }
+
+  async saveEdge(data: { parent: string; child: string }) {
+    await this.contextEdgeRepository.save(data);
+  }
+
+  // ToDo: refactor onStore
+  private async saveContextTree(
+    node: ContextDto,
+    onStore: (hash: string) => void,
+  ): Promise<string> {
+    const savedContext = await this.saveContextNode(node);
+
+    const hash = savedContext.metadata.hash;
 
     onStore(hash);
 
     const parentHash = node.parentNode
-      ? await this.storeNode(node.parentNode, onStore)
+      ? await this.saveContextTree(node.parentNode, onStore)
       : this._rootHash;
 
-    await this.contextEdgeRepository.save({
+    await this.saveEdge({
       parent: parentHash,
       child: hash,
     });
