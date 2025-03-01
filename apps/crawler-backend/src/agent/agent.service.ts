@@ -32,6 +32,16 @@ const SentimentAnalysis: Agent = {
       contextType: 'post',
       if: { id: { not: null } },
     },
+    {
+      namespace: 'bos.dapplets.near/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
   ],
 };
 
@@ -50,6 +60,16 @@ const FakeDetector: Agent = {
     },
     {
       namespace: 'bos.dapplets.testnet/parser/twitter',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.near/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/github',
       contextType: 'post',
       if: { id: { not: null } },
     },
@@ -74,6 +94,16 @@ const NearAiExampleAgent: Agent = {
       contextType: 'post',
       if: { id: { not: null } },
     },
+    {
+      namespace: 'bos.dapplets.near/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
   ],
 };
 
@@ -93,12 +123,12 @@ const CrawlerAgent: Agent = {
   ],
 };
 
-/*
-const AssociativeSummarizer = {
+const AssociativeSummarizer: Agent = {
   id: 'dapplets.near/agent/associative-summarizer',
   metadata: {
     name: 'Associative Summarizer',
   },
+  type: 'openfaas',
   image: 'ghcr.io/dapplets/associative-summarizer-agent:latest',
   targets: [
     {
@@ -111,16 +141,26 @@ const AssociativeSummarizer = {
       contextType: 'post',
       if: { id: { not: null } },
     },
+    {
+      namespace: 'bos.dapplets.near/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
+    {
+      namespace: 'bos.dapplets.testnet/parser/github',
+      contextType: 'post',
+      if: { id: { not: null } },
+    },
   ],
 };
-*/
 
 const AllAgents = [
   SentimentAnalysis,
   FakeDetector,
   NearAiExampleAgent,
   CrawlerAgent,
-]; // AssociativeSummarizer
+  AssociativeSummarizer,
+];
 
 @Injectable()
 export class AgentService {

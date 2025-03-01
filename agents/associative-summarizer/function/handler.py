@@ -1,65 +1,20 @@
 import json
-import numpy as np
-from sentence_transformers import SentenceTransformer
+import requests
 from transformers import pipeline
-
-# Load the SentenceTransformer model to compute embeddings
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
 # Initialize the summarization pipeline with the explicitly specified model
 summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
 
-# Sample vector database with documents.
-# In a real-world application, these embeddings would be precomputed and stored in a persistent vector database.
-vector_db = [
-    {"id": "doc1", "text": "Sample content similar to text A."},
-    {"id": "doc2", "text": "Another piece of content that relates to text B."},
-    {"id": "doc3", "text": "Further content that might match with text C."},
-    {"id": "doc4", "text": "Additional text that can be relevant."},
-]
-
-# Precompute embeddings for documents in the vector database
-for doc in vector_db:
-    doc["embedding"] = model.encode(doc["text"])
+aigencyBaseUrl = "https://api.aigency.augm.link"
 
 
-def cosine_similarity(vec1, vec2):
-    """Compute the cosine similarity between two vectors."""
-    if np.linalg.norm(vec1) == 0 or np.linalg.norm(vec2) == 0:
-        return 0.0
-    return np.dot(vec1, vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
-
-
-def search_vector_db(query_text, top_k):
-    """
-    Compute the embedding for the query text and search for the top_k most similar documents
-    in the vector database using cosine similarity.
-
-    Args:
-        query_text (str): The input text to search for similar documents.
-        top_k (int): The number of top similar documents to return.
-
-    Returns:
-        List[Dict]: A list of dictionaries containing the document id, text, and similarity score.
-    """
-    # Compute the embedding for the query text
-    query_embedding = model.encode(query_text)
-
-    # Calculate cosine similarity between the query embedding and each document's embedding
-    results = []
-    for doc in vector_db:
-        sim = cosine_similarity(query_embedding, doc["embedding"])
-        results.append(
-            {
-                "id": doc["id"],
-                "text": doc["text"],
-                "similarity": float(sim),  # convert numpy.float32 to Python float
-            }
-        )
-
-    # Sort the results by similarity in descending order and return the top_k results
-    results = sorted(results, key=lambda x: x["similarity"], reverse=True)
-    return results[:top_k]
+def search_vector_db(context):
+    url = f"{aigencyBaseUrl}/context/similar"
+    headers = {"Content-Type": "application/json"}
+    data = {"context": context, "limit": 5}
+    response = requests.post(url, headers=headers, data=json.dumps(data))
+    results = response.json()
+    return results["contexts"]
 
 
 def handle(req):
@@ -103,14 +58,13 @@ def handle(req):
     data = json.loads(req)
 
     # Extract the text to search from the parsed context
-    text = data["context"]["parsedContext"]["text"]
+    context = data["context"]
 
     # Perform the search in the vector database.
-    # Here, we get all similar documents by setting top_k to the size of the vector_db.
-    similar_items = search_vector_db(text, top_k=len(vector_db))
+    similar_contexts = search_vector_db(context)
 
     # Concatenate all similar document texts into one continuous string
-    combined_text = " ".join([doc["text"] for doc in similar_items])
+    combined_text = " ".join([doc["parsedContext"]["text"] for doc in similar_contexts])
 
     # Use the summarization model (LLM) to summarize the combined text
     # Adjust max_length and min_length as needed
@@ -122,10 +76,10 @@ def handle(req):
     # Build the output JSON with the search results and the summary
     output = {
         "context": {
-            "namespace": "dapplets.near/agent/vector-search",
+            "namespace": "dapplets.near/agent/associative-summarizer",
             "contextType": "similarity",
             "id": data["context"]["id"],
-            "parsedContext": {"results": similar_items, "summary": summary_text},
+            "parsedContext": {"results": similar_contexts, "summary": summary_text},
         }
     }
 
