@@ -77,6 +77,22 @@ const NearAiExampleAgent: Agent = {
   ],
 };
 
+const CrawlerAgent: Agent = {
+  id: 'dapplets.near/agent/crawler',
+  metadata: {
+    name: 'Crawler Agent',
+  },
+  type: 'openfaas',
+  image: 'ghcr.io/dapplets/crawler-agent:latest',
+  targets: [
+    {
+      namespace: 'engine',
+      contextType: 'website',
+      if: { url: { not: null } },
+    },
+  ],
+};
+
 /*
 const AssociativeSummarizer = {
   id: 'dapplets.near/agent/associative-summarizer',
@@ -99,7 +115,12 @@ const AssociativeSummarizer = {
 };
 */
 
-const AllAgents = [SentimentAnalysis, FakeDetector, NearAiExampleAgent]; // AssociativeSummarizer
+const AllAgents = [
+  SentimentAnalysis,
+  FakeDetector,
+  NearAiExampleAgent,
+  CrawlerAgent,
+]; // AssociativeSummarizer
 
 @Injectable()
 export class AgentService {
