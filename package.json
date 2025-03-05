@@ -10,7 +10,7 @@
   "packageManager": "pnpm@9.9.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
-    "build": "turbo run build --filter=!@mweb/crawler-economy",
+    "build": "turbo run build",
     "build:extension": "turbo run build --filter=@mweb/extension",
     "build:gateway": "turbo run build --filter=@mweb/gateway",
     "build:contract": "turbo run build --filter=@mweb/crawler-economy",
@@ -18,7 +18,7 @@
     "build:crawler-backend": "turbo run build --filter=@mweb/crawler-backend",
     "build:crawler-dashboard": "turbo run build --filter=@mweb/crawler-dashboard",
     "dev": "turbo run dev --concurrency 13",
-    "dev:mweb": "turbo run dev --concurrency 9 --filter=!@mweb/crawler-*",
+    "dev:mweb": "turbo run dev --concurrency 10 --filter=!@mweb/crawler-*",
     "dev:crawler": "turbo run dev --filter=@mweb/crawler-*",
     "clean": "turbo run clean",
     "autoclave": "rimraf libs/**/dist && rimraf libs/**/lib && rimraf libs/**/node_modules && rimraf libs/**/coverage && rimraf libs/**/.turbo && rimraf apps/**/dist && rimraf apps/**/lib && rimraf apps/**/node_modules && rimraf apps/**/coverage && rimraf apps/**/build && rimraf apps/**/.turbo && rm -rf node_modules",

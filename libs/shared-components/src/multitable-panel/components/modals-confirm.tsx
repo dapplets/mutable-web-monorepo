@@ -17,7 +17,7 @@ import { Alert, AlertProps } from './alert'
 import { Button } from './button'
 import { ButtonsGroup } from './buttons-group'
 import { DropdownButton } from './dropdown-button'
-import { Image } from './image'
+import { Image } from '../../common/image'
 import { InputImage } from './upload-image'
 
 enum MutationModalMode {

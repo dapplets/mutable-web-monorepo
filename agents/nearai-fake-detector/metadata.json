@@ -1,0 +1,18 @@
+{
+  "name": "nearai-fake-detector",
+  "version": "0.0.2",
+  "description": "Analyzes social network posts for fake content. Created by Mutable Web (Dapplets) team at the One Trillion Agents Hackathon.",
+  "category": "agent",
+  "tags": [],
+  "details": {
+    "agent": {
+      "defaults": {
+        "model": "llama-v3p1-70b-instruct",
+        "model_provider": "fireworks",
+        "model_temperature": 1.0,
+        "model_max_tokens": 16384
+      }
+    }
+  },
+  "show_entry": true
+}

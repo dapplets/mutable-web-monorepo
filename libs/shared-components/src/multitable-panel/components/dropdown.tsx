@@ -33,7 +33,7 @@ import {
   MutationsListWrapper,
 } from '../assets/styles-dropdown'
 import { AvailableIcon, Back, Mutate } from '../assets/vectors'
-import { Image } from './image'
+import { Image } from '../../common/image'
 import { ModalDelete } from './modal-delete'
 import { MutationDropdownItem } from './mutation-dropdown-item'
 import { useNavigate } from 'react-router'

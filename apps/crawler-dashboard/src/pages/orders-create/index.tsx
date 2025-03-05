@@ -73,7 +73,7 @@ export const CreateOrderPage: FC = () => {
         margin: '16px 0',
       }}
     >
-      <h2>Create Order</h2>
+      <h2>Create Job</h2>
       <Form layout="vertical" onFinish={handleSubmit} form={form}>
         <Form.Item
           name="schedule"
@@ -133,7 +133,7 @@ export const CreateOrderPage: FC = () => {
 
         <Form.Item style={{ marginTop: '20px' }}>
           <Button type="primary" htmlType="submit">
-            Submit Order
+            Submit Job
           </Button>
         </Form.Item>
       </Form>

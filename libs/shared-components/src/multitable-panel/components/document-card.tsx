@@ -1,8 +1,8 @@
 import { ApplicationDto, DocumentMetadata, EntitySourceType } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
-import { Image } from './image'
-import { Badge } from './badge'
+import { Badge } from '../../common/badgeWithIcon'
+import { Image } from '../../common/image'
 
 const Card = styled.div`
   position: relative;

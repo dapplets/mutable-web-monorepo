@@ -2,11 +2,11 @@ import { useAppDocuments } from '@mweb/react-engine'
 import { ApplicationDto, DocumentDto, EntitySourceType } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
-import { Image } from './image'
+import { Image } from '../../common/image'
 import { DocumentCard } from './document-card'
 import { AppInMutation } from '@mweb/backend'
 import { Spin } from 'antd'
-import { Badge } from './badge'
+import { Badge } from '../../common/badgeWithIcon'
 
 const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;

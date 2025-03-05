@@ -9,7 +9,7 @@ import { ApplicationCardWithDocs, SimpleApplicationCard } from './application-ca
 import { Button } from './button'
 import { ButtonsGroup } from './buttons-group'
 import { DocumentsModal } from './documents-modal'
-import { Image } from './image'
+import { Image } from '../../common/image'
 import { ModalConfirm } from './modals-confirm'
 import { useEngine } from '../../contexts/engine-context'
 

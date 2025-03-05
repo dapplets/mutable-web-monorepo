@@ -1,0 +1,16 @@
+{
+  "name": "@mweb/openfaas-client",
+  "version": "0.1.0",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json",
+    "dev": "tsc -w -p ./tsconfig.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "isomorphic-fetch": "^3.0.0"
+  }
+}
