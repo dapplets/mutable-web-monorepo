@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: {{.Release.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/dapplets/crawler-backend:{{.Values.tag | default "latest"}}
+          env:
+            - name: CRAWLER_API_PORT
+              value: '3000'
+            - name: CRAWLER_DATABASE_URL
+              value: '{{.Values.databaseUrl | default "postgres://mweb:mweb@postgres:5432/mweb"}}'
+            - name: OPENAI_API_KEY
+              value: '{{.Values.openaiApiKey}}'
+            - name: OPENFAAS_USERNAME
+              value: '{{ ( .Values.openfaas | default dict ).username | default "admin"}}'
+            - name: OPENFAAS_PASSWORD
+              value: '{{ ( .Values.openfaas | default dict ).password | default "admin"}}'
+            - name: OPENFAAS_URL
+              value: '{{ ( .Values.openfaas | default dict ).url | default "http://gateway.aigency:8080"}}'
+            - name: NEARAI_API_KEY
+              value: '{{.Values.nearAiApiKey}}'
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: {{.Release.Namespace}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: 'pgvector/pgvector:pg16'
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: '{{ ( .Values.postgresql | default dict ).dbName | default "mweb" }}'
+            - name: POSTGRES_USER
+              value: '{{ ( .Values.postgresql | default dict ).username | default "mweb"}}'
+            - name: POSTGRES_PASSWORD
+              value: '{{ ( .Values.postgresql | default dict ).password | default "mweb"}}'
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgresdata
+      volumes:
+        - name: postgresdata
+          persistentVolumeClaim:
+            claimName: postgres-volume-claim

@@ -1,6 +1,10 @@
 import { Body, Controller, Get, Post, Param } from '@nestjs/common';
 import { ContextService } from './context.service';
-import { StoreContextDto } from './dtos/store-context.dto';
+import {
+  InvokeAgentDto,
+  QuerySimilarContextDto,
+  StoreContextDto,
+} from './dtos/store-context.dto';
 
 @Controller('context')
 export class ContextController {
@@ -8,7 +12,12 @@ export class ContextController {
 
   @Post()
   async storeContext(@Body() storeContextDto: StoreContextDto) {
-    return this.contextService.storeContext(storeContextDto);
+    return this.contextService.storeContextForRewards(storeContextDto);
+  }
+
+  @Post('invoke-agent')
+  async invokeAgent(@Body() invokeAgentDto: InvokeAgentDto) {
+    return this.contextService.invokeAgent(invokeAgentDto);
   }
 
   @Get()
@@ -16,8 +25,13 @@ export class ContextController {
     return this.contextService.getContexts();
   }
 
-  @Get(':hash')
-  async getContext(@Param() params: any) {
-    return this.contextService.getContext(params.hash);
+  @Post('similar')
+  async getSimilarContexts(@Body() dto: QuerySimilarContextDto) {
+    return this.contextService.getSimilarContexts(dto);
+  }
+
+  @Get(':hash(*)')
+  async getContext(@Param('hash') hash: string) {
+    return this.contextService.getPaidContext(hash);
   }
 }

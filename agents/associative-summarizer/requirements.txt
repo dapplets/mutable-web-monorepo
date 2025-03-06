@@ -1,0 +1,8 @@
+flask
+waitress
+tox==3.*
+
+sentence-transformers==3.4.1
+transformers
+numpy
+torch

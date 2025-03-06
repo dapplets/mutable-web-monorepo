@@ -1,0 +1,5 @@
+flask
+waitress
+tox==3.*
+
+nltk

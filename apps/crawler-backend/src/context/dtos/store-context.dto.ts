@@ -4,6 +4,7 @@ import {
   ValidateNested,
   IsObject,
   IsOptional,
+  IsNumber,
 } from 'class-validator';
 
 export class ContextDto {
@@ -38,4 +39,26 @@ export class StoreContextDto {
 
   @IsString()
   receiverId: string;
+}
+
+export class InvokeAgentDto {
+  @ValidateNested()
+  @Type(() => ContextDto)
+  context: ContextDto;
+
+  @IsString()
+  @IsOptional()
+  receiverId?: string;
+
+  @IsString()
+  agentId: string;
+}
+
+export class QuerySimilarContextDto {
+  @ValidateNested()
+  @Type(() => ContextDto)
+  context: ContextDto;
+
+  @IsNumber()
+  limit: number;
 }

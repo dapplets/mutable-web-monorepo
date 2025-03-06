@@ -31,6 +31,7 @@ const HeaderWrapper = styled.div`
   box-shadow:
     0px 4px 20px 0px #0b576f26,
     0px 4px 5px 0px #2d343c1a;
+  gap: 6px;
 `
 
 const ButtonConnectWrapper = styled.button`
@@ -95,7 +96,7 @@ const ProfileButton = styled.button<{ isActive?: boolean }>`
   justify-content: center;
   align-items: center;
   width: 24px;
-  height: 24px;
+  aspect-ratio: 1;
   padding: 0;
   outline: none;
   border: none;
@@ -166,6 +167,7 @@ const Header: FC = () => {
             isActive={location.pathname === '/main'}
             disabled={waiting}
             onClick={() => navigate(`/main`)}
+            title="Home"
           >
             <HomeIcon />
           </ProfileButton>
@@ -174,6 +176,7 @@ const Header: FC = () => {
             data-testid="profile-page-button"
             disabled={waiting}
             onClick={() => navigate(`/profile`)}
+            title="Profile"
           >
             <PersonIcon />
           </ProfileButton>
@@ -181,6 +184,7 @@ const Header: FC = () => {
             isActive={location.pathname === '/applications'}
             disabled={waiting}
             onClick={() => navigate(`/applications`)}
+            title="Apps"
           >
             <PlayCenterIcon />
           </ProfileButton>
@@ -188,23 +192,29 @@ const Header: FC = () => {
             isActive={location.pathname === '/notifications'}
             disabled={waiting}
             onClick={() => navigate(`/notifications`)}
+            title="Notifications"
           >
             <BellIcon />
           </ProfileButton>
           <ProfileButton
             disabled={waiting}
             onClick={() => navigator.clipboard.writeText(loggedInAccountId)}
+            title="Copy address"
           >
             <CopyIcon />
           </ProfileButton>
-          <ProfileButton disabled={waiting} onClick={handleSignOut}>
+          <ProfileButton disabled={waiting} onClick={handleSignOut} title="Log out">
             <DisconnectIcon />
           </ProfileButton>
         </>
       ) : (
         <>
           <TextConnect>No wallet connected</TextConnect>
-          <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn}>
+          <ButtonConnectWrapper
+            disabled={waiting}
+            onClick={handleSignIn}
+            title="Connect NEAR wallet"
+          >
             {waiting ? (
               <div className="loading"></div>
             ) : (

@@ -1,73 +1,78 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Install with Helm
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Create `values.yaml` with the following secrets:
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ pnpm install
+```yaml
+openaiApiKey: sk-proj-example-key
+nearAiApiKey: '{"account_id":"example.near","signature":"example==","public_key":"ed25519:example","callback_url":"http://localhost:54875/capture","nonce":"1234567890","recipient":"ai.near","message":"Welcome to NEAR AI","on_behalf_of":null}'
 ```
 
-## Running the app
+Install helm chart from GitHub Registry:
 
-```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+```sh
+helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./values.yaml
 ```
 
-## Test
+Aigency will be available at `http://localhost:30001`
 
-```bash
-# unit tests
-$ pnpm run test
+## Development
 
-# e2e tests
-$ pnpm run test:e2e
+### Run PostgreSQL
 
-# test coverage
-$ pnpm run test:cov
+Run Docker container with PostgreSQL
+
+```sh
+docker run --name mweb-postgres -e POSTGRES_PASSWORD=password -e POSTGRES_USER=user -e POSTGRES_DB=mweb -p 5432:5432 -d pgvector/pgvector:pg16
 ```
 
-## Support
+### Install OpenSaaS
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Install OpenSaaS in Kubernetes:
 
-## Stay in touch
+```sh
+helm repo add openfaas https://openfaas.github.io/faas-netes/
+helm repo update
+kubectl create namespace openfaas-fn
+helm upgrade openfaas --install openfaas/openfaas --create-namespace --namespace openfaas
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Specify `--set ingress.enabled=true` to use IngressController with TLS.
+See more info at [OpenFaaS Documentation](https://github.com/openfaas/faas-netes/blob/master/chart/openfaas/README.md#2-install-with-helm)
 
-## License
+To verify that openfaas has started, run:
 
-Nest is [MIT licensed](LICENSE).
+```sh
+kubectl -n openfaas get deployments -l "release=openfaas, app=openfaas"
+```
+
+To retrieve the admin password, run:
+
+```sh
+echo $(kubectl -n openfaas get secret basic-auth -o jsonpath="{.data.basic-auth-password}" | base64 --decode)
+```
+
+Fetch your public IP or NodePort via
+
+```sh
+kubectl get svc -n openfaas gateway-external -o wide
+```
+
+Visit `http://127.0.0.1:31112/`
+
+## Build this project with Docker
+
+```sh
+cd mutable-web-monorepo
+docker buildx create --use # if you didn't it before
+docker buildx build --platform linux/amd64,linux/arm64 -f apps/crawler-backend/Dockerfile . --tag ghcr.io/dapplets/crawler-backend:latest --push
+```
+
+## Deploy to Kubernetes
+
+Use the hash from the previous step
+
+```sh
+helm upgrade aigency ./helm --install --create-namespace --namespace aigency -f ./helm/values.yaml
+```

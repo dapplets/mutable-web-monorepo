@@ -29,3 +29,5 @@ typedoc-docs/
 build
 
 dependency-graph.svg
+
+.env
