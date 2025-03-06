@@ -163,31 +163,37 @@ const Header: FC = () => {
               {nearNetwork === 'mainnet' ? 'NEAR-Mainnet' : 'NEAR-Testnet'}
             </ProfileNetwork>
           </ProfileInfo>
-          <ProfileButton
-            isActive={location.pathname === '/main'}
-            disabled={waiting}
-            onClick={() => navigate(`/main`)}
-            title="Home"
-          >
-            <HomeIcon />
-          </ProfileButton>
-          <ProfileButton
-            isActive={location.pathname === '/profile'}
-            data-testid="profile-page-button"
-            disabled={waiting}
-            onClick={() => navigate(`/profile`)}
-            title="Profile"
-          >
-            <PersonIcon />
-          </ProfileButton>
-          <ProfileButton
-            isActive={location.pathname === '/applications'}
-            disabled={waiting}
-            onClick={() => navigate(`/applications`)}
-            title="Apps"
-          >
-            <PlayCenterIcon />
-          </ProfileButton>
+        </>
+      ) : (
+        <TextConnect>No wallet connected</TextConnect>
+      )}
+      <ProfileButton
+        isActive={location.pathname === '/main'}
+        disabled={waiting}
+        onClick={() => navigate(`/main`)}
+        title="Home"
+      >
+        <HomeIcon />
+      </ProfileButton>
+      <ProfileButton
+        isActive={location.pathname === '/profile'}
+        data-testid="profile-page-button"
+        disabled={waiting}
+        onClick={() => navigate(`/profile`)}
+        title="Profile"
+      >
+        <PersonIcon />
+      </ProfileButton>
+      <ProfileButton
+        isActive={location.pathname === '/applications'}
+        disabled={waiting}
+        onClick={() => navigate(`/applications`)}
+        title="Apps"
+      >
+        <PlayCenterIcon />
+      </ProfileButton>
+      {loggedInAccountId ? (
+        <>
           <ProfileButton
             isActive={location.pathname === '/notifications'}
             disabled={waiting}
@@ -208,23 +214,16 @@ const Header: FC = () => {
           </ProfileButton>
         </>
       ) : (
-        <>
-          <TextConnect>No wallet connected</TextConnect>
-          <ButtonConnectWrapper
-            disabled={waiting}
-            onClick={handleSignIn}
-            title="Connect NEAR wallet"
-          >
-            {waiting ? (
-              <div className="loading"></div>
-            ) : (
-              <>
-                <ConnectIcon />
-                Connect
-              </>
-            )}
-          </ButtonConnectWrapper>
-        </>
+        <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn} title="Connect NEAR wallet">
+          {waiting ? (
+            <div className="loading"></div>
+          ) : (
+            <>
+              <ConnectIcon />
+              Connect
+            </>
+          )}
+        </ButtonConnectWrapper>
       )}
     </HeaderWrapper>
   )

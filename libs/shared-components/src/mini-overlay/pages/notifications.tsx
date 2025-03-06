@@ -68,12 +68,6 @@ const Notifications: FC = () => {
               justifyContent: 'center',
             }}
           >
-            <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
-              <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
-                Sign in
-              </Title>
-            </Space>
-
             <Text
               type="secondary"
               style={{
