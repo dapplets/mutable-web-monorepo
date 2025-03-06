@@ -12,14 +12,10 @@ import { useGetCANet } from '@mweb/react-engine'
 const Wrapper = styled.div<{ $status: RequestStatus }>`
   display: flex;
   flex-direction: column;
-  margin: 0 10px !important;
-  width: calc(100% - 20px) !important;
+  width: 100% !important;
   padding: 10px !important;
   border-radius: 10px !important;
   background: var(--pure-white);
-  box-shadow:
-    0px 4px 20px 0px rgba(11, 87, 111, 0.149),
-    0px 4px 5px 0px rgba(45, 52, 60, 0.102);
   transition: all 0.3s ease;
   gap: ${(props) =>
     props.$status === RequestStatus.SIGNING ||
@@ -123,7 +119,7 @@ type ConnectModuleProps = {
   } | null
 }
 
-const ConnectModule: FC<ConnectModuleProps> = ({
+export const ConnectModule: FC<ConnectModuleProps> = ({
   nearNetwork,
   loggedInAccountId,
   socialAccount,
@@ -198,6 +194,7 @@ const ConnectModule: FC<ConnectModuleProps> = ({
         name={accountToConnect.name}
         origin={accountToConnect.origin.toLowerCase()}
         disabled={status === RequestStatus.SIGNING || status === RequestStatus.VERIFYING}
+        bgColor="var(--muddy-white)"
       >
         {status !== RequestStatus.DEFAULT ? (
           <StatusBadge status={status} />

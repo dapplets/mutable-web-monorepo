@@ -1,16 +1,19 @@
 import makeBlockie from 'ethereum-blockies-base64'
 import React, { FC, useRef, useState } from 'react'
-import styled from 'styled-components'
-import cn from 'classnames'
 import { useLocation, useNavigate } from 'react-router'
+import styled from 'styled-components'
+import { ProfileAddress } from '../../common/profile-address'
+import { ProfileIcon } from '../../common/profile-icon'
+import { ProfileInfo } from '../../common/profile-info'
+import { ProfileNetwork } from '../../common/profile-network'
 import { useEngine } from '../../contexts/engine-context'
 import {
+  Bell as BellIcon,
   Connect as ConnectIcon,
   Copy as CopyIcon,
   Disconnect as DisconnectIcon,
-  Person as PersonIcon,
-  Bell as BellIcon,
   Home as HomeIcon,
+  Person as PersonIcon,
   PlayCenterIcon,
 } from '../assets/icons'
 
@@ -85,62 +88,6 @@ const TextConnect = styled.div`
   font-weight: 600;
 `
 
-const ProfileIcon = styled.div`
-  display: flex;
-  box-sizing: border-box;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  border: 1px solid #e2e2e5;
-
-  img {
-    object-fit: cover;
-  }
-`
-
-const ProfileInfo = styled.div`
-  display: flex;
-  box-sizing: border-box;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 158px;
-  overflow: hidden;
-`
-
-const ProfileAddress = styled.span`
-  display: inline-block;
-  box-sizing: border-box;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: #02193a;
-  font-size: 16px;
-  font-weight: 600;
-  width: 100%;
-`
-
-const ProfileNetwork = styled.span`
-  display: inline-block;
-  box-sizing: border-box;
-  font-size: 12px;
-  color: #7a818b;
-  position: relative;
-  padding-left: 12px;
-
-  &::before {
-    position: absolute;
-    content: '';
-    display: block;
-    top: 3px;
-    left: 0;
-    background: #6bea87;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-`
-
 const ProfileButton = styled.button<{ isActive?: boolean }>`
   display: flex;
   box-sizing: border-box;
@@ -157,6 +104,7 @@ const ProfileButton = styled.button<{ isActive?: boolean }>`
   cursor: ${({ isActive: active }) => (active ? 'default' : 'pointer')};
   color: ${({ isActive: active }) => (active ? 'white' : 'rgb(122, 129, 139)')};
   background: ${({ isActive: active }) => (active ? 'rgb(56, 75, 255)' : 'rgb(248, 249, 255)')};
+  flex-shrink: 0;
 
   &:hover {
     color: rgb(101, 108, 119);
@@ -208,7 +156,7 @@ const Header: FC = () => {
           <ProfileIcon>
             <img src={makeBlockie(loggedInAccountId)} alt="account blockie image" />
           </ProfileIcon>
-          <ProfileInfo>
+          <ProfileInfo styles={{ width: 158 }}>
             <ProfileAddress>{loggedInAccountId}</ProfileAddress>
             <ProfileNetwork>
               {nearNetwork === 'mainnet' ? 'NEAR-Mainnet' : 'NEAR-Testnet'}

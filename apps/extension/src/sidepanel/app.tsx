@@ -17,9 +17,8 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { useConnectEthWallet, useDisconnectEthWallet, address } = useEthWallet()
+  const { useConnectEthWallet, address } = useEthWallet()
   const { connectWallet: connectEthWallet } = useConnectEthWallet()
-  const { disconnectWallet: disconnectEthWallet } = useDisconnectEthWallet()
 
   if (!selector) return null
 
@@ -48,7 +47,6 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
         onConnectEthWallet={connectEthWallet}
-        onDisconnectEthWallet={disconnectEthWallet}
         address={address}
       >
         <SidePanel />

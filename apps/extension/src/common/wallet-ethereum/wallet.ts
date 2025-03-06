@@ -22,7 +22,7 @@ export class WalletImpl {
   }
 
   signOut = async () => {
-    return Background.disconnectEthWallet()
+    throw new Error(`Method not supported`)
   }
 
   getAddress = async () => {

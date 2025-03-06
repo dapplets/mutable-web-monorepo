@@ -10,13 +10,53 @@ import { MoreHoriz } from './assets/icons'
 import { StatusBadge } from './status-badge'
 import { createPortal } from 'react-dom'
 import { socialNetworkConnectionCondition } from './utils'
+import styled from 'styled-components'
+
+const List = styled.div`
+  position: absolute;
+  right: 6px;
+  z-index: 1;
+  padding: 8px !important;
+  background: var(--pure-white);
+  border-radius: 8px;
+  box-shadow:
+    0px 4px 20px 0px rgba(11, 87, 111, 0.149),
+    0px 4px 5px 0px rgba(45, 52, 60, 0.102);
+
+  ul,
+  li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  button {
+    border: none;
+    background: none;
+    margin: 4px;
+    padding: 2px;
+    transition: color 0.1s ease;
+    cursor: pointer;
+
+    :disabled {
+      cursor: default;
+    }
+
+    :hover:not(:disabled) {
+      color: var(--primary-hover);
+    }
+
+    :active:not(:disabled) {
+      color: var(--primary-pressed);
+    }
+  }
+`
 
 type CAListProps = {
   user?: IConnectedAccountUser
-  maxLength?: number
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
   nearNetwork: NearNetworks
-  loggedInAccountId: string
+  loggedInNearAccountId: string | null
   socialAccount: {
     name: string
     origin: string
@@ -28,10 +68,9 @@ type CAListProps = {
 
 const CAListItem: FC<CAListProps> = ({
   user,
-  maxLength = 32,
   trackingRefs,
   nearNetwork,
-  loggedInAccountId,
+  loggedInNearAccountId,
   socialAccount,
   profileRef,
 }) => {
@@ -52,7 +91,7 @@ const CAListItem: FC<CAListProps> = ({
   const [isListOpened, setIsListOpened] = useState(false)
   const [burgerRects, setBurgerRects] = useState<DOMRectList | null>(null)
   const ref = useRef<HTMLDivElement>(null)
-  useOutside(ref, () => setIsListOpened(false), trackingRefs)
+  useOutside(ref, () => setTimeout(() => setIsListOpened(false), 500), trackingRefs)
   const useCopiedResult = user?.name && useCopied(user.name)
   useEffect(() => {
     setIsActive(
@@ -65,13 +104,13 @@ const CAListItem: FC<CAListProps> = ({
   }, [user, socialAccount])
 
   const handleClickDisconnect = async () => {
-    if (!user || !loggedInAccountId) return
+    if (!user || !loggedInNearAccountId) return
     setIsListOpened(false)
     if (isActive && socialAccount) {
       const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: hardcoded: can be different URLs + less secure
       const isConditionMet = socialNetworkConnectionCondition({
         socNet_id: socialAccount.name,
-        near_id: loggedInAccountId,
+        near_id: loggedInNearAccountId,
         url: proofUrl,
         fullname: socialAccount.fullname,
       })
@@ -85,7 +124,7 @@ const CAListItem: FC<CAListProps> = ({
       origin: user.origin,
       isUnlink: true,
       nearNetwork,
-      loggedInAccountId,
+      loggedInAccountId: loggedInNearAccountId,
     })
   }
 
@@ -93,7 +132,6 @@ const CAListItem: FC<CAListProps> = ({
     <AccountListItem
       name={user?.name}
       origin={user?.origin}
-      maxLength={user?.accountActive ? maxLength - 6 : maxLength}
       disabled={status === RequestStatus.SIGNING || status === RequestStatus.VERIFYING}
       isActive={isActive}
       message={
@@ -116,9 +154,12 @@ const CAListItem: FC<CAListProps> = ({
           className="copyButton"
           disabled={isWaiting}
           onClick={(e) => {
-            !isListOpened && setIsListOpened(true)
-            setBurgerRects((e.currentTarget as HTMLButtonElement)?.getClientRects())
-            ref.current?.focus()
+            if (!isListOpened) {
+              setIsListOpened(true)
+              setBurgerRects((e.currentTarget as HTMLButtonElement)?.getClientRects())
+            } else {
+              setIsListOpened(false)
+            }
           }}
         >
           {isWaiting ? <Spin size="small" /> : <MoreHoriz />}
@@ -127,14 +168,14 @@ const CAListItem: FC<CAListProps> = ({
 
       {isListOpened && user
         ? createPortal(
-            <div
-              className="list"
+            <List
               style={{
                 top: burgerRects
                   ? window.innerHeight - burgerRects[0].bottom > 120
-                    ? burgerRects[0].bottom - 50
-                    : burgerRects[0].bottom - 186
+                    ? burgerRects[0].bottom + 8
+                    : burgerRects[0].bottom - 128
                   : 100,
+                right: 24,
               }}
               ref={ref}
             >
@@ -151,12 +192,17 @@ const CAListItem: FC<CAListProps> = ({
                   </button>
                 </li>
                 <li>
-                  <button className="listItem" onClick={handleClickDisconnect}>
+                  <button
+                    disabled={!loggedInNearAccountId}
+                    className="listItem"
+                    onClick={handleClickDisconnect}
+                  >
                     Unlink account
                   </button>
                 </li>
                 <li>
                   <button
+                    disabled={!loggedInNearAccountId}
                     className="listItem"
                     onClick={async () => {
                       setIsListOpened(false)
@@ -167,7 +213,7 @@ const CAListItem: FC<CAListProps> = ({
                   </button>
                 </li>
               </ul>
-            </div>,
+            </List>,
             profileRef.current ?? document.body
           )
         : null}

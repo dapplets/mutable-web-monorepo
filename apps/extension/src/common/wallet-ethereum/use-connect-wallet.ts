@@ -5,7 +5,6 @@ export const useConnectWallet = () => {
   const [isWalletConnecting, setIsWalletConnecting] = useState(false)
 
   const connectWallet = useCallback(async () => {
-    console.log('in connectWallet hook')
     setIsWalletConnecting(true)
 
     try {

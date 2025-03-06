@@ -8,7 +8,6 @@ export type EngineContextState = {
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
   onConnectEthWallet: () => Promise<void>
-  onDisconnectEthWallet: () => Promise<void>
   address: string | null
 }
 
@@ -19,7 +18,6 @@ export const contextDefaultValues: EngineContextState = {
   onConnectWallet: async () => {},
   onDisconnectWallet: async () => {},
   onConnectEthWallet: async () => {},
-  onDisconnectEthWallet: async () => {},
   address: null,
 }
 

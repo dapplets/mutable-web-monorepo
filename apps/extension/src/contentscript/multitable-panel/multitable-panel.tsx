@@ -19,9 +19,8 @@ export const MultitablePanel: FC = () => {
   useSidePanel()
 
   const { accountId, networkId } = useWallet()
-  const { useConnectEthWallet, useDisconnectEthWallet, address } = useEthWallet()
+  const { useConnectEthWallet, address } = useEthWallet()
   const { connectWallet: connectEthWallet } = useConnectEthWallet()
-  const { disconnectWallet: disconnectEthWallet } = useDisconnectEthWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
   const { tree } = useMutableWeb()
@@ -39,7 +38,6 @@ export const MultitablePanel: FC = () => {
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
         onConnectEthWallet={connectEthWallet}
-        onDisconnectEthWallet={disconnectEthWallet}
         address={address}
       >
         <UberSausageWrapper>

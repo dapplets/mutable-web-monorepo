@@ -27,11 +27,9 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   async getAddress(): Promise<string> {
-    console.log('getAddress')
     try {
       // ToDo: replace to ethereum.request({ method: 'eth_accounts' })
       const metamask = await this._getMetamaskProvider()
-      console.log('metamask', metamask)
       return metamask.selectedAddress ?? '' // ToDo: check it
     } catch (_) {
       return '' // ToDo: check it
@@ -113,21 +111,16 @@ export default class extends ethers.Signer implements EthereumWallet {
 
   // @CacheMethod() // ToDo: is it critical?
   async connectWallet(): Promise<void> {
-    console.log('connectWallet in background')
     const metamask = await this._getMetamaskProvider()
-    console.log('metamask', metamask)
     const isMetamaskDisabled = await browser.storage.local.get('metamask_disabled')
-    console.log('isMetamaskDisabled', isMetamaskDisabled)
     if (isMetamaskDisabled.metamask_disabled === 'true') {
-      const res = await metamask.request({
+      await metamask.request({
         method: 'wallet_requestPermissions',
         params: [{ eth_accounts: {} }],
       })
-      console.log('res', res)
       await browser.storage.local.remove('metamask_disabled')
     } else {
       const res = await metamask.request({ method: 'eth_requestAccounts' })
-      console.log('res', res)
     }
     await browser.storage.local.set({ metamask_disabled: new Date().toISOString() })
   }
@@ -197,43 +190,35 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   private async _getMetamaskProvider(): Promise<MetaMaskInpageProvider> {
-    console.log('this._metamaskProviderPromise', this._metamaskProviderPromise)
     if (!this._metamaskProviderPromise) {
       this._metamaskProviderPromise = new Promise((res, rej) => {
         const currentMetaMaskId = this._getMetaMaskId()
-        console.log('currentMetaMaskId', currentMetaMaskId)
         const metamaskPort = browser.runtime.connect(currentMetaMaskId)
-        console.log('metamaskPort', metamaskPort)
         metamaskPort.onDisconnect.addListener(() => browser.runtime.lastError) // mute "Unchecked runtime.lastError"
         const pluginStream = new PortStream(metamaskPort)
-        console.log('pluginStream', pluginStream)
         const metamask = new MetaMaskInpageProvider(pluginStream as any, {
           // mute all messages from provider
-          // logger: {
-          //   warn: () => {},
-          //   log: () => {},
-          //   error: () => {},
-          //   debug: () => {},
-          //   info: () => {},
-          //   trace: () => {},
-          // },
+          logger: {
+            warn: () => {},
+            log: () => {},
+            error: () => {},
+            debug: () => {},
+            info: () => {},
+            trace: () => {},
+          },
         })
-        console.log('metamask', metamask)
         // metamask['autoRefreshOnNetworkChange'] = false // silence the warning from metamask https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange // ToDo: do we have this warning?
         metamask.on('connect', () => {
-          console.log('in connect')
           // MV3 Extension doesn't have HTML-based background pages where favicon can be defined
           // We use the undocumented method metamask_sendDomainMetadata to manually provide metadata
           // https://github.com/MetaMask/providers/blob/6206aada4b1a8c14912fc9b0fcd0ec922d41251b/src/siteMetadata.ts#L23
-          const request = metamask.request({
+          metamask.request({
             method: 'metamask_sendDomainMetadata',
             params: {
               name: 'Dapplets',
               icon: MWebIcon, // walletIcons['dapplets'], ToDo: add icon
             },
           })
-          console.log('connect request', request)
-
           res(metamask)
         })
         metamask.on('disconnect', () => {
@@ -251,7 +236,6 @@ export default class extends ethers.Signer implements EthereumWallet {
         // metamask.on('data', (...args) => console.log('data', args))
       })
     }
-    console.log('this._metamaskProviderPromise resolved', this._metamaskProviderPromise)
 
     return this._metamaskProviderPromise
   }

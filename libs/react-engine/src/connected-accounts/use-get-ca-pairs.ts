@@ -2,18 +2,21 @@ import { useQuery } from '@tanstack/react-query'
 import { ChainTypes, IConnectedAccountsPair } from '@mweb/backend'
 import { useEngine } from '../engine'
 
-export function useGetCAPairs({ networkId, accountId }: { networkId: string; accountId: string }) {
+export function useGetCAPairs({ chain, accountId }: { chain: ChainTypes; accountId: string }) {
   const { engine } = useEngine()
 
-  const originId = `near/${networkId}` // ToDo: hardcoded
+  const originId =
+    chain === ChainTypes.ETHEREUM_SEPOLIA || chain === ChainTypes.ETHEREUM_XDAI
+      ? 'ethereum' // ToDo: hardcoded
+      : chain // ToDo: hardcoded
 
   const fetch = async () => {
-    if (!accountId || !networkId) return null
+    if (!accountId || !originId) return null
     const status = await engine.connectedAccountsService.getStatus(accountId, originId)
     return engine.connectedAccountsService.getPairs({
       receiver: {
         account: accountId,
-        chain: networkId === 'testnet' ? ChainTypes.NEAR_TESTNET : ChainTypes.NEAR_MAINNET, // ToDo: hardcoded; use enum
+        chain,
         accountActive: status,
       },
       prevPairs: null,
@@ -23,7 +26,7 @@ export function useGetCAPairs({ networkId, accountId }: { networkId: string; acc
   const { data, isLoading, error } = useQuery<IConnectedAccountsPair[] | null>({
     queryKey: ['connectedAccountsPairs', originId, accountId],
     queryFn: fetch,
-    enabled: !!accountId && !!networkId, // Ensure the query only runs when both `accountId` and `networkId` are provided
+    enabled: !!accountId && !!originId, // Ensure the query only runs when both `accountId` and `networkId` are provided
   })
 
   return {

@@ -69,8 +69,6 @@ const ethereum = new Wallet[ChainTypes.ETHEREUM_SEPOLIA][WalletTypes.METAMASK](
   ChainTypes.ETHEREUM_SEPOLIA
 )
 
-console.log('ethereum', ethereum)
-
 // Dev server
 
 const getDevServerUrl = async (): Promise<string | null> => {
@@ -132,7 +130,7 @@ const bgFunctions = {
   disconnectWallet,
   getCurrentNetwork,
   connectEthWallet: ethereum.connectWallet.bind(ethereum),
-  disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
+  // disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
   getEthAddress: ethereum.getAddress.bind(ethereum),
   signEthMessage: ethereum.signMessage.bind(ethereum),
   sendEthTransaction: ethereum.sendTransaction.bind(ethereum),
