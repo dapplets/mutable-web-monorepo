@@ -28,7 +28,11 @@ const PullRequestRejected: FC<{
       loggedInAccountId={loggedInAccountId}
       icon={<GreenBadge />}
       title={`${targetAuthorId} rejected PR from ${sourceAuthorId}`} // ToDo: handle multiple recipients
-      message={<Tag color="#DB504A">Rejected</Tag>}
+      message={
+        <Tag style={{ padding: '0 7px', border: '1px solid #DB504A' }} color="#DB504A">
+          Rejected
+        </Tag>
+      }
       children={`${sourceAuthorId} asks ${targetAuthorId} to accept changes from ${sourceLocalMutationId} to ${targetLocalMutationId}`}
     />
   )
