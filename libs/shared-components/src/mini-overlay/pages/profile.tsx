@@ -5,123 +5,7 @@ import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { ConnectedAccount } from '../../connected-accounts'
 import { useEngine } from '../../contexts/engine-context'
-import { ArrowIcon } from '../assets/icons'
-
-const ProfileContainer = styled.div`
-  --primary: oklch(53% 0.26 269.37); // rgb(56, 75, 255)
-  --primary-hover: oklch(47.4% 0.2613 267.51); // rgb(36, 55, 235)
-  --primary-pressed: oklch(42.2% 0.2585 265.62); // rgb(16, 35, 215)
-
-  --main-grey: rgb(145, 145, 145);
-  --content-black: rgb(116, 115, 118);
-
-  --gray: rgb(122, 129, 139);
-  --gray-hover: rgb(69, 71, 75);
-  --gray-active: rgb(21, 21, 22);
-
-  --pure-white: white;
-  --muddy-white: rgb(248, 249, 255);
-  --web-bg: rgb(234, 240, 240);
-
-  --pure-black: black;
-  --main-black: rgb(2, 25, 58);
-
-  --warning: rgba(246, 133, 27, 1);
-  --success: rgba(25, 206, 174, 1);
-  --error: rgba(217, 48, 79, 1);
-
-  --font-default: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
-    sans-serif;
-  --transition-default: all 0.1s ease;
-
-  * {
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-
-  :focus,
-  :active {
-    outline: none;
-  }
-
-  a:focus,
-  a:active {
-    outline: none;
-  }
-
-  input,
-  button,
-  textarea {
-    font-family: inherit;
-  }
-
-  input::-ms-clear {
-    display: none;
-  }
-
-  button {
-    cursor: pointer;
-  }
-
-  button::-moz-focus-inner {
-    padding: 0;
-    border: 0;
-  }
-
-  /* stylelint-disable-next-line no-descending-specificity */
-  a,
-  a:visited {
-    text-decoration: none;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
-
-  ul {
-    list-style: none;
-  }
-
-  li {
-    list-style: none;
-  }
-
-  img {
-    vertical-align: top;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-size: inherit;
-    font-weight: 400;
-  }
-
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  gap: 10px;
-  font-family: var(--font-default);
-`
-
-const Header = styled.header`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  margin: 0 10px;
-`
+import PageLayout from '../components/page-layout'
 
 const Main = styled.main`
   display: flex;
@@ -175,39 +59,6 @@ const ScrollContent = styled.div`
   &:first-child {
     margin-top: 0;
   }
-`
-
-const BackButton = styled.button`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  color: rgba(122, 129, 139, 1);
-  background: none;
-  transform: rotate(90deg);
-  transition: all 0.2s ease;
-
-  &:hover {
-    color: rgb(64, 150, 255);
-  }
-
-  &:active {
-    color: rgb(9, 88, 217);
-  }
-`
-
-const H1 = styled.h1`
-  margin: 0;
-  color: #02193a;
-  font-size: 22px !important;
-  font-weight: 600 !important;
-  line-height: 32.78px;
-  text-align: center;
-  text-underline-position: from-font;
-  text-decoration-skip-ink: none;
 `
 
 const ConnectMetamaskButton = styled.button`
@@ -301,13 +152,7 @@ const Profile: FC<{
   }, [contextInfoNode])
 
   return (
-    <ProfileContainer ref={profileRef} data-testid="profile-page">
-      <Header>
-        <BackButton onClick={() => navigate('/main')}>
-          <ArrowIcon />
-        </BackButton>
-        <H1>Profile</H1>
-      </Header>
+    <PageLayout ref={profileRef} title="Profile">
       <Main>
         <ScrollContent>
           {loggedInAccountId ? (
@@ -344,7 +189,7 @@ const Profile: FC<{
           )}
         </ScrollContent>
       </Main>
-    </ProfileContainer>
+    </PageLayout>
   )
 }
 
