@@ -1,7 +1,6 @@
 import { ChainTypes, NearNetworks } from '@mweb/backend'
 import { IContextNode } from '@mweb/core'
 import React, { FC, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { ConnectedAccount } from '../../connected-accounts'
 import { useEngine } from '../../contexts/engine-context'
@@ -109,7 +108,6 @@ const Profile: FC<{
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }> = ({ trackingRefs }) => {
   const { loggedInAccountId, nearNetwork, address, onConnectEthWallet } = useEngine()
-  const navigate = useNavigate()
   const profileRef = React.useRef<HTMLDivElement>(null)
 
   const [socialAccount, setSocialAccount] = useState<{
@@ -171,6 +169,7 @@ const Profile: FC<{
               showModal={true}
             />
           ) : null}
+          {/* ToDo: hardcoded */}
           {address ? (
             <ConnectedAccount
               loggedInNearAccountId={loggedInAccountId}

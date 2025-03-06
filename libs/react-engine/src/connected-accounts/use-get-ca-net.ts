@@ -1,16 +1,22 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEngine } from '../engine'
+import { ChainTypes } from '@mweb/backend'
 
-export function useGetCANet({ networkId, accountId }: { networkId: string; accountId: string }) {
+export function useGetCANet({ chain, accountId }: { chain: ChainTypes; accountId: string }) {
   const { engine } = useEngine()
 
+  const originId =
+    chain === ChainTypes.ETHEREUM_SEPOLIA || chain === ChainTypes.ETHEREUM_XDAI
+      ? 'ethereum' // ToDo: hardcoded
+      : chain // ToDo: hardcoded
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['connectedAccountsNet', networkId, accountId],
+    queryKey: ['connectedAccountsNet', originId, accountId],
     queryFn: async () => {
-      if (!accountId || !networkId) return null
-      return engine.connectedAccountsService.getNet(`${accountId}/near/${networkId}`) // ToDo: hardcoded
+      if (!accountId || !originId) return null
+      return engine.connectedAccountsService.getNet(`${accountId}/${originId}`) // ToDo: hardcoded
     },
-    enabled: !!accountId && !!networkId, // Only fetch when both values exist
+    enabled: !!accountId && !!originId, // Only fetch when both values exist
   })
 
   return { connectedAccountsNet: data ?? null, isLoading, error }

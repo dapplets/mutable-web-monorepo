@@ -172,8 +172,8 @@ const CAListItem: FC<CAListProps> = ({
               style={{
                 top: burgerRects
                   ? window.innerHeight - burgerRects[0].bottom > 120
-                    ? burgerRects[0].bottom + 8
-                    : burgerRects[0].bottom - 128
+                    ? burgerRects[0].bottom - 68
+                    : burgerRects[0].bottom - 204
                   : 100,
                 right: 24,
               }}

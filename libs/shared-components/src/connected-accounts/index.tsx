@@ -1,7 +1,7 @@
 import { ChainTypes, NearNetworks } from '@mweb/backend'
-import { useGetCAPairs } from '@mweb/react-engine'
+import { useGetCANet, useGetCAPairs } from '@mweb/react-engine'
 import makeBlockie from 'ethereum-blockies-base64'
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { ProfileAddress } from '../common/profile-address'
 import { ProfileIcon } from '../common/profile-icon'
@@ -9,6 +9,7 @@ import { ProfileInfo } from '../common/profile-info'
 import { ProfileNetwork } from '../common/profile-network'
 import ConnectModule from './connect-module'
 import CAListItem from './connected-account-list-item'
+import { socialNetworkConnectionCondition } from './utils'
 
 const NoAccountsMessage = styled.div`
   font-size: 13px;
@@ -78,6 +79,55 @@ export const ConnectedAccount: FC<{
     chain,
     accountId,
   })
+  const { connectedAccountsNet } = useGetCANet({
+    chain,
+    accountId,
+  })
+
+  const [showConnectModule, setShowConnectModule] = useState(false)
+  const [accountToConnect, setAccountToConnect] = useState<{
+    name: string
+    origin: string
+    fullname: string
+    websiteName: string
+  } | null>(null)
+  const [isConditionDone, setIsConditionDone] = useState(false)
+
+  useEffect(() => {
+    if (
+      !showModal ||
+      !socialAccount ||
+      connectedAccountsNet?.includes(`${socialAccount.name}/${socialAccount.origin}`)
+    ) {
+      setAccountToConnect(null)
+      setShowConnectModule(false)
+    } else if (
+      !accountToConnect ||
+      socialAccount.name !== accountToConnect.name ||
+      socialAccount.origin !== accountToConnect.origin ||
+      socialAccount.fullname !== accountToConnect.fullname
+    ) {
+      setAccountToConnect({ ...socialAccount })
+      setShowConnectModule(true)
+    }
+  }, [socialAccount, connectedAccountsNet, loggedInNearAccountId])
+
+  useEffect(() => {
+    if (!showModal || !socialAccount || !loggedInNearAccountId) {
+      setIsConditionDone(false)
+    } else {
+      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: hardcoded: can be different URLs + less secure
+      setIsConditionDone(() =>
+        socialNetworkConnectionCondition({
+          socNet_id: socialAccount.name,
+          near_id: loggedInNearAccountId,
+          url: proofUrl,
+          fullname: socialAccount.fullname,
+        })
+      )
+    }
+  }, [socialAccount, loggedInNearAccountId])
+
   return (
     <AccountsWrapper data-testid="connected-accounts-module">
       <Wallet>
@@ -98,7 +148,30 @@ export const ConnectedAccount: FC<{
           <ProfileNetwork>{showChain(chain)}</ProfileNetwork>
         </ProfileInfo>
       </Wallet>
-      {!pairs || pairs.length === 0 ? (
+      {showConnectModule && accountToConnect ? (
+        <ConnectModule
+          accountToConnect={accountToConnect}
+          nearNetwork={nearNetwork as NearNetworks}
+          loggedInAccountId={loggedInNearAccountId}
+          isConditionDone={isConditionDone}
+          onCloseModal={() => setShowConnectModule(false)}
+        />
+      ) : null}
+      {pairs && pairs.length !== 0 ? (
+        <>
+          {pairs.map((pair) => (
+            <CAListItem
+              key={pair.secondAccount.name + pair.secondAccount.origin}
+              user={pair.secondAccount}
+              trackingRefs={trackingRefs}
+              nearNetwork={nearNetwork}
+              loggedInNearAccountId={loggedInNearAccountId}
+              socialAccount={socialAccount}
+              profileRef={profileRef}
+            />
+          ))}
+        </>
+      ) : !(showConnectModule && accountToConnect) && showModal ? (
         <NoAccountsMessage>
           There are no connected accounts yet. You can connect your{' '}
           <a href="https://x.com" target="_blank">
@@ -110,28 +183,7 @@ export const ConnectedAccount: FC<{
           </a>{' '}
           accounts. Go to these resources and follow the instructions.
         </NoAccountsMessage>
-      ) : (
-        <>
-          {showModal && loggedInNearAccountId ? (
-            <ConnectModule
-              nearNetwork={nearNetwork as NearNetworks}
-              loggedInAccountId={loggedInNearAccountId}
-              socialAccount={socialAccount}
-            />
-          ) : null}
-          {pairs.map((x, i) => (
-            <CAListItem
-              key={x.secondAccount.name + x.secondAccount.origin}
-              user={x.secondAccount}
-              trackingRefs={trackingRefs}
-              nearNetwork={nearNetwork}
-              loggedInNearAccountId={loggedInNearAccountId}
-              socialAccount={socialAccount}
-              profileRef={profileRef}
-            />
-          ))}
-        </>
-      )}
+      ) : null}
     </AccountsWrapper>
   )
 }

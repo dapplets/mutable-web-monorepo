@@ -1,13 +1,11 @@
 import { NearNetworks } from '@mweb/backend'
-import { RequestStatus, useGetRequests, useConnectionRequest } from '@mweb/react-engine'
-import React, { FC, useEffect, useState } from 'react'
+import { RequestStatus, useConnectionRequest, useGetRequests } from '@mweb/react-engine'
+import React, { FC } from 'react'
 import styled from 'styled-components'
 import { Close } from '../mini-overlay/assets/icons'
 import AccountListItem from './account-list-item'
 import LinkButton from './link-button'
 import { StatusBadge } from './status-badge'
-import { socialNetworkConnectionCondition } from './utils'
-import { useGetCANet } from '@mweb/react-engine'
 
 const Wrapper = styled.div<{ $status: RequestStatus }>`
   display: flex;
@@ -109,71 +107,27 @@ const Text = styled.div<{ $status: RequestStatus }>`
 `
 
 type ConnectModuleProps = {
-  nearNetwork: NearNetworks
-  loggedInAccountId: string
-  socialAccount: {
+  accountToConnect: {
     name: string
     origin: string
     fullname: string
     websiteName: string
-  } | null
+  }
+  nearNetwork: NearNetworks
+  loggedInAccountId: string | null
+  isConditionDone: boolean
+  onCloseModal: () => void
 }
 
 export const ConnectModule: FC<ConnectModuleProps> = ({
+  accountToConnect,
   nearNetwork,
   loggedInAccountId,
-  socialAccount,
+  isConditionDone,
+  onCloseModal,
 }) => {
-  const { connectedAccountsNet } = useGetCANet({
-    networkId: nearNetwork,
-    accountId: loggedInAccountId,
-  })
   const { requests } = useGetRequests()
   const { makeConnectionRequest } = useConnectionRequest()
-  const [showConnectModule, setShowConnectModule] = useState(false)
-  const [accountToConnect, setAccountToConnect] = useState<{
-    name: string
-    origin: string
-    fullname: string
-    websiteName: string
-  } | null>(null)
-  const [isConditionDone, setIsConditionDone] = useState(false)
-
-  useEffect(() => {
-    if (
-      !socialAccount ||
-      connectedAccountsNet?.includes(`${socialAccount.name}/${socialAccount.origin}`)
-    ) {
-      setAccountToConnect(null)
-      setShowConnectModule(false)
-    } else if (
-      !accountToConnect ||
-      socialAccount.name !== accountToConnect.name ||
-      socialAccount.origin !== accountToConnect.origin ||
-      socialAccount.fullname !== accountToConnect.fullname
-    ) {
-      setAccountToConnect({ ...socialAccount })
-      setShowConnectModule(true)
-    }
-  }, [socialAccount, connectedAccountsNet, loggedInAccountId])
-
-  useEffect(() => {
-    if (!socialAccount || !loggedInAccountId) {
-      setIsConditionDone(false)
-    } else {
-      const proofUrl = `https://${socialAccount.origin.toLowerCase()}.com/` + socialAccount.name // ToDo: hardcoded: can be different URLs + less secure
-      setIsConditionDone(() =>
-        socialNetworkConnectionCondition({
-          socNet_id: socialAccount.name,
-          near_id: loggedInAccountId,
-          url: proofUrl,
-          fullname: socialAccount.fullname,
-        })
-      )
-    }
-  }, [socialAccount, loggedInAccountId])
-
-  if (!showConnectModule || !accountToConnect) return null
 
   const request = requests.find(
     (r) =>
@@ -186,7 +140,7 @@ export const ConnectModule: FC<ConnectModuleProps> = ({
     <Wrapper $status={status} data-status={status}>
       <Header $status={status}>
         <H3>You can link new account</H3>
-        <ButtonClose onClick={() => setShowConnectModule(false)}>
+        <ButtonClose onClick={onCloseModal}>
           <Close />
         </ButtonClose>
       </Header>
@@ -201,6 +155,7 @@ export const ConnectModule: FC<ConnectModuleProps> = ({
         ) : (
           <LinkButton
             onClick={() =>
+              loggedInAccountId &&
               makeConnectionRequest({
                 name: accountToConnect.name,
                 origin: accountToConnect.origin.toLowerCase(),
