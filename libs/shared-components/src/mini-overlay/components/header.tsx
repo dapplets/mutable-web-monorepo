@@ -89,7 +89,7 @@ const TextConnect = styled.div`
   font-weight: 600;
 `
 
-const ProfileButton = styled.button<{ isActive?: boolean }>`
+const ProfileButton = styled.button<{ $isActive?: boolean }>`
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
@@ -102,19 +102,19 @@ const ProfileButton = styled.button<{ isActive?: boolean }>`
   border: none;
   border-radius: 50%;
   transition: all 0.15s ease;
-  cursor: ${({ isActive: active }) => (active ? 'default' : 'pointer')};
-  color: ${({ isActive: active }) => (active ? 'white' : 'rgb(122, 129, 139)')};
-  background: ${({ isActive: active }) => (active ? 'rgb(56, 75, 255)' : 'rgb(248, 249, 255)')};
+  cursor: ${({ $isActive }) => ($isActive ? 'default' : 'pointer')};
+  color: ${({ $isActive }) => ($isActive ? 'white' : 'rgb(122, 129, 139)')};
+  background: ${({ $isActive }) => ($isActive ? 'rgb(56, 75, 255)' : 'rgb(248, 249, 255)')};
   flex-shrink: 0;
 
   &:hover {
-    color: rgb(101, 108, 119);
-    background-color: rgb(195, 197, 209);
+    color: ${({ $isActive }) => ($isActive ? 'white' : 'rgb(101, 108, 119)')};
+    background-color: ${({ $isActive }) => ($isActive ? 'rgb(56, 75, 255)' : 'rgb(195, 197, 209)')};
   }
 
   &:active {
-    color: rgb(84, 90, 101);
-    background-color: rgb(173, 175, 187);
+    color: ${({ $isActive }) => ($isActive ? 'white' : 'rgb(84, 90, 101)')};
+    background-color: ${({ $isActive }) => ($isActive ? 'rgb(56, 75, 255)' : 'rgb(173, 175, 187)')};
   }
 
   &:disabled {
@@ -168,7 +168,7 @@ const Header: FC = () => {
         <TextConnect>No wallet connected</TextConnect>
       )}
       <ProfileButton
-        isActive={location.pathname === '/main'}
+        $isActive={location.pathname === '/main'}
         disabled={waiting}
         onClick={() => navigate(`/main`)}
         title="Home"
@@ -176,7 +176,7 @@ const Header: FC = () => {
         <HomeIcon />
       </ProfileButton>
       <ProfileButton
-        isActive={location.pathname === '/profile'}
+        $isActive={location.pathname === '/profile'}
         data-testid="profile-page-button"
         disabled={waiting}
         onClick={() => navigate(`/profile`)}
@@ -185,7 +185,7 @@ const Header: FC = () => {
         <PersonIcon />
       </ProfileButton>
       <ProfileButton
-        isActive={location.pathname === '/applications'}
+        $isActive={location.pathname === '/applications'}
         disabled={waiting}
         onClick={() => navigate(`/applications`)}
         title="Apps"
@@ -195,7 +195,7 @@ const Header: FC = () => {
       {loggedInAccountId ? (
         <>
           <ProfileButton
-            isActive={location.pathname === '/notifications'}
+            $isActive={location.pathname === '/notifications'}
             disabled={waiting}
             onClick={() => navigate(`/notifications`)}
             title="Notifications"
