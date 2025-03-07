@@ -5,6 +5,7 @@ import browser from 'webextension-polyfill'
 import Background from '../common/background'
 import { setupMessageListener } from '../common/messenger'
 import { WalletProvider } from '../common/wallet-context'
+import { WalletProvider as WalletEthProvider } from '../common/wallet-ethereum'
 import { App } from './app'
 
 async function main() {
@@ -20,7 +21,9 @@ async function main() {
   const root = createRoot(container)
   root.render(
     <WalletProvider>
-      <App defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
+      <WalletEthProvider>
+        <App defaultMutationId={mutationIdToLoad} devServerUrl={devServerUrl} />
+      </WalletEthProvider>
     </WalletProvider>
   )
 }

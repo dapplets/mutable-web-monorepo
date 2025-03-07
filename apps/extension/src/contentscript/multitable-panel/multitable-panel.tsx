@@ -2,6 +2,7 @@ import { useMutableWeb } from '@mweb/engine'
 import { EngineProvider, UberSausage } from '@mweb/shared-components'
 import React, { FC } from 'react'
 import { useConnectWallet, useDisconnectWallet, useWallet } from '../../common/wallet-context'
+import { useWallet as useEthWallet, useConnectEthWallet } from '../../common/wallet-ethereum'
 import { useSidePanel } from '../hooks/use-side-panel'
 import styled from 'styled-components'
 import Background from '../../common/background'
@@ -18,6 +19,8 @@ export const MultitablePanel: FC = () => {
   useSidePanel()
 
   const { accountId, networkId } = useWallet()
+  const { address, addresses, walletChainId } = useEthWallet()
+  const { connectWallet: connectEthWallet } = useConnectEthWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
   const { tree } = useMutableWeb()
@@ -34,6 +37,10 @@ export const MultitablePanel: FC = () => {
         nearNetwork={networkId}
         onConnectWallet={connectWallet}
         onDisconnectWallet={disconnectWallet}
+        onConnectEthWallet={connectEthWallet}
+        address={address}
+        addresses={addresses}
+        walletChainId={walletChainId}
       >
         <UberSausageWrapper>
           <UberSausage onToggleOverlay={handleToggleOverlay} />

@@ -28,7 +28,11 @@ const PullRequestAccepted: FC<{
       loggedInAccountId={loggedInAccountId}
       icon={<GreenBadge />}
       title={`${targetAuthorId} commited commit from ${sourceAuthorId}`} // ToDo: handle multiple recipients
-      message={<Tag color="#384BFF">Accepted</Tag>}
+      message={
+        <Tag style={{ padding: '0 7px', border: '1px solid #384BFF' }} color="#384BFF">
+          Accepted
+        </Tag>
+      }
       children={`${sourceAuthorId} asks ${targetAuthorId} to accept changes from ${sourceLocalMutationId} to ${targetLocalMutationId}`}
     />
   )

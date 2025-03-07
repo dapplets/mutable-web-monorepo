@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import styled from 'styled-components'
 import { Dropdown } from '../../multitable-panel/components/dropdown'
+import PageLayout from '../components/page-layout'
 
 const MainContainer = styled.div`
   display: flex;
@@ -12,10 +13,13 @@ const MainContainer = styled.div`
 export interface IMainProps {}
 
 const Main: FC<IMainProps> = ({}) => {
+  const ref = React.useRef<HTMLDivElement>(null)
   return (
-    <MainContainer data-testid="main-page">
-      <Dropdown />
-    </MainContainer>
+    <PageLayout ref={ref} title="Main">
+      <MainContainer data-testid="main-page">
+        <Dropdown />
+      </MainContainer>
+    </PageLayout>
   )
 }
 

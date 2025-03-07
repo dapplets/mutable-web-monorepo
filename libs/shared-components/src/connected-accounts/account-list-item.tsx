@@ -4,16 +4,17 @@ import styled from 'styled-components'
 import PictureIcon from './assets/resources/picture'
 import { resources } from './resources'
 
-const Wrapper = styled.div<{ $hasMessage?: boolean }>`
+const Wrapper = styled.div<{ $hasMessage?: boolean; $bgColor?: string }>`
   position: relative;
   display: flex;
   flex-direction: column;
   gap: ${({ $hasMessage }) => ($hasMessage ? '4px' : '0')};
   border-radius: 12px;
-  background-color: var(--muddy-white);
+  background-color: ${({ $bgColor }) => ($bgColor ? $bgColor : 'var(--pure-white)')};
   font-family: var(--font-default);
   padding: 4px 10px !important;
   transition: gap 0.1s ease;
+  width: 100%;
 `
 
 const Main = styled.div<{ $disabled?: boolean }>`
@@ -39,6 +40,8 @@ const Main = styled.div<{ $disabled?: boolean }>`
     align-items: center;
     opacity: ${({ $disabled }) => ($disabled ? 0.4 : 1)};
 
+    color: rgba(122, 129, 139, 1);
+
     /* width: 22px;
     height: 22px; */
 
@@ -63,9 +66,13 @@ const Main = styled.div<{ $disabled?: boolean }>`
   }
 
   .nameUser {
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: 400;
+    font-style: normal;
     display: flex;
     align-items: center;
-    gap: 6px;
+    overflow: hidden;
 
     h4 {
       line-height: 150%;
@@ -152,34 +159,31 @@ type AccountListItemProps = {
   children?: ReactElement | ReactElement[] | null | (ReactElement | null)[]
   name?: string
   origin?: string
-  maxLength?: number
   disabled?: boolean
   isActive?: boolean
   message?: { text: string; type: string }
+  bgColor?: string
 }
 
 const AccountListItem: FC<AccountListItemProps> = ({
   children,
   name,
   origin,
-  maxLength = 32,
   disabled,
   isActive,
   message,
+  bgColor,
 }) => {
   const ResourceIcon = (origin && resources[origin]?.icon) || null
   return (
-    <Wrapper $hasMessage={!!message}>
+    <Wrapper $bgColor={bgColor} $hasMessage={!!message}>
       {name ? (
         <>
           <Main $disabled={disabled}>
             <div className="imgUser">{ResourceIcon ? <ResourceIcon /> : <PictureIcon />}</div>
             <div className="nameUser">
-              <h4>
-                {name.length > maxLength
-                  ? name.slice(0, (maxLength - 2) / 2) + '...' + name.slice(-(maxLength - 4) / 2)
-                  : name}
-              </h4>
+              <h4 style={{ textOverflow: 'ellipsis', overflow: 'hidden' }}>{name.slice(0, -5)}</h4>
+              <h4>{name.slice(-5)}</h4>
               {isActive ? (
                 <div className="active-account" title="Current logged in account"></div>
               ) : null}

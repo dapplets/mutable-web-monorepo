@@ -73,9 +73,13 @@ const PullRequestNotification: FC<{
         error={errorAccept || errorReject}
         message={
           status === PullRequestStatus.Accepted ? (
-            <Tag color="#384BFF">Accepted</Tag>
+            <Tag style={{ padding: '0 7px', border: '1px solid #384BFF' }} color="#384BFF">
+              Accepted
+            </Tag>
           ) : status === PullRequestStatus.Rejected ? (
-            <Tag color="#DB504A">Rejected</Tag>
+            <Tag style={{ padding: '0 7px', border: '1px solid #DB504A' }} color="#DB504A">
+              Rejected
+            </Tag>
           ) : null
         }
         children={`${sourceAuthorId} asks ${targetAuthorId} to accept changes from ${sourceLocalMutationId} to ${targetLocalMutationId}`}
