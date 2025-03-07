@@ -78,6 +78,7 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   async sendCustomRequest(method: string, params: any[]): Promise<any> {
+    // ToDo: redirect view methods through our rpc provider
     await this._prepareNetwork()
     const metamask = await this._getMetamaskProvider()
     return metamask.request({ method, params })

@@ -69,6 +69,14 @@ const ethereum = new Wallet[ChainTypes.ETHEREUM_SEPOLIA][WalletTypes.METAMASK](
   ChainTypes.ETHEREUM_SEPOLIA
 )
 
+const connectEthWallet = async (): Promise<void> => {
+  await ethereum.connectWallet()
+  const account = await ethereum.getAddress()
+
+  // send events to all tabs
+  eventEmitter.emit('signedInEthereum', { account })
+}
+
 // Dev server
 
 const getDevServerUrl = async (): Promise<string | null> => {
@@ -129,7 +137,7 @@ const bgFunctions = {
   connectWallet,
   disconnectWallet,
   getCurrentNetwork,
-  connectEthWallet: ethereum.connectWallet.bind(ethereum),
+  connectEthWallet,
   // disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
   getEthAddress: ethereum.getAddress.bind(ethereum),
   signEthMessage: ethereum.signMessage.bind(ethereum),
@@ -349,13 +357,17 @@ const portConnectListener = async (port: browser.Runtime.Port) => {
   if (port.name === 'port-from-page') {
     const signInListener = (params: any) => port.postMessage({ type: 'signedIn', params })
     const signOutListener = () => port.postMessage({ type: 'signedOut' })
+    const signInEthListener = (params: any) =>
+      port.postMessage({ type: 'signedInEthereum', params })
 
     eventEmitter.addListener('signedIn', signInListener)
     eventEmitter.addListener('signedOut', signOutListener)
+    eventEmitter.addListener('signedInEthereum', signInEthListener)
 
     port.onDisconnect.addListener(() => {
       eventEmitter.removeListener('signedIn', signInListener)
       eventEmitter.removeListener('signedOut', signOutListener)
+      eventEmitter.removeListener('signedInEthereum', signInEthListener)
     })
   }
 }
