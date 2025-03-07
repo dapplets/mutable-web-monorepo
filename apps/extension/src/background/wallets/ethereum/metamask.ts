@@ -4,26 +4,16 @@ import { detect } from 'detect-browser'
 import { ethers } from 'ethers'
 import PortStream from 'extension-port-stream'
 import browser from 'webextension-polyfill'
-// import { CacheMethod } from '../../../common/helpers'
-// import * as walletIcons from '../../../common/resources/wallets'
 import { EthereumWallet } from './interface'
-import { getChainParameters } from './helpers'
-import { ChainTypes } from '@mweb/backend'
 import MWebIcon from '../../../../resources/icons/icon128.png' // ToDo: replace to walletIcons.metamask
 
 export default class extends ethers.Signer implements EthereumWallet {
   public provider: ethers.providers.StaticJsonRpcProvider
   private _metamaskProviderPromise: Promise<MetaMaskInpageProvider> | null = null
 
-  constructor(chain: ChainTypes) {
+  constructor() {
     super()
-    const config = getChainParameters(chain)
-    this.provider = new ethers.providers.StaticJsonRpcProvider(
-      config.providerUrl,
-      config.ensAddress && config.name
-        ? { name: config.name, chainId: config.chainId, ensAddress: config.ensAddress }
-        : config.chainId
-    )
+    this.provider = new ethers.providers.StaticJsonRpcProvider()
   }
 
   async getAddress(): Promise<string> {
@@ -33,6 +23,16 @@ export default class extends ethers.Signer implements EthereumWallet {
       return metamask.selectedAddress ?? '' // ToDo: check it
     } catch (_) {
       return '' // ToDo: check it
+    }
+  }
+
+  async getAddresses(): Promise<string[] | null> {
+    try {
+      // ToDo: replace to ethereum.request({ method: 'eth_accounts' })
+      const metamask = await this._getMetamaskProvider()
+      return metamask.request({ method: 'eth_accounts', params: [] }) as Promise<string[]> // ToDo: check it
+    } catch (_) {
+      return null // ToDo: check it
     }
   }
 
@@ -65,7 +65,7 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   async sendTransactionOutHash(transaction: TransactionRequest): Promise<string> {
-    await this._prepareNetwork()
+    // await this._prepareNetwork()
     const metamask = await this._getMetamaskProvider()
     await browser.storage.local.set({ metamask_lastUsage: new Date().toISOString() })
     transaction.from = await this.getAddress()
@@ -79,7 +79,7 @@ export default class extends ethers.Signer implements EthereumWallet {
 
   async sendCustomRequest(method: string, params: any[]): Promise<any> {
     // ToDo: redirect view methods through our rpc provider
-    await this._prepareNetwork()
+    // await this._prepareNetwork()
     const metamask = await this._getMetamaskProvider()
     return metamask.request({ method, params })
   }
@@ -145,43 +145,43 @@ export default class extends ethers.Signer implements EthereumWallet {
     )
   }
 
-  private async _prepareNetwork(): Promise<void> {
-    const network = await this.provider.getNetwork()
-    const chainId = await this._getWalletChainId()
+  // private async _prepareNetwork(): Promise<void> {
+  //   const network = await this.provider.getNetwork()
+  //   const chainId = await this._getWalletChainId()
 
-    if (network.chainId === chainId) return
+  //   if (network.chainId === chainId) return
 
-    const metamask = await this._getMetamaskProvider()
-    const chainIdHex = '0x' + network.chainId.toString(16)
+  //   const metamask = await this._getMetamaskProvider()
+  //   const chainIdHex = '0x' + network.chainId.toString(16)
 
-    try {
-      await metamask.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: chainIdHex }],
-      })
-    } catch (switchError: any) {
-      // This error code indicates that the chain has not been added to MetaMask.
-      if (switchError?.code === 4902) {
-        try {
-          await metamask.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: chainIdHex,
-                chainName: network.name,
-                rpcUrls: [this.provider.connection.url],
-              },
-            ],
-          })
-        } catch (addError) {
-          throw new Error('Network adding rejected')
-        }
-      }
-      throw new Error('Network switching rejected')
-    }
-  }
+  //   try {
+  //     await metamask.request({
+  //       method: 'wallet_switchEthereumChain',
+  //       params: [{ chainId: chainIdHex }],
+  //     })
+  //   } catch (switchError: any) {
+  //     // This error code indicates that the chain has not been added to MetaMask.
+  //     if (switchError?.code === 4902) {
+  //       try {
+  //         await metamask.request({
+  //           method: 'wallet_addEthereumChain',
+  //           params: [
+  //             {
+  //               chainId: chainIdHex,
+  //               chainName: network.name,
+  //               rpcUrls: [this.provider.connection.url],
+  //             },
+  //           ],
+  //         })
+  //       } catch (addError) {
+  //         throw new Error('Network adding rejected')
+  //       }
+  //     }
+  //     throw new Error('Network switching rejected')
+  //   }
+  // }
 
-  private async _getWalletChainId(): Promise<number> {
+  async getWalletChainId(): Promise<number> {
     const metamask = await this._getMetamaskProvider()
     const chainId = await metamask.request({
       method: 'eth_chainId',

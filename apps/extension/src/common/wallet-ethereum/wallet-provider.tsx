@@ -1,10 +1,10 @@
-import { setupWalletSelector, WalletSelector } from '@near-wallet-selector/core'
-import { EventEmitter as NEventEmitter } from 'events'
+// import { setupWalletSelector, WalletSelector } from '@near-wallet-selector/core'
+// import { EventEmitter as NEventEmitter } from 'events'
 import React, { FC, ReactNode, useEffect } from 'react'
 import browser from 'webextension-polyfill'
-import { ExtensionStorage } from '../extension-storage'
+// import { ExtensionStorage } from '../extension-storage'
 // import { setupWallet } from './wallet'
-import { WalletContext, contextDefaultValues, WalletContextState } from './wallet-context'
+import { WalletContext, WalletContextState } from './wallet-context'
 import Background from '../background'
 
 type Props = {
@@ -13,9 +13,13 @@ type Props = {
 
 const WalletProvider: FC<Props> = ({ children }) => {
   const [address, setAddress] = React.useState<string | null>(null)
+  const [addresses, setAddresses] = React.useState<string[] | null>(null)
+  const [walletChainId, setWalletChainId] = React.useState<number | null>(null)
 
   useEffect(() => {
     Background.getEthAddress().then(setAddress)
+    Background.getEthAddresses().then(setAddresses)
+    Background.getEthWalletChainId().then(setWalletChainId)
   }, [])
 
   useEffect(() => {
@@ -23,6 +27,7 @@ const WalletProvider: FC<Props> = ({ children }) => {
       if (!message || !message.type) return
       if (message.type === 'signedInEthereum') {
         setAddress(message.params.account)
+        setAddresses(message.params.accounts)
       }
     }
 
@@ -49,14 +54,11 @@ const WalletProvider: FC<Props> = ({ children }) => {
     }
   }, [])
 
-  // if (!networkId) return null
-
   const state: WalletContextState = {
-    ...contextDefaultValues,
     address,
+    addresses,
+    walletChainId,
   }
-
-  console.log('state', state)
 
   return <WalletContext.Provider value={state}>{children}</WalletContext.Provider>
 }

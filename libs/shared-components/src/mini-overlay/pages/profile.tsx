@@ -107,8 +107,12 @@ const ConnectMetamaskButton = styled.button`
 const Profile: FC<{
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }> = ({ trackingRefs }) => {
-  const { loggedInAccountId, nearNetwork, address, onConnectEthWallet } = useEngine()
+  const { loggedInAccountId, nearNetwork, addresses, onConnectEthWallet, walletChainId } =
+    useEngine()
   const profileRef = React.useRef<HTMLDivElement>(null)
+
+  console.log('addresses', addresses)
+  console.log('walletChainId', walletChainId)
 
   const [socialAccount, setSocialAccount] = useState<{
     name: string
@@ -170,17 +174,20 @@ const Profile: FC<{
             />
           ) : null}
           {/* ToDo: hardcoded */}
-          {address ? (
-            <ConnectedAccount
-              loggedInNearAccountId={loggedInAccountId}
-              nearNetwork={nearNetwork as NearNetworks}
-              accountId={address}
-              chain={ChainTypes.ETHEREUM_SEPOLIA} // ToDo: hardcoded
-              trackingRefs={trackingRefs}
-              profileRef={profileRef}
-              socialAccount={socialAccount}
-              showModal={false}
-            />
+          {addresses?.length ? (
+            addresses.map((addr) => (
+              <ConnectedAccount
+                key={addr}
+                loggedInNearAccountId={loggedInAccountId}
+                nearNetwork={nearNetwork as NearNetworks}
+                accountId={addr}
+                chain={ChainTypes.ETHEREUM_SEPOLIA} // ToDo: hardcoded
+                trackingRefs={trackingRefs}
+                profileRef={profileRef}
+                socialAccount={socialAccount}
+                showModal={false}
+              />
+            ))
           ) : (
             <ConnectMetamaskButton onClick={onConnectEthWallet}>
               <div>+</div>Connect MetaMask

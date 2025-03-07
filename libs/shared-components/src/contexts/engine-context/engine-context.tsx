@@ -9,6 +9,8 @@ export type EngineContextState = {
   onDisconnectWallet: () => Promise<void>
   onConnectEthWallet: () => Promise<void>
   address: string | null
+  addresses: string[] | null
+  walletChainId: number | null
 }
 
 export const contextDefaultValues: EngineContextState = {
@@ -19,6 +21,8 @@ export const contextDefaultValues: EngineContextState = {
   onDisconnectWallet: async () => {},
   onConnectEthWallet: async () => {},
   address: null,
+  addresses: null,
+  walletChainId: null,
 }
 
 export const EngineContext = createContext<EngineContextState>(contextDefaultValues)
