@@ -1,3 +1,14 @@
+import {
+  CopyOutlined,
+  HomeOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  PlayCircleOutlined,
+  TeamOutlined,
+} from '@ant-design/icons'
+import { Dropdown } from 'antd'
+import { ItemType } from 'antd/es/menu/interface'
 import makeBlockie from 'ethereum-blockies-base64'
 import React, { FC, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router'
@@ -7,23 +18,18 @@ import { ProfileIcon } from '../../common/profile-icon'
 import { ProfileInfo } from '../../common/profile-info'
 import { ProfileNetwork } from '../../common/profile-network'
 import { useEngine } from '../../contexts/engine-context'
-import {
-  Bell as BellIcon,
-  Connect as ConnectIcon,
-  Copy as CopyIcon,
-  Disconnect as DisconnectIcon,
-  Home as HomeIcon,
-  Person as PersonIcon,
-  PlayCenterIcon,
-} from '../assets/icons'
+import { Bell as BellIcon } from '../assets/icons'
 
 const HeaderWrapper = styled.div`
+  --primary: oklch(53% 0.26 269.37); // rgb(56, 75, 255)
+  --primary-hover: oklch(47.4% 0.2613 267.51); // rgb(36, 55, 235)
+  --primary-pressed: oklch(42.2% 0.2585 265.62); // rgb(16, 35, 215)
+
   display: flex;
   box-sizing: border-box;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  height: 56px;
   border-radius: 10px;
   padding: 4px 10px;
   background: #fff;
@@ -32,55 +38,27 @@ const HeaderWrapper = styled.div`
     0px 4px 20px 0px #0b576f26,
     0px 4px 5px 0px #2d343c1a;
   gap: 6px;
+  min-height: 56px;
 `
 
-const ButtonConnectWrapper = styled.button`
-  display: flex;
-  position: relative;
-  box-sizing: border-box;
-  overflow: hidden;
-  cursor: pointer;
-  justify-content: center;
-  align-items: center;
-  width: 96px;
-  height: 38px;
-  gap: 4px;
-  outline: none;
+const ProfileButton = styled.button`
   border: none;
-  background: #384bff;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 14px;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
   padding: 0;
-  transition: all 0.2s ease;
+  overflow: hidden;
+`
 
-  &:hover {
-    opacity: 0.8;
-  }
-
-  &:active {
-    opacity: 0.6;
-  }
-
-  &:disabled {
-    opacity: 0.6;
-  }
-
-  .loading {
-    height: 0;
-    width: 0;
-    padding: 9px;
-    border: 3px solid #8893ff;
-    border-right-color: #0e1ebe;
-    border-radius: 15px;
-    animation: 1s infinite linear rotate;
-  }
-
-  @keyframes rotate {
-    100% {
-      transform: rotate(360deg);
-    }
-  }
+const HeaderButtonsArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 0;
+  padding: 4px;
 `
 
 const TextConnect = styled.div`
@@ -89,7 +67,7 @@ const TextConnect = styled.div`
   font-weight: 600;
 `
 
-const ProfileButton = styled.button<{ $isActive?: boolean }>`
+const HeaderButton = styled.button<{ $isActive?: boolean }>`
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
@@ -108,13 +86,15 @@ const ProfileButton = styled.button<{ $isActive?: boolean }>`
   flex-shrink: 0;
 
   &:hover {
-    color: ${({ $isActive }) => ($isActive ? 'white' : 'rgb(101, 108, 119)')};
-    background-color: ${({ $isActive }) => ($isActive ? 'rgb(56, 75, 255)' : 'rgb(195, 197, 209)')};
+    color: ${({ $isActive }) => ($isActive ? 'white' : 'var(--primary)')};
+    /* background-color: ${({ $isActive }) =>
+      $isActive ? 'rgb(56, 75, 255)' : 'rgb(195, 197, 209)'}; */
   }
 
   &:active {
-    color: ${({ $isActive }) => ($isActive ? 'white' : 'rgb(84, 90, 101)')};
-    background-color: ${({ $isActive }) => ($isActive ? 'rgb(56, 75, 255)' : 'rgb(173, 175, 187)')};
+    color: ${({ $isActive }) => ($isActive ? 'white' : 'var(--primary-hover)')};
+    /* background-color: ${({ $isActive }) =>
+      $isActive ? 'rgb(56, 75, 255)' : 'rgb(173, 175, 187)'}; */
   }
 
   &:disabled {
@@ -123,7 +103,7 @@ const ProfileButton = styled.button<{ $isActive?: boolean }>`
   }
 `
 
-const Header: FC = () => {
+const Header: FC<{ onOpenHeader: () => void }> = ({ onOpenHeader }) => {
   const { onConnectWallet, onDisconnectWallet, loggedInAccountId, nearNetwork } = useEngine()
   const navigate = useNavigate()
   const location = useLocation()
@@ -150,81 +130,91 @@ const Header: FC = () => {
     }
   }
 
+  const menuItems: ItemType[] = [
+    {
+      label: 'Main',
+      key: '0',
+      onClick: () => navigate(`/main`),
+      icon: <HomeOutlined />,
+    },
+    {
+      label: 'Profile',
+      key: '1',
+      onClick: () => navigate(`/profile`),
+      icon: <TeamOutlined />,
+    },
+    {
+      label: 'Apps',
+      key: '2',
+      onClick: () => navigate(`/applications`),
+      icon: <PlayCircleOutlined />,
+    },
+    {
+      type: 'divider',
+    },
+  ]
+
+  if (loggedInAccountId) {
+    menuItems.push({
+      label: 'Copy address',
+      key: '3',
+      onClick: () => navigator.clipboard.writeText(loggedInAccountId),
+      disabled: waiting,
+      icon: <CopyOutlined />,
+    })
+    menuItems.push({
+      label: 'Log out',
+      key: '4',
+      onClick: handleSignOut,
+      disabled: waiting,
+      icon: <LogoutOutlined />,
+    })
+  } else {
+    menuItems.push({
+      label: 'Connect NEAR wallet',
+      key: '3',
+      onClick: handleSignIn,
+      disabled: waiting,
+      icon: <LoginOutlined />,
+    })
+  }
+
   return (
     <HeaderWrapper ref={wrapperRef}>
-      {loggedInAccountId ? (
-        <>
-          <ProfileIcon>
-            <img src={makeBlockie(loggedInAccountId)} alt="account blockie image" />
-          </ProfileIcon>
-          <ProfileInfo styles={{ width: 158 }}>
-            <ProfileAddress>{loggedInAccountId}</ProfileAddress>
-            <ProfileNetwork>
-              {nearNetwork === 'mainnet' ? 'NEAR-Mainnet' : 'NEAR-Testnet'}
-            </ProfileNetwork>
-          </ProfileInfo>
-        </>
-      ) : (
-        <TextConnect>No wallet connected</TextConnect>
-      )}
-      <ProfileButton
-        $isActive={location.pathname === '/main'}
-        disabled={waiting}
-        onClick={() => navigate(`/main`)}
-        title="Home"
-      >
-        <HomeIcon />
+      <ProfileButton title={loggedInAccountId ?? ''} onClick={onOpenHeader}>
+        {loggedInAccountId ? (
+          <>
+            <ProfileIcon>
+              <img src={makeBlockie(loggedInAccountId)} alt="account blockie image" />
+            </ProfileIcon>
+            <ProfileInfo>
+              <ProfileAddress>{loggedInAccountId}</ProfileAddress>
+              <ProfileNetwork>
+                {nearNetwork === 'mainnet' ? 'NEAR-Mainnet' : 'NEAR-Testnet'}
+              </ProfileNetwork>
+            </ProfileInfo>
+          </>
+        ) : (
+          <TextConnect>No wallet connected</TextConnect>
+        )}
       </ProfileButton>
-      <ProfileButton
-        $isActive={location.pathname === '/profile'}
-        data-testid="profile-page-button"
-        disabled={waiting}
-        onClick={() => navigate(`/profile`)}
-        title="Profile"
-      >
-        <PersonIcon />
-      </ProfileButton>
-      <ProfileButton
-        $isActive={location.pathname === '/applications'}
-        disabled={waiting}
-        onClick={() => navigate(`/applications`)}
-        title="Apps"
-      >
-        <PlayCenterIcon />
-      </ProfileButton>
-      {loggedInAccountId ? (
-        <>
-          <ProfileButton
+      <HeaderButtonsArea>
+        {loggedInAccountId ? (
+          <HeaderButton
             $isActive={location.pathname === '/notifications'}
             disabled={waiting}
             onClick={() => navigate(`/notifications`)}
             title="Notifications"
           >
             <BellIcon />
-          </ProfileButton>
-          <ProfileButton
-            disabled={waiting}
-            onClick={() => navigator.clipboard.writeText(loggedInAccountId)}
-            title="Copy address"
-          >
-            <CopyIcon />
-          </ProfileButton>
-          <ProfileButton disabled={waiting} onClick={handleSignOut} title="Log out">
-            <DisconnectIcon />
-          </ProfileButton>
-        </>
-      ) : (
-        <ButtonConnectWrapper disabled={waiting} onClick={handleSignIn} title="Connect NEAR wallet">
-          {waiting ? (
-            <div className="loading"></div>
-          ) : (
-            <>
-              <ConnectIcon />
-              Connect
-            </>
-          )}
-        </ButtonConnectWrapper>
-      )}
+          </HeaderButton>
+        ) : null}
+        <Dropdown menu={{ items: menuItems }}>
+          <HeaderButton>
+            <MenuOutlined />
+          </HeaderButton>
+        </Dropdown>
+      </HeaderButtonsArea>
     </HeaderWrapper>
   )
 }
