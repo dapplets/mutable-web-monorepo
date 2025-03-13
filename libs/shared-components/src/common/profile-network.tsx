@@ -7,23 +7,38 @@ const Component = styled.div`
   font-size: 12px;
   color: #7a818b;
   position: relative;
-  padding-left: 12px !important;
   font-family: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
     sans-serif;
+  text-transform: capitalize;
 
-  &::before {
-    position: absolute;
-    content: '';
-    display: block;
-    top: 3px;
-    left: 0;
+  &.connected,
+  &.error {
+    padding-left: 12px !important;
+
+    &::before {
+      position: absolute;
+      content: '';
+      display: block;
+      top: 3px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+  }
+
+  &.connected::before {
     background: #6bea87;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
+  }
+
+  &.error::before {
+    background: #f44336;
   }
 `
 
 export const ProfileNetwork: FC<{
   children: React.ReactElement | React.ReactElement[] | string
-}> = ({ children }) => <Component>{children}</Component>
+  indicatorType?: 'connected' | 'error' | 'no indicator'
+}> = ({ children, indicatorType = 'connected' }) => (
+  <Component className={indicatorType}>{children}</Component>
+)

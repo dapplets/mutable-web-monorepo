@@ -38,26 +38,26 @@ const Wallet = styled.div`
   width: 100%;
 `
 
-const showChain = (chain: ChainTypes) => {
-  if (chain === ChainTypes.ETHEREUM_SEPOLIA || chain === ChainTypes.ETHEREUM_XDAI) {
-    return 'Ethereum • MetaMask'
+const showChain = (chain: string) => {
+  switch (chain) {
+    case ChainTypes.NEAR_MAINNET:
+      return 'NEAR Mainnet • MyNearWallet'
+    case ChainTypes.NEAR_TESTNET:
+      return 'NEAR Testnet • MyNearWallet'
+    case ChainTypes.ETHEREUM_XDAI:
+      return 'Gnosis Chain • MetaMask'
+    default:
+      return `${chain.split('/')[1]} • MetaMask` // ToDo: hardcoded
   }
-  if (chain === ChainTypes.NEAR_MAINNET) {
-    return 'NEAR-Mainnet • MyNearWallet'
-  }
-  if (chain === ChainTypes.NEAR_TESTNET) {
-    return 'NEAR-Testnet • MyNearWallet'
-  }
-  return ''
 }
 
 export const ConnectedAccount: FC<{
   loggedInNearAccountId: string | null
   nearNetwork: NearNetworks
   accountId: string
-  chain: ChainTypes
+  chain: string
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
-  profileRef: React.RefObject<HTMLDivElement>
+  profileRef?: React.RefObject<HTMLDivElement>
   socialAccount: {
     name: string
     origin: string
@@ -65,6 +65,8 @@ export const ConnectedAccount: FC<{
     websiteName: string
   } | null
   showModal: boolean
+  showCA?: boolean
+  indicatorType?: 'connected' | 'error' | 'no indicator'
 }> = ({
   loggedInNearAccountId,
   nearNetwork,
@@ -74,13 +76,15 @@ export const ConnectedAccount: FC<{
   profileRef,
   socialAccount,
   showModal,
+  showCA = true,
+  indicatorType,
 }) => {
   const { connectedAccountsPairs: pairs } = useGetCAPairs({
-    chain,
+    chain: chain as ChainTypes,
     accountId,
   })
   const { connectedAccountsNet } = useGetCANet({
-    chain,
+    chain: chain as ChainTypes,
     accountId,
   })
 
@@ -145,7 +149,7 @@ export const ConnectedAccount: FC<{
               {accountId.slice(-5)}
             </ProfileAddress>
           </div>
-          <ProfileNetwork>{showChain(chain)}</ProfileNetwork>
+          <ProfileNetwork indicatorType={indicatorType}>{showChain(chain)}</ProfileNetwork>
         </ProfileInfo>
       </Wallet>
       {showConnectModule && accountToConnect ? (
@@ -157,7 +161,7 @@ export const ConnectedAccount: FC<{
           onCloseModal={() => setShowConnectModule(false)}
         />
       ) : null}
-      {pairs && pairs.length !== 0 ? (
+      {showCA && profileRef && pairs && pairs.length !== 0 ? (
         <>
           {pairs.map((pair) => (
             <CAListItem
@@ -171,7 +175,7 @@ export const ConnectedAccount: FC<{
             />
           ))}
         </>
-      ) : !(showConnectModule && accountToConnect) && showModal ? (
+      ) : !(showConnectModule && accountToConnect) && showCA && showModal ? (
         <NoAccountsMessage>
           There are no connected accounts yet. You can connect your{' '}
           <a href="https://x.com" target="_blank">

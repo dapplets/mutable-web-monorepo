@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import { ConnectedAccount } from '../../connected-accounts'
 import { useEngine } from '../../contexts/engine-context'
 import PageLayout from '../components/page-layout'
+import ConnectMetaMaskButton from '../../common/connect-MetaMask-button'
 
 const Main = styled.main`
   display: flex;
@@ -60,59 +61,15 @@ const ScrollContent = styled.div`
   }
 `
 
-const ConnectMetamaskButton = styled.button`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  border: none;
-  background: none;
-  transition: all 0.2s ease;
-  color: var(--primary);
-
-  & > div:first-child {
-    display: flex;
-    border-radius: 50%;
-    border: 2px solid var(--primary);
-    width: 16px;
-    height: 16px;
-    align-items: center;
-    justify-content: center;
-    line-height: 100%;
-    font-weight: bold;
-    font-size: 14px;
-    font-family: var(--font-default);
-  }
-
-  &:hover {
-    color: var(--primary-hover);
-  }
-
-  &:hover > div {
-    color: var(--primary-hover);
-    border: 2px solid var(--primary-hover);
-  }
-
-  &:active {
-    color: var(--primary-pressed);
-  }
-
-  &:active > div {
-    color: var(--primary-pressed);
-    border: 2px solid var(--primary-pressed);
-  }
-`
-
 const Profile: FC<{
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }> = ({ trackingRefs }) => {
-  const { loggedInAccountId, nearNetwork, addresses, onConnectEthWallet, walletChainId } =
+  const { loggedInAccountId, nearNetwork, addresses, onConnectEthWallet, walletChainName } =
     useEngine()
   const profileRef = React.useRef<HTMLDivElement>(null)
 
   console.log('addresses', addresses)
-  console.log('walletChainId', walletChainId)
+  console.log('walletChainName', walletChainName)
 
   const [socialAccount, setSocialAccount] = useState<{
     name: string
@@ -171,6 +128,7 @@ const Profile: FC<{
               profileRef={profileRef}
               socialAccount={socialAccount}
               showModal={true}
+              indicatorType="no indicator"
             />
           ) : null}
           {/* ToDo: hardcoded */}
@@ -181,17 +139,16 @@ const Profile: FC<{
                 loggedInNearAccountId={loggedInAccountId}
                 nearNetwork={nearNetwork as NearNetworks}
                 accountId={addr}
-                chain={ChainTypes.ETHEREUM_SEPOLIA} // ToDo: hardcoded
+                chain={'ethereum/' + walletChainName} // ToDo: hardcoded
                 trackingRefs={trackingRefs}
                 profileRef={profileRef}
                 socialAccount={socialAccount}
                 showModal={false}
+                indicatorType="no indicator"
               />
             ))
           ) : (
-            <ConnectMetamaskButton onClick={onConnectEthWallet}>
-              <div>+</div>Connect MetaMask
-            </ConnectMetamaskButton>
+            <ConnectMetaMaskButton onConnectEthWallet={onConnectEthWallet} />
           )}
         </ScrollContent>
       </Main>

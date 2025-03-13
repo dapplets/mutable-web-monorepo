@@ -17,7 +17,7 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { address, addresses, walletChainId } = useEthWallet()
+  const { address, addresses, walletChainName } = useEthWallet()
   const { connectWallet: connectEthWallet } = useConnectEthWallet()
 
   if (!selector) return null
@@ -49,7 +49,7 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
         onConnectEthWallet={connectEthWallet}
         address={address}
         addresses={addresses}
-        walletChainId={walletChainId}
+        walletChainName={walletChainName}
       >
         <SidePanel />
       </EngineProvider>

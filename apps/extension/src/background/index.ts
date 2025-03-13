@@ -139,7 +139,7 @@ const bgFunctions = {
   connectEthWallet,
   getEthAddress: ethereum.getAddress.bind(ethereum),
   getEthAddresses: ethereum.getAddresses.bind(ethereum),
-  getEthWalletChainId: ethereum.getWalletChainId.bind(ethereum),
+  getEthWalletChainName: ethereum.getWalletChainName.bind(ethereum),
   signEthMessage: ethereum.signMessage.bind(ethereum),
   sendEthTransaction: ethereum.sendTransaction.bind(ethereum),
   sendEthCustomRequest: ethereum.sendCustomRequest.bind(ethereum),

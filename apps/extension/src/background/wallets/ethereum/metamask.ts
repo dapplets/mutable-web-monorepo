@@ -190,6 +190,12 @@ export default class extends ethers.Signer implements EthereumWallet {
     return Number(chainId)
   }
 
+  async getWalletChainName(): Promise<string | null> {
+    const chainId = await this.getWalletChainId()
+    if (!chainId) return null
+    return ethers.providers.getNetwork(chainId)?.name
+  }
+
   private async _getMetamaskProvider(): Promise<MetaMaskInpageProvider> {
     if (!this._metamaskProviderPromise) {
       this._metamaskProviderPromise = new Promise((res, rej) => {

@@ -11,7 +11,7 @@ type Props = {
   onConnectEthWallet: () => Promise<void>
   address: string | null
   addresses: string[] | null
-  walletChainId: number | null
+  walletChainName: string | null
   children?: ReactNode
 }
 
@@ -24,7 +24,7 @@ const EngineProvider: FC<Props> = ({
   onConnectEthWallet,
   address,
   addresses,
-  walletChainId,
+  walletChainName,
   children,
 }) => {
   const state: EngineContextState = {
@@ -36,7 +36,7 @@ const EngineProvider: FC<Props> = ({
     onConnectEthWallet,
     address,
     addresses,
-    walletChainId,
+    walletChainName,
   }
 
   return <EngineContext.Provider value={state}>{children}</EngineContext.Provider>

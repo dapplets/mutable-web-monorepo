@@ -6,7 +6,7 @@ import { Image } from '../../common/image'
 import { DocumentCard } from './document-card'
 import { AppInMutation } from '@mweb/backend'
 import { Spin } from 'antd'
-import { Badge } from '../../common/badgeWithIcon'
+import { Badge } from '../../common/badge-with-icon'
 
 const Card = styled.div<{ $backgroundColor?: string }>`
   position: relative;

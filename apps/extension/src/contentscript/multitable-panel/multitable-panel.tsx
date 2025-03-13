@@ -19,7 +19,7 @@ export const MultitablePanel: FC = () => {
   useSidePanel()
 
   const { accountId, networkId } = useWallet()
-  const { address, addresses, walletChainId } = useEthWallet()
+  const { address, addresses, walletChainName } = useEthWallet()
   const { connectWallet: connectEthWallet } = useConnectEthWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
@@ -40,7 +40,7 @@ export const MultitablePanel: FC = () => {
         onConnectEthWallet={connectEthWallet}
         address={address}
         addresses={addresses}
-        walletChainId={walletChainId}
+        walletChainName={walletChainName}
       >
         <UberSausageWrapper>
           <UberSausage onToggleOverlay={handleToggleOverlay} />

@@ -4,8 +4,8 @@ import React, { FC } from 'react'
 const Component = styled.div<{ $size: 'big' | 'medium' }>`
   display: flex;
   box-sizing: border-box;
-  width: ${({ $size }) => ($size === 'big' ? '48px' : '32px')};
-  height: ${({ $size }) => ($size === 'big' ? '48px' : '32px')};
+  width: ${({ $size }) => ($size === 'big' ? '48px' : '38px')};
+  height: ${({ $size }) => ($size === 'big' ? '48px' : '38px')};
   border-radius: 50%;
   overflow: hidden;
   border: 1px solid #e2e2e5;

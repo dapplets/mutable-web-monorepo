@@ -14,12 +14,12 @@ type Props = {
 const WalletProvider: FC<Props> = ({ children }) => {
   const [address, setAddress] = React.useState<string | null>(null)
   const [addresses, setAddresses] = React.useState<string[] | null>(null)
-  const [walletChainId, setWalletChainId] = React.useState<number | null>(null)
+  const [walletChainName, setWalletChainName] = React.useState<string | null>(null)
 
   useEffect(() => {
     Background.getEthAddress().then(setAddress)
     Background.getEthAddresses().then(setAddresses)
-    Background.getEthWalletChainId().then(setWalletChainId)
+    Background.getEthWalletChainName().then(setWalletChainName)
   }, [])
 
   useEffect(() => {
@@ -57,7 +57,7 @@ const WalletProvider: FC<Props> = ({ children }) => {
   const state: WalletContextState = {
     address,
     addresses,
-    walletChainId,
+    walletChainName,
   }
 
   return <WalletContext.Provider value={state}>{children}</WalletContext.Provider>
