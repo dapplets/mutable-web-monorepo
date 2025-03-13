@@ -1,4 +1,5 @@
-import React, { FC } from 'react'
+import { Spin } from 'antd'
+import React, { FC, useState } from 'react'
 import styled from 'styled-components'
 
 const ConnectMetamaskButton = styled.button`
@@ -15,7 +16,12 @@ const ConnectMetamaskButton = styled.button`
   cursor: pointer;
   font-family: var(--font-default);
 
-  & > div:first-child {
+  .ant-spin {
+    height: 15px !important;
+    margin-top: 1px !important;
+  }
+
+  .plus {
     display: flex;
     box-sizing: border-box;
     border-radius: 50%;
@@ -33,7 +39,7 @@ const ConnectMetamaskButton = styled.button`
     color: var(--primary-hover);
   }
 
-  &:hover > div {
+  &:hover .plus {
     color: var(--primary-hover);
     border: 2px solid var(--primary-hover);
   }
@@ -42,18 +48,35 @@ const ConnectMetamaskButton = styled.button`
     color: var(--primary-pressed);
   }
 
-  &:active > div {
+  &:active .plus {
     color: var(--primary-pressed);
     border: 2px solid var(--primary-pressed);
   }
 `
 
-export const ConnectMetaMaskButton: FC<{ onConnectEthWallet: () => void }> = ({
+export const ConnectMetaMaskButton: FC<{ onConnectEthWallet: () => Promise<void> }> = ({
   onConnectEthWallet,
 }) => {
+  const [isWaiting, setIsWaiting] = useState(false)
+  const handleClick = async () => {
+    setIsWaiting(true)
+    try {
+      await onConnectEthWallet()
+    } catch (e) {
+      console.log(e)
+    } finally {
+      setIsWaiting(false)
+    }
+  }
   return (
-    <ConnectMetamaskButton onClick={onConnectEthWallet}>
-      <div>+</div>Connect MetaMask
+    <ConnectMetamaskButton onClick={handleClick}>
+      {isWaiting ? (
+        <Spin size="small" />
+      ) : (
+        <>
+          <div className="plus">+</div>Connect MetaMask
+        </>
+      )}
     </ConnectMetamaskButton>
   )
 }
