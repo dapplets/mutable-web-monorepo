@@ -142,6 +142,10 @@ const HeaderButton = styled.button<{ $isActive?: boolean }>`
   background: ${({ $isActive }) => ($isActive ? 'rgb(56, 75, 255)' : 'rgb(248, 249, 255)')};
   flex-shrink: 0;
 
+  &.menu {
+    cursor: default;
+  }
+
   svg {
     width: 17px;
     height: 18px;
@@ -319,7 +323,7 @@ const Header: FC = () => {
               </HeaderButton>
             ) : null}
             <Dropdown menu={{ items: menuItems }}>
-              <HeaderButton>
+              <HeaderButton className="menu">
                 <MenuOutlined />
               </HeaderButton>
             </Dropdown>

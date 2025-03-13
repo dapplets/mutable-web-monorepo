@@ -21,7 +21,7 @@ const SmoothSpace = styled(Space)`
 
 const SpinContainer = styled(Flex)`
   transition: all 0.2s ease;
-  height: 100%;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -30,7 +30,7 @@ const SpinContainer = styled(Flex)`
 
 const Loader = () => (
   <SpinContainer prefixCls="spin">
-    <Spin size="large" />
+    <Spin />
   </SpinContainer>
 )
 

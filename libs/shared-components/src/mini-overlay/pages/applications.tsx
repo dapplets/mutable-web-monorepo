@@ -10,6 +10,7 @@ import styled from 'styled-components'
 import { useEngine } from '../../contexts/engine-context'
 import AppCard from '../components/app-card'
 import PageLayout from '../components/page-layout'
+import { Spin } from 'antd'
 
 const AppsWrapper = styled.div`
   display: flex;
@@ -52,16 +53,41 @@ const AppsWrapper = styled.div`
 
 const Applications: FC = () => {
   const { tree } = useEngine()
-  const { selectedMutationId } = useGetSelectedMutation(tree?.id)
-  const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
-  const { mutationVersion } = useGetMutationVersion(selectedMutationId)
-  const { mutation } = useMutation(selectedMutationId, preferredSource, mutationVersion)
-  const { mutationApps } = useMutationApps(mutation?.id, mutation?.apps ?? [])
+  const { selectedMutationId, isLoading: isSelectedMutIdLoading } = useGetSelectedMutation(tree?.id)
+  const { preferredSource, isLoading: isPreferredSourceLoading } = usePreferredSource(
+    selectedMutationId,
+    tree?.id
+  )
+  const { mutationVersion, isLoading: isMutationVersionLoading } =
+    useGetMutationVersion(selectedMutationId)
+  const { mutation, isMutationLoading } = useMutation(
+    selectedMutationId,
+    preferredSource,
+    mutationVersion
+  )
+  const { mutationApps, isLoading } = useMutationApps(mutation?.id, mutation?.apps ?? [])
   const appsRef = React.useRef<HTMLDivElement>(null)
 
   if (!selectedMutationId) return null
 
-  return (
+  return !tree ||
+    isSelectedMutIdLoading ||
+    isPreferredSourceLoading ||
+    isMutationVersionLoading ||
+    isMutationLoading ||
+    isLoading ? (
+    <div
+      style={{
+        width: '100%',
+        height: 40,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Spin />
+    </div>
+  ) : (
     <PageLayout ref={appsRef} title={mutation?.metadata.name + ' apps' || ''}>
       <AppsWrapper>
         {mutationApps.map((app) => (
