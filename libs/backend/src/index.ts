@@ -39,13 +39,16 @@ export { PullRequestAcceptedPayload } from './services/notification/types/pull-r
 export { PullRequestRejectedPayload } from './services/notification/types/pull-request-rejected'
 export { RegularPayload } from './services/notification/types/regular'
 export {
+  WalletDescriptorWithCAMainStatus,
+  NearNetworks,
+  ChainTypes,
+  WalletTypes,
+} from './types/wallets'
+export {
   TConnectedAccount,
   IConnectedAccountsPair,
   ConnectedAccountsPairStatus,
   IConnectedAccountUser,
-  WalletDescriptorWithCAMainStatus,
-  NearNetworks,
-  ChainTypes,
   TConnectedAccountsVerificationRequestInfo,
   ConnectedAccountsRequestStatus,
 } from './services/connected-accounts/types'

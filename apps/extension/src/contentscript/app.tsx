@@ -1,13 +1,14 @@
 import { EngineConfig } from '@mweb/backend'
 import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
-import { useInitNear } from 'near-social-vm'
-import React, { FC, useEffect } from 'react'
+import { useInitNear, EthersProviderContext } from 'near-social-vm'
+import React, { FC, useEffect, useMemo } from 'react'
 import browser from 'webextension-polyfill'
 import { ExtensionStorage } from '../common/extension-storage'
 import { networkConfigs } from '../common/networks'
 import { useWallet } from '../common/wallet-context'
 import { MultitablePanel } from './multitable-panel/multitable-panel'
 import { WildcardEventEmitter } from '../common/wildcard-event-emitter'
+import Background from '../common/background'
 
 export const App: FC<{
   defaultMutationId?: string | null
@@ -16,6 +17,16 @@ export const App: FC<{
   const { selector, networkId } = useWallet()
 
   const { initNear } = useInitNear()
+
+  const ethersProviderContext = useMemo(
+    () => ({
+      provider: {
+        request: ({ method, params }: { method: string; params: any[] }) =>
+          Background.sendEthCustomRequest(method, params),
+      },
+    }),
+    []
+  )
 
   useEffect(() => {
     if (initNear && selector && networkId in networkConfigs) {
@@ -50,14 +61,16 @@ export const App: FC<{
   }
 
   return (
-    <MutableWebProvider
-      config={engineConfig}
-      defaultMutationId={defaultMutationId}
-      devServerUrl={devServerUrl}
-    >
-      <ShadowDomWrapper stylesheetSrc={engineConfig.bosElementStyleSrc}>
-        <MultitablePanel />
-      </ShadowDomWrapper>
-    </MutableWebProvider>
+    <EthersProviderContext.Provider value={ethersProviderContext}>
+      <MutableWebProvider
+        config={engineConfig}
+        defaultMutationId={defaultMutationId}
+        devServerUrl={devServerUrl}
+      >
+        <ShadowDomWrapper stylesheetSrc={engineConfig.bosElementStyleSrc}>
+          <MultitablePanel />
+        </ShadowDomWrapper>
+      </MutableWebProvider>
+    </EthersProviderContext.Provider>
   )
 }

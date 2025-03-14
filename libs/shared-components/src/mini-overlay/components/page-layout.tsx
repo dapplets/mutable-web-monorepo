@@ -1,13 +1,107 @@
 import React, { forwardRef } from 'react'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
-import { ArrowIcon } from '../assets/icons'
+import { ArrowIcon, Home } from '../assets/icons'
 
 const Container = styled.div`
   --primary: oklch(53% 0.26 269.37); // rgb(56, 75, 255)
   --primary-hover: oklch(47.4% 0.2613 267.51); // rgb(36, 55, 235)
   --primary-pressed: oklch(42.2% 0.2585 265.62); // rgb(16, 35, 215)
+
+  --main-grey: rgb(145, 145, 145);
+  --content-black: rgb(116, 115, 118);
+
+  --gray: rgb(122, 129, 139);
+  --gray-hover: rgb(69, 71, 75);
+  --gray-active: rgb(21, 21, 22);
+
   --pure-white: white;
+  --muddy-white: rgb(248, 249, 255);
+  --web-bg: rgb(234, 240, 240);
+
+  --pure-black: black;
+  --main-black: rgb(2, 25, 58);
+
+  --warning: rgba(246, 133, 27, 1);
+  --success: rgba(25, 206, 174, 1);
+  --error: rgba(217, 48, 79, 1);
+
+  --font-default: system-ui, Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+    sans-serif;
+  --transition-default: all 0.1s ease;
+
+  * {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :focus,
+  :active {
+    outline: none;
+  }
+
+  a:focus,
+  a:active {
+    outline: none;
+  }
+
+  input,
+  button,
+  textarea {
+    font-family: inherit;
+  }
+
+  input::-ms-clear {
+    display: none;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+  }
+
+  /* stylelint-disable-next-line no-descending-specificity */
+  a,
+  a:visited {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  img {
+    vertical-align: top;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: inherit;
+    font-weight: 400;
+  }
 
   width: 100%;
   position: relative;
@@ -15,41 +109,7 @@ const Container = styled.div`
   flex-direction: column;
   margin: 0;
   gap: 10px;
-
-  .list {
-    position: absolute;
-    right: 6px;
-    z-index: 1;
-    padding: 8px;
-    background: var(--pure-white);
-    border-radius: 8px;
-    box-shadow:
-      0px 4px 20px 0px rgba(11, 87, 111, 0.149),
-      0px 4px 5px 0px rgba(45, 52, 60, 0.102);
-
-    ul,
-    li {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    button {
-      border: none;
-      background: none;
-      margin: 4px;
-      padding: 2px;
-      transition: color 0.1s ease;
-
-      :hover {
-        color: var(--primary-hover);
-      }
-
-      :active {
-        color: var(--primary-pressed);
-      }
-    }
-  }
+  font-family: var(--font-default);
 `
 
 const Header = styled.div`
@@ -57,7 +117,22 @@ const Header = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  margin: 0 10px;
+  margin: 6px 10px 0 !important;
+`
+
+const HomeIcon = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  width: 20px;
+  height: 20px;
+  color: var(--gray);
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
 `
 
 const BackButton = styled.button`
@@ -67,8 +142,8 @@ const BackButton = styled.button`
   border: none;
   width: 20px;
   height: 20px;
-  padding: 0;
-  color: rgba(122, 129, 139, 1);
+  padding: 0 !important;
+  color: var(--gray);
   background: none;
   transform: rotate(90deg);
   transition: all 0.2s ease;
@@ -84,16 +159,17 @@ const BackButton = styled.button`
 `
 
 const H1 = styled.h1`
-  margin: 0;
+  margin: 0 !important;
   font-family: system-ui, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
     'Helvetica Neue', sans-serif;
   color: #02193a;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 32.78px;
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  line-height: 120%;
   text-align: center;
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
+  user-select: none;
 `
 
 interface PageLayoutProps {
@@ -108,9 +184,15 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(
     return (
       <Container ref={ref} data-testid={`${title.toLowerCase()}-page`}>
         <Header>
-          <BackButton onClick={() => navigate((backPath as string) ?? '/main')}>
-            <ArrowIcon />
-          </BackButton>
+          {title === 'Main' ? (
+            <HomeIcon>
+              <Home />
+            </HomeIcon>
+          ) : (
+            <BackButton onClick={() => navigate((backPath as string) ?? '/main')}>
+              <ArrowIcon />
+            </BackButton>
+          )}
           <H1>{title}</H1>
         </Header>
         {children}

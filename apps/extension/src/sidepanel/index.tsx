@@ -2,6 +2,7 @@ import * as React from 'react'
 import { createRoot } from 'react-dom/client'
 import browser from 'webextension-polyfill'
 import { WalletProvider } from '../common/wallet-context'
+import { WalletProvider as WalletEthProvider } from '../common/wallet-ethereum'
 import { App } from './app'
 import './index.css'
 import { setupMessageListener } from '../common/messenger'
@@ -16,7 +17,9 @@ async function main() {
   if (container) {
     createRoot(container).render(
       <WalletProvider>
-        <App windowId={window.id} />
+        <WalletEthProvider>
+          <App windowId={window.id} />
+        </WalletEthProvider>
       </WalletProvider>
     )
   } else {

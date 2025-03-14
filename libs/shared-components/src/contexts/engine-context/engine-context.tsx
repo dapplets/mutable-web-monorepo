@@ -7,6 +7,11 @@ export type EngineContextState = {
   nearNetwork: string
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
+  onConnectEthWallet: () => Promise<void>
+  onDisconnectEthWallet: () => Promise<void>
+  address: string | null
+  addresses: string[] | null
+  walletChainName: string | null
 }
 
 export const contextDefaultValues: EngineContextState = {
@@ -15,6 +20,11 @@ export const contextDefaultValues: EngineContextState = {
   nearNetwork: '',
   onConnectWallet: async () => {},
   onDisconnectWallet: async () => {},
+  onConnectEthWallet: async () => {},
+  onDisconnectEthWallet: async () => {},
+  address: null,
+  addresses: null,
+  walletChainName: null,
 }
 
 export const EngineContext = createContext<EngineContextState>(contextDefaultValues)

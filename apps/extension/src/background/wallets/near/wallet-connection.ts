@@ -2,7 +2,7 @@ import { serialize } from 'borsh'
 import * as NearApiJs from 'near-api-js'
 import { Near, KeyPair, InMemorySigner } from 'near-api-js'
 import browser from 'webextension-polyfill'
-import { generateGuid, waitClosingTab, waitTab } from '../helpers'
+import { generateGuid, waitClosingTab, waitTab } from '../../helpers'
 import { CustomConnectedWalletAccount } from './connected-wallet-account'
 
 const LOGIN_WALLET_URL_SUFFIX = '/login/'
@@ -239,7 +239,7 @@ export class CustomWalletConnection {
     })
 
     const [tab] = window.tabs ?? []
-    
+
     // const tab = await browser.tabs.create({ url })
 
     return tab

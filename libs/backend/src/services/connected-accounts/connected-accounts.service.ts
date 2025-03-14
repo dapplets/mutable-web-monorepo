@@ -1,13 +1,12 @@
 import makeBlockie from 'ethereum-blockies-base64'
 import * as nearAPI from 'near-api-js'
 // import * as EventBus from '../../common/global-event-bus'
+import { ChainTypes, NearNetworks } from '../../types/wallets'
 import {
-  ChainTypes,
   ConnectedAccountsPairStatus,
   ConnectedAccountsRequestStatus,
   IConnectedAccountsPair,
   IConnectedAccountUser,
-  NearNetworks,
   TConnectedAccount,
   TConnectedAccountsVerificationRequestInfo,
 } from './types'

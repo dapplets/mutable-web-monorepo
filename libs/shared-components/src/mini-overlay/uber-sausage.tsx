@@ -6,7 +6,7 @@ import {
   useMutationApps,
   usePreferredSource,
 } from '@mweb/react-engine'
-import React, { CSSProperties, useEffect } from 'react'
+import React, { CSSProperties } from 'react'
 import styled from 'styled-components'
 import { Badge } from '../common/badge'
 import { Image } from '../common/image'
@@ -52,7 +52,7 @@ const TopBlock = styled.div<{ $open?: boolean; $noMutations: boolean }>`
   }
 `
 
-const MutationIconWrapper = styled.button<{ $isStopped?: boolean; $isButton: boolean }>`
+const MutationIconWrapper = styled.button<{ $isStopped?: boolean }>`
   display: flex;
   box-sizing: border-box;
   justify-content: center;
@@ -67,7 +67,7 @@ const MutationIconWrapper = styled.button<{ $isStopped?: boolean; $isButton: boo
   transition: all 0.15s ease-in-out;
   position: relative;
   box-shadow: 0 4px 5px 0 rgba(45, 52, 60, 0.2);
-  cursor: ${(props) => (props.$isButton ? 'pointer' : 'default !important')};
+  cursor: pointer;
 
   .labelAppCenter {
     opacity: 0;
@@ -84,20 +84,22 @@ const MutationIconWrapper = styled.button<{ $isStopped?: boolean; $isButton: boo
   }
 
   &:hover {
-    box-shadow: ${(props) =>
-      props.$isButton ? '0px 4px 20px 0px #0b576f26, 0px 4px 5px 0px #2d343c1a' : 'initial'};
+    box-shadow:
+      0px 4px 20px 0px #0b576f26,
+      0px 4px 5px 0px #2d343c1a;
 
     img {
-      filter: ${(props) => (props.$isButton ? 'brightness(115%)' : 'none')};
+      filter: brightness(115%);
     }
   }
 
   &:active {
-    box-shadow: ${(props) =>
-      props.$isButton ? '0px 4px 20px 0px #0b576f26, 0px 4px 5px 0px #2d343c1a' : 'initial'};
+    box-shadow:
+      0px 4px 20px 0px #0b576f26,
+      0px 4px 5px 0px #2d343c1a;
 
     img {
-      filter: ${(props) => (props.$isButton ? 'brightness(125%)' : 'none')};
+      filter: brightness(125%);
     }
   }
 
@@ -127,7 +129,7 @@ interface ISidePanelProps {
 }
 
 export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style }) => {
-  const { loggedInAccountId, tree } = useEngine()
+  const { tree } = useEngine()
   const { selectedMutationId } = useGetSelectedMutation(tree?.id)
   const { preferredSource } = usePreferredSource(selectedMutationId, tree?.id)
   const { mutationVersion } = useGetMutationVersion(selectedMutationId)
@@ -137,8 +139,6 @@ export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style 
     mutationVersion
   )
   const { mutationApps } = useMutationApps(selectedMutation?.id, selectedMutation?.apps ?? [])
-
-  const isMutationIconButton = !!loggedInAccountId
 
   return (
     <SidePanelWrapper
@@ -152,13 +152,10 @@ export const UberSausage: React.FC<ISidePanelProps> = ({ onToggleOverlay, style 
       <TopBlock $open={!!mutationApps.length} $noMutations={!mutationApps.length}>
         <MutationIconWrapper
           onClick={onToggleOverlay}
-          $isButton={isMutationIconButton}
           title={selectedMutation?.metadata.name}
           data-testid="mutation-button"
           data-mweb-context-type="mweb-overlay"
-          data-mweb-context-parsed={JSON.stringify({
-            id: isMutationIconButton ? 'mutation-button' : 'mutation-icon',
-          })}
+          data-mweb-context-parsed={JSON.stringify({ id: 'mutation-button' })}
           data-mweb-context-level="system"
         >
           {selectedMutation?.metadata.image ? (

@@ -5,7 +5,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import { useNavigate } from 'react-router'
 import styled from 'styled-components'
 import { PlayCenterIcon, StopCenterIcon, StopTopIcon } from '../assets/icons'
-import { Badge } from '../../common/badgeWithIcon'
+import { Badge } from '../../common/badge-with-icon'
 import { Image } from '../../common/image'
 
 const Card = styled.div<{ $backgroundColor?: string }>`

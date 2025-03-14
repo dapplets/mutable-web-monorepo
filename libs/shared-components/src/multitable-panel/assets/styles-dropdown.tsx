@@ -4,8 +4,54 @@ export const MutationsList = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  max-height: calc(100vh - 129px);
+  overflow: auto;
+  gap: 10px;
+  background-color: var(--pure-white);
   border-radius: 10px;
-  border: 1px solid #e2e2e5;
+  box-shadow:
+    0px 4px 20px 0px #0b576f26,
+    0px 4px 5px 0px #2d343c1a;
+`
+
+export const ScrollContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  width: 100%;
+  padding: 10px;
+
+  &::-webkit-scrollbar {
+    cursor: pointer;
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgb(244 244 244);
+    background: linear-gradient(
+      90deg,
+      rgb(244 244 244 / 0%) 10%,
+      rgb(227 227 227 / 100%) 50%,
+      rgb(244 244 244 / 0%) 90%
+    );
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 4px;
+    height: 2px;
+    margin-bottom: 15px;
+
+    background: var(--primary);
+    border-radius: 2px;
+    box-shadow:
+      0 2px 6px rgb(0 0 0 / 9%),
+      0 2px 2px rgb(38 117 209 / 4%);
+  }
+
+  &:first-child {
+    margin-top: 0;
+  }
 `
 
 export const MutationsListWrapper = styled.div`
@@ -19,39 +65,44 @@ export const ButtonListBlock = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  padding-top: 6px;
 `
 
 export const ButtonBack = styled.div`
   display: flex;
-  background: #f8f9ff;
+  background: none;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: 400;
   line-height: 20.86px;
-  color: #7a818b;
+  color: var(--gray);
   cursor: pointer;
   z-index: 1;
   width: 40%;
   height: 70%;
-  padding-bottom: 10px;
-  padding-top: 10px;
   transition: all 0.2s ease;
+  user-select: none;
+
   svg {
     margin-right: 5px;
   }
+
   &:hover {
-    background: rgba(56, 75, 255, 0.1);
-    border-radius: 4px;
+    color: var(--gray-hover);
+  }
+
+  &:active {
+    color: var(--gray-active);
   }
 `
 
 export const ButtonMutation = styled.div`
   display: flex;
-  background: #f8f9ff;
+  background: none;
   align-items: center;
   justify-content: center;
-  color: #384bff;
+  color: var(--primary);
   font-size: 14px;
   font-weight: 400;
   line-height: 20.86px;
@@ -59,15 +110,19 @@ export const ButtonMutation = styled.div`
   z-index: 1;
   width: 40%;
   height: 70%;
-  padding-bottom: 10px;
-  padding-top: 10px;
   transition: all 0.2s ease;
+  user-select: none;
+
   svg {
     margin-left: 5px;
   }
+
   &:hover {
-    background: rgba(56, 75, 255, 0.1);
-    border-radius: 4px;
+    color: var(--primary-hover);
+  }
+
+  &:active {
+    color: var(--primary-pressed);
   }
 `
 

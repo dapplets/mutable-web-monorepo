@@ -6,7 +6,7 @@ import { TypedError } from 'near-api-js/lib/providers'
 import { Action, createTransaction } from 'near-api-js/lib/transaction'
 import { PublicKey, serialize } from 'near-api-js/lib/utils'
 import browser from 'webextension-polyfill'
-import { generateGuid, waitTab } from '../helpers'
+import { generateGuid, waitTab } from '../../helpers'
 
 export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
   async signAndSendTransaction({
