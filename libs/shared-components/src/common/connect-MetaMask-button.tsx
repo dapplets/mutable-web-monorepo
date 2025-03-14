@@ -1,3 +1,4 @@
+import { MinusCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { Spin } from 'antd'
 import React, { FC, useState } from 'react'
 import styled from 'styled-components'
@@ -12,56 +13,38 @@ const ConnectMetamaskButton = styled.button`
   background: none;
   transition: all 0.2s ease;
   color: var(--primary);
-  padding: 8px;
+  padding: 8px !important;
   cursor: pointer;
   font-family: var(--font-default);
+
+  p {
+    margin: 0;
+  }
 
   .ant-spin {
     height: 15px !important;
     margin-top: 1px !important;
   }
 
-  .plus {
-    display: flex;
-    box-sizing: border-box;
-    border-radius: 50%;
-    border: 2px solid var(--primary);
-    width: 16px;
-    height: 16px;
-    align-items: center;
-    justify-content: center;
-    line-height: 100%;
-    font-weight: bold;
-    font-size: 14px;
-  }
-
   &:hover {
     color: var(--primary-hover);
-  }
-
-  &:hover .plus {
-    color: var(--primary-hover);
-    border: 2px solid var(--primary-hover);
   }
 
   &:active {
     color: var(--primary-pressed);
   }
-
-  &:active .plus {
-    color: var(--primary-pressed);
-    border: 2px solid var(--primary-pressed);
-  }
 `
 
-export const ConnectMetaMaskButton: FC<{ onConnectEthWallet: () => Promise<void> }> = ({
-  onConnectEthWallet,
+const MetaMaskButton: FC<{ text: string; icon: React.ReactNode; onClick: () => Promise<void> }> = ({
+  text,
+  icon,
+  onClick,
 }) => {
   const [isWaiting, setIsWaiting] = useState(false)
   const handleClick = async () => {
     setIsWaiting(true)
     try {
-      await onConnectEthWallet()
+      await onClick()
     } catch (e) {
       console.log(e)
     } finally {
@@ -74,11 +57,34 @@ export const ConnectMetaMaskButton: FC<{ onConnectEthWallet: () => Promise<void>
         <Spin size="small" />
       ) : (
         <>
-          <div className="plus">+</div>Connect MetaMask
+          {icon}
+          <p>{text}</p>
         </>
       )}
     </ConnectMetamaskButton>
   )
 }
 
-export default ConnectMetaMaskButton
+export const ConnectMetaMaskButton: FC<{ onConnectEthWallet: () => Promise<void> }> = ({
+  onConnectEthWallet,
+}) => {
+  return (
+    <MetaMaskButton
+      text="Connect MetaMask"
+      icon={<PlusCircleOutlined />}
+      onClick={onConnectEthWallet}
+    />
+  )
+}
+
+export const DisconnectMetaMaskButton: FC<{ onDisconnectEthWallet: () => Promise<void> }> = ({
+  onDisconnectEthWallet,
+}) => {
+  return (
+    <MetaMaskButton
+      text="Disonnect MetaMask"
+      icon={<MinusCircleOutlined />}
+      onClick={onDisconnectEthWallet}
+    />
+  )
+}

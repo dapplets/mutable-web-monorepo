@@ -63,12 +63,21 @@ const disconnectWallet = async (): Promise<void> => {
   updateMenuForDisconnectedState()
 }
 
-// Ethereum Sepolia wallet
+// MetaMask wallet
 
-const ethereum = new Wallet[ChainTypes.ETHEREUM_SEPOLIA][WalletTypes.METAMASK]()
+const ethereum = new Wallet[ChainTypes.ETHEREUM_SEPOLIA][WalletTypes.METAMASK](eventEmitter)
 
 const connectEthWallet = async (): Promise<void> => {
   await ethereum.connectWallet()
+  const account = await ethereum.getAddress()
+  const accounts = await ethereum.getAddresses()
+
+  // send events to all tabs
+  eventEmitter.emit('signedInEthereum', { account, accounts })
+}
+
+const disconnectEthWallet = async (): Promise<void> => {
+  await ethereum.disconnectWallet()
   const account = await ethereum.getAddress()
   const accounts = await ethereum.getAddresses()
 
@@ -137,6 +146,7 @@ const bgFunctions = {
   disconnectWallet,
   getCurrentNetwork,
   connectEthWallet,
+  disconnectEthWallet,
   getEthAddress: ethereum.getAddress.bind(ethereum),
   getEthAddresses: ethereum.getAddresses.bind(ethereum),
   getEthWalletChainName: ethereum.getWalletChainName.bind(ethereum),

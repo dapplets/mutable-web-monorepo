@@ -5,7 +5,10 @@ import styled from 'styled-components'
 import { ConnectedAccount } from '../../connected-accounts'
 import { useEngine } from '../../contexts/engine-context'
 import PageLayout from '../components/page-layout'
-import ConnectMetaMaskButton from '../../common/connect-MetaMask-button'
+import {
+  ConnectMetaMaskButton,
+  DisconnectMetaMaskButton,
+} from '../../common/connect-MetaMask-button'
 
 const Main = styled.main`
   display: flex;
@@ -64,12 +67,15 @@ const ScrollContent = styled.div`
 const Profile: FC<{
   trackingRefs?: Set<React.RefObject<HTMLDivElement>>
 }> = ({ trackingRefs }) => {
-  const { loggedInAccountId, nearNetwork, addresses, onConnectEthWallet, walletChainName } =
-    useEngine()
+  const {
+    loggedInAccountId,
+    nearNetwork,
+    addresses,
+    onConnectEthWallet,
+    onDisconnectEthWallet,
+    walletChainName,
+  } = useEngine()
   const profileRef = React.useRef<HTMLDivElement>(null)
-
-  console.log('addresses', addresses)
-  console.log('walletChainName', walletChainName)
 
   const [socialAccount, setSocialAccount] = useState<{
     name: string
@@ -133,20 +139,23 @@ const Profile: FC<{
           ) : null}
           {/* ToDo: hardcoded */}
           {addresses?.length ? (
-            addresses.map((addr) => (
-              <ConnectedAccount
-                key={addr}
-                loggedInNearAccountId={loggedInAccountId}
-                nearNetwork={nearNetwork as NearNetworks}
-                accountId={addr}
-                chain={'ethereum/' + walletChainName} // ToDo: hardcoded
-                trackingRefs={trackingRefs}
-                profileRef={profileRef}
-                socialAccount={socialAccount}
-                showModal={false}
-                indicatorType="no indicator"
-              />
-            ))
+            <>
+              {addresses.map((addr) => (
+                <ConnectedAccount
+                  key={addr}
+                  loggedInNearAccountId={loggedInAccountId}
+                  nearNetwork={nearNetwork as NearNetworks}
+                  accountId={addr}
+                  chain={'ethereum/' + walletChainName} // ToDo: hardcoded
+                  trackingRefs={trackingRefs}
+                  profileRef={profileRef}
+                  socialAccount={socialAccount}
+                  showModal={false}
+                  indicatorType="no indicator"
+                />
+              ))}
+              <DisconnectMetaMaskButton onDisconnectEthWallet={onDisconnectEthWallet} />
+            </>
           ) : (
             <ConnectMetaMaskButton onConnectEthWallet={onConnectEthWallet} />
           )}

@@ -21,7 +21,10 @@ import { useEngine } from '../../contexts/engine-context'
 import { Bell as BellIcon } from '../assets/icons'
 import { ConnectedAccount } from '../../connected-accounts'
 import { NearNetworks } from '@mweb/backend'
-import ConnectMetaMaskButton from '../../common/connect-MetaMask-button'
+import {
+  ConnectMetaMaskButton,
+  DisconnectMetaMaskButton,
+} from '../../common/connect-MetaMask-button'
 
 const TopPadding = styled.div`
   display: flex;
@@ -45,7 +48,7 @@ const BlurredBackdrop = styled.button<{ $shown: boolean }>`
   border: none;
 `
 
-const HeaderWrapper = styled.div`
+const HeaderWrapper = styled.div<{ $opened: boolean }>`
   --primary: oklch(53% 0.26 269.37); // rgb(56, 75, 255)
   --primary-hover: oklch(47.4% 0.2613 267.51); // rgb(36, 55, 235)
   --primary-pressed: oklch(42.2% 0.2585 265.62); // rgb(16, 35, 215)
@@ -56,11 +59,11 @@ const HeaderWrapper = styled.div`
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   width: calc(100% - 20px);
   border-radius: 10px;
-  padding: 4px 10px;
+  padding: ${({ $opened }) => ($opened ? '4px 10px 10px' : '4px 10px')};
   background: #fff;
   font-family: sans-serif;
   box-shadow:
@@ -106,6 +109,7 @@ const ProfileButton = styled.button`
   padding: 0;
   overflow: hidden;
   flex: 1;
+  min-height: 48px;
   cursor: pointer;
 `
 
@@ -182,6 +186,7 @@ const Header: FC = () => {
     nearNetwork,
     addresses,
     onConnectEthWallet,
+    onDisconnectEthWallet,
     walletChainName,
   } = useEngine()
   const navigate = useNavigate()
@@ -189,7 +194,6 @@ const Header: FC = () => {
 
   const [waiting, setWaiting] = useState(false)
   const [isHeaderOpened, setIsHeaderOpened] = useState(false)
-  console.log('isHeaderOpened', isHeaderOpened)
 
   const wrapperRef = useRef<HTMLDivElement>(null)
 
@@ -286,7 +290,7 @@ const Header: FC = () => {
     <>
       <TopPadding />
       <BlurredBackdrop $shown={isHeaderOpened} onClick={closeAccounts} />
-      <HeaderWrapper ref={wrapperRef}>
+      <HeaderWrapper $opened={isHeaderOpened} ref={wrapperRef}>
         <ActiveAccount>
           <ProfileButton
             title={loggedInAccountId ?? ''}
@@ -331,19 +335,22 @@ const Header: FC = () => {
         </ActiveAccount>
         <DroppedAccounts $shown={isHeaderOpened}>
           {addresses?.length ? (
-            addresses.map((addr) => (
-              <ConnectedAccount
-                key={addr}
-                loggedInNearAccountId={loggedInAccountId}
-                nearNetwork={nearNetwork as NearNetworks}
-                accountId={addr}
-                chain={'ethereum/' + walletChainName}
-                socialAccount={null}
-                showModal={false}
-                showCA={false}
-                indicatorType="no indicator"
-              />
-            ))
+            <>
+              {addresses.map((addr) => (
+                <ConnectedAccount
+                  key={addr}
+                  loggedInNearAccountId={loggedInAccountId}
+                  nearNetwork={nearNetwork as NearNetworks}
+                  accountId={addr}
+                  chain={'ethereum/' + walletChainName}
+                  socialAccount={null}
+                  showModal={false}
+                  showCA={false}
+                  indicatorType="no indicator"
+                />
+              ))}
+              <DisconnectMetaMaskButton onDisconnectEthWallet={onDisconnectEthWallet} />
+            </>
           ) : (
             <ConnectMetaMaskButton onConnectEthWallet={onConnectEthWallet} />
           )}

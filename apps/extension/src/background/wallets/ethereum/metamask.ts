@@ -6,14 +6,17 @@ import PortStream from 'extension-port-stream'
 import browser from 'webextension-polyfill'
 import { EthereumWallet } from './interface'
 import MWebIcon from '../../../../resources/icons/icon128.png' // ToDo: replace to walletIcons.metamask
+import EventEmitter from 'events'
 
 export default class extends ethers.Signer implements EthereumWallet {
   public provider: ethers.providers.StaticJsonRpcProvider
   private _metamaskProviderPromise: Promise<MetaMaskInpageProvider> | null = null
+  private _eventEmitter: EventEmitter
 
-  constructor() {
+  constructor(eventEmitter: EventEmitter) {
     super()
     this.provider = new ethers.providers.StaticJsonRpcProvider()
+    this._eventEmitter = eventEmitter
   }
 
   async getAddress(): Promise<string> {
@@ -127,6 +130,15 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   async disconnectWallet() {
+    const metamask = await this._getMetamaskProvider()
+    await metamask.request({
+      method: 'wallet_revokePermissions',
+      params: [
+        {
+          eth_accounts: {},
+        },
+      ],
+    })
     await browser.storage.local.set({ metamask_disabled: 'true' })
     browser.storage.local.remove('metamask_lastUsage')
   }
@@ -215,32 +227,34 @@ export default class extends ethers.Signer implements EthereumWallet {
           },
         })
         // metamask['autoRefreshOnNetworkChange'] = false // silence the warning from metamask https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange // ToDo: do we have this warning?
-        metamask.on('connect', () => {
+        metamask.on('connect', (...args) => {
+          console.log('metamask connected', args)
           // MV3 Extension doesn't have HTML-based background pages where favicon can be defined
           // We use the undocumented method metamask_sendDomainMetadata to manually provide metadata
           // https://github.com/MetaMask/providers/blob/6206aada4b1a8c14912fc9b0fcd0ec922d41251b/src/siteMetadata.ts#L23
           metamask.request({
             method: 'metamask_sendDomainMetadata',
             params: {
-              name: 'Dapplets',
-              icon: MWebIcon, // walletIcons['dapplets'], ToDo: add icon
+              name: 'Mutable Web',
+              icon: MWebIcon,
             },
           })
           res(metamask)
         })
         metamask.on('disconnect', () => {
+          console.log('metamask disconnected')
           this._metamaskProviderPromise = null
           rej('MetaMask is unavailable.')
         })
         // another available events: _initialized, chainChanged, networkChanged, accountsChanged, message, data, error
-        // metamask.on('connect', (...args) => console.log('connect', args))
-        // metamask.on('disconnect', (...args) => console.log('disconnect', args))
-        // metamask.on('_initialized', (...args) => console.log('_initialized', args))
-        // metamask.on('chainChanged', (...args) => console.log('chainChanged', args))
-        // metamask.on('networkChanged', (...args) => console.log('networkChanged', args))
-        // metamask.on('accountsChanged', (...args) => console.log('accountsChanged', args))
-        // metamask.on('message', (...args) => console.log('message', args))
-        // metamask.on('data', (...args) => console.log('data', args))
+        metamask.on('connect', (...args) => console.log('connect', args))
+        metamask.on('disconnect', (...args) => console.log('disconnect', args))
+        metamask.on('_initialized', (...args) => console.log('_initialized', args))
+        metamask.on('chainChanged', (...args) => console.log('chainChanged', args))
+        metamask.on('networkChanged', (...args) => console.log('networkChanged', args))
+        metamask.on('accountsChanged', (...args) => console.log('accountsChanged', args))
+        metamask.on('message', (...args) => console.log('message', args))
+        metamask.on('data', (...args) => console.log('data', args))
       })
     }
 

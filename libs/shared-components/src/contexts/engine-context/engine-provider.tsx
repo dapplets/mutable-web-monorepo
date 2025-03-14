@@ -9,6 +9,7 @@ type Props = {
   onConnectWallet: () => Promise<void>
   onDisconnectWallet: () => Promise<void>
   onConnectEthWallet: () => Promise<void>
+  onDisconnectEthWallet: () => Promise<void>
   address: string | null
   addresses: string[] | null
   walletChainName: string | null
@@ -22,6 +23,7 @@ const EngineProvider: FC<Props> = ({
   onConnectWallet,
   onDisconnectWallet,
   onConnectEthWallet,
+  onDisconnectEthWallet,
   address,
   addresses,
   walletChainName,
@@ -34,6 +36,7 @@ const EngineProvider: FC<Props> = ({
     onConnectWallet,
     onDisconnectWallet,
     onConnectEthWallet,
+    onDisconnectEthWallet,
     address,
     addresses,
     walletChainName,
