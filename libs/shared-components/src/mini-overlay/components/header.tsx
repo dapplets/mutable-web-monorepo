@@ -48,7 +48,7 @@ const BlurredBackdrop = styled.button<{ $shown: boolean }>`
   border: none;
 `
 
-const HeaderWrapper = styled.div<{ $opened: boolean }>`
+const HeaderWrapper = styled.div`
   --primary: oklch(53% 0.26 269.37); // rgb(56, 75, 255)
   --primary-hover: oklch(47.4% 0.2613 267.51); // rgb(36, 55, 235)
   --primary-pressed: oklch(42.2% 0.2585 265.62); // rgb(16, 35, 215)
@@ -63,7 +63,7 @@ const HeaderWrapper = styled.div<{ $opened: boolean }>`
   align-items: center;
   width: calc(100% - 20px);
   border-radius: 10px;
-  padding: ${({ $opened }) => ($opened ? '4px 10px 10px' : '4px 10px')};
+  padding: 4px 10px;
   background: #fff;
   font-family: sans-serif;
   box-shadow:
@@ -97,6 +97,10 @@ const DroppedAccounts = styled.div<{ $shown: boolean }>`
     height 0.3s ease-in-out,
     opacity 0.3s ease-in-out;
   overflow: hidden;
+
+  & > button:last-child {
+    margin-top: -6px;
+  }
 `
 
 const ProfileButton = styled.button`
@@ -290,7 +294,7 @@ const Header: FC = () => {
     <>
       <TopPadding />
       <BlurredBackdrop $shown={isHeaderOpened} onClick={closeAccounts} />
-      <HeaderWrapper $opened={isHeaderOpened} ref={wrapperRef}>
+      <HeaderWrapper ref={wrapperRef}>
         <ActiveAccount>
           <ProfileButton
             title={loggedInAccountId ?? ''}
