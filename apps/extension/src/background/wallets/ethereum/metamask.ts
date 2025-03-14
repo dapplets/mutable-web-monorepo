@@ -249,10 +249,18 @@ export default class extends ethers.Signer implements EthereumWallet {
         // another available events: _initialized, chainChanged, networkChanged, accountsChanged, message, data, error
         metamask.on('connect', (...args) => console.log('connect', args))
         metamask.on('disconnect', (...args) => console.log('disconnect', args))
-        metamask.on('_initialized', (...args) => console.log('_initialized', args))
-        metamask.on('chainChanged', (...args) => console.log('chainChanged', args))
-        metamask.on('networkChanged', (...args) => console.log('networkChanged', args))
-        metamask.on('accountsChanged', (...args) => console.log('accountsChanged', args))
+        // metamask.on('_initialized', (...args) => console.log('_initialized', args))
+        metamask.on('chainChanged', async (...args) => {
+          console.log('chainChanged', args)
+          const chainName = await this.getWalletChainName()
+          this._eventEmitter.emit('ethChainChanged', { chainName })
+        })
+        // metamask.on('networkChanged', (...args) => console.log('networkChanged', args))
+        metamask.on('accountsChanged', async (...args) => {
+          console.log('accountsChanged', args)
+          const account = await this.getAddress()
+          this._eventEmitter.emit('ethAccountsChanged', { account, accounts: args[0] })
+        })
         metamask.on('message', (...args) => console.log('message', args))
         metamask.on('data', (...args) => console.log('data', args))
       })

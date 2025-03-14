@@ -25,9 +25,15 @@ const WalletProvider: FC<Props> = ({ children }) => {
   useEffect(() => {
     const listener = (message: any): undefined => {
       if (!message || !message.type) return
-      if (message.type === 'signedInEthereum') {
+      if (
+        message.type === 'signedInEthereum' ||
+        message.type === 'signedOutEthereum' ||
+        message.type === 'ethAccountsChanged'
+      ) {
         setAddress(message.params.account)
         setAddresses(message.params.accounts)
+      } else if (message.type === 'ethChainChanged') {
+        setWalletChainName(message.params.chainName)
       }
     }
 

@@ -82,7 +82,7 @@ const disconnectEthWallet = async (): Promise<void> => {
   const accounts = await ethereum.getAddresses()
 
   // send events to all tabs
-  eventEmitter.emit('signedInEthereum', { account, accounts })
+  eventEmitter.emit('signedOutEthereum', { account, accounts })
 }
 
 // Dev server
@@ -369,15 +369,27 @@ const portConnectListener = async (port: browser.Runtime.Port) => {
     const signOutListener = () => port.postMessage({ type: 'signedOut' })
     const signInEthListener = (params: any) =>
       port.postMessage({ type: 'signedInEthereum', params })
+    const signOutEthListener = (params: any) =>
+      port.postMessage({ type: 'signedOutEthereum', params })
+    const changeEthChainListener = (params: any) =>
+      port.postMessage({ type: 'ethChainChanged', params })
+    const changeEthAccountsListener = (params: any) =>
+      port.postMessage({ type: 'ethAccountsChanged', params })
 
     eventEmitter.addListener('signedIn', signInListener)
     eventEmitter.addListener('signedOut', signOutListener)
     eventEmitter.addListener('signedInEthereum', signInEthListener)
+    eventEmitter.addListener('signedOutEthereum', signOutEthListener)
+    eventEmitter.addListener('ethChainChanged', changeEthChainListener)
+    eventEmitter.addListener('ethAccountsChanged', changeEthAccountsListener)
 
     port.onDisconnect.addListener(() => {
       eventEmitter.removeListener('signedIn', signInListener)
       eventEmitter.removeListener('signedOut', signOutListener)
       eventEmitter.removeListener('signedInEthereum', signInEthListener)
+      eventEmitter.removeListener('signedOutEthereum', signOutEthListener)
+      eventEmitter.removeListener('ethChainChanged', changeEthChainListener)
+      eventEmitter.removeListener('ethAccountsChanged', changeEthAccountsListener)
     })
   }
 }
