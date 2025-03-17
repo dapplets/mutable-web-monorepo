@@ -1,7 +1,7 @@
 import { EngineConfig } from '@mweb/backend'
 import { customElements, MutableWebProvider, ShadowDomWrapper } from '@mweb/engine'
 import { useInitNear, EthersProviderContext } from 'near-social-vm'
-import React, { FC, useMemo, useEffect } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import browser from 'webextension-polyfill'
 import { ExtensionStorage } from '../common/extension-storage'
 import { networkConfigs } from '../common/networks'
@@ -24,47 +24,49 @@ export const App: FC<{
   devServerUrl?: string | null
 }> = ({ defaultMutationId, devServerUrl }) => {
   const { selector, networkId } = useWallet()
-
+  const [ethersProviderContext, setEthersProviderContext] = useState<{
+    provider: SimplifiedEIP1193Provider
+  } | null>(null)
   const { initNear } = useInitNear()
 
   const eventEmitter = new WildcardEventEmitter()
 
-  const ethersProviderContext = useMemo<{
-    provider: SimplifiedEIP1193Provider
-  }>(
-    () => ({
-      provider: {
-        on: (
-          event: ProviderEvent,
-          listener:
-            | ConnectListener
-            | DisconnectListener
-            | MessageListener
-            | ChainListener
-            | AccountsListener
-        ): void => {
-          eventEmitter.on(event, listener)
-        },
-        removeListener: (
-          event: ProviderEvent,
-          listener:
-            | ConnectListener
-            | DisconnectListener
-            | MessageListener
-            | ChainListener
-            | AccountsListener
-        ): void => {
-          eventEmitter.removeListener(event, listener)
-        },
-        request: ({ method, params }: { method: string; params: any[] }) =>
-          Background.sendEthCustomRequest(method, params),
+  const handleSetEthereumProviderContext = async () => {
+    const provider = {
+      on: (
+        event: ProviderEvent,
+        listener:
+          | ConnectListener
+          | DisconnectListener
+          | MessageListener
+          | ChainListener
+          | AccountsListener
+      ): void => {
+        eventEmitter.on(event, listener)
       },
-    }),
-    []
-  )
+      removeListener: (
+        event: ProviderEvent,
+        listener:
+          | ConnectListener
+          | DisconnectListener
+          | MessageListener
+          | ChainListener
+          | AccountsListener
+      ): void => {
+        eventEmitter.removeListener(event, listener)
+      },
+      request: ({ method, params }: { method: string; params: any[] }) =>
+        Background.sendEthCustomRequest(method, params),
+    }
+    setEthersProviderContext({ provider })
+  }
 
   useEffect(() => {
-    const listener = (message: any): undefined => {
+    handleSetEthereumProviderContext()
+  }, [])
+
+  useEffect(() => {
+    const listener = async (message: any) => {
       if (!message || !message.type) return
       switch (message.type) {
         case 'signedInEthereum':
@@ -77,6 +79,7 @@ export const App: FC<{
           eventEmitter.emit('ethAccountsChanged', message.params)
           break
         case 'ethChainChanged':
+          await handleSetEthereumProviderContext()
           eventEmitter.emit('ethChainChanged', message.params)
           break
       }
