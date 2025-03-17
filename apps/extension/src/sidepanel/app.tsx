@@ -21,7 +21,7 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
   const { selector, networkId, accountId } = useWallet()
   const { connectWallet } = useConnectWallet()
   const { disconnectWallet } = useDisconnectWallet()
-  const { address, addresses, walletChainName } = useEthWallet()
+  const { addresses, walletChainName } = useEthWallet()
   const { connectWallet: connectEthWallet } = useConnectEthWallet()
   const { disconnectWallet: disconnectEthWallet } = useDisconnectEthWallet()
 
@@ -53,7 +53,6 @@ export const App: React.FC<{ windowId: number }> = ({ windowId }) => {
         onDisconnectWallet={disconnectWallet}
         onConnectEthWallet={connectEthWallet}
         onDisconnectEthWallet={disconnectEthWallet}
-        address={address}
         addresses={addresses}
         walletChainName={walletChainName}
       >

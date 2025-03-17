@@ -4,11 +4,10 @@ import { detect } from 'detect-browser'
 import { ethers } from 'ethers'
 import PortStream from 'extension-port-stream'
 import browser from 'webextension-polyfill'
-import { EthereumWallet } from './interface'
 import MWebIcon from '../../../../resources/icons/icon128.png' // ToDo: replace to walletIcons.metamask
 import EventEmitter from 'events'
 
-export default class extends ethers.Signer implements EthereumWallet {
+export default class extends ethers.Signer {
   public provider: ethers.providers.StaticJsonRpcProvider
   private _metamaskProviderPromise: Promise<MetaMaskInpageProvider> | null = null
   private _isMetamaskInitialized = false
@@ -22,21 +21,19 @@ export default class extends ethers.Signer implements EthereumWallet {
 
   async getAddress(): Promise<string> {
     try {
-      // ToDo: replace to ethereum.request({ method: 'eth_accounts' })
-      const metamask = await this._getMetamaskProvider()
-      return metamask.selectedAddress ?? '' // ToDo: check it
+      const addresses = await this.getAddresses()
+      return addresses?.[0] || ''
     } catch (_) {
-      return '' // ToDo: check it
+      return ''
     }
   }
 
   async getAddresses(): Promise<string[] | null> {
     try {
-      // ToDo: replace to ethereum.request({ method: 'eth_accounts' })
       const metamask = await this._getMetamaskProvider()
-      return metamask.request({ method: 'eth_accounts', params: [] }) as Promise<string[]> // ToDo: check it
+      return metamask.request({ method: 'eth_accounts', params: [] }) as Promise<string[]>
     } catch (_) {
-      return null // ToDo: check it
+      return null
     }
   }
 
@@ -56,7 +53,6 @@ export default class extends ethers.Signer implements EthereumWallet {
   async sendTransaction(
     transaction: TransactionRequest
   ): Promise<ethers.providers.TransactionResponse> {
-    // console.log('sendTransaction', transaction)
     const txHash = await this.sendTransactionOutHash(transaction)
 
     // the wait of a transaction from another provider can be long
@@ -70,8 +66,6 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   async sendTransactionOutHash(transaction: TransactionRequest): Promise<string> {
-    // await this._prepareNetwork()
-    // console.log('sendTransactionOutHash', transaction)
     const metamask = await this._getMetamaskProvider()
     await browser.storage.local.set({ metamask_lastUsage: new Date().toISOString() })
     transaction.from = await this.getAddress()
@@ -84,9 +78,6 @@ export default class extends ethers.Signer implements EthereumWallet {
   }
 
   async sendCustomRequest(method: string, params: any[]): Promise<any> {
-    // ToDo: redirect view methods through our rpc provider
-    // await this._prepareNetwork()
-    // console.log('sendCustomRequest', method, params)
     const metamask = await this._getMetamaskProvider()
     return metamask.request({ method, params })
   }
@@ -120,22 +111,17 @@ export default class extends ethers.Signer implements EthereumWallet {
   // @CacheMethod() // ToDo: is it critical?
   async connectWallet(): Promise<void> {
     const metamask = await this._getMetamaskProvider()
-    // console.log('metamask', metamask)
-    // const isConnected = await this.isConnected()
-    // console.log('isConnected', isConnected)
     const isMetamaskDisabled = await browser.storage.local.get('metamask_disabled')
     if (isMetamaskDisabled.metamask_disabled === 'true') {
       const permissions = await metamask.request({
         method: 'wallet_requestPermissions',
         params: [{ eth_accounts: {} }],
       })
-      // console.log('permissions', permissions)
       await browser.storage.local.remove('metamask_disabled')
       const selectedAddress = await this.getAddress()
       const accounts = permissions
         ? (permissions as any[])[0].caveats[0].value
         : await this.getAddresses()
-      // console.log('accounts', accounts)
 
       // send events to all tabs
       this._eventEmitter.emit('signedInEthereum', {
@@ -144,7 +130,6 @@ export default class extends ethers.Signer implements EthereumWallet {
       })
     } else {
       const accounts = await metamask.request({ method: 'eth_requestAccounts' })
-      // console.log('accounts', accounts)
       const selectedAddress = await this.getAddress()
 
       // send events to all tabs
@@ -183,42 +168,6 @@ export default class extends ethers.Signer implements EthereumWallet {
     )
   }
 
-  // private async _prepareNetwork(): Promise<void> {
-  //   const network = await this.provider.getNetwork()
-  //   const chainId = await this._getWalletChainId()
-
-  //   if (network.chainId === chainId) return
-
-  //   const metamask = await this._getMetamaskProvider()
-  //   const chainIdHex = '0x' + network.chainId.toString(16)
-
-  //   try {
-  //     await metamask.request({
-  //       method: 'wallet_switchEthereumChain',
-  //       params: [{ chainId: chainIdHex }],
-  //     })
-  //   } catch (switchError: any) {
-  //     // This error code indicates that the chain has not been added to MetaMask.
-  //     if (switchError?.code === 4902) {
-  //       try {
-  //         await metamask.request({
-  //           method: 'wallet_addEthereumChain',
-  //           params: [
-  //             {
-  //               chainId: chainIdHex,
-  //               chainName: network.name,
-  //               rpcUrls: [this.provider.connection.url],
-  //             },
-  //           ],
-  //         })
-  //       } catch (addError) {
-  //         throw new Error('Network adding rejected')
-  //       }
-  //     }
-  //     throw new Error('Network switching rejected')
-  //   }
-  // }
-
   async getWalletChainId(): Promise<number> {
     const metamask = await this._getMetamaskProvider()
     const chainId = await metamask.request({
@@ -249,8 +198,7 @@ export default class extends ethers.Signer implements EthereumWallet {
       this.disconnectWallet()
     })
     metamask.on('chainChanged', async (...args) => {
-      console.log('chainChanged', args)
-      // await this._changeMetamaskProvider()
+      // console.log('chainChanged', args)
       const chainName = await this.getWalletChainName()
       this._eventEmitter.emit('ethChainChanged', { chainName })
     })
@@ -267,69 +215,58 @@ export default class extends ethers.Signer implements EthereumWallet {
     metamask.on('data', (...args) => console.log('data', args))
   }
 
-  private async _createMetamaskProvider(): Promise<MetaMaskInpageProvider> {
-    return new Promise((res, rej) => {
-      const currentMetaMaskId = this._getMetaMaskId()
-      const metamaskPort = browser.runtime.connect(currentMetaMaskId)
-      metamaskPort.onDisconnect.addListener(() => browser.runtime.lastError) // mute "Unchecked runtime.lastError"
-      const pluginStream = new PortStream(metamaskPort)
-      const metamask = new MetaMaskInpageProvider(pluginStream as any, {
-        // mute all messages from provider
-        logger: {
-          warn: () => {},
-          log: () => {},
-          error: () => {},
-          debug: () => {},
-          info: () => {},
-          trace: () => {},
-        },
-      })
-      // metamask['autoRefreshOnNetworkChange'] = false // silence the warning from metamask https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange // ToDo: do we have this warning?
-      metamask.on('connect', (...args) => {
-        // console.log('metamask connected', args)
-        // MV3 Extension doesn't have HTML-based background pages where favicon can be defined
-        // We use the undocumented method metamask_sendDomainMetadata to manually provide metadata
-        // https://github.com/MetaMask/providers/blob/6206aada4b1a8c14912fc9b0fcd0ec922d41251b/src/siteMetadata.ts#L23
-        metamask.request({
-          method: 'metamask_sendDomainMetadata',
-          params: {
-            name: 'Mutable Web',
-            icon: MWebIcon,
-            uuid: crypto.randomUUID(),
-            rdns: 'eth.mutable-web.metamask',
-          },
-        })
-        res(metamask)
-      })
-      metamask.on('disconnect', () => {
-        // console.log('metamask disconnected')
-        this._metamaskProviderPromise = null
-        rej('MetaMask is unavailable.')
-      })
-      metamask.on('_initialized', async (...args) => {
-        // console.log('_initialized', args)
-        // console.log('this._isMetamaskInitialized', this._isMetamaskInitialized)
-        this._isMetamaskInitialized = true
-        metamask.removeAllListeners()
-        this._subscribeForMetamaskEvents()
-      })
-    })
-  }
-
   private async _getMetamaskProvider(): Promise<MetaMaskInpageProvider> {
     if (!this._metamaskProviderPromise || !this._isMetamaskInitialized) {
-      this._metamaskProviderPromise = this._createMetamaskProvider()
+      this._metamaskProviderPromise = new Promise((res, rej) => {
+        const currentMetaMaskId = this._getMetaMaskId()
+        const metamaskPort = browser.runtime.connect(currentMetaMaskId)
+        metamaskPort.onDisconnect.addListener(() => browser.runtime.lastError) // mute "Unchecked runtime.lastError"
+        const pluginStream = new PortStream(metamaskPort)
+        const metamask = new MetaMaskInpageProvider(pluginStream as any, {
+          // mute all messages from provider
+          logger: {
+            warn: () => {},
+            log: () => {},
+            error: () => {},
+            debug: () => {},
+            info: () => {},
+            trace: () => {},
+          },
+        })
+        // metamask['autoRefreshOnNetworkChange'] = false // silence the warning from metamask https://docs.metamask.io/guide/ethereum-provider.html#ethereum-autorefreshonnetworkchange // ToDo: do we have this warning?
+        metamask.on('connect', (...args) => {
+          // console.log('metamask connected', args)
+          // MV3 Extension doesn't have HTML-based background pages where favicon can be defined
+          // We use the undocumented method metamask_sendDomainMetadata to manually provide metadata
+          // https://github.com/MetaMask/providers/blob/6206aada4b1a8c14912fc9b0fcd0ec922d41251b/src/siteMetadata.ts#L23
+          metamask.request({
+            method: 'metamask_sendDomainMetadata',
+            params: {
+              name: 'Mutable Web',
+              icon: MWebIcon,
+              uuid: crypto.randomUUID(),
+              rdns: 'eth.mutable-web.metamask',
+            },
+          })
+          res(metamask)
+        })
+        metamask.on('disconnect', () => {
+          // console.log('metamask disconnected')
+          this._metamaskProviderPromise = null
+          rej('MetaMask is unavailable.')
+        })
+        metamask.on('_initialized', async (...args) => {
+          // console.log('_initialized', args)
+          // console.log('this._isMetamaskInitialized', this._isMetamaskInitialized)
+          this._isMetamaskInitialized = true
+          metamask.removeAllListeners()
+          this._subscribeForMetamaskEvents()
+        })
+      })
     }
+
     return this._metamaskProviderPromise
   }
-
-  // private async _changeMetamaskProvider(): Promise<MetaMaskInpageProvider> {
-  //   console.log('_changeMetamaskProvider')
-  //   const metamask = await this._getMetamaskProvider()
-  //   metamask.removeAllListeners()
-  //   this._metamaskProviderPromise = this._createMetamaskProvider()
-  //   return this._metamaskProviderPromise
-  // }
 
   private _getMetaMaskId() {
     const config = {

@@ -129,7 +129,6 @@ const bgFunctions = {
   getCurrentNetwork,
   connectEthWallet: ethereum.connectWallet.bind(ethereum),
   disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
-  getEthAddress: ethereum.getAddress.bind(ethereum),
   getEthAddresses: ethereum.getAddresses.bind(ethereum),
   getEthWalletChainName: ethereum.getWalletChainName.bind(ethereum),
   signEthMessage: ethereum.signMessage.bind(ethereum),

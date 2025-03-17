@@ -26,7 +26,7 @@ export class WalletImpl {
   }
 
   getAddress = async () => {
-    return Background.getEthAddress()
+    return (await Background.getEthAddresses())?.[0] || ''
   }
 
   verifyOwner = async () => {

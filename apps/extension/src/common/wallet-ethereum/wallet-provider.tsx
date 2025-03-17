@@ -12,12 +12,10 @@ type Props = {
 }
 
 const WalletProvider: FC<Props> = ({ children }) => {
-  const [address, setAddress] = React.useState<string | null>(null)
   const [addresses, setAddresses] = React.useState<string[] | null>(null)
   const [walletChainName, setWalletChainName] = React.useState<string | null>(null)
 
   useEffect(() => {
-    Background.getEthAddress().then(setAddress)
     Background.getEthAddresses().then(setAddresses)
     Background.getEthWalletChainName().then(setWalletChainName)
   }, [])
@@ -30,7 +28,6 @@ const WalletProvider: FC<Props> = ({ children }) => {
         message.type === 'signedOutEthereum' ||
         message.type === 'ethAccountsChanged'
       ) {
-        setAddress(message.params.account ?? null)
         setAddresses(message.params.accounts)
       } else if (message.type === 'ethChainChanged') {
         setWalletChainName(message.params.chainName)
@@ -61,7 +58,6 @@ const WalletProvider: FC<Props> = ({ children }) => {
   }, [])
 
   const state: WalletContextState = {
-    address,
     addresses,
     walletChainName,
   }
