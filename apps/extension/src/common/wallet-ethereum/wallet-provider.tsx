@@ -30,7 +30,7 @@ const WalletProvider: FC<Props> = ({ children }) => {
         message.type === 'signedOutEthereum' ||
         message.type === 'ethAccountsChanged'
       ) {
-        setAddress(message.params.account)
+        setAddress(message.params.account ?? null)
         setAddresses(message.params.accounts)
       } else if (message.type === 'ethChainChanged') {
         setWalletChainName(message.params.chainName)

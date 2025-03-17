@@ -9,7 +9,7 @@ import { EventEmitter as NEventEmitter } from 'events'
 import ContentScript from '../common/content-script'
 import SidePanel from '../common/sidepanel'
 import Wallet from './wallets'
-import { ChainTypes, WalletTypes } from '@mweb/backend'
+import { WalletTypes } from '@mweb/backend'
 
 const eventEmitter = new NEventEmitter()
 
@@ -33,7 +33,7 @@ const tabStateService = new TabStateService()
 
 // NEAR wallet
 
-const near = new Wallet[ChainTypes.NEAR_MAINNET][WalletTypes.MYNEARWALLET](networkConfigPromise)
+const near = new Wallet[WalletTypes.MYNEARWALLET](networkConfigPromise)
 
 const connectWallet = async (): Promise<void> => {
   const { socialDbContract } = await networkConfigPromise
@@ -65,25 +65,7 @@ const disconnectWallet = async (): Promise<void> => {
 
 // MetaMask wallet
 
-const ethereum = new Wallet[ChainTypes.ETHEREUM_SEPOLIA][WalletTypes.METAMASK](eventEmitter)
-
-const connectEthWallet = async (): Promise<void> => {
-  await ethereum.connectWallet()
-  const account = await ethereum.getAddress()
-  const accounts = await ethereum.getAddresses()
-
-  // send events to all tabs
-  eventEmitter.emit('signedInEthereum', { account, accounts })
-}
-
-const disconnectEthWallet = async (): Promise<void> => {
-  await ethereum.disconnectWallet()
-  const account = await ethereum.getAddress()
-  const accounts = await ethereum.getAddresses()
-
-  // send events to all tabs
-  eventEmitter.emit('signedOutEthereum', { account, accounts })
-}
+const ethereum = new Wallet[WalletTypes.METAMASK](eventEmitter)
 
 // Dev server
 
@@ -145,8 +127,8 @@ const bgFunctions = {
   connectWallet,
   disconnectWallet,
   getCurrentNetwork,
-  connectEthWallet,
-  disconnectEthWallet,
+  connectEthWallet: ethereum.connectWallet.bind(ethereum),
+  disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
   getEthAddress: ethereum.getAddress.bind(ethereum),
   getEthAddresses: ethereum.getAddresses.bind(ethereum),
   getEthWalletChainName: ethereum.getWalletChainName.bind(ethereum),
