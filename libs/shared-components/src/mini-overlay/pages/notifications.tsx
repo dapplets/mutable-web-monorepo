@@ -11,11 +11,10 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: calc(100% - 20px);
+  width: 100%;
   padding: 0 10px;
-  margin: 0 0 5px;
   gap: 10px;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100vh - 129px);
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -69,12 +68,6 @@ const Notifications: FC = () => {
               justifyContent: 'center',
             }}
           >
-            <Space direction="horizontal" style={{ width: '100%', display: 'flex' }}>
-              <Title style={{ userSelect: 'none', margin: '0 auto' }} level={3}>
-                Sign in
-              </Title>
-            </Space>
-
             <Text
               type="secondary"
               style={{

@@ -5,10 +5,11 @@ import { MUTATION_LINK_URL } from '../common/constants'
 import { DefaultNetworkId, NearNetworkId, networkConfigs } from '../common/networks'
 import { debounce } from './helpers'
 import { TabStateService } from './services/tab-state-service'
-import { WalletImpl } from './wallet'
 import { EventEmitter as NEventEmitter } from 'events'
 import ContentScript from '../common/content-script'
 import SidePanel from '../common/sidepanel'
+import Wallet from './wallets'
+import { WalletTypes } from '@mweb/backend'
 
 const eventEmitter = new NEventEmitter()
 
@@ -32,7 +33,7 @@ const tabStateService = new TabStateService()
 
 // NEAR wallet
 
-const near = new WalletImpl(networkConfigPromise)
+const near = new Wallet[WalletTypes.MYNEARWALLET](networkConfigPromise)
 
 const connectWallet = async (): Promise<void> => {
   const { socialDbContract } = await networkConfigPromise
@@ -62,6 +63,12 @@ const disconnectWallet = async (): Promise<void> => {
   updateMenuForDisconnectedState()
 }
 
+// MetaMask wallet
+
+const ethereum = new Wallet[WalletTypes.METAMASK](eventEmitter)
+
+// Dev server
+
 const getDevServerUrl = async (): Promise<string | null> => {
   const { devServerUrl } = await browser.storage.local.get('devServerUrl')
   // @ts-ignore
@@ -71,6 +78,8 @@ const getDevServerUrl = async (): Promise<string | null> => {
 const setDevServerUrl = async (devServerUrl: string | null): Promise<void> => {
   await browser.storage.local.set({ devServerUrl })
 }
+
+// Side panel
 
 const _toggleSidePanel = async (tabId: number) => {
   // !!! Workaround for user gesture error
@@ -118,6 +127,13 @@ const bgFunctions = {
   connectWallet,
   disconnectWallet,
   getCurrentNetwork,
+  connectEthWallet: ethereum.connectWallet.bind(ethereum),
+  disconnectEthWallet: ethereum.disconnectWallet.bind(ethereum),
+  getEthAddresses: ethereum.getAddresses.bind(ethereum),
+  getEthWalletChainName: ethereum.getWalletChainName.bind(ethereum),
+  signEthMessage: ethereum.signMessage.bind(ethereum),
+  sendEthTransaction: ethereum.sendTransaction.bind(ethereum),
+  sendEthCustomRequest: ethereum.sendCustomRequest.bind(ethereum),
   getDevServerUrl,
   setDevServerUrl,
   toggleSidePanel,
@@ -332,13 +348,29 @@ const portConnectListener = async (port: browser.Runtime.Port) => {
   if (port.name === 'port-from-page') {
     const signInListener = (params: any) => port.postMessage({ type: 'signedIn', params })
     const signOutListener = () => port.postMessage({ type: 'signedOut' })
+    const signInEthListener = (params: any) =>
+      port.postMessage({ type: 'signedInEthereum', params })
+    const signOutEthListener = (params: any) =>
+      port.postMessage({ type: 'signedOutEthereum', params })
+    const changeEthChainListener = (params: any) =>
+      port.postMessage({ type: 'ethChainChanged', params })
+    const changeEthAccountsListener = (params: any) =>
+      port.postMessage({ type: 'ethAccountsChanged', params })
 
     eventEmitter.addListener('signedIn', signInListener)
     eventEmitter.addListener('signedOut', signOutListener)
+    eventEmitter.addListener('signedInEthereum', signInEthListener)
+    eventEmitter.addListener('signedOutEthereum', signOutEthListener)
+    eventEmitter.addListener('ethChainChanged', changeEthChainListener)
+    eventEmitter.addListener('ethAccountsChanged', changeEthAccountsListener)
 
     port.onDisconnect.addListener(() => {
       eventEmitter.removeListener('signedIn', signInListener)
       eventEmitter.removeListener('signedOut', signOutListener)
+      eventEmitter.removeListener('signedInEthereum', signInEthListener)
+      eventEmitter.removeListener('signedOutEthereum', signOutEthListener)
+      eventEmitter.removeListener('ethChainChanged', changeEthChainListener)
+      eventEmitter.removeListener('ethAccountsChanged', changeEthAccountsListener)
     })
   }
 }

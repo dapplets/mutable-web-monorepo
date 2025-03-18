@@ -10,7 +10,7 @@ import {
   InputMutation,
 } from '../assets/styles-dropdown'
 import { StarMutationList, StarMutationListDefault } from '../assets/vectors'
-import { Badge } from '../../common/badgeWithIcon'
+import { Badge } from '../../common/badge-with-icon'
 import { Image } from '../../common/image'
 import { usePreferredSource, useSetPreferredSource } from '@mweb/react-engine'
 import { useEngine } from '../../contexts/engine-context'

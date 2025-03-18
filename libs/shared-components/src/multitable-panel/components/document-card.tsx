@@ -1,7 +1,7 @@
 import { ApplicationDto, DocumentMetadata, EntitySourceType } from '@mweb/backend'
 import React from 'react'
 import styled from 'styled-components'
-import { Badge } from '../../common/badgeWithIcon'
+import { Badge } from '../../common/badge-with-icon'
 import { Image } from '../../common/image'
 
 const Card = styled.div`

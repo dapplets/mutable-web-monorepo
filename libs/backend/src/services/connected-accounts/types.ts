@@ -1,6 +1,7 @@
 // import { Runtime } from 'webextension-polyfill'
 // import ManifestDTO from '../background/dto/manifestDTO'
 // import VersionInfo from '../background/models/versionInfo'
+import { WalletTypes } from '../../types/wallets'
 
 export type ValueOf<T> = T[keyof T]
 
@@ -30,49 +31,9 @@ export enum DefaultSigners {
   EXTENSION = 'extension',
 }
 
-export enum ChainTypes {
-  ETHEREUM_SEPOLIA = 'ethereum/sepolia',
-  ETHEREUM_XDAI = 'ethereum/xdai',
-  NEAR_TESTNET = 'near/testnet',
-  NEAR_MAINNET = 'near/mainnet',
-}
-
-export enum WalletTypes {
-  WALLETCONNECT = 'walletconnect',
-  METAMASK = 'metamask',
-  NEAR = 'near',
-  DAPPLETS = 'dapplets',
-}
-
-export enum NearNetworks {
-  Mainnet = 'mainnet',
-  Testnet = 'testnet',
-}
-
 export enum OverlayStorages {
   Centralized = 'centralized',
   Decentralized = 'decentralized',
-}
-
-export interface WalletDescriptor {
-  chain: ChainTypes
-  type: WalletTypes
-  meta: {
-    icon: string
-    name: string
-    description: string
-  } | null
-  connected: boolean
-  available: boolean
-  account: string
-  chainId: number
-  apps: string[]
-  default: boolean
-  lastUsage: string
-}
-
-export interface WalletDescriptorWithCAMainStatus extends WalletDescriptor {
-  accountActive: boolean
 }
 
 export type ModuleId = {

@@ -12,6 +12,7 @@ const FeedContainer = styled(Space)`
   transition: all 0.2s ease;
   width: 100%;
   gap: 10px;
+  padding-bottom: 16px;
 `
 
 const SmoothSpace = styled(Space)`
@@ -20,7 +21,7 @@ const SmoothSpace = styled(Space)`
 
 const SpinContainer = styled(Flex)`
   transition: all 0.2s ease;
-  height: 100%;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,7 +30,7 @@ const SpinContainer = styled(Flex)`
 
 const Loader = () => (
   <SpinContainer prefixCls="spin">
-    <Spin size="large" />
+    <Spin />
   </SpinContainer>
 )
 
@@ -69,7 +70,7 @@ const NotificationFeed: FC<{
       ) : !loggedInAccountId ? (
         <Text type="secondary">
           {!!onConnectWallet ? (
-            <Button style={{ padding: ' 4px 4px' }} type="link" onClick={handleSignIn}>
+            <Button style={{ padding: '4px 4px !important' }} type="link" onClick={handleSignIn}>
               Login
             </Button>
           ) : (
@@ -86,7 +87,7 @@ const NotificationFeed: FC<{
               </Text>
               {newNotifications.length ? (
                 <Button
-                  style={{ float: 'right' }}
+                  style={{ float: 'right', padding: '4px 15px' }}
                   onClick={() => viewAllNotifications()}
                   type="link"
                 >
