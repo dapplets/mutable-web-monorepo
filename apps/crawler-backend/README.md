@@ -1,5 +1,14 @@
 # Backend
 
+## Prerequisites
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. Go to Settings, enable Kubernetes, click on Apply & Restart
+3. Create `helm/values.yaml` and `.env` files as written above (see also `helm/values.example.yaml` and `.example.env`)
+4. Install [Lens](https://k8slens.dev/) [Optionally]
+5. Install [`kubectl`](https://kubernetes.io/docs/tasks/tools/)
+6. Install [`helm`](https://helm.sh/docs/intro/install/)
+
 ## Install with Helm
 
 Create `values.yaml` with the following secrets:
@@ -11,11 +20,28 @@ nearAiApiKey: '{"account_id":"example.near","signature":"example==","public_key"
 
 Install helm chart from GitHub Registry:
 
-```sh
-helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./values.yaml
+```bash
+cd apps/crawler-backend
+kubectl create namespace openfaas-fn
+helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./helm/values.yaml
+```
+
+If the `secrets "basic-auth" already exists` error occured, try this:
+
+```bash
+helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./helm/values.yaml
+helm uninstall aigency --namespace aigency
+helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./helm/values.yaml
+helm upgrade aigency oci://ghcr.io/dapplets/aigency --install --create-namespace --namespace aigency -f ./helm/values.yaml
 ```
 
 Aigency will be available at `http://localhost:30001`
+
+Add port forwarding to PostgreSQL
+
+```
+kubectl port-forward service/postgres 5432 5432 --namespace aigency
+```
 
 ## Development
 
