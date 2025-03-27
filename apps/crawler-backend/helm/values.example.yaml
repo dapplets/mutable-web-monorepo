@@ -1,0 +1,2 @@
+openaiApiKey: sk-proj-example-key
+nearAiApiKey: '{"account_id":"example.near","signature":"example==","public_key":"ed25519:example","callback_url":"http://localhost:54875/capture","nonce":"1234567890","recipient":"ai.near","message":"Welcome to NEAR AI","on_behalf_of":null}'
