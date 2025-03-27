@@ -118,6 +118,14 @@ const Header = styled.div`
   align-items: center;
   gap: 10px;
   margin: 6px 10px 0 !important;
+
+  img {
+    box-sizing: border-box;
+    object-fit: cover;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
 `
 
 const HomeIcon = styled.div`
@@ -174,12 +182,13 @@ const H1 = styled.h1`
 
 interface PageLayoutProps {
   title: string
+  icon?: React.ReactNode
   children: React.ReactNode | null
   backPath?: string | -1
 }
 
 const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(
-  ({ title, children, backPath }, ref) => {
+  ({ title, icon, children, backPath }, ref) => {
     const navigate = useNavigate()
     return (
       <Container ref={ref} data-testid={`${title.toLowerCase()}-page`}>
@@ -193,6 +202,7 @@ const PageLayout = forwardRef<HTMLDivElement, PageLayoutProps>(
               <ArrowIcon />
             </BackButton>
           )}
+          {icon ? icon : null}
           <H1>{title}</H1>
         </Header>
         {children}

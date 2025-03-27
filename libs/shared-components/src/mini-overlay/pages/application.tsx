@@ -293,7 +293,18 @@ const Application: FC = () => {
   const appRef = React.useRef<HTMLDivElement>(null)
 
   return !selectedApp ? null : (
-    <PageLayout ref={appRef} title={selectedApp.metadata.name || ''} backPath={-1}>
+    <PageLayout
+      ref={appRef}
+      title={selectedApp.metadata.name || ''}
+      backPath={-1}
+      icon={
+        <Image
+          image={selectedApp.metadata.image}
+          fallbackUrl="https://ipfs.near.social/ipfs/bafkreifc4burlk35hxom3klq4mysmslfirj7slueenbj7ddwg7pc6ixomu"
+          alt={selectedApp.metadata.name}
+        />
+      }
+    >
       {/* ToDo: hardcoded AiAgent !!! */}
       {selectedApp.id === 'bos.dapplets.testnet/app/AiAgent' ? (
         <JobsProvider>
