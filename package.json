@@ -7,7 +7,7 @@
   "author": "Dapplets Team <contact@dapplets.org>",
   "license": "MIT",
   "private": true,
-  "packageManager": "pnpm@9.9.0",
+  "packageManager": "pnpm@10.6.5",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "build": "turbo run build",
@@ -17,7 +17,7 @@
     "build:crawler-agent": "turbo run build --filter=@mweb/crawler-agent",
     "build:crawler-backend": "turbo run build --filter=@mweb/crawler-backend",
     "build:crawler-dashboard": "turbo run build --filter=@mweb/crawler-dashboard",
-    "dev": "turbo run dev --concurrency 13",
+    "dev": "turbo run dev --concurrency 14",
     "dev:mweb": "turbo run dev --concurrency 10 --filter=!@mweb/crawler-*",
     "dev:crawler": "turbo run dev --filter=@mweb/crawler-*",
     "clean": "turbo run clean",
