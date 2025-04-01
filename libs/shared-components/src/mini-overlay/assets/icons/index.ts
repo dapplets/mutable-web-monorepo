@@ -18,6 +18,7 @@ import Home from './home'
 import Info from './info'
 import LoaderSettings from './loader-settings'
 import Bell from './bell'
+import LinkOut from './link-out'
 
 export {
   MutationFallbackIcon,
@@ -34,6 +35,7 @@ export {
   OpenOverlay,
   OpenOverlayWithCircle,
   Logo,
+  LinkOut,
   PersonAddAlt,
   Person,
   Home,

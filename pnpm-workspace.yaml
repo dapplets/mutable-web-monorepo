@@ -1,5 +1,7 @@
 packages:
-  - 'apps/*'
-  - 'libs/*'
-  - "contracts/*"
-  - "agents/crawler"
+  - apps/*
+  - libs/*
+  - contracts/*
+  - agents/crawler
+ignoredBuiltDependencies:
+  - '@nestjs/core'
