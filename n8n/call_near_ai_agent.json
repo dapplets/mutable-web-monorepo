@@ -1,0 +1,196 @@
+{
+  "name": "call-near-ai-agent",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ApiKey"
+            },
+            {
+              "name": "AgentId"
+            },
+            {
+              "name": "Message"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        -120
+      ],
+      "id": "1b69bbdb-6ef1-4471-ab58-73c9b9b017f0",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.near.ai/v1/threads/runs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ApiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agent_id\": {{ $json.AgentId.toJsonString() }},\n  \"new_message\": {{ $json.Message.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "ThreadId"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        260,
+        80
+      ],
+      "id": "98c4ec8c-c39e-4089-875a-63df5f8aa2ff",
+      "name": "Create Thread"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        500,
+        -120
+      ],
+      "id": "bd035cd2-fc07-4707-ba3d-df68854288a9",
+      "name": "Merge ApiKey & ThreadId"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.ApiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        780,
+        -120
+      ],
+      "id": "39057415-fc6a-4bfd-85b1-330fa814d378",
+      "name": "Get Agent Response"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39b1dc4b-a9f5-4add-9c1e-600a54910834",
+              "name": "ResponseMessage",
+              "value": "={{ $json.data[0].content[0].text.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1060,
+        -120
+      ],
+      "id": "bf1d2d3d-1422-4c9c-b40e-07ced5fe055f",
+      "name": "Extract Response from JSON"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Create Thread",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge ApiKey & ThreadId",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Thread": {
+      "main": [
+        [
+          {
+            "node": "Merge ApiKey & ThreadId",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge ApiKey & ThreadId": {
+      "main": [
+        [
+          {
+            "node": "Get Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent Response": {
+      "main": [
+        [
+          {
+            "node": "Extract Response from JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Response from JSON": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bd05d22d-51ce-466e-bc25-646f890c316c",
+  "meta": {
+    "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
+  },
+  "id": "DIXbOKdlOzCkKFne",
+  "tags": []
+}

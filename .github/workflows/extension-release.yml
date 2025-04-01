@@ -10,9 +10,16 @@ on:
       - 'apps/crawler-backend/**'
       - 'apps/crawler-dashboard/**'
       - 'apps/crawler-extension/**'
+      - 'libs/crawler-sdk/**'
+      - 'libs/openfaas-client/**'
+      - 'n8n/**'
+      - 'agents/**'
+      - 'contracts/**'
+      - 'docs/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'CHANGELOG.md'
+      - 'README.md'
 jobs:
   release:
     name: Release
