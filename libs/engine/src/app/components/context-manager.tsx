@@ -17,7 +17,7 @@ import {
 } from '@mweb/backend'
 import { IContextNode, InsertionPointWithElement } from '@mweb/core'
 import { ContextPortal, ContextTree } from '@mweb/react'
-import { Widget } from 'near-social-vm'
+import { BosWidget } from './bos-widget'
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { filterAndDiscriminate } from '../common/filter-and-discriminate'
@@ -580,11 +580,10 @@ const InsPointHandler: FC<{
         style={shadowDomHostStyles}
         stylesheetSrc={engine.config.bosElementStyleSrc}
       >
-        <Widget
+        <BosWidget
           src={layoutManagerId ?? config.layoutManagers.horizontal}
           props={props}
-          loading={<></>}
-          config={{ redirectMap }}
+          redirectMap={redirectMap}
         />
       </ShadowDomWrapper>
     </ContextPortal>
@@ -654,7 +653,7 @@ const ControllerHandler: FC<{
 
   return (
     <InMemoryRenderer>
-      <Widget src={controller.bosWidgetId} props={props} loading={<></>} config={{ redirectMap }} />
+      <BosWidget src={controller.bosWidgetId} props={props} redirectMap={redirectMap} />
     </InMemoryRenderer>
   )
 }

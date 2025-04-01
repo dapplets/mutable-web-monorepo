@@ -3,3 +3,4 @@ packages:
   - 'libs/*'
   - "contracts/*"
   - "agents/crawler"
+  - 'dapplets/*'
