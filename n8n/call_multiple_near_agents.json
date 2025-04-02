@@ -1,0 +1,532 @@
+{
+  "name": "call-multiple-near-agents",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.near.ai/v1/threads/runs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Begin').item.json.ApiKey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agent_id\": \"{{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}\",\n  \"new_message\": {{ $json.query.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "ThreadId"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        -460
+      ],
+      "id": "4485cc41-ab1b-45b1-919b-e7401b5c8f8b",
+      "name": "Create Thread"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Begin').item.json.ApiKey }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1320,
+        -460
+      ],
+      "id": "a7343eaf-799a-4b8c-bd33-728f2fad9ef2",
+      "name": "Get Agent Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.near.ai/v1/registry/download_metadata",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"entry_location\": {\n    \"namespace\": {{ $json.namespace.toJsonString() }},\n    \"name\": {{ $json.name.toJsonString() }},\n    \"version\": {{ $json.version.toJsonString() }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -300,
+        -340
+      ],
+      "id": "3bf34753-bd9a-4015-82e3-212f9cb96269",
+      "name": "Get Agent Manifest"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        -120,
+        -460
+      ],
+      "id": "d3e7070e-3d15-485f-a1b9-424168c2d8cb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c45176b-c40e-4944-af38-7321ce59f7dd",
+              "name": "namespace",
+              "value": "={{ $json.namespace }}",
+              "type": "string"
+            },
+            {
+              "id": "05552cd1-7076-4d94-aa53-0d7dfd6952a2",
+              "name": "name",
+              "value": "={{ $json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "d25add34-e96c-4e15-a735-38c390befd4f",
+              "name": "version",
+              "value": "={{ $json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "f3f626c2-3863-47af-a933-440629d58c0d",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        -460
+      ],
+      "id": "bea7c3cf-6aef-4086-b9f3-9b8da029b611",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        -240
+      ],
+      "id": "f3be313e-20d8-49ad-b020-d52182f45b6f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "agents",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        280,
+        -460
+      ],
+      "id": "ed9d08cf-b130-4bd6-a2a8-bb1ce9831265",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Begin').item.json.Query }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Return just an array of AI agent calls that suitable for the user request. Put to the `query` property an input data for the specific agent. Don't call any tools.\nThe list of available AI agents:\n{{ $json.agents.toJsonString() }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        480,
+        -460
+      ],
+      "id": "feb2289d-b011-46f8-95a7-b882ea8934a1",
+      "name": "Find suitable agent"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"agent_calls\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n\"namespace\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"name\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"version\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"query\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n              }\n            }\n\t\t}\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        -240
+      ],
+      "id": "9b3a4dc3-cda2-4dab-8f5b-02809a18626c",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.agent_calls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -460
+      ],
+      "id": "6bfbc74e-1a9b-4288-a444-22c0b30b882b",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7326c09a-5ef3-48e6-982e-e85a92dde505",
+              "name": "agentId",
+              "value": "={{ $json.data[0].assistant_id }}",
+              "type": "string"
+            },
+            {
+              "id": "17f07fd3-6f83-4e54-bad0-a3eaae66b99e",
+              "name": "response",
+              "value": "={{ $json.data[0].content[0].text.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1540,
+        -460
+      ],
+      "id": "5a39bd0c-9f3a-46ba-b2a2-c7885c9da8e6",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "responses",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1740,
+        -460
+      ],
+      "id": "ccf963a4-890e-4624-a487-8ba107efb441",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "AgentIds",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        -500
+      ],
+      "id": "7449e73b-f10f-4c5f-990f-64326f667f92",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "ApiKey"
+            },
+            {
+              "name": "Query"
+            },
+            {
+              "name": "AgentIds",
+              "type": "array"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -840,
+        -500
+      ],
+      "id": "7eded082-272c-4ad0-8d11-a94b23bea9c0",
+      "name": "Begin"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6400e5e0-a51a-407a-8f73-3e20b1bb181b",
+              "name": "namespace",
+              "value": "={{ $json.AgentIds.split('/')[0] }}",
+              "type": "string"
+            },
+            {
+              "id": "2c1a096f-02b3-4365-96b9-e325b4a29752",
+              "name": "name",
+              "value": "={{ $json.AgentIds.split('/')[1] }}",
+              "type": "string"
+            },
+            {
+              "id": "32859e9c-d219-4668-8e9f-691cb8e87ef5",
+              "name": "version",
+              "value": "={{ $json.AgentIds.split('/')[2] ?? 'latest' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -500
+      ],
+      "id": "7f03b49e-9ef2-4cad-9619-822c27fa482f",
+      "name": "Edit Fields2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create Thread": {
+      "main": [
+        [
+          {
+            "node": "Get Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent Manifest": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Find suitable agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Find suitable agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find suitable agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Find suitable agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent Response": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate1": {
+      "main": [
+        []
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Agent Manifest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "24aece9c-fc6f-4e0f-a299-b79c832a7079",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
+  },
+  "id": "XeW4thzhqbyqX7zq",
+  "tags": []
+}
