@@ -1,0 +1,450 @@
+{
+  "name": "dept",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "user-id",
+              "type": "number"
+            },
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ca0ee43a-fac9-4f64-ae0d-bb16774c5d68",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "near-ai",
+          "mode": "list",
+          "cachedResultName": "near-ai"
+        },
+        "table": {
+          "__rl": true,
+          "value": "available",
+          "mode": "list",
+          "cachedResultName": "available"
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "stars",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        200,
+        0
+      ],
+      "id": "0c8d2866-d31a-4083-ae8b-be82e8f661ea",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        840,
+        180
+      ],
+      "id": "677e8548-b044-4c56-84c7-51b6c1a40b3c",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "p4zymgdrfCv2VdG1",
+          "name": "Direct Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('When Executed by Another Workflow').item.json.query }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single agent that is best suited for the task and respond with the agent's ID.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.appended_agent }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        860,
+        0
+      ],
+      "id": "675a2202-dd08-4b46-9b90-28581b46fa10",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "agent"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        640,
+        0
+      ],
+      "id": "9e10d452-ef06-4a81-ac67-9f888f4c08f0",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af333a2-758c-4a71-b11a-28bcfc5dfc26",
+              "name": "agent",
+              "value": "={{ $json.title }}: {{ $json.description }} id: {{ $json.id }};",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        420,
+        0
+      ],
+      "id": "3a1fc291-40a9-4406-9161-2515e4a2f127",
+      "name": "set-preview"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "near-ai",
+          "mode": "list",
+          "cachedResultName": "near-ai"
+        },
+        "table": {
+          "__rl": true,
+          "value": "available",
+          "mode": "list",
+          "cachedResultName": "available"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1240,
+        0
+      ],
+      "id": "925f1ad6-11f5-48d8-90f3-17e0ce0149be",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.near.ai/v1/threads/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agent_id\": {{ $json.AgentId.toJsonString() }},\n  \"new_message\": {{ $('When Executed by Another Workflow').item.json.query.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "ThreadId"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1780,
+        160
+      ],
+      "id": "398d1bc9-e393-49a6-9314-c40d14f7691c",
+      "name": "Create Thread",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ld1Tlwc93eGx974g",
+          "name": "NEAR AI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        2060,
+        0
+      ],
+      "id": "902444cd-5065-4e32-94bd-3912769d3074",
+      "name": "Merge ApiKey & ThreadId"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2300,
+        0
+      ],
+      "id": "834428fe-df55-40cc-960b-4d2a8d6d33ed",
+      "name": "Get Agent Response",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ld1Tlwc93eGx974g",
+          "name": "NEAR AI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1518f8f9-286f-4102-bc90-9bbaf3243421",
+              "name": "AgentId",
+              "value": "={{ $json.namespace }}/{{ $json.name }}/latest",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1480,
+        0
+      ],
+      "id": "ef97c8f6-b9dc-4bf8-8007-bb03cdbd225a",
+      "name": "Init Variables"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f71d8357-3b3f-4a76-9335-3ea5a61d8f78",
+              "name": "data[0].content[0].text.value",
+              "value": "={{ $json.data[0].content[0].text.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2520,
+        0
+      ],
+      "id": "1a473e55-46a0-4e33-9ea3-ff4d5752401f",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "set-preview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set-preview": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Thread": {
+      "main": [
+        [
+          {
+            "node": "Merge ApiKey & ThreadId",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge ApiKey & ThreadId": {
+      "main": [
+        [
+          {
+            "node": "Get Agent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent Response": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Init Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Init Variables": {
+      "main": [
+        [
+          {
+            "node": "Merge ApiKey & ThreadId",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Thread",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "13b3fd2b-7861-4336-9aeb-e33c7bbc422d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
+  },
+  "id": "jAozB7pBNuZIf2Gj",
+  "tags": []
+}

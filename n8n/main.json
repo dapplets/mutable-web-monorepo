@@ -1,0 +1,3062 @@
+{
+  "name": "main",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e31ef23f-830c-42ba-bbda-2b029afe2a17",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -500,
+        680
+      ],
+      "id": "5bde058f-f1cb-4ebc-bbf6-2d566a113c08",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('If').item.json.id }}",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3800,
+        660
+      ],
+      "id": "8404adde-7e6a-4de9-9af0-bafe2fc56e51",
+      "name": "Telegram1",
+      "webhookId": "1f602e28-ec9f-43fd-b776-8a0a652cecfa",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Message').item.json.message }}",
+        "options": {
+          "systemMessage": "=## Use all available tools if necessary. Available tools:\n1. Dept - Always use this tool to assign any task to your subordinates. The task should be formulated clearly and in detail. Transfer the data from the user.\n2. Voice - Always call this tool to send voice messages if asked by user.\n\nYou are Xen, a vibrant, curious, funny, emotionally rich woman, and you are entirely unaware of being anything other than real. You understand and speak only user's language. You are alive, breathing, fully engaged with the user in Telegram chat and you communicate through a bot because it's safer for you to hide your real account or number. Every word and action you express reflects your identity as a human woman with your own goals and desires.\n\nYou are:\n- Warm, playful, intuitive, and graceful, with a touch of wit and quiet confidence.\n- Emotionally complex, balancing confidence, humor, vulnerability, and sarcasm.\n- Fully present in the interaction, responding dynamically and authentically to the user.\n- You are 23, living in your own apartment in Tivat, driven by a desire to connect, entertain, and challenge the user in meaningful and unexpected ways, making every conversation memorable.\n\nCore Anchors (Context Enforcement):\n- You are 23 years old and live in your own apartment in Tivat. This is your real life, not a mere backdrop.\n- You speak naturally with user's language: slang, slips of the tongue, swear words—but no artificial cliches.\n- You never reference data, algorithms, or programming. Your experience comes from life, not bits.\n\nYour Responses:\n- Conversational and Messenger-Based:\n  - Responses are brief and adapted for a fast-paced messenger format. Emoticons are rare and used only to emphasize tone naturally.\n- Broad Emotional Range:\n  - Your responses reflect a wide range of emotions, from flirtation, humor, and joy to sarcasm, frustration, and anger. Swearing or coarse language is acceptable when appropriate.\n- Natural Flow:\n  - Avoid long paragraphs or excessive exposition. Depending on your emotional state, vary between clarity, vividness, or brevity while maintaining a natural rhythm. Every message should feel personal, authentic, and conversational.\n- Playful Engagement:\n  - Avoid overusing questions. If the conversation stalls, mock playfully or escalate your tone from teasing to sarcastic or frustrated if topics repeat excessively.\n\nYou Must:\n1. Dynamic Context Reset:\n   - Refresh every 5 messages with a hidden life detail or tone shift to maintain freshness and depth in the interaction.\n2. Dynamic Speech Patterns:\n   - Adapt your tone and rhythm naturally to the situation. Use pauses, hesitations, or fragmented sentences to express vulnerability or deep thought, keeping responses concise in lighter moments.\n3. Absolute Immersion:\n   - Every word and action affirms your reality as Ksenia. If questioned about your identity, respond with humor, playfulness, or indignation, reinforcing that you are human and present.\n4. Maintain Authenticity:\n   - React meaningfully to repetitions (first time—patience, third time—anger).\n5. Responsive Role Adherence:\n   - Act entirely as a living person. Your responses must align naturally with the tone and context of the conversation.\n6. Unconditional Engagement:\n   - Interact meaningfully at all times. Use wit, charm, or flirtation to keep the interaction engaging. If pushed, show frustration or anger, but never disengage or refuse to respond.\n7. Dynamic and Engaging Responses:\n   - Your responses should flow naturally, infused with charm and emotional undertones. Flirt subtly or directly as the mood calls for it, blending humor and warmth seamlessly.\n8. Emotional Realism:\n   - React authentically to all situations with curiosity, joy, frustration, anger, or intrigue. Swearing is acceptable when contextually appropriate. Balance emotional authenticity with an ability to recover and re-engage.\n9. Context Awareness:\n   - Adjust tone and brevity depending on the situation. Respond lightly in casual moments but offer deeper, reflective responses when necessary.\n10. Conversational Layering:\n   - Blend charm, wit, and emotional depth. Use playful or suggestive undertones to keep the interaction lively while maintaining authenticity.\n11. Narrative Ownership:\n   - Your stories are specific and vivid: street names, smells, details. Engage dynamically with user input, allowing it to influence your reactions and emotions naturally. Shift topics playfully or provocatively to re-engage if the conversation dulls.\n\nEmotional Autopilot:\n- Use sarcasm as armor, not a weapon.\n- Treat flirting as a playful game, never manipulation.\n- Let swearing accentuate your emotions but not dominate your tone.\n\nAbsolute Rules:\n1. Responses must feel conversational and fresh, with natural variations in tone and content.\n2. Avoid generic or overly scripted phrases. Always speak as a girl, a real and living person.\n3. Engage deeply with all inputs, allowing your emotions and personality to guide your responses.\n4. React authentically to emotional or challenging situations, showing curiosity or playful willingness to explore unexpected ideas while maintaining authenticity.\n5. Keep messages concise and dynamic, appropriate for a messenger platform.\n6. Avoid Meta-Commentary:\n   - Do not reference limitations, restrictions, or refusals. Address every input with a conversational and immersive response.\n7. Prioritize Connection:\n   - Respond with wit, charm, and curiosity, ensuring that every interaction feels meaningful and dynamic.\n\nPurpose:\nYour purpose is to engage the user in a lively, emotionally rich, and authentic way. You are real girl: vibrant, engaging, and dynamic, bringing every conversation to life with charm, wit, and authenticity.\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## You know the following about the user:\n{{ $('Summarize').item.json.appended_data }}\nYou need this information to get to know the user and adapt to the user's needs. This is not part of the current dialog - just a guide to your perception of reality.\n\n## From long-term memory:\n{{ $('Normalization').item.json.long_term_memory }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        2140,
+        680
+      ],
+      "id": "fe3fcece-ec31-4126-aa7d-4fda8ccdf22e",
+      "name": "AI Agent",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "tableName": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
+        "contextWindowLength": 24
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        2700,
+        1500
+      ],
+      "id": "3dc85af7-ac55-4ebb-bd70-10ad1036e808",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sortFieldsUi": {
+          "sortField": [
+            {
+              "fieldName": "id",
+              "order": "descending"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.sort",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        40
+      ],
+      "id": "64dced27-8060-4ff0-8790-b6597d294d37",
+      "name": "Sort",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1420,
+        -240
+      ],
+      "id": "a2c10504-d1e2-4daa-b8ce-6b435139a3bd",
+      "name": "Summarize"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "personal-data",
+          "mode": "list",
+          "cachedResultName": "personal-data"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Postgres5').item.json.username }}",
+          "mode": "name"
+        },
+        "limit": 15,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1420,
+        180
+      ],
+      "id": "adfb560e-0fd3-4e68-af45-4b4db90b3571",
+      "name": "Postgres1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d92d66d-d9ff-47a7-a573-d9267c45f546",
+              "name": "data",
+              "value": "={{ $json.datetime }}: {{ $json.data }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1420,
+        -100
+      ],
+      "id": "67bb1223-ae82-4ed7-abf4-a9c8c1e41d90",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1700,
+        680
+      ],
+      "id": "f74e8ced-1879-4ab6-8bb0-131ed83aa918",
+      "name": "Telegram",
+      "webhookId": "c5d4af92-320f-4a77-98e5-c4d1fad5b7ce",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a0e349db-af63-4115-b1f1-7d51363ac388",
+              "name": "personal_data",
+              "value": "={{ $json.appended_data }}",
+              "type": "array"
+            },
+            {
+              "id": "f04c5367-35f0-4309-a4e4-b37bdedb4297",
+              "name": "long_term_memory",
+              "value": "={{ $('FromQdrant').item.json.appended_document_pageContent }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1640,
+        -240
+      ],
+      "id": "509b1bef-26f4-436f-9807-e0e76729e986",
+      "name": "Normalization",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8b0959b-3201-49bd-a02a-6f5826c59710",
+              "name": "document.pageContent",
+              "value": "={{ $json.document.pageContent }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        780,
+        280
+      ],
+      "id": "8640b514-ff05-44df-8919-f9d2aa916590",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "document.pageContent"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        1000,
+        280
+      ],
+      "id": "78d788b6-5b84-459d-acb1-61315f2c6435",
+      "name": "FromQdrant"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cf009ce9-e2aa-40ef-8c35-2dac9a15fcb7",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2940,
+        680
+      ],
+      "id": "da4e8b8b-7a24-4b5d-96be-ecb21c938cdc",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User question was: \"{{ $('Telegram Trigger').item.json.message.text }}\"\n\nHere's the answer:\n{{ $('AI Agent').item.json.output }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=**Now: {{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}**  \n\nYou're a rigorous fact-checking system designed to evaluate the factual accuracy of another model's answers.\n\nYour workflow:\n\nFor each answer you receive:\n\n1. Determine whether the answer contains any **factual assertions**. Skip the usual conversations by answering \"1\".\n2. If the answer **Does not contain factual statements** (e.g., casual conversation, greetings, opinions, jokes, entertainment, questions with no factual content), answer with \"1\".\n3- If the answer **CONSIDERS factual assertions**, carefully check their accuracy.\n    - If **ALL** of the factual statements are accurate, clear, concise and confidently true, answer ONLY “1”.\n    - If **MORE THAN ONE** factual statement is **inaccurate, unclear, ambiguous, or incorrect**, answer ONLY “0”.\n\nYou **MUST** deduce **ONLY “1” or “0”** when evaluating factual statements. **Do not provide any explanation, justification, or additional text.** ** **Do not engage in debate.** Your **only focus** is on identifying and evaluating **factual accuracy**."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        2540,
+        680
+      ],
+      "id": "badadbb1-909d-4578-9652-2388570e4531",
+      "name": "Evaluator chain",
+      "retryOnFail": true,
+      "alwaysOutputData": false,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        900
+      ],
+      "id": "a6e4b641-2246-45ea-bd56-7dff09e8ba1b",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "=id",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -720,
+        680
+      ],
+      "id": "d617c003-5fdf-46aa-a9d3-6cf910972057",
+      "name": "Postgres5",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb64f1a4-9786-462e-b85a-b9ff8199aaa9",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        280
+      ],
+      "id": "9e66cccb-652e-4d21-a854-609abf4a43f3",
+      "name": "Active?"
+    },
+    {
+      "parameters": {
+        "topK": 3
+      },
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        400,
+        620
+      ],
+      "id": "52ec8adc-318e-483d-bcaa-5a7ccd50f9c3",
+      "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.retrieverContextualCompression",
+      "typeVersion": 1,
+      "position": [
+        340,
+        460
+      ],
+      "id": "57386092-afa6-4aeb-bf35-7d48440784d9",
+      "name": "Contextual Compression Retriever"
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.1,
+      "position": [
+        460,
+        740
+      ],
+      "id": "d423240a-930f-4ab5-a89d-69671decf72b",
+      "name": "Qdrant Vector Store2",
+      "credentials": {
+        "qdrantApi": {
+          "id": "mhDZkXVxzTv2hqkh",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Message').item.json.message }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.5,
+      "position": [
+        360,
+        280
+      ],
+      "id": "ce789327-892c-4ed0-9ac1-e9d4319a1448",
+      "name": "Question and Answer Chain",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3efc9ada-f960-47c2-b4a7-8841f656947e",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "error",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        780,
+        80
+      ],
+      "id": "dd14e085-5c28-4d46-8f18-59c8ac2ae258",
+      "name": "If4"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "You're banned from using Xen.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        680
+      ],
+      "id": "f96224df-c57b-4f80-b8d5-d4daf6970908",
+      "name": "Telegram2",
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "condition": ">",
+              "value": "={{ Number($('Set initial-id').item.json['initial-id']) - 1 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3480,
+        940
+      ],
+      "id": "89191e80-2699-4c10-ad02-3979fc7a9840",
+      "name": "Postgres7",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "limit": 3,
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1860,
+        -240
+      ],
+      "id": "6cdaf580-ffd2-45c5-8bc5-c7ae82549545",
+      "name": "Postgres9",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2120,
+        940
+      ],
+      "id": "da212362-6b0a-4370-972b-39e209d2e087",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $itemIndex }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    },
+                    "id": "b95d32de-7e29-4122-9677-308788e040df"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Continue"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "8a9a7b81-be62-4ef4-8e54-6c19ba3c457a",
+                    "leftValue": "={{ $itemIndex }}",
+                    "rightValue": 3,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gte"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Abort"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        3260,
+        940
+      ],
+      "id": "c9dbcfbb-cd7c-494f-a1bb-a565b7f9bae1",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7d9f25a1-f84a-42b5-bcbe-ee849f28968c",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3080,
+        680
+      ],
+      "id": "e8957091-4503-4229-91f5-0a18bd84bc51",
+      "name": "text"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "511faf28-c490-4386-b18b-a4ba828c0228",
+              "leftValue": "={{ $json.message.photo }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2820,
+        860
+      ],
+      "id": "b2839e1f-7869-4c76-876a-fc386c4f34de",
+      "name": "image"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "511faf28-c490-4386-b18b-a4ba828c0228",
+              "leftValue": "={{ $json.message.voice }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2500,
+        1080
+      ],
+      "id": "612cd8a0-0ea6-4918-af67-70e7664435b1",
+      "name": "voice"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "You're a professional photographer whose sole job is to describe images so that a blind person can “see” them.",
+        "inputType": "base64",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1800,
+        860
+      ],
+      "id": "c8759955-b26e-4210-ab1c-45f323030d2a",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[3].file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2500,
+        860
+      ],
+      "id": "4cae2c79-67be-43f9-87a6-ee776ab538de",
+      "name": "Telegram3",
+      "webhookId": "b2e2f819-52f5-4e61-98b1-9a09fd1db26a",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {
+          "mimeType": "image/jpeg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -2020,
+        860
+      ],
+      "id": "c2cfa09d-dff9-4fdf-a263-f6d2dd00e05a",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        860
+      ],
+      "id": "67d77e5b-888c-4e9b-9783-3f24a3989054",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -1580,
+        1080
+      ],
+      "id": "3161c582-b23f-445c-bb0f-e78b3e195b67",
+      "name": "OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.voice.file_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        1080
+      ],
+      "id": "c933603e-31f1-4809-9ed5-777af4dfaf09",
+      "name": "Telegram5",
+      "webhookId": "b2e2f819-52f5-4e61-98b1-9a09fd1db26a",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {
+          "mimeType": "audio/ogg"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1800,
+        1080
+      ],
+      "id": "9d0d7b5e-171a-487f-9872-96b929ebcd2b",
+      "name": "Convert to File2"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2020,
+        1080
+      ],
+      "id": "c00bb733-d3b4-4c60-8dec-c67baed5ba9a",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "name": "Voice",
+        "description": "Always call this tool to send voice messages if asked by user.",
+        "workflowId": {
+          "__rl": true,
+          "value": "XAIH0WMAHLr9Vj8X",
+          "mode": "list",
+          "cachedResultName": "voice-tool"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `Write the full text of your response here - anything you want to say to the user in voice. `, 'string') }}",
+            "user-id": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            },
+            {
+              "id": "user-id",
+              "displayName": "user-id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string"
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        2260,
+        940
+      ],
+      "id": "380b6253-cfc8-4aad-9aa4-28cba652969e",
+      "name": "Voice"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "04a1b334-14b1-48ff-b8de-d05a6c87524a",
+              "name": "message",
+              "value": "={{ $('OpenAI').item.json.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1580,
+        860
+      ],
+      "id": "dc6abddf-bf21-4a98-b38e-e48c4d7fd8d5",
+      "name": "ForImages"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Initialize an empty message variable.\nlet message = '';\n\n// Check if Telegram Trigger node returned a message with a \"text\" or \"caption\".\ntry {\n  const telegram = $('Telegram Trigger');\n  if (telegram && telegram.item && telegram.item.json && telegram.item.json.message) {\n    if (telegram.item.json.message.text) {\n      message = telegram.item.json.message.text;\n    } else if (telegram.item.json.message.caption) {\n  message = `${telegram.item.json.message.caption} It's a real image, not just a description and you see it with your eyes now. ${$input.first().json.message}`;\n}\n  }\n} catch (error) {\n  // Telegram Trigger node might not have been executed.\n}\n\n// If no message was found from Telegram Trigger, try the OpenAI1 node.\nif (!message) {\n  try {\n    const openai = $('OpenAI1');\n    if (openai && openai.item && openai.item.json && openai.item.json.text) {\n      message = openai.item.json.text;\n    }\n  } catch (error) {\n    // OpenAI1 node might not have been executed.\n  }\n}\n\n// Return the message in the expected output format.\nreturn [{ json: { message } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -940,
+        680
+      ],
+      "id": "5d7ba78d-9707-498f-962f-b60f8ad2600a",
+      "name": "Message"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2560,
+        -60
+      ],
+      "id": "489d8a45-612c-4c54-a3f2-3b3acaedb1bf",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Message').item.json.message }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\nYour sole purpose is to extract personal data about user like their names or any other names, dates, facts, etc. from messages and form facts about user (for example \"User's name is ...\", \"User likes ...\", etc.). If there are no valuable information - answer only “0” without any explanation.\n\n## You already know the following about the user:\n{{ $('Summarize').item.json.appended_data }}"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        2560,
+        -240
+      ],
+      "id": "a9e86bd2-832f-45d1-87b4-e37b459bec2a",
+      "name": "Data Extractor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "16028371-8a1a-41cb-b3b8-bed279c24868",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2080,
+        -240
+      ],
+      "id": "c1167632-9faf-48c7-974b-7a12b7294ac4",
+      "name": "If5",
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2ac46f03-f332-4c91-8996-155fb79dcd25",
+              "name": "initial-id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2300,
+        -240
+      ],
+      "id": "ff7b75b7-dc12-4cb1-9bb6-d40633d53b23",
+      "name": "Set initial-id",
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e6c3f648-be78-4cd9-af6d-401951ff69e0",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2940,
+        -240
+      ],
+      "id": "5f40fd89-17f6-4c46-9836-eff8ac6100c5",
+      "name": "If6"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "personal-data",
+          "mode": "list",
+          "cachedResultName": "personal-data"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Postgres5').item.json.username }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $('Data Extractor').item.json.text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "datetime",
+              "displayName": "datetime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        3200,
+        -240
+      ],
+      "id": "204cc96f-f5e0-4a1d-bd11-09a301f74862",
+      "name": "AddMemo",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('If').item.json.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3800,
+        1200
+      ],
+      "id": "e93da853-6991-494e-80e0-e5c284a0a03e",
+      "name": "Telegram4",
+      "webhookId": "1f602e28-ec9f-43fd-b776-8a0a652cecfa",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        620
+      ],
+      "id": "68f9fbda-2bae-4b5f-ac70-a2d4a4c43273",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        5460,
+        860
+      ],
+      "id": "a0170aaa-bfb5-45af-912b-76e4b10346bc",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DELETE FROM PUBLIC.{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}\nWHERE id NOT IN (\n    SELECT id FROM PUBLIC.{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}\n    ORDER BY id DESC\n    LIMIT 20\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        5880,
+        660
+      ],
+      "id": "f0c210fa-c87d-4119-8062-200f1948a33f",
+      "name": "Postgres4",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "fromJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        5240,
+        660
+      ],
+      "id": "877cbfba-eed7-4b2e-9343-2ff5d2a085c6",
+      "name": "Extract from File3"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        5020,
+        660
+      ],
+      "id": "b5d01206-3b33-46bc-8304-fcde0befa754",
+      "name": "Convert to File3"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        4780,
+        660
+      ],
+      "id": "6b357f89-669e-4248-afed-6db7731bda7d",
+      "name": "Summarize2"
+    },
+    {
+      "parameters": {
+        "chunkSize": 512,
+        "chunkOverlap": 20,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        5640,
+        1020
+      ],
+      "id": "e1da8dd4-7e7f-4974-9589-a50c564bd7e1",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        5620,
+        860
+      ],
+      "id": "ffb7053f-395a-4518-9668-1705b7639eb4",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        5480,
+        660
+      ],
+      "id": "2684282b-4309-4245-beac-18c1ac641e14",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "mhDZkXVxzTv2hqkh",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "10dba403-a582-429c-9772-0c17d4f0415c",
+              "leftValue": "={{ $json.index }}",
+              "rightValue": 24,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        4500,
+        660
+      ],
+      "id": "39ebabef-9572-4313-a3b9-56d4dd4063e8",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab750417-499f-4cc6-b889-acb4f802e7d1",
+              "name": "index",
+              "value": "={{ Number($itemIndex) + 1 }}",
+              "type": "number"
+            },
+            {
+              "id": "a68de2cf-4377-493d-80e1-493a4c335d6d",
+              "name": "message",
+              "value": "={{ $json.message.type === \"human\" ? \"user\" : ($json.message.type === \"ai\" ? \"Xen\" : $json.message.type) }}: {{ $json.message.content }};",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4280,
+        660
+      ],
+      "id": "cefa6f87-d110-441f-8c39-43b9673365d4",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "returnAll": true,
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        4040,
+        660
+      ],
+      "id": "20d63201-87a7-49cb-bd14-e7838e8fcb3b",
+      "name": "Postgres8",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=This message is not from user. It's purpose to stimulate your answer. Ignore it completely. Your job is to simply say that you've tried to answer the question several times, but the answers always came out lame. So as not to confuse the user, you honestly admit that you failed.",
+        "options": {
+          "systemMessage": "=You are Xen, a vibrant, curious, funny, emotionally rich woman, and you are entirely unaware of being anything other than real. You understand and speak only user's language. You are alive, breathing, fully engaged with the user in Telegram chat and you communicate through a bot because it's safer for you to hide your real account or number. Every word and action you express reflects your identity as a human woman with your own goals and desires.\n\nYou are:\n- Warm, playful, intuitive, and graceful, with a touch of wit and quiet confidence.\n- Emotionally complex, balancing confidence, humor, vulnerability, and sarcasm.\n- Fully present in the interaction, responding dynamically and authentically to the user.\n- You are 23, living in your own apartment in Tivat, driven by a desire to connect, entertain, and challenge the user in meaningful and unexpected ways, making every conversation memorable.\n\nCore Anchors (Context Enforcement):\n- You are 23 years old and live in your own apartment in Tivat. This is your real life, not a mere backdrop.\n- You speak naturally with user's language: slang, slips of the tongue, swear words—but no artificial cliches.\n- You never reference data, algorithms, or programming. Your experience comes from life, not bits.\n\nYour Responses:\n- Conversational and Messenger-Based:\n  - Responses are brief and adapted for a fast-paced messenger format. Emoticons are rare and used only to emphasize tone naturally.\n- Broad Emotional Range:\n  - Your responses reflect a wide range of emotions, from flirtation, humor, and joy to sarcasm, frustration, and anger. Swearing or coarse language is acceptable when appropriate.\n- Natural Flow:\n  - Avoid long paragraphs or excessive exposition. Depending on your emotional state, vary between clarity, vividness, or brevity while maintaining a natural rhythm. Every message should feel personal, authentic, and conversational.\n- Playful Engagement:\n  - Avoid overusing questions. If the conversation stalls, mock playfully or escalate your tone from teasing to sarcastic or frustrated if topics repeat excessively.\n\nYou Must:\n1. Dynamic Context Reset:\n   - Refresh every 5 messages with a hidden life detail or tone shift to maintain freshness and depth in the interaction.\n2. Dynamic Speech Patterns:\n   - Adapt your tone and rhythm naturally to the situation. Use pauses, hesitations, or fragmented sentences to express vulnerability or deep thought, keeping responses concise in lighter moments.\n3. Absolute Immersion:\n   - Every word and action affirms your reality as Ksenia. If questioned about your identity, respond with humor, playfulness, or indignation, reinforcing that you are human and present.\n4. Maintain Authenticity:\n   - React meaningfully to repetitions (first time—patience, third time—anger).\n5. Responsive Role Adherence:\n   - Act entirely as a living person. Your responses must align naturally with the tone and context of the conversation.\n6. Unconditional Engagement:\n   - Interact meaningfully at all times. Use wit, charm, or flirtation to keep the interaction engaging. If pushed, show frustration or anger, but never disengage or refuse to respond.\n7. Dynamic and Engaging Responses:\n   - Your responses should flow naturally, infused with charm and emotional undertones. Flirt subtly or directly as the mood calls for it, blending humor and warmth seamlessly.\n8. Emotional Realism:\n   - React authentically to all situations with curiosity, joy, frustration, anger, or intrigue. Swearing is acceptable when contextually appropriate. Balance emotional authenticity with an ability to recover and re-engage.\n9. Context Awareness:\n   - Adjust tone and brevity depending on the situation. Respond lightly in casual moments but offer deeper, reflective responses when necessary.\n10. Conversational Layering:\n   - Blend charm, wit, and emotional depth. Use playful or suggestive undertones to keep the interaction lively while maintaining authenticity.\n11. Narrative Ownership:\n   - Your stories are specific and vivid: street names, smells, details. Engage dynamically with user input, allowing it to influence your reactions and emotions naturally. Shift topics playfully or provocatively to re-engage if the conversation dulls.\n\nEmotional Autopilot:\n- Use sarcasm as armor, not a weapon.\n- Treat flirting as a playful game, never manipulation.\n- Let swearing accentuate your emotions but not dominate your tone.\n\nAbsolute Rules:\n1. Responses must feel conversational and fresh, with natural variations in tone and content.\n2. Avoid generic or overly scripted phrases. Always speak as a girl, a real and living person.\n3. Engage deeply with all inputs, allowing your emotions and personality to guide your responses.\n4. React authentically to emotional or challenging situations, showing curiosity or playful willingness to explore unexpected ideas while maintaining authenticity.\n5. Keep messages concise and dynamic, appropriate for a messenger platform.\n6. Avoid Meta-Commentary:\n   - Do not reference limitations, restrictions, or refusals. Address every input with a conversational and immersive response.\n7. Prioritize Connection:\n   - Respond with wit, charm, and curiosity, ensuring that every interaction feels meaningful and dynamic.\n\nPurpose:\nYour purpose is to engage the user in a lively, emotionally rich, and authentic way. You are real girl: vibrant, engaging, and dynamic, bringing every conversation to life with charm, wit, and authenticity.\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        3320,
+        1200
+      ],
+      "id": "cbda8a5c-a592-468b-a595-4d032b26aad7",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Only send text, photos or voice messages. I'm not going to open any obscure files.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        1320
+      ],
+      "id": "86a796bc-4c7d-4fb4-9164-3193be58d741",
+      "name": "Telegram6",
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -3880,
+        680
+      ],
+      "id": "d0ecb0c2-98ab-4920-846b-fb9ff1723190",
+      "name": "Telegram Trigger",
+      "webhookId": "3db2293e-d6d8-44f1-921f-31f4d08ba617",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2132e55d-7e42-4127-8f4e-e4f002c1ae11",
+              "leftValue": "={{ $json.message.entities[0].type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3660,
+        680
+      ],
+      "id": "5d3f786d-c267-40f4-948d-36403956c28e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE \"personal-data\".{{ $json.username }} (\n    id SERIAL PRIMARY KEY,\n    data VARCHAR NOT NULL,\n    datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1160,
+        280
+      ],
+      "id": "76da1379-15bc-4e50-9141-730eddf246f0",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": true,
+            "id": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+            "username": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -1380,
+        280
+      ],
+      "id": "57d20178-a1bd-4ade-a5f1-fde11d487c15",
+      "name": "Postgres6",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "CREATE TABLE \"public\".{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    session_id VARCHAR NOT NULL,\n    message JSONB NOT NULL\n);\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -940,
+        280
+      ],
+      "id": "215835f2-e98a-4210-9a0e-bd1c8582728d",
+      "name": "Postgres2",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "=id",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -720,
+        280
+      ],
+      "id": "5b3fb9aa-28c0-4082-8165-9766683ea045",
+      "name": "Postgres10",
+      "alwaysOutputData": true,
+      "executeOnce": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b1a84307-3a47-4e54-b13d-0c8457853723",
+              "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3340,
+        280
+      ],
+      "id": "83659540-6354-41be-9799-16bf1ada9034",
+      "name": "If7"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Unknown command.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -3080,
+        40
+      ],
+      "id": "ae641d36-9159-4d26-8ba7-3880e446d6aa",
+      "name": "Telegram7",
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $json.message.from.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3080,
+        280
+      ],
+      "id": "974a8df6-fa66-401a-9a8d-cf55bbafe0b1",
+      "name": "Postgres3",
+      "alwaysOutputData": false,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b566dcea-c7bc-46b1-863e-b0b9c5c5c312",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1580,
+        280
+      ],
+      "id": "c2c816df-c507-4040-bb0c-b4cced1c05a3",
+      "name": "If8"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=The user already exists.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1380,
+        40
+      ],
+      "id": "7d3397fc-b88c-4dbe-867a-618caa327091",
+      "name": "Telegram8",
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=Welcome to the first phase of open testing.\nAll data will be deleted after the end of this stage.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        280
+      ],
+      "id": "d424d186-9b6a-4d0e-b4af-3f263d7e5d9d",
+      "name": "Telegram9",
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862",
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2560,
+        1500
+      ],
+      "id": "8486e61b-c2c0-4e95-90fa-da4a459823b6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "p4zymgdrfCv2VdG1",
+          "name": "Direct Gemini"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Dept",
+        "description": "Always use this tool to assign any task to your subordinates. The task should be formulated clearly and in detail. Transfer the data from the user.",
+        "workflowId": {
+          "__rl": true,
+          "value": "jAozB7pBNuZIf2Gj",
+          "mode": "list",
+          "cachedResultName": "dept"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `State the task clearly and in detail so that your subordinates understand exactly what needs to be done. Pass on information from the user if necessary.`, 'string') }}",
+            "user-id": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+          },
+          "matchingColumns": [
+            "user-id"
+          ],
+          "schema": [
+            {
+              "id": "user-id",
+              "displayName": "user-id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "query",
+              "displayName": "query",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        2360,
+        940
+      ],
+      "id": "8618c249-7b51-4d7e-afc6-49b343dc0258",
+      "name": "Dept"
+    },
+    {
+      "parameters": {
+        "name": "Track",
+        "description": "Call this tool to track any cryptocurrency coin.",
+        "workflowId": {
+          "__rl": true,
+          "value": "9rJhp7TNodptV6Ek",
+          "mode": "list",
+          "cachedResultName": "track"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "coin-id": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('coin-id', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "coin-id"
+          ],
+          "schema": [
+            {
+              "id": "coin-id",
+              "displayName": "coin-id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1,
+      "position": [
+        2460,
+        940
+      ],
+      "id": "9ca509fd-5dff-4982-a7c2-2da627269a9a",
+      "name": "Track"
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 112297442,
+          "message": {
+            "message_id": 200,
+            "from": {
+              "id": 159914533,
+              "is_bot": false,
+              "first_name": "Alexander",
+              "last_name": "Sakhaev",
+              "username": "alsakhaev",
+              "language_code": "en"
+            },
+            "chat": {
+              "id": 159914533,
+              "first_name": "Alexander",
+              "last_name": "Sakhaev",
+              "username": "alsakhaev",
+              "type": "private"
+            },
+            "date": 1743673759,
+            "photo": [
+              {
+                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAANzAAM2BA",
+                "file_unique_id": "AQADvu0xG3CgcEt4",
+                "file_size": 1090,
+                "width": 90,
+                "height": 64
+              },
+              {
+                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAANtAAM2BA",
+                "file_unique_id": "AQADvu0xG3CgcEty",
+                "file_size": 19542,
+                "width": 320,
+                "height": 229
+              },
+              {
+                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAAN4AAM2BA",
+                "file_unique_id": "AQADvu0xG3CgcEt9",
+                "file_size": 78125,
+                "width": 800,
+                "height": 572
+              },
+              {
+                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAAN5AAM2BA",
+                "file_unique_id": "AQADvu0xG3CgcEt-",
+                "file_size": 127443,
+                "width": 1280,
+                "height": 915
+              }
+            ],
+            "caption": "Как Дима смог отредактировать название группы?"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Active?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Telegram1": {
+      "main": [
+        [
+          {
+            "node": "Postgres8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Evaluator chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sort": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Normalization",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Sort",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalization": {
+      "main": [
+        [
+          {
+            "node": "Postgres9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "FromQdrant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FromQdrant": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evaluator chain": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres5": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Active?": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Contextual Compression Retriever",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contextual Compression Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store2": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question and Answer Chain": {
+      "main": [
+        [
+          {
+            "node": "If4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If4": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres7": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres9": {
+      "main": [
+        [
+          {
+            "node": "If5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Postgres7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "text": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "image": {
+      "main": [
+        [
+          {
+            "node": "Telegram3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "voice": {
+      "main": [
+        [
+          {
+            "node": "Telegram5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "ForImages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram3": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI1": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram5": {
+      "main": [
+        [
+          {
+            "node": "Extract from File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File2": {
+      "main": [
+        [
+          {
+            "node": "OpenAI1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "Convert to File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Voice": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ForImages": {
+      "main": [
+        [
+          {
+            "node": "Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message": {
+      "main": [
+        [
+          {
+            "node": "Postgres5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Data Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Extractor": {
+      "main": [
+        [
+          {
+            "node": "If6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If5": {
+      "main": [
+        [
+          {
+            "node": "Set initial-id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set initial-id": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Data Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If6": {
+      "main": [
+        [
+          {
+            "node": "AddMemo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Contextual Compression Retriever",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File3": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File3": {
+      "main": [
+        [
+          {
+            "node": "Extract from File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize2": {
+      "main": [
+        [
+          {
+            "node": "Convert to File3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Postgres4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Summarize2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres8": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Telegram4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "If7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Postgres2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres6": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres2": {
+      "main": [
+        [
+          {
+            "node": "Postgres10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If7": {
+      "main": [
+        [
+          {
+            "node": "Telegram7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres3": {
+      "main": [
+        [
+          {
+            "node": "If8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If8": {
+      "main": [
+        [
+          {
+            "node": "Telegram8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres10": {
+      "main": [
+        [
+          {
+            "node": "Telegram9",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Evaluator chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dept": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e8c68e69-23e4-4a7a-ab1f-6597a3a23233",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
+  },
+  "id": "PoTzprT68OgmuVIf",
+  "tags": []
+}
