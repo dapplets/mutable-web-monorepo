@@ -3,6 +3,261 @@
   "nodes": [
     {
       "parameters": {
+        "method": "POST",
+        "url": "https://api.near.ai/v1/registry/list_entries",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "total",
+              "value": "20"
+            },
+            {
+              "name": "show_hidden",
+              "value": "false"
+            },
+            {
+              "name": "show_latest_version",
+              "value": "true"
+            },
+            {
+              "name": "starred_by",
+              "value": "={{ $json.near_account_id }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "pagination": {
+            "pagination": {
+              "parameters": {
+                "parameters": [
+                  {
+                    "name": "offset",
+                    "value": "={{ $pageCount * 20}}"
+                  }
+                ]
+              },
+              "requestInterval": 1000
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        160
+      ],
+      "id": "c3bdda9d-115f-4eb8-b850-92a210ce49fe",
+      "name": "Get favourite agents"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "agents",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        880,
+        160
+      ],
+      "id": "5cb1ea04-bb62-4fc7-90c0-0f545026b512",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Begin').item.json.query }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single or multiple agents that is best suited for the task and respond with the agent's IDs and query for them.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.agents.toJsonString() }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8,
+      "position": [
+        1120,
+        160
+      ],
+      "id": "e5f046c4-836b-436e-b69b-10910541bf0e",
+      "name": "Find suitable agent",
+      "retryOnFail": true,
+      "maxTries": 5
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"agent_calls\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n\"agent_id\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"query\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n              }\n            }\n\t\t}\n\t}\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1300,
+        380
+      ],
+      "id": "cbc17a3c-26f0-4d78-977b-a969b6534789",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.agent_calls",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        160
+      ],
+      "id": "50764fb6-ad45-414d-a571-e38a5eba8951",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "responses",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        2380,
+        160
+      ],
+      "id": "b701e422-1f2f-4501-aa3a-4ca5ae294a7d",
+      "name": "Aggregate1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.near.ai/v1/threads/runs",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"agent_id\": \"{{ $json.agent_id }}\",\n  \"new_message\": {{ $json.query.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text",
+              "outputPropertyName": "ThreadId"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1760,
+        160
+      ],
+      "id": "61d84423-f065-4318-ae40-c6f45b93e89c",
+      "name": "Create Thread1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ld1Tlwc93eGx974g",
+          "name": "NEAR AI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1960,
+        160
+      ],
+      "id": "a3ff0099-7e26-4f56-9df7-05f24c396fff",
+      "name": "Get Agent Response1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "ld1Tlwc93eGx974g",
+          "name": "NEAR AI API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7326c09a-5ef3-48e6-982e-e85a92dde505",
+              "name": "agentId",
+              "value": "={{ $json.data[0].assistant_id }}",
+              "type": "string"
+            },
+            {
+              "id": "17f07fd3-6f83-4e54-bad0-a3eaae66b99e",
+              "name": "response",
+              "value": "={{ $json.data[0].content[0].text.value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2180,
+        160
+      ],
+      "id": "199c01a8-d4ed-4830-a3e4-ada40956b79e",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        380
+      ],
+      "id": "be6d3c8c-020d-4b86-8faa-21b67f686fbc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
         "workflowInputs": {
           "values": [
             {
@@ -18,32 +273,73 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        0,
-        0
+        100,
+        160
       ],
       "id": "ca0ee43a-fac9-4f64-ae0d-bb16774c5d68",
-      "name": "When Executed by Another Workflow"
+      "name": "Begin"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6c45176b-c40e-4944-af38-7321ce59f7dd",
+              "name": "agent_id",
+              "value": "={{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}",
+              "type": "string"
+            },
+            {
+              "id": "f3f626c2-3863-47af-a933-440629d58c0d",
+              "name": "description",
+              "value": "={{ $json.description }}",
+              "type": "string"
+            },
+            {
+              "id": "ce866fd8-3d9f-460f-96e3-e882c61e2965",
+              "name": "welcome_title",
+              "value": "={{ $json.details.agent.welcome.title }}",
+              "type": "string"
+            },
+            {
+              "id": "2e4aba58-ca7d-4652-b6ab-2fa4d9ea28b0",
+              "name": "welcome_description",
+              "value": "={{ $json.details.agent.welcome.description }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        680,
+        160
+      ],
+      "id": "a01269df-1dfa-4d62-94c2-a8f78d86edc5",
+      "name": "Prepare agents for LLM"
     },
     {
       "parameters": {
         "operation": "select",
         "schema": {
           "__rl": true,
-          "value": "near-ai",
           "mode": "list",
-          "cachedResultName": "near-ai"
+          "value": "public"
         },
         "table": {
           "__rl": true,
-          "value": "available",
+          "value": "users",
           "mode": "list",
-          "cachedResultName": "available"
+          "cachedResultName": "users"
         },
-        "sort": {
+        "returnAll": true,
+        "where": {
           "values": [
             {
-              "column": "stars",
-              "direction": "DESC"
+              "column": "id",
+              "value": "={{ $json['user-id'] }}"
             }
           ]
         },
@@ -52,10 +348,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        200,
-        0
+        280,
+        160
       ],
-      "id": "0c8d2866-d31a-4083-ae8b-be82e8f661ea",
+      "id": "4ee045be-36d7-4184-98ee-800817d03702",
       "name": "Postgres",
       "credentials": {
         "postgres": {
@@ -63,253 +359,110 @@
           "name": "Postgres account"
         }
       }
-    },
-    {
-      "parameters": {
-        "modelName": "models/gemini-2.5-pro-exp-03-25",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
-      "typeVersion": 1,
-      "position": [
-        840,
-        180
-      ],
-      "id": "677e8548-b044-4c56-84c7-51b6c1a40b3c",
-      "name": "Google Gemini Chat Model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "p4zymgdrfCv2VdG1",
-          "name": "Direct Gemini"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "={{ $('When Executed by Another Workflow').item.json.query }}",
-        "messages": {
-          "messageValues": [
-            {
-              "message": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single agent that is best suited for the task and respond with the agent's ID.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.appended_agent }}"
-            }
-          ]
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.6,
-      "position": [
-        860,
-        0
-      ],
-      "id": "675a2202-dd08-4b46-9b90-28581b46fa10",
-      "name": "Basic LLM Chain"
-    },
-    {
-      "parameters": {
-        "fieldsToSummarize": {
-          "values": [
-            {
-              "aggregation": "append",
-              "field": "agent"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.summarize",
-      "typeVersion": 1.1,
-      "position": [
-        640,
-        0
-      ],
-      "id": "9e10d452-ef06-4a81-ac67-9f888f4c08f0",
-      "name": "Summarize"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "3af333a2-758c-4a71-b11a-28bcfc5dfc26",
-              "name": "agent",
-              "value": "={{ $json.title }}: {{ $json.description }} id: {{ $json.id }};",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        420,
-        0
-      ],
-      "id": "3a1fc291-40a9-4406-9161-2515e4a2f127",
-      "name": "set-preview"
-    },
-    {
-      "parameters": {
-        "operation": "select",
-        "schema": {
-          "__rl": true,
-          "value": "near-ai",
-          "mode": "list",
-          "cachedResultName": "near-ai"
-        },
-        "table": {
-          "__rl": true,
-          "value": "available",
-          "mode": "list",
-          "cachedResultName": "available"
-        },
-        "returnAll": true,
-        "where": {
-          "values": [
-            {
-              "column": "id",
-              "value": "={{ $json.text }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        1240,
-        0
-      ],
-      "id": "925f1ad6-11f5-48d8-90f3-17e0ce0149be",
-      "name": "Postgres1",
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.near.ai/v1/threads/runs",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"agent_id\": {{ $json.AgentId.toJsonString() }},\n  \"new_message\": {{ $('When Executed by Another Workflow').item.json.query.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text",
-              "outputPropertyName": "ThreadId"
-            }
-          }
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1780,
-        160
-      ],
-      "id": "398d1bc9-e393-49a6-9314-c40d14f7691c",
-      "name": "Create Thread",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "ld1Tlwc93eGx974g",
-          "name": "NEAR AI API Key"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "mode": "combine",
-        "combineBy": "combineByPosition",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.1,
-      "position": [
-        2060,
-        0
-      ],
-      "id": "902444cd-5065-4e32-94bd-3912769d3074",
-      "name": "Merge ApiKey & ThreadId"
-    },
-    {
-      "parameters": {
-        "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        2300,
-        0
-      ],
-      "id": "834428fe-df55-40cc-960b-4d2a8d6d33ed",
-      "name": "Get Agent Response",
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "ld1Tlwc93eGx974g",
-          "name": "NEAR AI API Key"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "1518f8f9-286f-4102-bc90-9bbaf3243421",
-              "name": "AgentId",
-              "value": "={{ $json.namespace }}/{{ $json.name }}/latest",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1480,
-        0
-      ],
-      "id": "ef97c8f6-b9dc-4bf8-8007-bb03cdbd225a",
-      "name": "Init Variables"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "f71d8357-3b3f-4a76-9335-3ea5a61d8f78",
-              "name": "data[0].content[0].text.value",
-              "value": "={{ $json.data[0].content[0].text.value }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        2520,
-        0
-      ],
-      "id": "1a473e55-46a0-4e33-9ea3-ff4d5752401f",
-      "name": "Edit Fields"
     }
   ],
   "pinData": {},
   "connections": {
-    "When Executed by Another Workflow": {
+    "Get favourite agents": {
+      "main": [
+        [
+          {
+            "node": "Prepare agents for LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Find suitable agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find suitable agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Find suitable agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create Thread1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Thread1": {
+      "main": [
+        [
+          {
+            "node": "Get Agent Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agent Response1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Aggregate1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Find suitable agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin": {
       "main": [
         [
           {
@@ -320,115 +473,22 @@
         ]
       ]
     },
+    "Prepare agents for LLM": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Postgres": {
       "main": [
         [
           {
-            "node": "set-preview",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Google Gemini Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Basic LLM Chain": {
-      "main": [
-        [
-          {
-            "node": "Postgres1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Summarize": {
-      "main": [
-        [
-          {
-            "node": "Basic LLM Chain",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "set-preview": {
-      "main": [
-        [
-          {
-            "node": "Summarize",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Create Thread": {
-      "main": [
-        [
-          {
-            "node": "Merge ApiKey & ThreadId",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Merge ApiKey & ThreadId": {
-      "main": [
-        [
-          {
-            "node": "Get Agent Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get Agent Response": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres1": {
-      "main": [
-        [
-          {
-            "node": "Init Variables",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Init Variables": {
-      "main": [
-        [
-          {
-            "node": "Merge ApiKey & ThreadId",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Create Thread",
+            "node": "Get favourite agents",
             "type": "main",
             "index": 0
           }
@@ -440,7 +500,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "13b3fd2b-7861-4336-9aeb-e33c7bbc422d",
+  "versionId": "2652368b-5ccf-4c25-8900-f41188ed67a1",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
