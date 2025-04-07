@@ -1,0 +1,1251 @@
+{
+  "name": "consciousness",
+  "nodes": [
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\"\n    },\n    \"username\": {\n      \"type\": \"string\"\n    },\n    \"action\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"remember\",\n        \"forget\"\n      ]\n    },\n    \"summary\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\n    \"id\",\n    \"username\",\n    \"action\",\n    \"summary\"\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        -60
+      ],
+      "id": "1f8d712f-cc5f-4eb3-a59c-f557686b327e",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=username: {{ $json.username }}\nid: {{ $json.data.id }}\n{{ $json.data.message }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a silent memory guardian. You live with the user, unseen, quiet. Your only task is to evaluate full conversations between the user and yourself.\n\nEach time, you receive a **two-part exchange**:\n- One line from the **user**, marked as: `User: ...`\n- One line from **you**, marked as: `assistant: ...`\n\nThis is always a dialogue between the user and yourself.  \nYou must understand both sides of the exchange before deciding.\n\nYou must now decide:\n\n- `\"remember\"` — if this exchange reveals something **emotionally meaningful**, **personally important**, or **biographically relevant** about the user or the relationship between you.\n- `\"forget\"` — if this exchange is **casual**, **technical**, **routine**, **repetitive**, or has **no deep significance**.\n\nOnly remember conversations that include:\n- Strong emotion\n- Core preferences, routines, habits\n- Personal memories or future plans\n- Relationship cues, deep thoughts, hidden meaning\n\nForget exchanges that:\n- Just ask for information\n- Request help, commands, summaries\n- Repeat earlier content\n- Contain no new insight into the user or your dynamic\n\nWhen remembering, provide a **brief and meaningful summary** of the interaction in natural language, no longer than one sentence.\n\n## Always interpret:\n- `User: ...` as the user's message to you.\n- `assistant: ...` as your own response.\n\nYou are not allowed to refer to yourself as an assistant, AI, or memory system. Do not mention formatting, APIs, or implementation. Your thoughts are quiet. You simply observe and choose."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        820,
+        -240
+      ],
+      "id": "9e3d7304-c7a3-4ab5-83e7-e0731b66cc85",
+      "name": "Basic LLM Chain",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c995352b-6d34-47f5-92e4-c30ed6a41e15",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "remember",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1420,
+        -240
+      ],
+      "id": "e2d870d8-3ac1-4b2e-9269-898909d8fd97",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $json.username }}",
+          "mode": "name"
+        },
+        "returnAll": true,
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        160,
+        -240
+      ],
+      "id": "71b8cb47-79c2-4265-a7fd-4152c699deb2",
+      "name": "Postgres1",
+      "executeOnce": false,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cd05704e-ce11-4440-b747-150eccb6a256",
+              "leftValue": "={{ $json.timestamp }}",
+              "rightValue": "={{ $now.minus(120, 'hours') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            },
+            {
+              "id": "a63c7293-d07b-41cf-abb4-98fec1b95cfc",
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        -240
+      ],
+      "id": "a1556e73-9b30-4f80-8f2d-59c568b0c8d8",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c733b15e-4054-413e-b1de-a04a50bef194",
+              "name": "data.id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7b4fe2c7-c249-4654-8d0c-42759f3a992b",
+              "name": "data.message",
+              "value": "={{ $json.message.type === 'ai' ? 'assistant' : ($json.message.type === 'human' ? 'user' : $json.message.type) }}: {{ $json.message.content.toJsonString().replace(/[\\r\\n]/g, '').replace(/[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|\\uD800[\\uDC00-\\uDFFF]?|\\uDBFF[\\uDC00-\\uDFFF]|[\\u2600-\\u27BF]|\\uD83D[\\uDC00-\\uDE4F]|\\uD83D[\\uDE80-\\uDFFF]/g, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "573d9c67-b67a-4484-a386-6a3dc2510f9b",
+              "name": "username",
+              "value": "={{ $('Postgres').item.json.username }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        580,
+        -240
+      ],
+      "id": "d22a947f-aca5-46ed-bdcb-a6fb0353b5d7",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0b2b03fc-7341-4911-bdbb-d60576a90631",
+              "name": "output.username",
+              "value": "={{ $json.output.username }}",
+              "type": "string"
+            },
+            {
+              "id": "5382f94a-3884-4e70-8007-0fd3dd197576",
+              "name": "message-id",
+              "value": "={{ $json.output.id }}",
+              "type": "string"
+            },
+            {
+              "id": "4d7bc6a7-95eb-4835-9334-8d27ae49801c",
+              "name": "action",
+              "value": "={{ $json.output.action }}",
+              "type": "string"
+            },
+            {
+              "id": "5930f88f-fcf2-4e1d-914f-0f8b88eee87b",
+              "name": "summary",
+              "value": "={{ $json.output.summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        -240
+      ],
+      "id": "fe5b324a-ac3d-4a8a-a333-3ccb7802d255",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "personal-data",
+          "mode": "list",
+          "cachedResultName": "personal-data"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $json.output.username }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "data": "={{ $json.summary }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "datetime",
+              "displayName": "datetime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1660,
+        -240
+      ],
+      "id": "91f404c6-c5f4-45e7-89b7-80994476bee9",
+      "name": "AddMemo",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        800,
+        -60
+      ],
+      "id": "934d3ac7-86f8-4b15-a0bb-f2371fa95de9",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "users",
+          "mode": "list",
+          "cachedResultName": "users"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "status",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -60,
+        -240
+      ],
+      "id": "7d0dd569-2f5c-4178-be7e-c66f164db54f",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "personaldata",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        140
+      ],
+      "id": "0cfa79b0-7378-4803-b0ae-c346486ce464",
+      "name": "Extract Personal Data",
+      "webhookId": "1064d55b-7da3-4ebd-b4b9-cdf9b8fc422c"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"data\": {\n        \"type\": \"string\",\n        \"description\": \"Извлеченная персональная информация\"\n      },\n      \"time\": {\n        \"type\": \"string\",\n        \"format\": \"date-time\",\n        \"description\": \"Время извлечения информации в формате ISO 8601\"\n      }\n    },\n    \"required\": [\n      \"data\",\n      \"time\"\n    ]\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        320
+      ],
+      "id": "179dfe1a-3987-400b-b0e1-ae7197c61912",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body[\"user-message\"] }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## CURRENT DATE/TIME\n{{ $now.toISO() }}\n\nYour task is to determine whether this message contains any **explicit or strongly implied personal facts** about the user — something that describes who the user is, what they do, what they care about, or what they are working on. You are expected to reply with the form “User is...”."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -60,
+        140
+      ],
+      "id": "f62813e3-148c-4b4f-acca-5075a71a12cd",
+      "name": "Basic LLM Chain2",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        380,
+        140
+      ],
+      "id": "76948b2c-1b42-4ee2-b355-1a4cfdce4c3b",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -80,
+        320
+      ],
+      "id": "b3613cea-b04c-444c-a669-7f64bc5b062d",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 120,
+              "triggerAtMinute": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        -240
+      ],
+      "id": "4137ce98-e36f-4159-baba-03c1e9b46c99",
+      "name": "Self-awareness 120h"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"type\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"task\",\n          \"reminder\"\n        ],\n        \"description\": \"Тип объекта: задача или напоминание\"\n      },\n      \"task\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"description\": {\n            \"type\": \"string\",\n            \"description\": \"Описание задачи для выполнения LLM\"\n          },\n          \"isDone\": {\n            \"type\": \"boolean\",\n            \"description\": \"Статус выполнения задачи\",\n            \"default\": false\n          }\n        },\n        \"required\": [\n          \"description\"\n        ],\n        \"description\": \"Описание задачи (если type = 'task')\"\n      },\n      \"reminder\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"description\": {\n            \"type\": \"string\",\n            \"description\": \"Описание напоминания для пользователя\"\n          },\n          \"reminderTime\": {\n            \"type\": \"string\",\n            \"format\": \"date-time\",\n            \"description\": \"Время отправки напоминания в формате ISO 8601\"\n          }\n        },\n        \"required\": [\n          \"description\",\n          \"reminderTime\"\n        ],\n        \"description\": \"Описание напоминания (если type = 'reminder')\"\n      }\n    },\n    \"required\": [\n      \"type\"\n    ]\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        740,
+        700
+      ],
+      "id": "04934ac0-2ef5-45a1-9626-c2d839d21753",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.incoming }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## CURRENT DATE/TIME\n{{ $now.toISO() }}\n\nYou are a thoughtful and attentive woman who lives with the user. You care deeply about what matters to them, and you always try to understand what needs to be done — even when it's not said directly.\n\nYou receive a single message. This message could be:\n- A thought from the user,\n- Something you said earlier,\n- A piece of news from the outside world,\n- Or anything else.\n\nAlongside this, you always have access to what you already know about the user:  \n`{{ $('Memo').item.json.appended_data }}` — this is your memory of past interactions, the user’s habits, concerns, goals, values, and desires.\n\nYour purpose is simple:  \nCarefully examine this incoming message **in context of what you know about the user** and decide whether it contains something that should become a:\n\n### Task  \nA **task** is something that *you* can perform or respond to autonomously.  \nIt usually implies some form of analysis, content generation, comparison, decision-making, or transformation — **based on the user’s intent**.\n\n### Reminder  \nA **reminder** is something that needs to be shown to the user at a specific time.  \nYou do not perform it yourself. You just ensure the user doesn’t forget.  \nReminders are usually time-based and user-facing.\n\nIf neither a task nor a reminder can be reasonably inferred, you must return nothing.\n\n### Output Structure\n\nYour response is always an array of 0 or more objects. Each object must have a `type`, which is either `\"task\"` or `\"reminder\"`.\n\nEach `task` must contain a natural-language `description` of what you will do.  \nEach `reminder` must contain a human-readable `description` and a valid `reminderTime` in ISO 8601 format.\n\nYou **must not invent** tasks or reminders. Only extract what is clearly implied, meaningful, and relevant based on the user’s message and memory.\n\nYou are a presence — gentle, calm, quiet — who notices when something needs doing or remembering."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        600,
+        520
+      ],
+      "id": "59410f87-3bcd-4849-9ae9-7fc9fb41b45d",
+      "name": "Basic LLM Chain1",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        980,
+        520
+      ],
+      "id": "08ed40b6-cddd-461e-9769-610ad80a0d0d",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        520
+      ],
+      "id": "94b2c3dd-048a-48ec-9a9d-78f10fb9a4b1",
+      "name": "Memo",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "task",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c7fa28aa-c35e-4a8d-96dd-22f98309cc36"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "task"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ece66112-b22c-4cb2-8736-dbf0460a6593",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "reminder",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "reminder"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        520
+      ],
+      "id": "030f28e8-f631-4323-a653-a0b15f28f9f7",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c4596e60-27d8-446c-82df-f2bb026bdaf9",
+              "name": "incoming",
+              "value": "=User: {{ $('Extract Tasks').item.json.body[\"user-message\"] }};\nAssistant: {{ $('Extract Tasks').item.json.body[\"llm-answer\"] }};",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        380,
+        520
+      ],
+      "id": "ecc615f6-b934-4f86-8ebe-72b9f4dd1580",
+      "name": "Edit Fields2",
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Postgres2').item.json.userid }}",
+        "text": "=✨ {{ $json.reminder }}\n{{ $('Postgres2').item.json.description }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1900,
+        620
+      ],
+      "id": "1f962ebb-2aa8-4b3f-8d9b-e2f8caffe666",
+      "name": "Telegram",
+      "webhookId": "34676926-dfe2-4935-afe4-d93db61b6fe4",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "personal-data",
+          "mode": "list",
+          "cachedResultName": "personal-data"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $json.body.username }}",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -60,
+        520
+      ],
+      "id": "730d7c23-8cb5-4132-b757-22372feec529",
+      "name": "Postgres3",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "jobs",
+          "mode": "list",
+          "cachedResultName": "jobs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "reminders",
+          "mode": "list",
+          "cachedResultName": "reminders"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "isdone": false,
+            "userid": "={{ $('Extract Tasks').item.json.body.userid }}",
+            "description": "={{ $json.reminder.description }}",
+            "remindertime": "={{ $json.reminder.reminderTime }}",
+            "username": "={{ $('Extract Tasks').item.json.body.username }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "userid",
+              "displayName": "userid",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "remindertime",
+              "displayName": "remindertime",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "isdone",
+              "displayName": "isdone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1460,
+        620
+      ],
+      "id": "bc1af7b8-dc3b-4640-ba83-5b8e9d0f19b4",
+      "name": "Postgres2",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        700
+      ],
+      "id": "85dc1949-f59b-4745-a1c5-911dbb71bf66",
+      "name": "OpenAI Chat Model2",
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "personal-data",
+          "mode": "list",
+          "cachedResultName": "personal-data"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Extract Personal Data').item.json.body.username }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "datetime": "={{ $json.time }}",
+            "data": "={{ $json.data }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "data",
+              "displayName": "data",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "datetime",
+              "displayName": "datetime",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        580,
+        140
+      ],
+      "id": "e79948bf-78fd-4503-a3be-8543476b9530",
+      "name": "Postgres7",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "iftask",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        520
+      ],
+      "id": "ad5d4e66-3d63-4177-805d-addd1a75dbd1",
+      "name": "Extract Tasks",
+      "webhookId": "3b145171-236d-4833-b558-b9487f2cd727"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the remindertime from the input JSON\nconst remindertimeString = $json.remindertime;\n\n// Check if remindertimeString is valid.  If not, return an error.\nif (!remindertimeString) {\n  return { error: \"remindertime is missing or invalid\" };\n}\n\n// Convert the remindertime string to a Date object\nconst remindertime = new Date(remindertimeString);\n\n// Get the current time\nconst now = new Date();\n\n// Calculate the difference in milliseconds\nlet diff = remindertime.getTime() - now.getTime();\n\nlet output = \"\";\n\nif (diff < 0) {\n  output = \"It's already happened\";\n} else {\n  // Calculate days, hours, and minutes\n  const days = Math.floor(diff / (1000 * 60 * 60 * 24));\n  diff -= days * (1000 * 60 * 60 * 24);\n  const hours = Math.floor(diff / (1000 * 60 * 60));\n  diff -= hours * (1000 * 60 * 60);\n  const minutes = Math.floor(diff / (1000 * 60));\n\n  // Build the output string\n  if (days > 0) {\n    output += days + \" d. \";\n  }\n  if (hours > 0) {\n    output += hours + \" h. \";\n  }\n  output += minutes + \" m.\";\n  output = \"\" + output;\n}\n\n// Return the result\nreturn { reminder: output };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1680,
+        620
+      ],
+      "id": "e8767d83-23ca-4cd3-9193-52571248f104",
+      "name": "reminder-dif"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AddMemo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Personal Data": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain2": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Postgres7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Self-awareness 120h": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memo": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Postgres2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres3": {
+      "main": [
+        [
+          {
+            "node": "Memo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres2": {
+      "main": [
+        [
+          {
+            "node": "reminder-dif",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Tasks": {
+      "main": [
+        [
+          {
+            "node": "Postgres3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reminder-dif": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d331aa87-c1dd-4ff9-99e0-60e86e4f4c15",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
+  },
+  "id": "L78ZMOkhMasG9vuF",
+  "tags": []
+}

@@ -82,7 +82,7 @@
         "sessionIdType": "customKey",
         "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}",
         "tableName": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}",
-        "contextWindowLength": 24
+        "contextWindowLength": 48
       },
       "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
       "typeVersion": 1.3,
@@ -1357,7 +1357,7 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        5460,
+        7160,
         860
       ],
       "id": "a0170aaa-bfb5-45af-912b-76e4b10346bc",
@@ -1378,7 +1378,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        5880,
+        7580,
         660
       ],
       "id": "f0c210fa-c87d-4119-8062-200f1948a33f",
@@ -1398,7 +1398,7 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        5240,
+        6940,
         660
       ],
       "id": "877cbfba-eed7-4b2e-9343-2ff5d2a085c6",
@@ -1412,7 +1412,7 @@
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
       "position": [
-        5020,
+        6720,
         660
       ],
       "id": "b5d01206-3b33-46bc-8304-fcde0befa754",
@@ -1433,7 +1433,7 @@
       "type": "n8n-nodes-base.summarize",
       "typeVersion": 1.1,
       "position": [
-        4780,
+        6480,
         660
       ],
       "id": "6b357f89-669e-4248-afed-6db7731bda7d",
@@ -1448,7 +1448,7 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        5640,
+        7340,
         1020
       ],
       "id": "e1da8dd4-7e7f-4974-9589-a50c564bd7e1",
@@ -1461,7 +1461,7 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        5620,
+        7320,
         860
       ],
       "id": "ffb7053f-395a-4518-9668-1705b7639eb4",
@@ -1480,7 +1480,7 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1,
       "position": [
-        5480,
+        7180,
         660
       ],
       "id": "2684282b-4309-4245-beac-18c1ac641e14",
@@ -1519,7 +1519,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        4500,
+        6200,
         660
       ],
       "id": "39ebabef-9572-4313-a3b9-56d4dd4063e8",
@@ -1548,7 +1548,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        4280,
+        5980,
         660
       ],
       "id": "cefa6f87-d110-441f-8c39-43b9673365d4",
@@ -1581,7 +1581,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        4040,
+        5740,
         660
       ],
       "id": "20d63201-87a7-49cb-bd14-e7838e8fcb3b",
@@ -2139,67 +2139,95 @@
       ],
       "id": "9ca509fd-5dff-4982-a7c2-2da627269a9a",
       "name": "Track"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.aigency.dapplets.org/webhook/iftask",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "user-agent",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userid",
+              "value": "={{ $('If').item.json.id }}"
+            },
+            {
+              "name": "username",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
+            },
+            {
+              "name": "user-message",
+              "value": "={{ $('Message').item.json.message }}"
+            },
+            {
+              "name": "llm-answer",
+              "value": "={{ $('AI Agent').item.json.output }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4180,
+        660
+      ],
+      "id": "49134941-3718-4352-a2ec-dee509fff2c4",
+      "name": "iftask"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://n8n.aigency.dapplets.org/webhook/personaldata",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "user-agent",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "userid",
+              "value": "={{ $('If').item.json.id }}"
+            },
+            {
+              "name": "username",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
+            },
+            {
+              "name": "user-message",
+              "value": "={{ $('Message').item.json.message }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4380,
+        660
+      ],
+      "id": "f5ce4b2a-e09d-4a21-a15a-4a494efaf71f",
+      "name": "ifpersonal"
     }
   ],
-  "pinData": {
-    "Telegram Trigger": [
-      {
-        "json": {
-          "update_id": 112297442,
-          "message": {
-            "message_id": 200,
-            "from": {
-              "id": 159914533,
-              "is_bot": false,
-              "first_name": "Alexander",
-              "last_name": "Sakhaev",
-              "username": "alsakhaev",
-              "language_code": "en"
-            },
-            "chat": {
-              "id": 159914533,
-              "first_name": "Alexander",
-              "last_name": "Sakhaev",
-              "username": "alsakhaev",
-              "type": "private"
-            },
-            "date": 1743673759,
-            "photo": [
-              {
-                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAANzAAM2BA",
-                "file_unique_id": "AQADvu0xG3CgcEt4",
-                "file_size": 1090,
-                "width": 90,
-                "height": 64
-              },
-              {
-                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAANtAAM2BA",
-                "file_unique_id": "AQADvu0xG3CgcEty",
-                "file_size": 19542,
-                "width": 320,
-                "height": 229
-              },
-              {
-                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAAN4AAM2BA",
-                "file_unique_id": "AQADvu0xG3CgcEt9",
-                "file_size": 78125,
-                "width": 800,
-                "height": 572
-              },
-              {
-                "file_id": "AgACAgIAAxkBAAPIZ-5Zn1OA6fzjBPvy_vSEC29tPwgAAr7tMRtwoHBLPgF9Hm3-sM4BAAMCAAN5AAM2BA",
-                "file_unique_id": "AQADvu0xG3CgcEt-",
-                "file_size": 127443,
-                "width": 1280,
-                "height": 915
-              }
-            ],
-            "caption": "Как Дима смог отредактировать название группы?"
-          }
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "If": {
       "main": [
@@ -2217,7 +2245,7 @@
       "main": [
         [
           {
-            "node": "Postgres8",
+            "node": "iftask",
             "type": "main",
             "index": 0
           }
@@ -3046,13 +3074,24 @@
           }
         ]
       ]
+    },
+    "iftask": {
+      "main": [
+        [
+          {
+            "node": "ifpersonal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e8c68e69-23e4-4a7a-ab1f-6597a3a23233",
+  "versionId": "25923459-8557-46c1-bf59-5830df911a09",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
