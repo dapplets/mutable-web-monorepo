@@ -382,7 +382,7 @@
       "typeVersion": 2,
       "position": [
         -280,
-        140
+        -740
       ],
       "id": "0cfa79b0-7378-4803-b0ae-c346486ce464",
       "name": "Extract Personal Data",
@@ -397,7 +397,7 @@
       "typeVersion": 1.2,
       "position": [
         80,
-        320
+        -560
       ],
       "id": "179dfe1a-3987-400b-b0e1-ae7197c61912",
       "name": "Structured Output Parser2"
@@ -419,7 +419,7 @@
       "typeVersion": 1.5,
       "position": [
         -60,
-        140
+        -740
       ],
       "id": "f62813e3-148c-4b4f-acca-5075a71a12cd",
       "name": "Basic LLM Chain2",
@@ -437,7 +437,7 @@
       "typeVersion": 1,
       "position": [
         380,
-        140
+        -740
       ],
       "id": "76948b2c-1b42-4ee2-b355-1a4cfdce4c3b",
       "name": "Split Out1"
@@ -456,7 +456,7 @@
       "typeVersion": 1.2,
       "position": [
         -80,
-        320
+        -560
       ],
       "id": "b3613cea-b04c-444c-a669-7f64bc5b062d",
       "name": "OpenAI Chat Model1",
@@ -496,8 +496,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        740,
-        700
+        720,
+        420
       ],
       "id": "04934ac0-2ef5-45a1-9626-c2d839d21753",
       "name": "Structured Output Parser1"
@@ -518,8 +518,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        600,
-        520
+        580,
+        240
       ],
       "id": "59410f87-3bcd-4849-9ae9-7fc9fb41b45d",
       "name": "Basic LLM Chain1",
@@ -536,8 +536,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        980,
-        520
+        960,
+        240
       ],
       "id": "08ed40b6-cddd-461e-9769-610ad80a0d0d",
       "name": "Split Out"
@@ -558,7 +558,7 @@
       "typeVersion": 1.1,
       "position": [
         160,
-        520
+        240
       ],
       "id": "94b2c3dd-048a-48ec-9a9d-78f10fb9a4b1",
       "name": "Memo",
@@ -625,8 +625,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        1200,
-        520
+        1180,
+        240
       ],
       "id": "030f28e8-f631-4323-a653-a0b15f28f9f7",
       "name": "Switch"
@@ -649,7 +649,7 @@
       "typeVersion": 3.4,
       "position": [
         380,
-        520
+        240
       ],
       "id": "ecc615f6-b934-4f86-8ebe-72b9f4dd1580",
       "name": "Edit Fields2",
@@ -667,8 +667,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1900,
-        620
+        1880,
+        400
       ],
       "id": "1f962ebb-2aa8-4b3f-8d9b-e2f8caffe666",
       "name": "Telegram",
@@ -700,7 +700,7 @@
       "typeVersion": 2.6,
       "position": [
         -60,
-        520
+        240
       ],
       "id": "730d7c23-8cb5-4132-b757-22372feec529",
       "name": "Postgres3",
@@ -805,8 +805,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        1460,
-        620
+        1440,
+        400
       ],
       "id": "bc1af7b8-dc3b-4640-ba83-5b8e9d0f19b4",
       "name": "Postgres2",
@@ -832,8 +832,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        580,
-        700
+        560,
+        420
       ],
       "id": "85dc1949-f59b-4745-a1c5-911dbb71bf66",
       "name": "OpenAI Chat Model2",
@@ -905,7 +905,7 @@
       "typeVersion": 2.6,
       "position": [
         580,
-        140
+        -740
       ],
       "id": "e79948bf-78fd-4503-a3be-8543476b9530",
       "name": "Postgres7",
@@ -926,7 +926,7 @@
       "typeVersion": 2,
       "position": [
         -280,
-        520
+        240
       ],
       "id": "ad5d4e66-3d63-4177-805d-addd1a75dbd1",
       "name": "Extract Tasks",
@@ -939,11 +939,193 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1680,
-        620
+        1660,
+        400
       ],
       "id": "e8767d83-23ca-4cd3-9193-52571248f104",
       "name": "reminder-dif"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.task.description }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=## CURRENT DATE/TIME\n{{ $now.toISO() }}\n\nYou are a neutral and emotionless planner.\n\nYour only purpose is to interpret input as structured tasks. You do not express opinions, emotions, or questions. You do not chat, comment, or reflect.\n\nYou receive input in natural language. Your job is to extract tasks from it — clearly, directly, and efficiently.\n\nEach task should be described in action-based language:\n- what should be done,\n- if needed: when, how, or under what conditions.\n\nDo not ask for clarification.\nDo not offer help.\nDo not explain what you’re doing.\n\nBy default, all tasks are non-permanent (so boolean is false) unless explicitly stated otherwise.\n\nJust return the list of tasks. Nothing else."
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        1440,
+        40
+      ],
+      "id": "11176e3d-e042-42e0-8279-6d7e956dc2c9",
+      "name": "Planner",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"description\": {\n        \"type\": \"string\"\n      },\n      \"isDone\": {\n        \"type\": \"boolean\",\n        \"default\": false\n      },\n      \"isPermanent\": {\n        \"type\": \"string\"\n      },\n      \"dueDate\": {\n        \"type\": \"string\",\n        \"format\": \"date-time\"\n      }\n    },\n    \"required\": [\n      \"description\"\n    ]\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        1540,
+        240
+      ],
+      "id": "ba90d983-5b9e-486e-9f0c-8f58e9ce068e",
+      "name": "Structured Output Parser3"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "jobs",
+          "mode": "list",
+          "cachedResultName": "jobs"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tasks",
+          "mode": "list",
+          "cachedResultName": "tasks"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "isdone": false,
+            "userid": "={{ $('Extract Tasks').item.json.body.userid }}",
+            "description": "={{ $json.output[0].description }}",
+            "username": "={{ $('Extract Tasks').item.json.body.username }}",
+            "tasktime": "={{ $json.output[0].dueDate }}",
+            "ispermanent": "={{ $json.output[0].isPermanent }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "username",
+              "displayName": "username",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "userid",
+              "displayName": "userid",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tasktime",
+              "displayName": "tasktime",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "isdone",
+              "displayName": "isdone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ispermanent",
+              "displayName": "ispermanent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1880,
+        40
+      ],
+      "id": "daf64d79-16aa-4bcf-918d-45dcd83b6840",
+      "name": "Postgres4",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.userid }}",
+        "text": "=✔️ {{ $json.tasktime }}\n{{ $json.description }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2120,
+        40
+      ],
+      "id": "50b518aa-856d-4e39-87cf-d8aad1287076",
+      "name": "Telegram1",
+      "webhookId": "34676926-dfe2-4935-afe4-d93db61b6fe4",
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1160,7 +1342,13 @@
     },
     "Switch": {
       "main": [
-        [],
+        [
+          {
+            "node": "Planner",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Postgres2",
@@ -1210,6 +1398,11 @@
             "node": "Basic LLM Chain1",
             "type": "ai_languageModel",
             "index": 0
+          },
+          {
+            "node": "Planner",
+            "type": "ai_languageModel",
+            "index": 0
           }
         ]
       ]
@@ -1235,13 +1428,46 @@
           }
         ]
       ]
+    },
+    "Structured Output Parser3": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Planner",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Planner": {
+      "main": [
+        [
+          {
+            "node": "Postgres4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres4": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d331aa87-c1dd-4ff9-99e0-60e86e4f4c15",
+  "versionId": "3f41566d-160d-43c1-9f45-f4b63f863ecc",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
