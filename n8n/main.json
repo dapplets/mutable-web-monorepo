@@ -1096,7 +1096,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -2300,
+        -2280,
         -780
       ],
       "id": "7d3397fc-b88c-4dbe-867a-618caa327091",
@@ -2123,7 +2123,7 @@
       "typeVersion": 2.5,
       "position": [
         -2720,
-        160
+        100
       ],
       "id": "7edc2d40-83a1-459e-8238-6c83c741bc8f",
       "name": "Postgres16",
@@ -2146,8 +2146,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -2440,
-        160
+        -2500,
+        100
       ],
       "id": "4ae92591-4e28-4edc-b074-391a45c9f2ea",
       "name": "Telegram13",
@@ -2878,7 +2878,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "2252379d-632a-4f79-af44-5060896dd9dc",
+  "versionId": "ef9be731-a706-43ec-aeb3-430e373ab95a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"

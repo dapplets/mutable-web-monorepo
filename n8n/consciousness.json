@@ -497,7 +497,7 @@
       "typeVersion": 1.2,
       "position": [
         720,
-        420
+        560
       ],
       "id": "04934ac0-2ef5-45a1-9626-c2d839d21753",
       "name": "Structured Output Parser1"
@@ -519,7 +519,7 @@
       "typeVersion": 1.5,
       "position": [
         580,
-        240
+        380
       ],
       "id": "59410f87-3bcd-4849-9ae9-7fc9fb41b45d",
       "name": "Basic LLM Chain1",
@@ -537,7 +537,7 @@
       "typeVersion": 1,
       "position": [
         960,
-        240
+        380
       ],
       "id": "08ed40b6-cddd-461e-9769-610ad80a0d0d",
       "name": "Split Out"
@@ -558,7 +558,7 @@
       "typeVersion": 1.1,
       "position": [
         160,
-        240
+        380
       ],
       "id": "94b2c3dd-048a-48ec-9a9d-78f10fb9a4b1",
       "name": "Memo",
@@ -626,7 +626,7 @@
       "typeVersion": 3.2,
       "position": [
         1180,
-        240
+        380
       ],
       "id": "030f28e8-f631-4323-a653-a0b15f28f9f7",
       "name": "Switch"
@@ -649,7 +649,7 @@
       "typeVersion": 3.4,
       "position": [
         380,
-        240
+        380
       ],
       "id": "ecc615f6-b934-4f86-8ebe-72b9f4dd1580",
       "name": "Edit Fields2",
@@ -659,7 +659,7 @@
     {
       "parameters": {
         "chatId": "={{ $('Postgres2').item.json.userid }}",
-        "text": "=✨ {{ $json.reminder }}\n{{ $('Postgres2').item.json.description }}",
+        "text": "=✨ DEBUG: {{ $json.reminder }}\n{{ $('Postgres2').item.json.description }}",
         "additionalFields": {
           "appendAttribution": false
         }
@@ -668,7 +668,7 @@
       "typeVersion": 1.2,
       "position": [
         1880,
-        400
+        540
       ],
       "id": "1f962ebb-2aa8-4b3f-8d9b-e2f8caffe666",
       "name": "Telegram",
@@ -700,7 +700,7 @@
       "typeVersion": 2.6,
       "position": [
         -60,
-        240
+        380
       ],
       "id": "730d7c23-8cb5-4132-b757-22372feec529",
       "name": "Postgres3",
@@ -806,7 +806,7 @@
       "typeVersion": 2.6,
       "position": [
         1440,
-        400
+        540
       ],
       "id": "bc1af7b8-dc3b-4640-ba83-5b8e9d0f19b4",
       "name": "Postgres2",
@@ -833,7 +833,7 @@
       "typeVersion": 1.2,
       "position": [
         560,
-        420
+        560
       ],
       "id": "85dc1949-f59b-4745-a1c5-911dbb71bf66",
       "name": "OpenAI Chat Model2",
@@ -926,7 +926,7 @@
       "typeVersion": 2,
       "position": [
         -280,
-        240
+        380
       ],
       "id": "ad5d4e66-3d63-4177-805d-addd1a75dbd1",
       "name": "Extract Tasks",
@@ -940,7 +940,7 @@
       "typeVersion": 2,
       "position": [
         1660,
-        400
+        540
       ],
       "id": "e8767d83-23ca-4cd3-9193-52571248f104",
       "name": "reminder-dif"
@@ -962,7 +962,7 @@
       "typeVersion": 1.5,
       "position": [
         1440,
-        40
+        180
       ],
       "id": "11176e3d-e042-42e0-8279-6d7e956dc2c9",
       "name": "Planner",
@@ -974,13 +974,13 @@
     {
       "parameters": {
         "schemaType": "manual",
-        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"description\": {\n        \"type\": \"string\"\n      },\n      \"isDone\": {\n        \"type\": \"boolean\",\n        \"default\": false\n      },\n      \"isPermanent\": {\n        \"type\": \"string\"\n      },\n      \"dueDate\": {\n        \"type\": \"string\",\n        \"format\": \"date-time\"\n      }\n    },\n    \"required\": [\n      \"description\"\n    ]\n  }\n}"
+        "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"description\": {\n        \"type\": \"string\"\n      },\n      \"isPermanent\": {\n        \"type\": \"string\"\n      },\n      \"dueDate\": {\n        \"type\": \"string\",\n        \"format\": \"date-time\"\n      }\n    },\n    \"required\": [\n      \"description\"\n    ]\n  }\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
         1540,
-        240
+        380
       ],
       "id": "ba90d983-5b9e-486e-9f0c-8f58e9ce068e",
       "name": "Structured Output Parser3"
@@ -1090,7 +1090,7 @@
       "typeVersion": 2.6,
       "position": [
         1880,
-        40
+        180
       ],
       "id": "daf64d79-16aa-4bcf-918d-45dcd83b6840",
       "name": "Postgres4",
@@ -1106,7 +1106,7 @@
     {
       "parameters": {
         "chatId": "={{ $json.userid }}",
-        "text": "=✔️ {{ $json.tasktime }}\n{{ $json.description }}",
+        "text": "=✔️ DEBUG: {{ $json.tasktime }}\n{{ $json.description }}",
         "additionalFields": {
           "appendAttribution": false
         }
@@ -1115,7 +1115,7 @@
       "typeVersion": 1.2,
       "position": [
         2120,
-        40
+        180
       ],
       "id": "50b518aa-856d-4e39-87cf-d8aad1287076",
       "name": "Telegram1",
@@ -1467,7 +1467,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "3f41566d-160d-43c1-9f45-f4b63f863ecc",
+  "versionId": "d7554e35-6036-4062-b8ea-9e79316b0d83",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
