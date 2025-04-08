@@ -24,8 +24,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPO: ${{ github.repository }}
-          WALLET_ID: bos.dapplets.testnet
-          NETWORK_ID: testnet
         run: |
           npm install -g near-protocol-rewards@latest
           near-protocol-rewards calculate
