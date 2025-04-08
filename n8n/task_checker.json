@@ -195,276 +195,6 @@
     },
     {
       "parameters": {
-        "operation": "toJson",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [
-        2000,
-        -140
-      ],
-      "id": "39a67741-01b1-4dd7-b81a-a256ca9c4757",
-      "name": "Convert to File1"
-    },
-    {
-      "parameters": {
-        "operation": "fromJson",
-        "destinationKey": "message",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        2200,
-        -140
-      ],
-      "id": "55928bef-fa69-4f8f-9ae5-4cf1735c0ae4",
-      "name": "Extract from File1"
-    },
-    {
-      "parameters": {
-        "schema": {
-          "__rl": true,
-          "value": "public",
-          "mode": "list",
-          "cachedResultName": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "={{ $('Telegram9').item.json.result.chat.username.toLowerCase() }}",
-          "mode": "name"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "session_id": "={{ $('Telegram9').item.json.result.chat.id }}",
-            "message": "={{ $json.message[0] }}",
-            "timestamp": "={{ $now.toISO() }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "session_id",
-              "displayName": "session_id",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "message",
-              "displayName": "message",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "object",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "timestamp",
-              "displayName": "timestamp",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        2400,
-        -140
-      ],
-      "id": "7ab5fd55-15af-4541-9ad6-bc445fd9f717",
-      "name": "Postgres11",
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4bd8d266-be67-41c1-a73b-2df46c4eac43",
-              "name": "type",
-              "value": "ai",
-              "type": "string"
-            },
-            {
-              "id": "a764fdf1-1100-4acc-ae25-659db9cb9f71",
-              "name": "content",
-              "value": "={{ $json.result.text }}",
-              "type": "string"
-            },
-            {
-              "id": "01448c49-837f-4c36-826f-cb5fdca36de1",
-              "name": "tool_calls",
-              "value": "[]",
-              "type": "string"
-            },
-            {
-              "id": "d2761801-9bba-4aa7-ae77-de586681b74d",
-              "name": "additional_kwargs",
-              "value": "{}",
-              "type": "string"
-            },
-            {
-              "id": "85271eb3-3941-416e-8ceb-31e3dcd3704d",
-              "name": "response_metadata",
-              "value": "{}",
-              "type": "string"
-            },
-            {
-              "id": "7d77c90d-ce26-42c9-9391-602b8278d8e5",
-              "name": "invalid_tool_calls",
-              "value": "[]",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1800,
-        -140
-      ],
-      "id": "04d21bb1-f8f7-48b0-bf12-02c7ac02fff2",
-      "name": "Edit Fields4"
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "schema": {
-          "__rl": true,
-          "value": "jobs",
-          "mode": "list",
-          "cachedResultName": "jobs"
-        },
-        "table": {
-          "__rl": true,
-          "value": "reminders",
-          "mode": "list",
-          "cachedResultName": "reminders"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "isdone": true,
-            "id": "={{ $('Filter1').item.json.id }}",
-            "userid": "={{ $('Filter1').item.json.userid }}",
-            "description": "={{ $('Filter1').item.json.description }}",
-            "remindertime": "={{ $('Filter1').item.json.remindertime }}",
-            "username": "={{ $('Filter1').item.json.username }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "userid",
-              "displayName": "userid",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "description",
-              "displayName": "description",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "remindertime",
-              "displayName": "remindertime",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "isdone",
-              "displayName": "isdone",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "boolean",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "username",
-              "displayName": "username",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        2600,
-        -140
-      ],
-      "id": "397048eb-62a3-4d3d-b794-1d6f26b9ba03",
-      "name": "Postgres12",
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "model": {
           "__rl": true,
           "value": "gpt-4o",
@@ -702,276 +432,6 @@
     },
     {
       "parameters": {
-        "operation": "toJson",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.convertToFile",
-      "typeVersion": 1.1,
-      "position": [
-        2000,
-        320
-      ],
-      "id": "cde7fc83-66ef-4c2b-abf1-e2583beeb473",
-      "name": "Convert to File"
-    },
-    {
-      "parameters": {
-        "operation": "fromJson",
-        "destinationKey": "message",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        2200,
-        320
-      ],
-      "id": "276dee02-79a7-4fee-971a-def97d376c74",
-      "name": "Extract from File"
-    },
-    {
-      "parameters": {
-        "schema": {
-          "__rl": true,
-          "value": "public",
-          "mode": "list",
-          "cachedResultName": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "={{ $('Telegram').item.json.result.chat.username.toLowerCase() }}",
-          "mode": "name"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "session_id": "={{ $('Telegram').item.json.result.chat.id }}",
-            "message": "={{ $json.message[0] }}",
-            "timestamp": "={{ $now.toISO() }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "removed": true
-            },
-            {
-              "id": "session_id",
-              "displayName": "session_id",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "message",
-              "displayName": "message",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "object",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "timestamp",
-              "displayName": "timestamp",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5,
-      "position": [
-        2400,
-        320
-      ],
-      "id": "0d8e61bb-f288-4666-84e5-bf4b671875c4",
-      "name": "Postgres14",
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "4bd8d266-be67-41c1-a73b-2df46c4eac43",
-              "name": "type",
-              "value": "ai",
-              "type": "string"
-            },
-            {
-              "id": "a764fdf1-1100-4acc-ae25-659db9cb9f71",
-              "name": "content",
-              "value": "={{ $json.result.text }}",
-              "type": "string"
-            },
-            {
-              "id": "01448c49-837f-4c36-826f-cb5fdca36de1",
-              "name": "tool_calls",
-              "value": "[]",
-              "type": "string"
-            },
-            {
-              "id": "d2761801-9bba-4aa7-ae77-de586681b74d",
-              "name": "additional_kwargs",
-              "value": "{}",
-              "type": "string"
-            },
-            {
-              "id": "85271eb3-3941-416e-8ceb-31e3dcd3704d",
-              "name": "response_metadata",
-              "value": "{}",
-              "type": "string"
-            },
-            {
-              "id": "7d77c90d-ce26-42c9-9391-602b8278d8e5",
-              "name": "invalid_tool_calls",
-              "value": "[]",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [
-        1800,
-        320
-      ],
-      "id": "5a4fb24a-1280-44cc-9a4c-29999ac021c8",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "operation": "update",
-        "schema": {
-          "__rl": true,
-          "value": "jobs",
-          "mode": "list",
-          "cachedResultName": "jobs"
-        },
-        "table": {
-          "__rl": true,
-          "value": "reminders",
-          "mode": "list",
-          "cachedResultName": "reminders"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "isdone": true,
-            "id": "={{ $('Filter').item.json.id }}",
-            "userid": "={{ $('Filter').item.json.userid }}",
-            "description": "={{ $('Filter').item.json.description }}",
-            "remindertime": "={{ $('Filter').item.json.remindertime }}",
-            "username": "={{ $('Filter').item.json.username }}"
-          },
-          "matchingColumns": [
-            "id"
-          ],
-          "schema": [
-            {
-              "id": "id",
-              "displayName": "id",
-              "required": false,
-              "defaultMatch": true,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "userid",
-              "displayName": "userid",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "description",
-              "displayName": "description",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "remindertime",
-              "displayName": "remindertime",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "isdone",
-              "displayName": "isdone",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "boolean",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "username",
-              "displayName": "username",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        2600,
-        320
-      ],
-      "id": "febd4973-305c-4a95-ae0f-e45dc4ac1e81",
-      "name": "Postgres15",
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "model": {
           "__rl": true,
           "value": "gpt-4o",
@@ -1014,6 +474,166 @@
       ],
       "id": "6d6aa76f-5f50-4133-908c-77cc5daf0924",
       "name": "IsTasks 1m"
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram9').item.json.result.chat.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.id -1 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2000,
+        -140
+      ],
+      "id": "35224882-9259-4229-8ae3-76742e79bce8",
+      "name": "Postgres8",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram9').item.json.result.chat.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "limit": 2,
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1800,
+        -140
+      ],
+      "id": "40d192f9-5c00-476d-ad7d-dea7fcdb6c82",
+      "name": "Postgres16",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteTable",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram').item.json.result.chat.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "deleteCommand": "delete",
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.id -1 }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        2000,
+        320
+      ],
+      "id": "dee827dc-e800-4c5e-acf8-fe4327ca4674",
+      "name": "Postgres11",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "={{ $('Telegram').item.json.result.chat.username.toLowerCase() }}",
+          "mode": "name"
+        },
+        "limit": 2,
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1800,
+        320
+      ],
+      "id": "3353f0aa-3c3d-4152-b18d-b68202996443",
+      "name": "Postgres17",
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1044,7 +664,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields4",
+            "node": "Postgres16",
             "type": "main",
             "index": 0
           }
@@ -1089,50 +709,6 @@
         [
           {
             "node": "Telegram10",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convert to File1": {
-      "main": [
-        [
-          {
-            "node": "Extract from File1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract from File1": {
-      "main": [
-        [
-          {
-            "node": "Postgres11",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres11": {
-      "main": [
-        [
-          {
-            "node": "Postgres12",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields4": {
-      "main": [
-        [
-          {
-            "node": "Convert to File1",
             "type": "main",
             "index": 0
           }
@@ -1187,7 +763,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields",
+            "node": "Postgres17",
             "type": "main",
             "index": 0
           }
@@ -1232,50 +808,6 @@
         ]
       ]
     },
-    "Convert to File": {
-      "main": [
-        [
-          {
-            "node": "Extract from File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract from File": {
-      "main": [
-        [
-          {
-            "node": "Postgres14",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres14": {
-      "main": [
-        [
-          {
-            "node": "Postgres15",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "Convert to File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "OpenAI Chat Model": {
       "ai_languageModel": [
         [
@@ -1297,14 +829,37 @@
           }
         ]
       ]
+    },
+    "Postgres16": {
+      "main": [
+        [
+          {
+            "node": "Postgres8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres17": {
+      "main": [
+        [
+          {
+            "node": "Postgres11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "c57b23b5-e37b-461f-ad1f-ddbb3d1aec38",
+  "versionId": "e1f7f51f-6265-4546-b3bf-b34eff1e6fb1",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "e4f9b7577a8053fefa17d473b70f3090c0593d82b9948f1bd1d3e844c90ce304"
   },
   "id": "FZAwaQYd7SBxLr9q",
