@@ -1,0 +1,153 @@
+{
+  "active": false,
+  "connections": {
+    "Init Variables": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Call NEAR AI Agent",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Init Variables",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-04-01T18:55:36.217Z",
+  "id": "MvfOpSixVPWPyGT4",
+  "meta": null,
+  "name": "near-ai-example",
+  "nodes": [
+    {
+      "id": "5d9a3dc7-3fa8-4e76-b39c-2ed112b08c32",
+      "name": "When clicking ‘Test workflow’",
+      "parameters": {
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "6a59b448-c486-4271-944b-98c4f40b9fec",
+      "name": "Init Variables",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "72fcffa8-82a5-4710-8b13-0e7c57673081",
+              "name": "ApiKey",
+              "type": "string",
+              "value": "={\"account_id\":\"dapplets.near\",\"signature\":\"4Km6T1csHuxMabWwLrQ+y7NlFfl7hLiK7I+i43ilVQK/zIcAOSsGPUxK9GuDoGZ6VDz50UvSjVX1jv8VID4mBQ==\",\"public_key\":\"ed25519:Hq5DxJ6L7EtrHRFXMPZ7pMkjWm1qApeCxqf2MzXLCUT1\",\"callback_url\":\"http://localhost:60446/capture\",\"nonce\":\"1743532271614\",\"recipient\":\"ai.near\",\"message\":\"Welcome to NEAR AI\",\"on_behalf_of\":null}"
+            },
+            {
+              "id": "1518f8f9-286f-4102-bc90-9bbaf3243421",
+              "name": "AgentId",
+              "type": "string",
+              "value": "=dapplets.near/nearai-fake-detector/latest"
+            },
+            {
+              "id": "022dfcde-970f-46b7-bb93-706ab1762f46",
+              "name": "Message",
+              "type": "string",
+              "value": "={\"context\":{\"namespace\":\"bos.dapplets.testnet/parser/twitter\",\"contextType\":\"post\",\"id\":\"1906368335509373349\",\"parsedContext\":{\"id\":\"1906368335509373349\",\"text\":\"Ben ik tegen lintjes voor vrijwilligers? Nee hoor!\\nMensen die, zonder vergoeding of dubbele agenda, zich inzetten voor bv ouderen, dierenopvang of hospice mag je van mij behangen met lintjes!!!!\\n\\nMaar vrijwilligers op een azc, inburgering of integratie hebben naast een royale\",\"authorFullname\":\"Monique X- Fluencer  \",\"authorUsername\":\"moeva18\",\"authorImg\":\"https://pbs.twimg.com/profile_images/1894500118981718016/tUQYqLt-_normal.jpg\",\"createdAt\":\"2025-03-30T15:30:04.000Z\",\"url\":\"https://x.com/moeva18/status/1906368335509373349\"}}}"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "id": "6957db7e-d5df-44c4-af8c-6bac9eb4eeef",
+      "name": "Call NEAR AI Agent",
+      "parameters": {
+        "options": {
+        },
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "call-near-ai-agent",
+          "mode": "list",
+          "value": "DIXbOKdlOzCkKFne"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ApiKey",
+              "id": "ApiKey",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "AgentId",
+              "id": "AgentId",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Message",
+              "id": "Message",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "AgentId": "={{ $json.AgentId }}",
+            "ApiKey": "={{ $json.ApiKey }}",
+            "Message": "={{ $json.Message }}"
+          }
+        }
+      },
+      "position": [
+        440,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2
+    }
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-04-08T08:34:47.000Z",
+  "versionId": "9a4bc4bc-5b97-41ea-912d-5055501e7f6d"
+}
