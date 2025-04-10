@@ -1,0 +1,117 @@
+{
+  "active": false,
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Telegram",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Edit Fields",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-03-31T13:38:49.627Z",
+  "id": "IUb2T2ToikRAdVTw",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "test-webhooks",
+  "nodes": [
+    {
+      "id": "a0d29ea0-1826-460b-bcea-e254d3fe4e8f",
+      "name": "Webhook",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {
+        },
+        "path": "testwebhook"
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "3f7ab4c1-0149-42b5-add3-2de8246d4aaf"
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@dapplets_receiver_bot"
+        }
+      },
+      "id": "92bd4e24-4516-4532-aedd-a6db1e987e04",
+      "name": "Telegram",
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
+        },
+        "chatId": "249317824",
+        "text": "=namespace: {{ $json.body.post.context.namespace }}\nid: {{ $json.body.post.context.id }}"
+      },
+      "position": [
+        480,
+        0
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "832bcbca-88a7-4b92-ab58-9db9a036b5f0"
+    },
+    {
+      "id": "d3490709-982a-4a07-b7fb-54a0e767303d",
+      "name": "Edit Fields",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2d62294d-c900-4352-9f0c-a02b5c1e0f62",
+              "name": "body.post.context.namespace",
+              "type": "string",
+              "value": "={{ $json.body.post.context.namespace }}"
+            },
+            {
+              "id": "e37d1219-f7af-4807-82cc-a5a07da91fd1",
+              "name": "body.post.context.id",
+              "type": "string",
+              "value": "={{ $json.body.post.context.id }}"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    }
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 1,
+  "updatedAt": "2025-04-08T08:34:35.000Z",
+  "versionId": "3a5f76ac-2eec-492b-83e2-0712c069265e"
+}
