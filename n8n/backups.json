@@ -1,0 +1,508 @@
+{
+  "active": false,
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "GitHub",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Compare Datasets": {
+      "main": [
+        [
+        ],
+        [
+        ],
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "main"
+          }
+        ],
+        [
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract from File1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Compare Datasets",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "index": 1,
+            "node": "Compare Datasets",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "GitHub": {
+      "main": [
+        [
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "ai_outputParser"
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "export-n8n-workflows",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "export-n8n-workflows": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "get-workflow-from-github",
+            "type": "main"
+          },
+          {
+            "index": 0,
+            "node": "Convert to File",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "get-workflow-from-github": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract from File",
+            "type": "main"
+          }
+        ],
+        [
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-04-01T14:16:08.268Z",
+  "id": "2yZRpdSz5shJpng1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "backups",
+  "nodes": [
+    {
+      "id": "36e855da-ffb0-44aa-8b58-ec6ec5c6d294",
+      "name": "When clicking ‘Test workflow’",
+      "parameters": {
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "9adb3096-b171-418b-9395-9b1e42b3e8fe",
+      "name": "Schedule Trigger",
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 4
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        -280
+      ],
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2
+    },
+    {
+      "id": "886c7af7-38e7-4366-9b3b-7cc524b7e708",
+      "name": "Google Drive",
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "cachedResultName": "/ (Root folder)",
+          "mode": "list",
+          "value": "root"
+        },
+        "options": {
+        }
+      },
+      "position": [
+        920,
+        -340
+      ],
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3
+    },
+    {
+      "credentials": {
+        "githubApi": {
+          "id": "baRMPgIVSXufKRQj",
+          "name": "GitHub account"
+        }
+      },
+      "id": "a8c0ad46-ab34-4295-af64-d162de1f4332",
+      "name": "GitHub",
+      "parameters": {
+        "additionalParameters": {
+          "branch": {
+            "branch": "={{ $now.format('yyyyMMdd') }}"
+          }
+        },
+        "binaryData": true,
+        "binaryPropertyName": "={{$('Convert to File')}}",
+        "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
+        "filePath": "=n8n/{{ $('export-n8n-workflows').item.json.name }}.json",
+        "operation": "edit",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "dapplets"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "mutable-web-monorepo"
+        },
+        "resource": "file"
+      },
+      "position": [
+        1880,
+        40
+      ],
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+    },
+    {
+      "credentials": {
+        "githubApi": {
+          "id": "baRMPgIVSXufKRQj",
+          "name": "GitHub account"
+        }
+      },
+      "id": "5c80c8b8-085d-404f-9cc8-869a6b6d2594",
+      "name": "GitHub2",
+      "parameters": {
+        "additionalParameters": {
+          "branch": {
+            "branch": "={{ $now.format('yyyyMMdd') }}"
+          }
+        },
+        "commitMessage": "=edit {{ $json.data.name }}workflow",
+        "fileContent": "={{ $json.data.toJsonString(null,2) }}",
+        "filePath": "=n8n/{{ $json.name }}.json",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "dapplets"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "mutable-web-monorepo"
+        },
+        "resource": "file"
+      },
+      "position": [
+        1520,
+        440
+      ],
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+    },
+    {
+      "credentials": {
+        "githubApi": {
+          "id": "baRMPgIVSXufKRQj",
+          "name": "GitHub account"
+        }
+      },
+      "id": "55612c53-79c0-4393-bdea-ba87005a4f61",
+      "name": "GitHub4",
+      "parameters": {
+        "additionalParameters": {
+          "branch": {
+            "branch": "={{ $now.format('yyyyMMdd') }}"
+          }
+        },
+        "commitMessage": "=edit {{ $json.name }} workflow",
+        "fileContent": "={{ $json.toJsonString() }}",
+        "filePath": "=n8n/{{ $json.name }}.json",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "dapplets"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "mutable-web-monorepo"
+        },
+        "resource": "file"
+      },
+      "position": [
+        1260,
+        -100
+      ],
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+    },
+    {
+      "id": "0d4ebfe1-3819-40fa-acf2-b85a13029480",
+      "name": "Compare Datasets",
+      "parameters": {
+        "mergeByFields": {
+          "values": [
+            {
+              "field1": "data.name",
+              "field2": "data.name"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        880,
+        -20
+      ],
+      "type": "n8n-nodes-base.compareDatasets",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "705690f8-487b-48f7-84fa-2534a47d67be",
+      "name": "Extract from File",
+      "parameters": {
+        "operation": "fromJson",
+        "options": {
+        }
+      },
+      "position": [
+        640,
+        -80
+      ],
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1
+    },
+    {
+      "id": "0c95c0f4-3e21-4af0-ab19-7bc1c0ced450",
+      "name": "Convert to File",
+      "parameters": {
+        "mode": "each",
+        "operation": "toJson",
+        "options": {
+        }
+      },
+      "position": [
+        440,
+        60
+      ],
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "99426b73-6d6d-406b-8d19-06485ac1aadb",
+      "name": "Extract from File1",
+      "parameters": {
+        "operation": "fromJson",
+        "options": {
+        }
+      },
+      "position": [
+        660,
+        60
+      ],
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1
+    },
+    {
+      "id": "41f2e4e9-81a4-4d05-9351-911bc41d0571",
+      "name": "AI Agent",
+      "parameters": {
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a developer who thinks out a commit message for git. You should determine commit type:\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nAnd write a commit message comparing changes in the given files with maximum length is 72 characters. First letter is lowercase. Don't put dot in the end of the message"
+        },
+        "promptType": "define",
+        "text": "=Before file:\n{{ $json.different.data.inputA.toJsonString() }}\n\nAfter file:\n{{ $json.different.data.inputB.toJsonString() }}"
+      },
+      "position": [
+        1380,
+        40
+      ],
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.8
+    },
+    {
+      "id": "409acc0c-d43f-44d3-9fc7-afb8e17f4e6d",
+      "name": "Structured Output Parser",
+      "parameters": {
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"commitType\": {\n\t\t\t\"type\": \"string\",\n          \"enum\": [\"feat\", \"fix\"]\n\t\t},\n\t\t\"commitMessage\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
+        "schemaType": "manual"
+      },
+      "position": [
+        1580,
+        240
+      ],
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2
+    },
+    {
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      },
+      "id": "1bc9acb6-67f6-47a4-994c-988a2a4499ea",
+      "name": "OpenAI Chat Model",
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {
+        }
+      },
+      "position": [
+        1400,
+        240
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2
+    },
+    {
+      "credentials": {
+        "n8nApi": {
+          "id": "29pMkB66wmwgdc6w",
+          "name": "n8n account"
+        }
+      },
+      "id": "7e5c2bdb-50d6-4e37-9d08-7e28383d1b7c",
+      "name": "export-n8n-workflows",
+      "parameters": {
+        "filters": {
+        },
+        "requestOptions": {
+        }
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "githubApi": {
+          "id": "baRMPgIVSXufKRQj",
+          "name": "GitHub account"
+        }
+      },
+      "id": "29f264ff-01a1-4f11-837b-397dc2008c76",
+      "name": "get-workflow-from-github",
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "additionalParameters": {
+          "reference": "={{ $now.format('yyyyMMdd') }}"
+        },
+        "filePath": "=n8n/{{ $json.name }}.json",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "dapplets"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "name",
+          "value": "mutable-web-monorepo"
+        },
+        "resource": "file"
+      },
+      "position": [
+        440,
+        -80
+      ],
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+    }
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-04-10T12:19:18.000Z",
+  "versionId": "c24a4e95-d63e-4ff3-8ba9-c0dc98bd0b79"
+}
