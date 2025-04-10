@@ -1,0 +1,114 @@
+{
+  "active": false,
+  "connections": {
+    "OpenAI2": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Telegram6",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "OpenAI2",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-04-01T18:30:14.671Z",
+  "id": "XAIH0WMAHLr9Vj8X",
+  "meta": null,
+  "name": "voice-tool",
+  "nodes": [
+    {
+      "id": "a4fdba85-ac01-4459-9da8-6e49148638d3",
+      "name": "When Executed by Another Workflow",
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            },
+            {
+              "name": "user-id"
+            }
+          ]
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
+    },
+    {
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      },
+      "id": "fe1264aa-4b23-46f2-b182-5b65ba53214d",
+      "name": "OpenAI2",
+      "parameters": {
+        "input": "={{ $json.query }}",
+        "options": {
+          "response_format": "mp3"
+        },
+        "resource": "audio",
+        "voice": "nova"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@dapplets_receiver_bot"
+        }
+      },
+      "id": "d5f3e1ba-0e0d-4234-bd76-1fd33f11de0e",
+      "name": "Telegram6",
+      "parameters": {
+        "additionalFields": {
+        },
+        "binaryData": true,
+        "chatId": "={{ $('When Executed by Another Workflow').item.json['user-id'] }}",
+        "operation": "sendAudio"
+      },
+      "position": [
+        480,
+        0
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "28329a6b-082a-41e6-9573-abb02fa244e9"
+    }
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-04-01T18:35:24.000Z",
+  "versionId": "2724d3e7-6712-4507-9ff8-8da9e3662975"
+}
