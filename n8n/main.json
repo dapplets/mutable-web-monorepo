@@ -114,14 +114,14 @@
         [
           {
             "index": 0,
-            "node": "Generate Key Pair",
+            "node": "Get Account1",
             "type": "main"
           }
         ],
         [
           {
             "index": 0,
-            "node": "Delete Private Key",
+            "node": "Get Account",
             "type": "main"
           }
         ]
@@ -193,6 +193,17 @@
         ]
       ]
     },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Save Account ID and Private Key",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "Extract from File1": {
       "main": [
         [
@@ -232,6 +243,28 @@
           {
             "index": 0,
             "node": "Send Wallet URL",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Get Account": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Is Logged In?",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Get Account1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Is Logged In?1",
             "type": "main"
           }
         ]
@@ -344,6 +377,42 @@
           {
             "index": 0,
             "node": "Postgres6",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Is Logged In?": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Delete Private Key",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Already Logged Out",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Is Logged In?1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Already Logged In",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Generate Key Pair",
             "type": "main"
           }
         ]
@@ -617,6 +686,17 @@
         ]
       ]
     },
+    "Sign Message": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Edit Fields1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "Sort": {
       "main": [
         [
@@ -739,7 +819,7 @@
         [
           {
             "index": 0,
-            "node": "Save Account ID and Private Key",
+            "node": "Sign Message",
             "type": "main"
           }
         ]
@@ -1736,7 +1816,7 @@
         "query": "CREATE TABLE \"personal-data\".{{ $json.username }} (\n    id SERIAL PRIMARY KEY,\n    data VARCHAR NOT NULL,\n    datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n"
       },
       "position": [
-        1900,
+        2120,
         -1000
       ],
       "type": "n8n-nodes-base.postgres",
@@ -1811,7 +1891,7 @@
         }
       },
       "position": [
-        1700,
+        1920,
         -1000
       ],
       "type": "n8n-nodes-base.postgres",
@@ -1833,7 +1913,7 @@
         "query": "CREATE TABLE \"public\".{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    session_id VARCHAR NOT NULL,\n    message JSONB NOT NULL,\n    timestamp TIMESTAMP DEFAULT NOW()\n);\n"
       },
       "position": [
-        2120,
+        2340,
         -1000
       ],
       "type": "n8n-nodes-base.postgres",
@@ -1876,7 +1956,7 @@
         }
       },
       "position": [
-        2340,
+        2560,
         -1000
       ],
       "type": "n8n-nodes-base.postgres",
@@ -1909,7 +1989,7 @@
         }
       },
       "position": [
-        1260,
+        1480,
         -1000
       ],
       "type": "n8n-nodes-base.postgres",
@@ -1944,7 +2024,7 @@
         }
       },
       "position": [
-        1480,
+        1700,
         -1000
       ],
       "type": "n8n-nodes-base.if",
@@ -1968,7 +2048,7 @@
         "text": "=Xen already knows you."
       },
       "position": [
-        1700,
+        1920,
         -1160
       ],
       "type": "n8n-nodes-base.telegram",
@@ -1993,7 +2073,7 @@
         "text": "=Hello {{ $('Telegram Trigger').item.json.message.from.username }}, \nI am XEN. I am here to be a helpful and pleasant companion in your daily life. You can text me, voice me in any language or send me pictures and I will proactively help you.\n\nThe more I know about you, the more efficiently I can support you.\n\nIf you are not satisfied with my work, please provide feedback using the command \"/f\". It will help the team improve me. \n\nTo start using NEAR.AI Agents connect your NEAR wallet first using \"/setwallet your.near wallet\".\n\n⚠️⚠️ DON'T FORGET: this installation is cloud-based. Use local hardware for better privacy. ⚠️⚠️"
       },
       "position": [
-        2560,
+        2780,
         -1000
       ],
       "type": "n8n-nodes-base.telegram",
@@ -2272,8 +2352,8 @@
         }
       },
       "position": [
-        580,
-        -1000
+        800,
+        -460
       ],
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2
@@ -2366,7 +2446,7 @@
         }
       },
       "position": [
-        1480,
+        1700,
         -840
       ],
       "type": "n8n-nodes-base.postgres",
@@ -2391,7 +2471,7 @@
         "text": "=Thanks for your feedback! We've received it, and we're already looking into how we can use it to improve Xen. We appreciate your help in making Xen better."
       },
       "position": [
-        1700,
+        1920,
         -840
       ],
       "type": "n8n-nodes-base.telegram",
@@ -2424,7 +2504,7 @@
         }
       },
       "position": [
-        1260,
+        1480,
         -680
       ],
       "type": "n8n-nodes-base.postgres",
@@ -2445,7 +2525,7 @@
         }
       },
       "position": [
-        1480,
+        1700,
         -680
       ],
       "type": "n8n-nodes-base.aggregate",
@@ -2469,7 +2549,7 @@
         "text": "={{ $json.result }}"
       },
       "position": [
-        1900,
+        2120,
         -680
       ],
       "type": "n8n-nodes-base.telegram",
@@ -2483,7 +2563,7 @@
         "jsCode": "const dataArray = $json.data;\n\nif (!Array.isArray(dataArray)) {\n  return [{ json: { error: \"Input 'data' is not an array.\" } }]; // Handle non-array input\n}\n\nconst outputString = dataArray.join('\\n\\n');\n\nreturn [{ json: { result: outputString } }];"
       },
       "position": [
-        1700,
+        1920,
         -680
       ],
       "type": "n8n-nodes-base.code",
@@ -2507,7 +2587,7 @@
         "text": "=Hello {{ $('Telegram Trigger').item.json.message.from.username }}, \nI am XEN. I am here to be a helpful and pleasant companion in your daily life. You can text me, voice me in any language or send me pictures and I will proactively help you.\n\nThe more I know about you, the more efficiently I can support you.\n\nIf you are not satisfied with my work, please provide feedback using the command \"/f\". It will help the team improve me. \n\nTo start using NEAR.AI Agents connect your NEAR wallet first using \"/login\" command.\n\n⚠️⚠️ DON'T FORGET: this installation is cloud-based. Use local hardware for better privacy. ⚠️⚠️"
       },
       "position": [
-        1260,
+        1480,
         -520
       ],
       "type": "n8n-nodes-base.telegram",
@@ -2974,7 +3054,7 @@
         }
       },
       "position": [
-        1260,
+        1480,
         -840
       ],
       "type": "n8n-nodes-base.if",
@@ -3083,7 +3163,7 @@
         }
       },
       "position": [
-        2120,
+        2340,
         -300
       ],
       "type": "n8n-nodes-base.postgres",
@@ -3107,7 +3187,7 @@
         "text": "=📰 You're now subscribed to {{ $json.link }} 📰\n\nXen will monitor this source and report news that is important to you. This intelligent feature improves as Xen gets to know you."
       },
       "position": [
-        2320,
+        2540,
         -300
       ],
       "type": "n8n-nodes-base.telegram",
@@ -3142,7 +3222,7 @@
         }
       },
       "position": [
-        1260,
+        1480,
         -300
       ],
       "type": "n8n-nodes-base.if",
@@ -3159,7 +3239,7 @@
         "url": "=https://www.reddit.com/{{ $json.message.text.replace(/^\\/sub\\s*/, '') }}.rss"
       },
       "position": [
-        1480,
+        1700,
         -300
       ],
       "type": "n8n-nodes-base.rssFeedRead",
@@ -3196,7 +3276,7 @@
         }
       },
       "position": [
-        1700,
+        1920,
         -300
       ],
       "type": "n8n-nodes-base.if",
@@ -3220,7 +3300,7 @@
         "text": "=⚠️ Xen could not find the subreddit you are trying to add or it is empty."
       },
       "position": [
-        1900,
+        2120,
         -160
       ],
       "type": "n8n-nodes-base.telegram",
@@ -3245,7 +3325,7 @@
         "text": "=⚠️ Invalid regex ⚠️\n\nYou are unable to create a subscription because an invalid format is specified. Subreddits usually named like \"r/Somename\". The command to add in this case is /sub r/Somename ."
       },
       "position": [
-        1480,
+        1700,
         -160
       ],
       "type": "n8n-nodes-base.telegram",
@@ -3258,8 +3338,8 @@
       "parameters": {
       },
       "position": [
-        1260,
-        40
+        2000,
+        100
       ],
       "type": "@dapplets/n8n-nodes-near-protocol.generateKeyPair",
       "typeVersion": 1
@@ -3283,8 +3363,8 @@
         "resume": "webhook"
       },
       "position": [
-        1680,
-        40
+        2420,
+        100
       ],
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
@@ -3308,8 +3388,8 @@
         "text": "=Please authorize this bot in your NEAR account by following the URL: \n\n[https://app.mynearwallet.com/login/?title=Xen+Bot&public_key={{$json.publicKey.urlEncode()}}&contract_id=social.dapplets.near&success_url={{$execution.resumeUrl.urlEncode()}}/webhook]\n\nYou may easily revoke access at any time."
       },
       "position": [
-        1480,
-        40
+        2220,
+        100
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -3391,13 +3471,24 @@
               "removed": true,
               "required": false,
               "type": "string"
+            },
+            {
+              "canBeUsedToMatch": false,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "nearai_token",
+              "id": "nearai_token",
+              "removed": false,
+              "required": false,
+              "type": "string"
             }
           ],
           "value": {
             "id": "={{ $('Telegram Trigger').item.json.message.from.id }}",
-            "near_account_id": "={{ $json.query.account_id }}",
+            "near_account_id": "={{ $('Sign Message').item.json.query.account_id }}",
+            "nearai_token": "={{ $json.toJsonString() }}",
             "private_key": "={{ $('Generate Key Pair').item.json.privateKey }}",
-            "username": "={{ $('Telegram Trigger').item.json.message.from.username }}"
+            "username": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
           }
         },
         "operation": "upsert",
@@ -3416,8 +3507,8 @@
         }
       },
       "position": [
-        1900,
-        40
+        3080,
+        100
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6
@@ -3439,8 +3530,8 @@
         "text": "=You are logged in with `{{ $('Wait for Signing').item.json.query.account_id }}`"
       },
       "position": [
-        2340,
-        40
+        3520,
+        100
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -3461,8 +3552,8 @@
         "operation": "deleteMessage"
       },
       "position": [
-        2120,
-        40
+        3300,
+        100
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -3542,11 +3633,22 @@
               "id": "network_id",
               "required": false,
               "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "nearai_token",
+              "id": "nearai_token",
+              "removed": false,
+              "required": false,
+              "type": "string"
             }
           ],
           "value": {
             "id": "={{ $('Telegram Trigger').item.json.message.from.id }}",
             "near_account_id": "={{ null }}",
+            "nearai_token": "={{ null }}",
             "network_id": "={{ null }}",
             "private_key": "={{ null }}"
           }
@@ -3567,8 +3669,8 @@
         }
       },
       "position": [
-        1260,
-        260
+        2000,
+        240
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6
@@ -3590,8 +3692,282 @@
         "text": "=You are logged out"
       },
       "position": [
+        2220,
+        240
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "2e7b0d78-b0ad-462f-bac9-509f3556d886"
+    },
+    {
+      "id": "db0e2de4-2ca3-4dbe-9ddf-8aa4fa0b597e",
+      "name": "Sign Message",
+      "parameters": {
+        "message": "Welcome to NEAR AI Hub!",
+        "privateKey": "={{ $('Generate Key Pair').item.json.privateKey }}"
+      },
+      "position": [
+        2640,
+        100
+      ],
+      "type": "@dapplets/n8n-nodes-near-protocol.signMessage",
+      "typeVersion": 1
+    },
+    {
+      "id": "54ef36cd-332a-4b0a-9059-6a5151a70870",
+      "name": "Edit Fields1",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "44766888-4895-43b4-9e15-c4aa934b1c7b",
+              "name": "account_id",
+              "type": "string",
+              "value": "={{ $json.query.account_id }}"
+            },
+            {
+              "id": "b80aa3dd-85b2-4b7a-9f93-1306630d691a",
+              "name": "public_key",
+              "type": "string",
+              "value": "={{ $json.publicKey }}"
+            },
+            {
+              "id": "9ddbac24-29ed-48e9-9168-40b07806e7b3",
+              "name": "signature",
+              "type": "string",
+              "value": "={{ $json.signature }}"
+            },
+            {
+              "id": "b38ea797-9597-4e7b-9390-f283727c8a0f",
+              "name": "callback_url",
+              "type": "string",
+              "value": "https://app.near.ai/sign-in/callback"
+            },
+            {
+              "id": "e1f8cb48-3939-4fd9-b2e7-07939314d48a",
+              "name": "message",
+              "type": "string",
+              "value": "Welcome to NEAR AI Hub!"
+            },
+            {
+              "id": "b77ac086-6f8b-4291-a3b5-441c8848f7d2",
+              "name": "recipient",
+              "type": "string",
+              "value": "ai.near"
+            },
+            {
+              "id": "3bebdee3-f363-447f-8a76-92ff2255353f",
+              "name": "nonce",
+              "type": "string",
+              "value": "=0000000000000000000{{ $now.toMillis() }}"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        2860,
+        100
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "id": "bc83f9d7-675b-4d01-8e52-db35b382d112",
+      "name": "Get Account",
+      "parameters": {
+        "limit": 1,
+        "operation": "select",
+        "options": {
+        },
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "users",
+          "mode": "list",
+          "value": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+            }
+          ]
+        }
+      },
+      "position": [
         1480,
-        260
+        300
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "dbba5011-62dc-46a3-a337-d75c54025542",
+      "name": "Is Logged In?",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "ebfb0c67-cd4d-4e73-b6a4-e1f8b1f64883",
+              "leftValue": "={{ $json.near_account_id }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {
+        }
+      },
+      "position": [
+        1700,
+        300
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "id": "37712828-0b05-45fc-a44f-f5b2e1cb3a95",
+      "name": "Get Account1",
+      "parameters": {
+        "limit": 1,
+        "operation": "select",
+        "options": {
+        },
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "users",
+          "mode": "list",
+          "value": "users"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+            }
+          ]
+        }
+      },
+      "position": [
+        1480,
+        40
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "7a858706-9bfb-4787-80fa-da2d7daad225",
+      "name": "Is Logged In?1",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "ebfb0c67-cd4d-4e73-b6a4-e1f8b1f64883",
+              "leftValue": "={{ $json.near_account_id }}",
+              "operator": {
+                "operation": "notEmpty",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {
+        }
+      },
+      "position": [
+        1700,
+        40
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      },
+      "id": "625ffd7f-1ca4-4cd3-ab2e-e33a33199543",
+      "name": "Already Logged Out",
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
+        },
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=You are not logged in"
+      },
+      "position": [
+        2000,
+        400
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "2e7b0d78-b0ad-462f-bac9-509f3556d886"
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      },
+      "id": "cf0f5a87-35d8-41b8-8472-ebb18109db85",
+      "name": "Already Logged In",
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
+        },
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=You are logged in with `{{ $json.near_account_id }}`"
+      },
+      "position": [
+        2000,
+        -40
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -3607,6 +3983,6 @@
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-10T17:39:17.000Z",
-  "versionId": "4a61cdc3-aff6-4e35-a0cb-e79ea6b0eb72"
+  "updatedAt": "2025-04-11T11:38:09.000Z",
+  "versionId": "d15ae5b9-ee01-4686-b5a9-8213692e0c45"
 }
