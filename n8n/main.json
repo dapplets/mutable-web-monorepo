@@ -369,6 +369,13 @@
             "node": "Postgres11",
             "type": "main"
           }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Telegram17",
+            "type": "main"
+          }
         ]
       ]
     },
@@ -1894,7 +1901,7 @@
       },
       "position": [
         2120,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5
@@ -1969,7 +1976,7 @@
       },
       "position": [
         1920,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5
@@ -1991,7 +1998,7 @@
       },
       "position": [
         2340,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5
@@ -2034,7 +2041,7 @@
       },
       "position": [
         2560,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5
@@ -2067,7 +2074,7 @@
       },
       "position": [
         1480,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6
@@ -2102,7 +2109,7 @@
       },
       "position": [
         1700,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2
@@ -2126,7 +2133,7 @@
       },
       "position": [
         1920,
-        -1160
+        -1280
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -2151,7 +2158,7 @@
       },
       "position": [
         2780,
-        -1000
+        -1120
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -2524,7 +2531,7 @@
       },
       "position": [
         1700,
-        -840
+        -960
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6
@@ -2549,7 +2556,7 @@
       },
       "position": [
         1920,
-        -840
+        -960
       ],
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
@@ -3132,7 +3139,7 @@
       },
       "position": [
         1480,
-        -840
+        -880
       ],
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2
@@ -3399,7 +3406,7 @@
           "appendAttribution": false
         },
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "=⚠️ Invalid regex ⚠️\n\nYou are unable to create a subscription because an invalid format is specified. Subreddits usually named like \"r/Somename\". The command to add in this case is /sub r/Somename ."
+        "text": "=⚠️ Invalid Command ⚠️\n\nYou are unable to create a subscription because an invalid format is specified. Subreddits usually named like \"r/Somename\". The command to add in this case is /sub r/Somename ."
       },
       "position": [
         1700,
@@ -4313,6 +4320,31 @@
       ],
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      },
+      "executeOnce": true,
+      "id": "f952b0e3-dd00-4bba-818b-f82a53c97b2c",
+      "name": "Telegram17",
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
+        },
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=⚠️ Invalid Command ⚠️\n\nOops! It looks like you didn’t include any feedback text.\nTo send feedback, please use the format:\n/f Your feedback goes here"
+      },
+      "position": [
+        1700,
+        -820
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
     }
   ],
   "pinData": {
@@ -4324,6 +4356,6 @@
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-11T13:33:47.000Z",
-  "versionId": "07967116-da41-436a-b9e0-da29774a034f"
+  "updatedAt": "2025-04-11T13:54:56.000Z",
+  "versionId": "7062968b-dcc9-4de0-b2d7-5213e0b96da0"
 }
