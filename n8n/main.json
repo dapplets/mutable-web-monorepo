@@ -2661,7 +2661,7 @@
           "appendAttribution": false
         },
         "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-        "text": "=Hello {{ $('Telegram Trigger').item.json.message.from.username }}, \nI am XEN. I am here to be a helpful and pleasant companion in your daily life. You can text me, voice me in any language or send me pictures and I will proactively help you.\n\nThe more I know about you, the more efficiently I can support you.\n\nIf you are not satisfied with my work, please provide feedback using the command \"/f\". It will help the team improve me. \n\nTo start using NEAR.AI Agents connect your NEAR wallet first using \"/loginout\" command.\n\n⚠️⚠️ DON'T FORGET: this installation is cloud-based. Use local hardware for better privacy. ⚠️⚠️"
+        "text": "=Hello {{ $('Telegram Trigger').item.json.message.from.username }},\nI am XEN. I am here to be a helpful and pleasant companion in your daily life. You can text me, voice me in any language or send me pictures and I will proactively help you.\n\nThe more I know about you, the more efficiently I can support you.\n\nIf you are not satisfied with my work, please provide feedback using the command \"/f\". It will help the team improve me.\n\n/memo shows you all infos I memorized about you.\n\nTo start using NEAR. AI Agents connect your NEAR wallet first using \"/login\" command.\n\n⚠️⚠️ DON'T FORGET: this installation is cloud-based. Use local hardware for better privacy. ⚠️⚠️"
       },
       "position": [
         1480,
@@ -4324,6 +4324,6 @@
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-11T13:21:40.000Z",
-  "versionId": "9bdc87e3-74c9-4de8-b514-eb7ebec535f9"
+  "updatedAt": "2025-04-11T13:33:47.000Z",
+  "versionId": "07967116-da41-436a-b9e0-da29774a034f"
 }
