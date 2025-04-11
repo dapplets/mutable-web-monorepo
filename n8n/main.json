@@ -3849,7 +3849,7 @@
           "value": {
             "link": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('link', `link must be only in form of subreddit name like r/subreddit`, 'string') }}",
             "userid": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-            "username": "="
+            "username": "={{ $('Telegram Trigger').item.json.message.chat.username.toLowerCase() }}"
           }
         }
       },
@@ -3870,6 +3870,6 @@
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-11T11:57:24.000Z",
-  "versionId": "9ef2a417-284c-42e2-9f29-de68b79a64cf"
+  "updatedAt": "2025-04-11T12:00:22.000Z",
+  "versionId": "059a48ff-d41f-4019-a9cf-5b12e2e4d183"
 }
