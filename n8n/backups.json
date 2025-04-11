@@ -23,6 +23,17 @@
         ]
       ]
     },
+    "Branch": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "export-n8n-workflows",
+            "type": "main"
+          }
+        ]
+      ]
+    },
     "Compare Datasets": {
       "main": [
         [
@@ -139,7 +150,7 @@
         [
           {
             "index": 0,
-            "node": "export-n8n-workflows",
+            "node": "Branch",
             "type": "main"
           }
         ]
@@ -225,7 +236,7 @@
       "parameters": {
         "additionalParameters": {
           "branch": {
-            "branch": "={{ $now.format('yyyyMMdd') }}"
+            "branch": "={{ $('Branch').item.json.branch }}"
           }
         },
         "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
@@ -245,7 +256,7 @@
         "resource": "file"
       },
       "position": [
-        2000,
+        2220,
         -120
       ],
       "type": "n8n-nodes-base.github",
@@ -264,7 +275,7 @@
       "parameters": {
         "additionalParameters": {
           "branch": {
-            "branch": "={{ $now.format('yyyyMMdd') }}"
+            "branch": "={{ $('Branch').item.json.branch }}"
           }
         },
         "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
@@ -283,7 +294,7 @@
         "resource": "file"
       },
       "position": [
-        2000,
+        2220,
         280
       ],
       "type": "n8n-nodes-base.github",
@@ -306,7 +317,7 @@
         }
       },
       "position": [
-        1080,
+        1300,
         40
       ],
       "type": "n8n-nodes-base.compareDatasets",
@@ -321,7 +332,7 @@
         }
       },
       "position": [
-        640,
+        860,
         -80
       ],
       "type": "n8n-nodes-base.extractFromFile",
@@ -339,7 +350,7 @@
         "text": "=Before file:\n{{ $json.different.serialized.inputA }}\n\nAfter file:\n{{ $json.different.serialized.inputB }}"
       },
       "position": [
-        1580,
+        1800,
         -120
       ],
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -353,7 +364,7 @@
         "schemaType": "manual"
       },
       "position": [
-        1780,
+        2000,
         80
       ],
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
@@ -378,7 +389,7 @@
         }
       },
       "position": [
-        1600,
+        1820,
         80
       ],
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
@@ -400,7 +411,7 @@
         }
       },
       "position": [
-        220,
+        440,
         0
       ],
       "type": "n8n-nodes-base.n8n",
@@ -418,7 +429,7 @@
       "onError": "continueRegularOutput",
       "parameters": {
         "additionalParameters": {
-          "reference": "={{ $now.format('yyyyMMdd') }}"
+          "reference": "={{ $('Branch').item.json.branch }}"
         },
         "filePath": "=n8n/{{ $json.name }}.json",
         "operation": "get",
@@ -435,7 +446,7 @@
         "resource": "file"
       },
       "position": [
-        440,
+        660,
         -80
       ],
       "type": "n8n-nodes-base.github",
@@ -454,7 +465,7 @@
         "text": "=Given file:\n{{ $json.serialized }}"
       },
       "position": [
-        1580,
+        1800,
         280
       ],
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -479,7 +490,7 @@
         }
       },
       "position": [
-        1600,
+        1820,
         540
       ],
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
@@ -493,7 +504,7 @@
         "schemaType": "manual"
       },
       "position": [
-        1780,
+        2000,
         540
       ],
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
@@ -507,7 +518,7 @@
         "mode": "runOnceForEachItem"
       },
       "position": [
-        620,
+        840,
         140
       ],
       "type": "n8n-nodes-base.code",
@@ -521,11 +532,35 @@
         "mode": "runOnceForEachItem"
       },
       "position": [
-        840,
+        1060,
         -80
       ],
       "type": "n8n-nodes-base.code",
       "typeVersion": 2
+    },
+    {
+      "id": "2c6b313b-4223-4d3a-9225-79eb78a5d930",
+      "name": "Branch",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc6a9c37-4664-4f9b-96ef-5f6cdd3a5107",
+              "name": "branch",
+              "type": "string",
+              "value": "={{ $now.format('yyyyMMdd') }}"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
     }
   ],
   "pinData": {
@@ -537,6 +572,6 @@
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-10T13:11:33.000Z",
-  "versionId": "e0f1f40a-d208-43ab-9944-d76e1163a571"
+  "updatedAt": "2025-04-11T11:51:51.000Z",
+  "versionId": "5fa2109f-6616-453b-836a-e9f7e53659b1"
 }
