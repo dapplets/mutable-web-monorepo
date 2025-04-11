@@ -1,218 +1,67 @@
 {
   "active": false,
   "connections": {
-    "AI Agent1": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Filter2",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Clean text": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Filter1",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Code1": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Edit Fields",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Delivery1": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Loop Over Items",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Merge3",
-            "type": "main"
-          },
-          {
-            "index": 0,
-            "node": "Postgres",
-            "type": "main"
-          },
-          {
-            "index": 0,
-            "node": "AI Agent1",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Filter1": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Code1",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Filter2": {
-      "main": [
-        [
-          {
-            "index": 1,
-            "node": "Merge3",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Loop Over Items": {
-      "main": [
-        [
-        ],
-        [
-          {
-            "index": 0,
-            "node": "Postgres5",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Clean text",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "Merge3": {
-      "main": [
-        [
-          {
-            "index": 0,
-            "node": "Delivery1",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "index": 0,
-            "node": "AI Agent1",
-            "type": "ai_languageModel"
-          }
-        ]
-      ]
-    },
-    "Personal Memories1": {
+    "If4": {
       "main": [
         [
           {
             "index": 0,
             "node": "reddit",
             "type": "main"
-          },
+          }
+        ],
+        [
           {
             "index": 0,
-            "node": "delivered-news",
+            "node": "Telegram16",
             "type": "main"
           }
         ]
       ]
     },
-    "Postgres1": {
+    "If5": {
       "main": [
         [
           {
             "index": 0,
-            "node": "Switch",
+            "node": "Postgres17",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Telegram15",
             "type": "main"
           }
         ]
       ]
     },
-    "Postgres5": {
+    "Postgres17": {
       "main": [
         [
           {
             "index": 0,
-            "node": "Personal Memories1",
+            "node": "Telegram14",
             "type": "main"
           }
         ]
       ]
     },
-    "Reddits 1h": {
+    "Trigger": {
       "main": [
         [
           {
             "index": 0,
-            "node": "Postgres1",
+            "node": "If4",
             "type": "main"
           }
         ]
       ]
     },
-    "Structured Output Parser": {
-      "ai_outputParser": [
-        [
-          {
-            "index": 0,
-            "node": "AI Agent1",
-            "type": "ai_outputParser"
-          }
-        ]
-      ]
-    },
-    "Switch": {
+    "When clicking ‘Test workflow’": {
       "main": [
         [
-          {
-            "index": 0,
-            "node": "Loop Over Items",
-            "type": "main"
-          }
-        ]
-      ]
-    },
-    "delivered-news": {
-      "main": [
-        [
-          {
-            "index": 1,
-            "node": "Merge",
-            "type": "main"
-          }
         ]
       ]
     },
@@ -221,118 +70,41 @@
         [
           {
             "index": 0,
-            "node": "Merge",
+            "node": "If5",
             "type": "main"
           }
         ]
       ]
     }
   },
-  "createdAt": "2025-04-09T10:03:52.969Z",
-  "id": "hUnkG6eBZZZGN97V",
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
+  "createdAt": "2025-04-11T11:51:26.257Z",
+  "id": "y8mzKl2C2xdtAN7y",
+  "meta": null,
   "name": "reddits",
   "nodes": [
     {
-      "id": "989466a2-8b8d-4417-91fc-6255fe08f088",
-      "name": "Code1",
+      "id": "4fe66cd5-ac83-4983-914b-0a4b93c5aa2b",
+      "name": "When clicking ‘Test workflow’",
       "parameters": {
-        "jsCode": "/**\n * Decodes basic HTML entities in a string.\n * Converts numeric entities (e.g. &#32;) and a few named entities.\n *\n * @param {string} text - The string containing HTML entities.\n * @return {string} - The decoded string.\n */\nfunction decodeHTMLEntities(text) {\n  // Replace numeric entities\n  text = text.replace(/&#(\\d+);/g, (match, dec) => {\n    return String.fromCharCode(dec);\n  });\n  // Replace some common named entities\n  const entities = {\n    'amp': '&',\n    'lt': '<',\n    'gt': '>',\n    'quot': '\"',\n    'apos': \"'\",\n    'nbsp': ' '\n  };\n  return text.replace(/&([a-zA-Z]+);/g, (match, entity) => {\n    return entities[entity] || match;\n  });\n}\n\n/**\n * Cleans an HTML string by removing image tags and all HTML tags,\n * then decodes HTML entities to produce plain text.\n *\n * @param {string} html - The input HTML string.\n * @return {string} - The cleaned plain text.\n */\nfunction cleanHTML(html) {\n  // Remove <img> tags (ignoring case)\n  let withoutImages = html.replace(/<img[^>]*>/gi, '');\n  \n  // Remove all remaining HTML tags\n  let textOnly = withoutImages.replace(/<\\/?[^>]+(>|$)/g, '');\n  \n  // Decode HTML entities\n  textOnly = decodeHTMLEntities(textOnly);\n  \n  // Normalize whitespace and trim the text\n  return textOnly.replace(/\\s+/g, ' ').trim();\n}\n\n// Process each input item\nconst newItems = items.map(item => {\n  const inputHTML = item.json.content || \"\";\n  const cleanedText = cleanHTML(inputHTML);\n  const pubDate = item.json.pubDate;\n  return { json: { cleanedText, pubDate } };\n});\n\nreturn newItems;"
       },
       "position": [
-        -720,
-        140
+        0,
+        0
       ],
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
     },
     {
-      "id": "c906c9df-0c6f-41e4-ae85-7471494be747",
-      "name": "Filter1",
-      "parameters": {
-        "conditions": {
-          "combinator": "and",
-          "conditions": [
-            {
-              "id": "49d8f353-95c6-42a1-9b82-86add3524d85",
-              "leftValue": "={{ $('Merge').item.json.pubDate }}",
-              "operator": {
-                "operation": "after",
-                "type": "dateTime"
-              },
-              "rightValue": "={{ $now.minus(1, 'hours') }}"
-            }
-          ],
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          }
-        },
-        "options": {
-        }
-      },
-      "position": [
-        -940,
-        140
-      ],
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.2
-    },
-    {
-      "id": "b34efb36-1146-40fd-aa97-f528acb296c4",
-      "name": "Clean text",
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "6ad05f09-e49f-47bf-ada4-80c02bed60d2",
-              "name": "title",
-              "type": "string",
-              "value": "={{ $json.title }}"
-            },
-            {
-              "id": "83e00cda-ace9-44c5-8c98-577741da62f7",
-              "name": "content",
-              "type": "string",
-              "value": "={{ $json.content }}"
-            },
-            {
-              "id": "475ab3c1-35a8-4bcf-a1d3-ad7127353c9f",
-              "name": "link",
-              "type": "string",
-              "value": "={{ $json.link }}"
-            },
-            {
-              "id": "b587b89e-c84b-475e-b33d-22c61d2655c5",
-              "name": "id",
-              "type": "string",
-              "value": "={{ $json.id }}"
-            }
-          ]
-        },
-        "options": {
-        }
-      },
-      "position": [
-        -1160,
-        140
-      ],
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4
-    },
-    {
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "8ZOLCkWqvhw8gGkU",
           "name": "Postgres account"
         }
       },
-      "id": "dd3cfb06-9138-4d84-9139-fe95b6ab72b2",
-      "name": "Postgres",
+      "executeOnce": false,
+      "id": "bfc6f5bf-f83a-49f6-bba1-427bef103dd2",
+      "name": "Postgres17",
       "parameters": {
         "columns": {
           "attemptToConvertTypes": false,
@@ -356,8 +128,18 @@
               "canBeUsedToMatch": true,
               "defaultMatch": false,
               "display": true,
+              "displayName": "username",
+              "id": "username",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
               "displayName": "userid",
               "id": "userid",
+              "removed": false,
               "required": false,
               "type": "string"
             },
@@ -365,8 +147,9 @@
               "canBeUsedToMatch": true,
               "defaultMatch": false,
               "display": true,
-              "displayName": "pubdate",
-              "id": "pubdate",
+              "displayName": "source",
+              "id": "source",
+              "removed": false,
               "required": false,
               "type": "string"
             },
@@ -374,8 +157,9 @@
               "canBeUsedToMatch": true,
               "defaultMatch": false,
               "display": true,
-              "displayName": "delivered",
-              "id": "delivered",
+              "displayName": "link",
+              "id": "link",
+              "removed": false,
               "required": false,
               "type": "string"
             },
@@ -383,138 +167,82 @@
               "canBeUsedToMatch": true,
               "defaultMatch": false,
               "display": true,
-              "displayName": "identifier",
-              "id": "identifier",
+              "displayName": "is-active",
+              "id": "is-active",
+              "removed": false,
               "required": false,
-              "type": "string"
+              "type": "boolean"
             }
           ],
           "value": {
-            "delivered": "={{ $now.toISO() }}",
-            "identifier": "={{ $json.data.id }}",
-            "pubdate": "={{ $('Merge').item.json.pubDate }}",
-            "userid": "={{ $('Loop Over Items').item.json.userid }}"
+            "link": "={{ $('Trigger').item.json.link }}",
+            "source": "reddit",
+            "userid": "={{ $('Trigger').item.json.userid }}",
+            "username": "={{ $('Trigger').item.json.username.toLowerCase() }}"
           }
         },
         "options": {
         },
         "schema": {
           "__rl": true,
-          "cachedResultName": "delivered",
+          "cachedResultName": "jobs",
           "mode": "list",
-          "value": "delivered"
+          "value": "jobs"
         },
         "table": {
           "__rl": true,
-          "cachedResultName": "reddits",
+          "cachedResultName": "subscriptions",
           "mode": "list",
-          "value": "reddits"
+          "value": "subscriptions"
         }
       },
       "position": [
-        -500,
-        400
+        1080,
+        200
       ],
       "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6
+      "typeVersion": 2.5
     },
     {
-      "alwaysOutputData": true,
       "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
         }
       },
-      "executeOnce": false,
-      "id": "f35739d3-7020-463e-ae3f-028d16cdc60c",
-      "name": "delivered-news",
-      "onError": "continueRegularOutput",
+      "executeOnce": true,
+      "id": "824e173c-3aa8-4e5c-91b8-18571cbe5cce",
+      "name": "Telegram14",
       "parameters": {
-        "operation": "select",
-        "options": {
+        "additionalFields": {
+          "appendAttribution": false
         },
-        "returnAll": true,
-        "schema": {
-          "__rl": true,
-          "cachedResultName": "delivered",
-          "mode": "list",
-          "value": "delivered"
-        },
-        "table": {
-          "__rl": true,
-          "cachedResultName": "reddits",
-          "mode": "list",
-          "value": "reddits"
-        },
-        "where": {
-          "values": [
-            {
-              "column": "userid",
-              "value": "={{ $('Loop Over Items').item.json.userid }}"
-            }
-          ]
-        }
+        "chatId": "={{ $('Trigger').item.json.userid }}",
+        "text": "=📰 You're now subscribed to {{ $json.link }} 📰\n\nXen will monitor this source and report news that is important to you. This intelligent feature improves as Xen gets to know you."
       },
       "position": [
-        -1760,
-        40
+        1280,
+        200
       ],
-      "retryOnFail": false,
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
     },
     {
-      "id": "0005c1a6-0e13-4370-96ed-f8f9dacb9e2c",
-      "maxTries": 5,
-      "name": "AI Agent1",
-      "parameters": {
-        "hasOutputParser": true,
-        "options": {
-          "systemMessage": "=You're always getting news with id. Your only task is to understand whether this news will be useful and interesting for the user or should be ignored. You must answer true or false and pass id without changes.\n\nYou make your decision only based on user knowledge and common sense - the user doesn't want to receive too many meaningless notifications.\n\n## Your knowledge of the user:\n{{ $('Personal Memories1').item.json.appended_data }}"
-        },
-        "promptType": "define",
-        "text": "=id: {{ $json.data.id }}\n{{ $json.data.cleanedText }}"
-      },
-      "position": [
-        -260,
-        140
-      ],
-      "retryOnFail": true,
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.8,
-      "waitBetweenTries": 3000
-    },
-    {
-      "id": "486a9637-41ed-4556-8e7a-957402743066",
-      "name": "Structured Output Parser",
-      "parameters": {
-        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"string\",\n      \"description\": \"unchanged id\"\n    },\n    \"relevant\": {\n      \"type\": \"boolean\",\n      \"description\": \"is new relevant?\"\n    }\n  },\n  \"required\": [\n    \"id\",\n    \"relevant\"\n  ]\n}",
-        "schemaType": "manual"
-      },
-      "position": [
-        -100,
-        360
-      ],
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2
-    },
-    {
-      "id": "fce02d59-8233-4d62-8c53-dc290ac69380",
-      "name": "Filter2",
+      "id": "0a763b4c-9672-478e-992e-174e222d5352",
+      "name": "If4",
       "parameters": {
         "conditions": {
           "combinator": "and",
           "conditions": [
             {
-              "id": "b3b4aa19-77ab-4ab4-a996-c2c599bc1d87",
-              "leftValue": "={{ $json.output.relevant }}",
+              "id": "0913f05e-3aeb-443f-b0ff-2c0bb56da71d",
+              "leftValue": "={{ $json.message.text.replace(/^\\/sub\\s*/, '') }}",
               "operator": {
-                "operation": "true",
-                "singleValue": true,
-                "type": "boolean"
+                "operation": "regex",
+                "type": "string"
               },
-              "rightValue": "true"
+              "rightValue": "=^r\\/[a-zA-Z0-9_]+$"
             }
           ],
           "options": {
@@ -528,391 +256,140 @@
         }
       },
       "position": [
-        160,
-        140
+        220,
+        200
       ],
-      "type": "n8n-nodes-base.filter",
+      "type": "n8n-nodes-base.if",
       "typeVersion": 2.2
     },
     {
-      "id": "390b414f-46b3-4e66-8fc3-1937e9076743",
-      "name": "Merge3",
-      "parameters": {
-        "advanced": true,
-        "mergeByFields": {
-          "values": [
-            {
-              "field1": "data.id",
-              "field2": "output.id"
-            }
-          ]
-        },
-        "mode": "combine",
-        "options": {
-        },
-        "outputDataFrom": "input1"
-      },
-      "position": [
-        160,
-        -40
-      ],
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.1
-    },
-    {
-      "id": "4beda8ab-037c-4a23-85df-05334f9c5790",
-      "name": "Edit Fields",
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "b136b0d6-77a7-4f32-97ff-27e8b29b9353",
-              "name": "data.cleanedText",
-              "type": "string",
-              "value": "={{ $('Clean text').item.json.title }}\n{{ $json.cleanedText }}"
-            },
-            {
-              "id": "543b0d42-dc09-4c5f-923c-70ad4dc68cc3",
-              "name": "data.link",
-              "type": "string",
-              "value": "={{ $('Clean text').item.json.link }}"
-            },
-            {
-              "id": "afa5e637-a053-4f80-96c3-6af05ab8d466",
-              "name": "data.id",
-              "type": "string",
-              "value": "={{ $('Clean text').item.json.id }}"
-            }
-          ]
-        },
-        "options": {
-        }
-      },
-      "position": [
-        -500,
-        140
-      ],
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4
-    },
-    {
+      "alwaysOutputData": true,
       "executeOnce": false,
-      "id": "ed61f577-ff6e-440d-8614-1a97201ce3ca",
-      "maxTries": 5,
-      "name": "Delivery1",
-      "parameters": {
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "userid",
-              "value": "={{ $('Loop Over Items').item.json.userid }}"
-            },
-            {
-              "name": "username",
-              "value": "={{ $('Loop Over Items').item.json.username }}"
-            },
-            {
-              "name": "user-input",
-              "value": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\n{{ $json.data.cleanedText }}\n{{ $json.data.link }}"
-            },
-            {
-              "name": "system-prompt",
-              "value": "=Your sole purpose is to read news You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. Always include link without changes.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in Russian unless explicitly stated otherwise.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Personal Memories1').item.json.appended_data }}"
-            }
-          ]
-        },
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "user-agent",
-              "value": "application/json"
-            }
-          ]
-        },
-        "method": "POST",
-        "options": {
-        },
-        "sendBody": true,
-        "sendHeaders": true,
-        "url": "https://n8n.aigency.test.dapplets.org/webhook/delivery"
-      },
-      "position": [
-        400,
-        140
-      ],
-      "retryOnFail": false,
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "waitBetweenTries": 3000
-    },
-    {
-      "alwaysOutputData": true,
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      },
-      "executeOnce": true,
-      "id": "cba18df8-4f75-46b1-8090-ecda39653c54",
-      "name": "Postgres5",
-      "onError": "continueRegularOutput",
-      "parameters": {
-        "operation": "select",
-        "options": {
-        },
-        "returnAll": true,
-        "schema": {
-          "__rl": true,
-          "cachedResultName": "personal-data",
-          "mode": "list",
-          "value": "personal-data"
-        },
-        "sort": {
-          "values": [
-            {
-              "column": "id",
-              "direction": "DESC"
-            }
-          ]
-        },
-        "table": {
-          "__rl": true,
-          "mode": "name",
-          "value": "={{ $json.username }}"
-        }
-      },
-      "position": [
-        -2320,
-        140
-      ],
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.5
-    },
-    {
-      "alwaysOutputData": true,
-      "id": "01caac13-9c60-4bb5-bdd0-8e6cf2fdc090",
-      "name": "Personal Memories1",
-      "onError": "continueRegularOutput",
-      "parameters": {
-        "fieldsToSummarize": {
-          "values": [
-            {
-              "aggregation": "append",
-              "field": "data"
-            }
-          ]
-        },
-        "options": {
-        }
-      },
-      "position": [
-        -2100,
-        140
-      ],
-      "type": "n8n-nodes-base.summarize",
-      "typeVersion": 1.1
-    },
-    {
-      "id": "2cd5fb99-bbf6-46da-ab28-05e4ad16a52d",
-      "name": "Reddits 1h",
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "hours",
-              "triggerAtMinute": 2
-            }
-          ]
-        }
-      },
-      "position": [
-        -3260,
-        140
-      ],
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2
-    },
-    {
-      "id": "278930cb-3c99-4535-b880-80b451093353",
-      "name": "Merge",
-      "parameters": {
-        "advanced": true,
-        "joinMode": "keepNonMatches",
-        "mergeByFields": {
-          "values": [
-            {
-              "field1": "id",
-              "field2": "identifier"
-            }
-          ]
-        },
-        "mode": "combine",
-        "options": {
-        },
-        "outputDataFrom": "input1"
-      },
-      "position": [
-        -1380,
-        140
-      ],
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.1
-    },
-    {
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
-        }
-      },
-      "id": "07829e66-afde-411d-b605-3bf21bc4cd7b",
-      "name": "Switch",
-      "parameters": {
-        "limit": 2,
-        "operation": "select",
-        "options": {
-        },
-        "schema": {
-          "__rl": true,
-          "cachedResultName": "jobs",
-          "mode": "list",
-          "value": "jobs"
-        },
-        "sort": {
-          "values": [
-            {
-              "column": "id",
-              "direction": "DESC"
-            }
-          ]
-        },
-        "table": {
-          "__rl": true,
-          "cachedResultName": "subscriptions",
-          "mode": "list",
-          "value": "subscriptions"
-        },
-        "where": {
-          "values": [
-            {
-              "column": "is-active",
-              "value": "true"
-            },
-            {
-              "column": "source",
-              "value": "reddit"
-            },
-            {
-              "column": "userid",
-              "value": "={{ $('Postgres1').item.json.id.toString() }}"
-            }
-          ]
-        }
-      },
-      "position": [
-        -2840,
-        140
-      ],
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6
-    },
-    {
-      "credentials": {
-        "openAiApi": {
-          "id": "LFGWC331SnBhJfQS",
-          "name": "OpenAi account"
-        }
-      },
-      "id": "d4c2c938-611c-4ef8-9f03-583e3f18a0a2",
-      "name": "OpenAI Chat Model",
-      "parameters": {
-        "model": {
-          "__rl": true,
-          "cachedResultName": "gpt-4o",
-          "mode": "list",
-          "value": "gpt-4o"
-        },
-        "options": {
-        }
-      },
-      "position": [
-        -260,
-        360
-      ],
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.2
-    },
-    {
-      "executeOnce": true,
-      "id": "679626a9-ff8f-4f1d-bbe7-dbd3e2087b7b",
+      "id": "1c21ba4e-95a5-4cf9-bf15-96dd380995dc",
       "name": "reddit",
       "parameters": {
         "options": {
         },
-        "url": "=https://www.reddit.com/{{ $('Loop Over Items').item.json.link }}.rss"
+        "url": "=https://www.reddit.com/{{ $json.message.text.replace(/^\\/sub\\s*/, '') }}.rss"
       },
       "position": [
-        -1760,
-        220
+        440,
+        200
       ],
       "type": "n8n-nodes-base.rssFeedRead",
       "typeVersion": 1.1
     },
     {
-      "credentials": {
-        "postgres": {
-          "id": "8ZOLCkWqvhw8gGkU",
-          "name": "Postgres account"
+      "alwaysOutputData": false,
+      "executeOnce": true,
+      "id": "69ecbfbc-85fc-489c-99f3-478e530a1129",
+      "name": "If5",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "bd21d202-faeb-4bb7-8e41-511d7f5e7bfe",
+              "leftValue": "={{ $json.title }}",
+              "operator": {
+                "operation": "exists",
+                "singleValue": true,
+                "type": "string"
+              },
+              "rightValue": ""
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {
         }
       },
-      "id": "c796b2b2-07d9-49d2-995e-076ee6cb1739",
-      "name": "Postgres1",
+      "position": [
+        660,
+        200
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      },
+      "executeOnce": true,
+      "id": "66f2ada8-8bd5-4c9d-9633-7530e820d288",
+      "name": "Telegram15",
       "parameters": {
-        "operation": "select",
-        "options": {
+        "additionalFields": {
+          "appendAttribution": false
         },
-        "returnAll": true,
-        "schema": {
-          "__rl": true,
-          "mode": "list",
-          "value": "public"
+        "chatId": "={{ $('Trigger').item.json.userid }}",
+        "text": "=⚠️ Xen could not find the subreddit you are trying to add or it is empty."
+      },
+      "position": [
+        860,
+        380
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+    },
+    {
+      "credentials": {
+        "telegramApi": {
+          "id": "0Z6YSeWPzl1d2jdc",
+          "name": "@yourxenbot"
+        }
+      },
+      "executeOnce": true,
+      "id": "497f8a5a-ef73-409b-a3ca-bc9019b21876",
+      "name": "Telegram16",
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false
         },
-        "table": {
-          "__rl": true,
-          "cachedResultName": "users",
-          "mode": "list",
-          "value": "users"
-        },
-        "where": {
+        "chatId": "={{ $('Trigger').item.json.userid }}",
+        "text": "=⚠️ Invalid regex ⚠️\n\nYou are unable to create a subscription because an invalid format is specified. Subreddits usually named like \"r/Somename\". The command to add in this case is /sub r/Somename ."
+      },
+      "position": [
+        440,
+        380
+      ],
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+    },
+    {
+      "id": "71ddf554-361f-402b-b160-b4c4d18805ea",
+      "name": "Trigger",
+      "parameters": {
+        "workflowInputs": {
           "values": [
             {
-              "column": "status",
-              "value": "true"
+              "name": "username"
+            },
+            {
+              "name": "userid"
+            },
+            {
+              "name": "link"
             }
           ]
         }
       },
       "position": [
-        -3060,
-        140
+        0,
+        200
       ],
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6
-    },
-    {
-      "id": "901ff661-cce2-4b42-9b0c-b81d7ba72b6b",
-      "name": "Loop Over Items",
-      "parameters": {
-        "options": {
-        }
-      },
-      "position": [
-        -2600,
-        140
-      ],
-      "type": "n8n-nodes-base.splitInBatches",
-      "typeVersion": 3
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1
     }
   ],
   "pinData": {
@@ -924,6 +401,6 @@
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-10T10:33:24.000Z",
-  "versionId": "11cb3d29-7ca3-4fcb-840c-25a2db79454f"
+  "updatedAt": "2025-04-11T11:51:47.000Z",
+  "versionId": "76d8681f-5afe-4160-8b40-b675cd696d93"
 }
