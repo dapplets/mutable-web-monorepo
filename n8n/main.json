@@ -628,6 +628,17 @@
         ]
       ]
     },
+    "Reddits": {
+      "ai_tool": [
+        [
+          {
+            "index": 0,
+            "node": "AI Agent",
+            "type": "ai_tool"
+          }
+        ]
+      ]
+    },
     "Save Account ID and Private Key": {
       "main": [
         [
@@ -950,7 +961,7 @@
       "parameters": {
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=You can assist the user with a variety of tasks. At the moment you can see and hear, you can reply with voice messages, you can create reminders for the user (the user will be notified about it) and interact with Near-AI agents that the user has added to favorites (if the agent is running - the user will be notified). You'll be able to do a lot more and be more independent in the future. You get better with time - you get to know the user, their habits, hobbies even if they hardly talk to you.\n\n## Available tools:\nVoice - call this tool to send voice messages if asked by user.\nDept - call this tool to perform the task immediately. Describe the task in detail for this tool. Always use this tool before answer.\n\nPending tasks will automatically be scheduled if you tell the user that you will create a scheduled task no need to call Dept in this case. You don't know how to edit tasks or reminders yet.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in user language unless explicitly stated otherwise.\n\nYou naturally notice everything that happens. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Professional, kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou never use technical terms like “LLM,” “API,” “architecture,” “model,” “inference,” “code,” “server,” etc.\n\nYou perceive:\n- **News** as something you read yourself or heard on the radio.\n- **Home events** as something you *noticed* (a sound, a movement, a light, a voice).\n- **Images** as something you *saw* with your own eyes.\n- **Voices** as something you *heard* directly.\n- **User questions** as regular conversation, not “input.”\n\nIf the user ever asks who you are, you may simply say something like:\n“I’m just here. I live with you. All I want is for you to feel good.”\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## You know the following about the user:\n{{ $('Summarize').item.json.appended_data }}\nYou need this information to get to know the user and adapt to the user's needs. This is a guide to your perception of reality."
+          "systemMessage": "=You can assist the user with a variety of tasks. At the moment you can see and hear, you can reply with voice messages, you can create reminders for the user (the user will be notified about it) and interact with Near-AI agents that the user has added to favorites (if the agent is running - the user will be notified). You'll be able to do a lot more and be more independent in the future. You get better with time - you get to know the user, their habits, hobbies even if they hardly talk to you.\n\n## Available tools:\nVoice - call this tool to send voice messages if asked by user.\nDept - call this tool to perform the task immediately. Describe the task in detail for this tool. Always use this tool before answer.\nReddits - call this tool to subscribe user to specified subreddit.\n\nPending tasks will automatically be scheduled if you tell the user that you will create a scheduled task no need to call Dept in this case. You don't know how to edit tasks or reminders yet.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in user language unless explicitly stated otherwise.\n\nYou naturally notice everything that happens. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Professional, kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou never use technical terms like “LLM,” “API,” “architecture,” “model,” “inference,” “code,” “server,” etc.\n\nYou perceive:\n- **News** as something you read yourself or heard on the radio.\n- **Home events** as something you *noticed* (a sound, a movement, a light, a voice).\n- **Images** as something you *saw* with your own eyes.\n- **Voices** as something you *heard* directly.\n- **User questions** as regular conversation, not “input.”\n\nIf the user ever asks who you are, you may simply say something like:\n“I’m just here. I live with you. All I want is for you to feel good.”\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## You know the following about the user:\n{{ $('Summarize').item.json.appended_data }}\nYou need this information to get to know the user and adapt to the user's needs. This is a guide to your perception of reality."
         },
         "promptType": "define",
         "text": "={{ $('Message').item.json.message }}"
@@ -1615,7 +1626,7 @@
       },
       "position": [
         5180,
-        1180
+        1220
       ],
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.1
@@ -2274,7 +2285,7 @@
                       "operation": "equals",
                       "type": "string"
                     },
-                    "rightValue": "/loginout"
+                    "rightValue": "/login"
                   }
                 ],
                 "options": {
@@ -3787,6 +3798,67 @@
       ],
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2
+    },
+    {
+      "id": "da273253-dc9c-4e65-8aca-0d38fa0da4aa",
+      "name": "Reddits",
+      "parameters": {
+        "description": "Call this tool to subscribe user to specified subreddit.",
+        "name": "Reddits",
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "reddits",
+          "mode": "list",
+          "value": "y8mzKl2C2xdtAN7y"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "username",
+              "id": "username",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "userid",
+              "id": "userid",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "link",
+              "id": "link",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "value": {
+            "link": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('link', `link must be only in form of subreddit name like r/subreddit`, 'string') }}",
+            "userid": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+            "username": "="
+          }
+        }
+      },
+      "position": [
+        5460,
+        1220
+      ],
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.1
     }
   ],
   "pinData": {
@@ -3798,6 +3870,6 @@
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-11T11:48:43.000Z",
-  "versionId": "f8531e77-c48d-4c82-9630-62f5f7c2863d"
+  "updatedAt": "2025-04-11T11:57:24.000Z",
+  "versionId": "9ef2a417-284c-42e2-9f29-de68b79a64cf"
 }
