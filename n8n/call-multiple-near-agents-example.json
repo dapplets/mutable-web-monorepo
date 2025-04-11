@@ -1,0 +1,153 @@
+{
+  "active": false,
+  "connections": {
+    "Set Variables": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Execute Workflow",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Set Variables",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-04-02T16:27:31.647Z",
+  "id": "PsTYbuQm6BOWRjDP",
+  "meta": null,
+  "name": "call-multiple-near-agents-example",
+  "nodes": [
+    {
+      "id": "16ad3672-2c68-4587-b68b-95a2060ba62f",
+      "name": "When clicking ‘Test workflow’",
+      "parameters": {
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "74f5c96e-c0b1-4fd7-9a7e-e7644a0d5676",
+      "name": "Execute Workflow",
+      "parameters": {
+        "options": {
+        },
+        "workflowId": {
+          "__rl": true,
+          "cachedResultName": "call-multiple-near-agents",
+          "mode": "list",
+          "value": "XeW4thzhqbyqX7zq"
+        },
+        "workflowInputs": {
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true,
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+          ],
+          "schema": [
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "ApiKey",
+              "id": "ApiKey",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "Query",
+              "id": "Query",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "canBeUsedToMatch": true,
+              "defaultMatch": false,
+              "display": true,
+              "displayName": "AgentIds",
+              "id": "AgentIds",
+              "required": false,
+              "type": "array"
+            }
+          ],
+          "value": {
+            "AgentIds": "={{ $json.AgentIds }}",
+            "ApiKey": "={{ $json.ApiKey }}",
+            "Query": "={{ $json.Query }}"
+          }
+        }
+      },
+      "position": [
+        440,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2
+    },
+    {
+      "id": "03464776-97ca-4b85-afc1-a0042bd82862",
+      "name": "Set Variables",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9407d47e-2671-41bd-925d-58b044c6ca3b",
+              "name": "ApiKey",
+              "type": "string",
+              "value": "{\"account_id\":\"dapplets.near\",\"signature\":\"4Km6T1csHuxMabWwLrQ+y7NlFfl7hLiK7I+i43ilVQK/zIcAOSsGPUxK9GuDoGZ6VDz50UvSjVX1jv8VID4mBQ==\",\"public_key\":\"ed25519:Hq5DxJ6L7EtrHRFXMPZ7pMkjWm1qApeCxqf2MzXLCUT1\",\"callback_url\":\"http://localhost:60446/capture\",\"nonce\":\"1743532271614\",\"recipient\":\"ai.near\",\"message\":\"Welcome to NEAR AI\",\"on_behalf_of\":null}"
+            },
+            {
+              "id": "111cf919-b682-445c-9f46-521a482bcb5e",
+              "name": "Query",
+              "type": "string",
+              "value": "Improve tweet: Stop fuck around with Web2.0 tools - it is over. Explore and adopt new paradigm - build for self-sovereign users to make it win-win-win."
+            },
+            {
+              "id": "53da09e9-c2d6-421c-a99c-b6c4b70ee32d",
+              "name": "AgentIds",
+              "type": "array",
+              "value": "[       \"learn-agent.learnclub.near/learn_near_comments_agent/latest\",       \"learn-agent.learnclub.near/learn_near_agent\",       \"learn-agent.learnclub.near/learn_near_ai_comments_agent\"     ]"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        220,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    }
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-04-08T08:34:56.000Z",
+  "versionId": "731394a4-6dc9-4fc1-a06b-01ca69c93551"
+}

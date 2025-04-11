@@ -1,0 +1,766 @@
+{
+  "active": false,
+  "connections": {
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Postgres1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Extract from File",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "index": 0,
+            "node": "Qdrant Vector Store1",
+            "type": "ai_document"
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "If1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "index": 0,
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding"
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Qdrant Vector Store1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "index": 0,
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel"
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Summarize1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "set-preview",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Postgres2": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Edit Fields2",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Postgres3",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "index": 0,
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter"
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Basic LLM Chain",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Summarize1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Convert to File",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Respond to Webhook",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "n8n2",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "n8n": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "n8n1",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "set-preview": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Summarize",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-04-02T09:00:40.009Z",
+  "id": "ukQO3Y8gZ8HQaZQc",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "testing-only",
+  "nodes": [
+    {
+      "credentials": {
+        "openAiApi": {
+          "id": "LFGWC331SnBhJfQS",
+          "name": "OpenAi account"
+        }
+      },
+      "id": "eccab02c-e9bb-442c-9e6f-71b2c4a421b2",
+      "name": "Embeddings OpenAI1",
+      "parameters": {
+        "model": "text-embedding-ada-002",
+        "options": {
+        }
+      },
+      "position": [
+        1620,
+        200
+      ],
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "id": "ee3cf820-0120-471e-b7f3-30517e1224bd",
+      "name": "Postgres3",
+      "parameters": {
+        "operation": "executeQuery",
+        "options": {
+        },
+        "query": "DELETE FROM PUBLIC.{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}\nWHERE id NOT IN (\n    SELECT id FROM PUBLIC.{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}\n    ORDER BY timestamp DESC\n    LIMIT 25\n);"
+      },
+      "position": [
+        2040,
+        0
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5
+    },
+    {
+      "id": "d00a6a5a-b1e4-4d55-aca4-a423bb869e7b",
+      "name": "Extract from File",
+      "parameters": {
+        "operation": "fromJson",
+        "options": {
+        }
+      },
+      "position": [
+        1400,
+        0
+      ],
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1
+    },
+    {
+      "id": "1c8e99cb-4ef0-40ef-bf28-f09ec8f02d1e",
+      "name": "Convert to File",
+      "parameters": {
+        "operation": "toJson",
+        "options": {
+        }
+      },
+      "position": [
+        1180,
+        0
+      ],
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "825920af-17a9-441d-8ab1-c18fd355f5b0",
+      "name": "Summarize1",
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "message"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        940,
+        0
+      ],
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "0cf9bcc3-ad16-4412-9507-cd9503ccb0cc",
+      "name": "Recursive Character Text Splitter",
+      "parameters": {
+        "chunkOverlap": 20,
+        "chunkSize": 512,
+        "options": {
+        }
+      },
+      "position": [
+        1800,
+        360
+      ],
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1
+    },
+    {
+      "id": "8de43247-cf19-4378-9340-bb0847aaff2d",
+      "name": "Default Data Loader",
+      "parameters": {
+        "options": {
+        }
+      },
+      "position": [
+        1780,
+        200
+      ],
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "qdrantApi": {
+          "id": "mhDZkXVxzTv2hqkh",
+          "name": "QdrantApi account"
+        }
+      },
+      "id": "853359d3-7cbb-4183-a387-90977f9e8538",
+      "name": "Qdrant Vector Store1",
+      "parameters": {
+        "mode": "insert",
+        "options": {
+        },
+        "qdrantCollection": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
+        }
+      },
+      "position": [
+        1640,
+        0
+      ],
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1
+    },
+    {
+      "id": "7f71d845-af5a-452f-a419-0caa02ea2952",
+      "name": "If1",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "10dba403-a582-429c-9772-0c17d4f0415c",
+              "leftValue": "={{ $json.index }}",
+              "operator": {
+                "operation": "gte",
+                "type": "number"
+              },
+              "rightValue": 25
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {
+        }
+      },
+      "position": [
+        660,
+        0
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2
+    },
+    {
+      "id": "b313ce50-b4d7-4bac-824a-3d53e7a938c5",
+      "name": "Edit Fields2",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab750417-499f-4cc6-b889-acb4f802e7d1",
+              "name": "index",
+              "type": "number",
+              "value": "={{ Number($itemIndex) + 1 }}"
+            },
+            {
+              "id": "a68de2cf-4377-493d-80e1-493a4c335d6d",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.message.type === \"human\" ? \"user\" : ($json.message.type === \"ai\" ? \"Xen\" : $json.message.type) }}: {{ $json.message.content }};"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        440,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "id": "ed4f09ac-f337-4424-8c28-423e08650a0a",
+      "name": "Postgres2",
+      "parameters": {
+        "operation": "select",
+        "options": {
+        },
+        "returnAll": true,
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "id",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "table": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
+        }
+      },
+      "position": [
+        200,
+        0
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "id": "7179e784-6735-4736-a27f-29b42a542519",
+      "name": "Postgres",
+      "parameters": {
+        "operation": "select",
+        "options": {
+        },
+        "schema": {
+          "__rl": true,
+          "cachedResultName": "near-ai",
+          "mode": "list",
+          "value": "near-ai"
+        },
+        "sort": {
+          "values": [
+            {
+              "column": "stars",
+              "direction": "DESC"
+            }
+          ]
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "available",
+          "mode": "list",
+          "value": "available"
+        }
+      },
+      "position": [
+        320,
+        1100
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "credentials": {
+        "googlePalmApi": {
+          "id": "p4zymgdrfCv2VdG1",
+          "name": "Direct Gemini"
+        }
+      },
+      "id": "92e7b17d-ec25-4a8a-b39a-f7dafcb6ec0d",
+      "name": "Google Gemini Chat Model",
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {
+        }
+      },
+      "position": [
+        960,
+        1300
+      ],
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1
+    },
+    {
+      "id": "6459e015-0faf-458d-93f7-273b1f8f711a",
+      "name": "Basic LLM Chain",
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single agent that is best suited for the task and respond with the agent's ID.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.appended_agent }}"
+            }
+          ]
+        },
+        "promptType": "define",
+        "text": "How to improve my tweet?"
+      },
+      "position": [
+        980,
+        1100
+      ],
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6
+    },
+    {
+      "id": "f7a100ad-4d6a-47a9-a523-d036a75744a5",
+      "name": "Summarize",
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "append",
+              "field": "agent"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        760,
+        1100
+      ],
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "4592ce5e-3dd4-4315-a732-bc7e89bdb84a",
+      "name": "set-preview",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3af333a2-758c-4a71-b11a-28bcfc5dfc26",
+              "name": "agent",
+              "type": "string",
+              "value": "={{ $json.title }}: {{ $json.description }} id: {{ $json.id }};"
+            }
+          ]
+        },
+        "options": {
+        }
+      },
+      "position": [
+        540,
+        1100
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4
+    },
+    {
+      "credentials": {
+        "postgres": {
+          "id": "8ZOLCkWqvhw8gGkU",
+          "name": "Postgres account"
+        }
+      },
+      "id": "19aae94f-6ff7-4eb4-b2e6-9f8d81ce59b0",
+      "name": "Postgres1",
+      "parameters": {
+        "operation": "select",
+        "options": {
+        },
+        "returnAll": true,
+        "schema": {
+          "__rl": true,
+          "cachedResultName": "near-ai",
+          "mode": "list",
+          "value": "near-ai"
+        },
+        "table": {
+          "__rl": true,
+          "cachedResultName": "available",
+          "mode": "list",
+          "value": "available"
+        },
+        "where": {
+          "values": [
+            {
+              "column": "id",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "position": [
+        1360,
+        1100
+      ],
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6
+    },
+    {
+      "id": "5b5b665e-66ec-4e03-8aca-4398f9ce724c",
+      "name": "Webhook1",
+      "parameters": {
+        "httpMethod": "POST",
+        "options": {
+          "allowedOrigins": "*"
+        },
+        "path": "corstest",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        -200,
+        780
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "webhookId": "147d260b-940c-4268-85c1-9261344decc0"
+    },
+    {
+      "id": "dbda311c-0428-4c9c-910f-294b8283b0e2",
+      "name": "Respond to Webhook",
+      "parameters": {
+        "options": {
+        }
+      },
+      "position": [
+        40,
+        780
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1
+    },
+    {
+      "id": "93301204-08fe-45c9-ab50-27b9289e4050",
+      "name": "When clicking ‘Test workflow’",
+      "parameters": {
+      },
+      "position": [
+        320,
+        2440
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "n8nApi": {
+          "id": "29pMkB66wmwgdc6w",
+          "name": "n8n account"
+        }
+      },
+      "id": "86ed0529-0b79-4265-a1e3-beaac5d543ad",
+      "name": "n8n",
+      "parameters": {
+        "additionalOptions": {
+        },
+        "operation": "generate",
+        "requestOptions": {
+        },
+        "resource": "audit"
+      },
+      "position": [
+        540,
+        2440
+      ],
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "n8nApi": {
+          "id": "29pMkB66wmwgdc6w",
+          "name": "n8n account"
+        }
+      },
+      "id": "2e477f9f-e2ac-4975-bcb0-93a3776cda47",
+      "name": "n8n1",
+      "parameters": {
+        "filters": {
+          "status": "success"
+        },
+        "limit": 50,
+        "options": {
+        },
+        "requestOptions": {
+        },
+        "resource": "execution"
+      },
+      "position": [
+        760,
+        2440
+      ],
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1
+    },
+    {
+      "credentials": {
+        "n8nApi": {
+          "id": "29pMkB66wmwgdc6w",
+          "name": "n8n account"
+        }
+      },
+      "id": "116b5624-ee5a-42fa-90d7-9e5903d8f7e2",
+      "name": "n8n2",
+      "parameters": {
+        "filters": {
+        },
+        "requestOptions": {
+        }
+      },
+      "position": [
+        540,
+        2640
+      ],
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-04-08T10:01:48.000Z",
+  "versionId": "b28604ca-2cc7-4755-ab87-410a3b7719e8"
+}
