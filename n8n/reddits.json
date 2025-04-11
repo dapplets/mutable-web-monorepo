@@ -40,11 +40,6 @@
     "Postgres17": {
       "main": [
         [
-          {
-            "index": 0,
-            "node": "Telegram14",
-            "type": "main"
-          }
         ]
       ]
     },
@@ -237,7 +232,7 @@
           "conditions": [
             {
               "id": "0913f05e-3aeb-443f-b0ff-2c0bb56da71d",
-              "leftValue": "={{ $json.message.text.replace(/^\\/sub\\s*/, '') }}",
+              "leftValue": "={{ $json.link }}",
               "operator": {
                 "operation": "regex",
                 "type": "string"
@@ -401,6 +396,6 @@
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-11T11:51:47.000Z",
-  "versionId": "76d8681f-5afe-4160-8b40-b675cd696d93"
+  "updatedAt": "2025-04-11T12:01:30.000Z",
+  "versionId": "0f981f5d-42c1-4f41-a6f2-e504dadb314c"
 }
