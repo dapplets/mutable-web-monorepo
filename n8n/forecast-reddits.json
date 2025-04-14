@@ -918,12 +918,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-11T11:52:34.000Z",
-  "versionId": "e8f0228c-158e-4c8e-8241-119d8e3250c4"
+  "updatedAt": "2025-04-14T15:41:25.000Z",
+  "versionId": "e7dcb83d-6a8e-4e55-a701-6fa609e7c88d"
 }
