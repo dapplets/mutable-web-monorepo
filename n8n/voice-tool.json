@@ -103,12 +103,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-01T18:35:24.000Z",
-  "versionId": "2724d3e7-6712-4507-9ff8-8da9e3662975"
+  "updatedAt": "2025-04-14T15:43:58.000Z",
+  "versionId": "48f5f1a2-e6ca-481b-adb5-b4826d87c318"
 }
