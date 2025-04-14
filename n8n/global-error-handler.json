@@ -1,0 +1,22 @@
+{
+  "active": false,
+  "connections": {
+  },
+  "createdAt": "2025-04-14T08:12:42.237Z",
+  "id": "9GZ1XEYWWMhLFFTQ",
+  "meta": null,
+  "name": "global-error-handler",
+  "nodes": [
+  ],
+  "pinData": {
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-04-14T08:12:42.237Z",
+  "versionId": "fba8b148-2664-4c40-9dae-80aa5d5f735d"
+}
