@@ -280,6 +280,8 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": {
@@ -295,6 +297,6 @@
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-03T13:56:52.000Z",
-  "versionId": "95217662-2399-49ca-8ce0-053da968f158"
+  "updatedAt": "2025-04-14T15:43:08.000Z",
+  "versionId": "5ffc7b4c-e5ec-42d6-a3b9-03205a5c44fd"
 }
