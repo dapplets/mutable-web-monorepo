@@ -1085,12 +1085,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-01T14:18:45.000Z",
-  "versionId": "ce806df8-ca68-4f5a-a5b7-71238233667d"
+  "updatedAt": "2025-04-14T15:44:04.000Z",
+  "versionId": "b782573f-a04d-4162-be08-582ea7cd3139"
 }
