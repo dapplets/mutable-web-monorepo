@@ -11575,78 +11575,67 @@
           ]
         ]
       },
-      "AI Agent1": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "GitHub4",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Branch": {
         "main": [
           [
             {
               "index": 0,
-              "node": "export-n8n-workflows",
+              "node": "get-workflows-from-github",
               "type": "main"
             }
           ]
         ]
       },
-      "Compare Datasets": {
+      "Convert to File": {
         "main": [
           [
-          ],
-          [
-          ],
-          [
             {
               "index": 0,
-              "node": "AI Agent",
-              "type": "main"
-            }
-          ],
-          [
-            {
-              "index": 0,
-              "node": "AI Agent1",
+              "node": "Write to Disk1",
               "type": "main"
             }
           ]
         ]
       },
-      "Deterministic JSON": {
+      "Convert to File1": {
         "main": [
           [
             {
-              "index": 1,
-              "node": "Compare Datasets",
+              "index": 0,
+              "node": "Write to Disk",
               "type": "main"
             }
           ]
         ]
       },
-      "Deterministic JSON1": {
+      "Deterministic JSON After": {
         "main": [
           [
             {
               "index": 0,
-              "node": "Compare Datasets",
+              "node": "Convert to File1",
               "type": "main"
             }
           ]
         ]
       },
-      "Execute Command": {
+      "Deterministic JSON Before": {
         "main": [
           [
             {
               "index": 0,
-              "node": "Read/Write Files from Disk",
+              "node": "Convert to File",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Export Workflows": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Read from Disk",
               "type": "main"
             }
           ]
@@ -11657,7 +11646,7 @@
           [
             {
               "index": 0,
-              "node": "Deterministic JSON1",
+              "node": "Deterministic JSON Before",
               "type": "main"
             }
           ]
@@ -11668,7 +11657,18 @@
           [
             {
               "index": 0,
-              "node": "Deterministic JSON2",
+              "node": "Deterministic JSON After",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Git Diff": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Is Modified?",
               "type": "main"
             }
           ]
@@ -11680,9 +11680,14 @@
           ]
         ]
       },
-      "GitHub4": {
+      "Is Modified?": {
         "main": [
           [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -11697,34 +11702,12 @@
           ]
         ]
       },
-      "OpenAI Chat Model1": {
-        "ai_languageModel": [
-          [
-            {
-              "index": 0,
-              "node": "AI Agent1",
-              "type": "ai_languageModel"
-            }
-          ]
-        ]
-      },
-      "Read/Write Files from Disk": {
+      "Read from Disk": {
         "main": [
           [
             {
               "index": 0,
               "node": "Extract from File1",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "Schedule Trigger1": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Execute Command",
               "type": "main"
             }
           ]
@@ -11741,17 +11724,6 @@
           ]
         ]
       },
-      "Structured Output Parser1": {
-        "ai_outputParser": [
-          [
-            {
-              "index": 0,
-              "node": "AI Agent1",
-              "type": "ai_outputParser"
-            }
-          ]
-        ]
-      },
       "When clicking ‘Test workflow’": {
         "main": [
           [
@@ -11763,23 +11735,29 @@
           ]
         ]
       },
-      "export-n8n-workflows": {
+      "Write to Disk": {
         "main": [
           [
             {
               "index": 0,
-              "node": "get-workflow-from-github",
-              "type": "main"
-            },
-            {
-              "index": 0,
-              "node": "Deterministic JSON",
+              "node": "Git Diff",
               "type": "main"
             }
           ]
         ]
       },
-      "get-workflow-from-github": {
+      "Write to Disk1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Export Workflows",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "get-workflows-from-github": {
         "main": [
           [
             {
@@ -11806,8 +11784,8 @@
         "parameters": {
         },
         "position": [
-          0,
-          0
+          160,
+          80
         ],
         "type": "n8n-nodes-base.manualTrigger",
         "typeVersion": 1
@@ -11828,8 +11806,8 @@
             }
           },
           "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
-          "fileContent": "={{ $('Compare Datasets').item.json.different.serialized.inputB }}",
-          "filePath": "=n8n/{{ $('Compare Datasets').item.json.different.deserialized.inputB.name }}.json",
+          "fileContent": "={{ $('Deterministic JSON After').item.json.serialized }}",
+          "filePath": "=n8n/workflows.json",
           "operation": "edit",
           "owner": {
             "__rl": true,
@@ -11844,87 +11822,12 @@
           "resource": "file"
         },
         "position": [
-          2220,
-          -120
+          1100,
+          540
         ],
         "type": "n8n-nodes-base.github",
         "typeVersion": 1,
         "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
-      },
-      {
-        "credentials": {
-          "githubApi": {
-            "id": "baRMPgIVSXufKRQj",
-            "name": "GitHub account"
-          }
-        },
-        "id": "55612c53-79c0-4393-bdea-ba87005a4f61",
-        "name": "GitHub4",
-        "parameters": {
-          "additionalParameters": {
-            "branch": {
-              "branch": "={{ $('Branch').item.json.branch }}"
-            }
-          },
-          "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
-          "fileContent": "={{ $('Compare Datasets').item.json.serialized }}",
-          "filePath": "=n8n/{{ $('Compare Datasets').item.json.deserialized.name }}.json",
-          "owner": {
-            "__rl": true,
-            "mode": "name",
-            "value": "dapplets"
-          },
-          "repository": {
-            "__rl": true,
-            "mode": "name",
-            "value": "mutable-web-monorepo"
-          },
-          "resource": "file"
-        },
-        "position": [
-          2220,
-          280
-        ],
-        "type": "n8n-nodes-base.github",
-        "typeVersion": 1,
-        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
-      },
-      {
-        "id": "0d4ebfe1-3819-40fa-acf2-b85a13029480",
-        "name": "Compare Datasets",
-        "parameters": {
-          "mergeByFields": {
-            "values": [
-              {
-                "field1": "deserialized.name",
-                "field2": "deserialized.name"
-              }
-            ]
-          },
-          "options": {
-          }
-        },
-        "position": [
-          1300,
-          40
-        ],
-        "type": "n8n-nodes-base.compareDatasets",
-        "typeVersion": 2.3
-      },
-      {
-        "id": "705690f8-487b-48f7-84fa-2534a47d67be",
-        "name": "Extract from File",
-        "parameters": {
-          "operation": "fromJson",
-          "options": {
-          }
-        },
-        "position": [
-          860,
-          -80
-        ],
-        "type": "n8n-nodes-base.extractFromFile",
-        "typeVersion": 1
       },
       {
         "id": "41f2e4e9-81a4-4d05-9351-911bc41d0571",
@@ -11932,14 +11835,14 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "You are a developer who thinks out a commit message for git. You should determine commit type:\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nAnd write a commit message comparing changes in the given files with maximum length is 72 characters. First letter is lowercase. Don't put dot in the end of the message"
+            "systemMessage": "You are a software engineer tasked with generating concise and informative Git commit messages based on git diff outputs. Your goal is to write a commit message that adheres to the Conventional Commits specification. Comparing files are workflow backups from n8n.\n\nBehavior:\n1. Analyze the diff: Carefully compare the before and after code to determine the purpose of the change.\n2. Classify the commit using one of the allowed types (see below).\n3. Write a commit message summarizing the change in plain, concise language.\n\nOutput Data:\n1. Commit Type\n2. Commit Message\n\nRestrictions:\n1. Maximum commit message length: 72 characters\n2. Message starts with a lowercase letter\n3. No period at the end\n4. Be descriptive but brief\n5. Do not include commit type name into message\n\nAllowed commit types:\n\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\n\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nbuild: Changes that affect the build system or external dependencies\n\nci: Changes to our CI configuration files and scripts \n\ndocs: Documentation only changes\n\nperf: A code change that improves performance\n\nrefactor: A code change that neither fixes a bug nor adds a feature\n\nstyle: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)\n\ntest: Adding missing tests or correcting existing tests\n\n"
           },
           "promptType": "define",
-          "text": "=Before file:\n{{ $json.different.serialized.inputA }}\n\nAfter file:\n{{ $json.different.serialized.inputB }}"
+          "text": "={{ $json.stdout }}"
         },
         "position": [
-          1800,
-          -120
+          780,
+          540
         ],
         "type": "@n8n/n8n-nodes-langchain.agent",
         "typeVersion": 1.8
@@ -11948,12 +11851,12 @@
         "id": "409acc0c-d43f-44d3-9fc7-afb8e17f4e6d",
         "name": "Structured Output Parser",
         "parameters": {
-          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"commitType\": {\n\t\t\t\"type\": \"string\",\n          \"enum\": [\"feat\", \"fix\"]\n\t\t},\n\t\t\"commitMessage\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
+          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"commitType\": {\n\t\t\t\"type\": \"string\",\n          \"enum\": [\"feat\", \"fix\", \"refactor\", \"build\", \"ci\", \"docs\", \"perf\", \"style\", \"test\"]\n\t\t},\n\t\t\"commitMessage\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
           "schemaType": "manual"
         },
         "position": [
-          2000,
-          80
+          960,
+          740
         ],
         "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
         "typeVersion": 1.2
@@ -11970,6 +11873,7 @@
         "parameters": {
           "model": {
             "__rl": true,
+            "cachedResultName": "gpt-4o-mini",
             "mode": "list",
             "value": "gpt-4o-mini"
           },
@@ -11977,154 +11881,11 @@
           }
         },
         "position": [
-          1820,
-          80
+          780,
+          740
         ],
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2
-      },
-      {
-        "credentials": {
-          "n8nApi": {
-            "id": "29pMkB66wmwgdc6w",
-            "name": "n8n account"
-          }
-        },
-        "id": "7e5c2bdb-50d6-4e37-9d08-7e28383d1b7c",
-        "name": "export-n8n-workflows",
-        "parameters": {
-          "filters": {
-          },
-          "requestOptions": {
-          }
-        },
-        "position": [
-          440,
-          0
-        ],
-        "type": "n8n-nodes-base.n8n",
-        "typeVersion": 1
-      },
-      {
-        "credentials": {
-          "githubApi": {
-            "id": "baRMPgIVSXufKRQj",
-            "name": "GitHub account"
-          }
-        },
-        "id": "29f264ff-01a1-4f11-837b-397dc2008c76",
-        "name": "get-workflow-from-github",
-        "onError": "continueRegularOutput",
-        "parameters": {
-          "additionalParameters": {
-            "reference": "={{ $('Branch').item.json.branch }}"
-          },
-          "filePath": "=n8n/{{ $json.name }}.json",
-          "operation": "get",
-          "owner": {
-            "__rl": true,
-            "mode": "name",
-            "value": "dapplets"
-          },
-          "repository": {
-            "__rl": true,
-            "mode": "name",
-            "value": "mutable-web-monorepo"
-          },
-          "resource": "file"
-        },
-        "position": [
-          660,
-          -80
-        ],
-        "type": "n8n-nodes-base.github",
-        "typeVersion": 1,
-        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
-      },
-      {
-        "id": "49fbc188-2e2f-4c46-a811-63dd5a822874",
-        "name": "AI Agent1",
-        "parameters": {
-          "hasOutputParser": true,
-          "options": {
-            "systemMessage": "You are a developer who thinks out a commit message for git. You should determine commit type:\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nAnd write a commit message comparing changes in the given files with maximum length is 72 characters. First letter is lowercase. Don't put dot in the end of the message"
-          },
-          "promptType": "define",
-          "text": "=Given file:\n{{ $json.serialized }}"
-        },
-        "position": [
-          1800,
-          280
-        ],
-        "type": "@n8n/n8n-nodes-langchain.agent",
-        "typeVersion": 1.8
-      },
-      {
-        "credentials": {
-          "openAiApi": {
-            "id": "LFGWC331SnBhJfQS",
-            "name": "OpenAi account"
-          }
-        },
-        "id": "2c00c842-9004-456e-906f-1853bb59b28a",
-        "name": "OpenAI Chat Model1",
-        "parameters": {
-          "model": {
-            "__rl": true,
-            "mode": "list",
-            "value": "gpt-4o-mini"
-          },
-          "options": {
-          }
-        },
-        "position": [
-          1820,
-          540
-        ],
-        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-        "typeVersion": 1.2
-      },
-      {
-        "id": "d2a61d02-bec8-45ff-ae0a-a363ebafb31d",
-        "name": "Structured Output Parser1",
-        "parameters": {
-          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"commitType\": {\n\t\t\t\"type\": \"string\",\n          \"enum\": [\"feat\", \"fix\"]\n\t\t},\n\t\t\"commitMessage\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
-          "schemaType": "manual"
-        },
-        "position": [
-          2000,
-          540
-        ],
-        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-        "typeVersion": 1.2
-      },
-      {
-        "id": "3b90a0b6-c0b0-4242-b2e5-d6596b96a90a",
-        "name": "Deterministic JSON",
-        "parameters": {
-          "jsCode": "const DEFAULTS = {\n  space: \"\",\n  cycles: false,\n  replacer: (k, v) => v,\n  stringify: JSON.stringify,\n};\nconst isFunction = (v) => typeof v === \"function\";\nconst isBoolean = (v) => typeof v === \"boolean\";\nconst isObject = (v) => typeof v === \"object\";\nconst isArray = Array.isArray;\nconst isRegex = (v) => v instanceof RegExp;\nconst assign = Object.assign;\nconst keys = Object.keys;\n\nfunction serialize(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (isRegex(obj)) return obj.toString();\n  return obj.toJSON ? obj.toJSON() : obj;\n}\n\nfunction stringifyDeterministic(obj, opts) {\n  opts = opts || assign({}, DEFAULTS);\n\n  if (isFunction(opts)) opts = { compare: opts };\n\n  const space = opts.space || DEFAULTS.space;\n  const cycles = isBoolean(opts.cycles) ? opts.cycles : DEFAULTS.cycles;\n  const replacer = opts.replacer || DEFAULTS.replacer;\n  const stringify = opts.stringify || DEFAULTS.stringify;\n\n  const compare =\n    opts.compare &&\n    (function (f) {\n      return function (node) {\n        return function (a, b) {\n          const aobj = { key: a, value: node[a] };\n          const bobj = { key: b, value: node[b] };\n          return f(aobj, bobj);\n        };\n      };\n    })(opts.compare);\n\n  // Detect circular structure in obj and raise error efficiently.\n  if (!cycles) stringify(obj);\n\n  const seen = [];\n\n  return (function _deterministic(parent, key, node, level) {\n    const indent = space ? \"\\n\" + new Array(level + 1).join(space) : \"\";\n    const colonSeparator = space ? \": \" : \":\";\n\n    node = serialize(node);\n    node = replacer.call(parent, key, node);\n\n    if (node === undefined) return;\n\n    if (!isObject(node) || node === null) return stringify(node);\n\n    if (isArray(node)) {\n      const out = [];\n      for (let i = 0; i < node.length; i++) {\n        const item =\n          _deterministic(node, i, node[i], level + 1) || stringify(null);\n        out.push(indent + space + item);\n      }\n      return \"[\" + out.join(\",\") + indent + \"]\";\n    } else {\n      if (cycles) {\n        if (seen.indexOf(node) !== -1) {\n          return stringify(\"[Circular]\");\n        } else {\n          seen.push(node);\n        }\n      }\n\n      const nodeKeys = keys(node).sort(compare && compare(node));\n      const out = [];\n      for (let i = 0; i < nodeKeys.length; i++) {\n        const key = nodeKeys[i];\n        const value = _deterministic(node, key, node[key], level + 1);\n\n        if (!value) continue;\n\n        const keyValue = stringify(key) + colonSeparator + value;\n        out.push(indent + space + keyValue);\n      }\n      seen.splice(seen.indexOf(node), 1);\n      return \"{\" + out.join(\",\") + indent + \"}\";\n    }\n  })({ \"\": obj }, \"\", obj, 0);\n}\n\nconst deserialized = $input.item.json\nconst serialized = stringifyDeterministic(deserialized, { space: \"  \" });\n\nreturn {\n  json: {\n    deserialized,\n    serialized\n  }\n};\n",
-          "mode": "runOnceForEachItem"
-        },
-        "position": [
-          840,
-          140
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
-      },
-      {
-        "id": "87303950-d672-4c52-9f8a-cc8cae9b2735",
-        "name": "Deterministic JSON1",
-        "parameters": {
-          "jsCode": "const DEFAULTS = {\n  space: \"\",\n  cycles: false,\n  replacer: (k, v) => v,\n  stringify: JSON.stringify,\n};\nconst isFunction = (v) => typeof v === \"function\";\nconst isBoolean = (v) => typeof v === \"boolean\";\nconst isObject = (v) => typeof v === \"object\";\nconst isArray = Array.isArray;\nconst isRegex = (v) => v instanceof RegExp;\nconst assign = Object.assign;\nconst keys = Object.keys;\n\nfunction serialize(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (isRegex(obj)) return obj.toString();\n  return obj.toJSON ? obj.toJSON() : obj;\n}\n\nfunction stringifyDeterministic(obj, opts) {\n  opts = opts || assign({}, DEFAULTS);\n\n  if (isFunction(opts)) opts = { compare: opts };\n\n  const space = opts.space || DEFAULTS.space;\n  const cycles = isBoolean(opts.cycles) ? opts.cycles : DEFAULTS.cycles;\n  const replacer = opts.replacer || DEFAULTS.replacer;\n  const stringify = opts.stringify || DEFAULTS.stringify;\n\n  const compare =\n    opts.compare &&\n    (function (f) {\n      return function (node) {\n        return function (a, b) {\n          const aobj = { key: a, value: node[a] };\n          const bobj = { key: b, value: node[b] };\n          return f(aobj, bobj);\n        };\n      };\n    })(opts.compare);\n\n  // Detect circular structure in obj and raise error efficiently.\n  if (!cycles) stringify(obj);\n\n  const seen = [];\n\n  return (function _deterministic(parent, key, node, level) {\n    const indent = space ? \"\\n\" + new Array(level + 1).join(space) : \"\";\n    const colonSeparator = space ? \": \" : \":\";\n\n    node = serialize(node);\n    node = replacer.call(parent, key, node);\n\n    if (node === undefined) return;\n\n    if (!isObject(node) || node === null) return stringify(node);\n\n    if (isArray(node)) {\n      const out = [];\n      for (let i = 0; i < node.length; i++) {\n        const item =\n          _deterministic(node, i, node[i], level + 1) || stringify(null);\n        out.push(indent + space + item);\n      }\n      return \"[\" + out.join(\",\") + indent + \"]\";\n    } else {\n      if (cycles) {\n        if (seen.indexOf(node) !== -1) {\n          return stringify(\"[Circular]\");\n        } else {\n          seen.push(node);\n        }\n      }\n\n      const nodeKeys = keys(node).sort(compare && compare(node));\n      const out = [];\n      for (let i = 0; i < nodeKeys.length; i++) {\n        const key = nodeKeys[i];\n        const value = _deterministic(node, key, node[key], level + 1);\n\n        if (!value) continue;\n\n        const keyValue = stringify(key) + colonSeparator + value;\n        out.push(indent + space + keyValue);\n      }\n      seen.splice(seen.indexOf(node), 1);\n      return \"{\" + out.join(\",\") + indent + \"}\";\n    }\n  })({ \"\": obj }, \"\", obj, 0);\n}\n\nconst deserialized = $input.item.json.data\nconst serialized = stringifyDeterministic(deserialized, { space: \"  \" });\n\nreturn {\n  json: {\n    deserialized,\n    serialized\n  }\n};\n",
-          "mode": "runOnceForEachItem"
-        },
-        "position": [
-          1060,
-          -80
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
       },
       {
         "id": "2c6b313b-4223-4d3a-9225-79eb78a5d930",
@@ -12144,39 +11905,11 @@
           }
         },
         "position": [
-          220,
-          0
+          340,
+          80
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
-      },
-      {
-        "id": "0d12ceed-2c11-4415-9657-2b7cafa0823c",
-        "name": "Execute Command",
-        "parameters": {
-          "command": "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true N8N_RUNNERS_ENABLED=true n8n export:workflow --all --output=workflows.json"
-        },
-        "position": [
-          220,
-          -320
-        ],
-        "type": "n8n-nodes-base.executeCommand",
-        "typeVersion": 1
-      },
-      {
-        "id": "51d2bec4-a8be-41fe-8928-b718e16c082c",
-        "name": "Read/Write Files from Disk",
-        "parameters": {
-          "fileSelector": "workflows.json",
-          "options": {
-          }
-        },
-        "position": [
-          440,
-          -320
-        ],
-        "type": "n8n-nodes-base.readWriteFile",
-        "typeVersion": 1
       },
       {
         "id": "1289c33b-ca95-469e-a71a-fb19fcfd838b",
@@ -12187,44 +11920,232 @@
           }
         },
         "position": [
-          660,
-          -320
+          700,
+          320
         ],
         "type": "n8n-nodes-base.extractFromFile",
         "typeVersion": 1
       },
       {
-        "id": "a6f459e1-449f-4c9b-8c1e-436ed113c902",
-        "name": "Deterministic JSON2",
+        "credentials": {
+          "githubApi": {
+            "id": "baRMPgIVSXufKRQj",
+            "name": "GitHub account"
+          }
+        },
+        "id": "29f264ff-01a1-4f11-837b-397dc2008c76",
+        "name": "get-workflows-from-github",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "additionalParameters": {
+            "reference": "={{ $('Branch').item.json.branch }}"
+          },
+          "filePath": "=n8n/workflows.json",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "dapplets"
+          },
+          "repository": {
+            "__rl": true,
+            "mode": "name",
+            "value": "mutable-web-monorepo"
+          },
+          "resource": "file"
+        },
+        "position": [
+          520,
+          80
+        ],
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+      },
+      {
+        "id": "c1526ff2-4a58-4ed1-968c-5e6e222a255e",
+        "name": "Extract from File",
+        "parameters": {
+          "operation": "fromJson",
+          "options": {
+          }
+        },
+        "position": [
+          700,
+          80
+        ],
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "03299c08-f50e-4a79-9c2f-8d5b69d3a405",
+        "name": "Convert to File",
+        "parameters": {
+          "operation": "toText",
+          "options": {
+            "fileName": "data.json"
+          },
+          "sourceProperty": "serialized"
+        },
+        "position": [
+          1060,
+          80
+        ],
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "96ec5229-f557-4e79-8e05-69b4b4840e07",
+        "name": "Convert to File1",
+        "parameters": {
+          "operation": "toText",
+          "options": {
+            "fileName": "data.json"
+          },
+          "sourceProperty": "serialized"
+        },
+        "position": [
+          1060,
+          320
+        ],
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "1cdecfd4-dbe1-4d62-9c7c-cb7c4bb6ce2e",
+        "name": "Is Modified?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "3ea21f3a-800d-404f-9fa0-bf4d8b00c0e9",
+                "leftValue": "={{ $json.stdout }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          520,
+          540
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "6c8f0d16-5cc7-4dba-b687-35ad5187cb28",
+        "name": "Git Diff",
+        "parameters": {
+          "command": "git --no-pager diff --no-ext-diff --no-index before.json after.json --ignore-all-space || true"
+        },
+        "position": [
+          340,
+          540
+        ],
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1
+      },
+      {
+        "id": "0d12ceed-2c11-4415-9657-2b7cafa0823c",
+        "name": "Export Workflows",
+        "parameters": {
+          "command": "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true N8N_RUNNERS_ENABLED=true n8n export:workflow --all --output=workflows.json"
+        },
+        "position": [
+          340,
+          320
+        ],
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1
+      },
+      {
+        "id": "51d2bec4-a8be-41fe-8928-b718e16c082c",
+        "name": "Read from Disk",
+        "parameters": {
+          "fileSelector": "workflows.json",
+          "options": {
+          }
+        },
+        "position": [
+          520,
+          320
+        ],
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "4ebca335-a3f1-401d-9e4a-9dd33744b14a",
+        "name": "Write to Disk",
+        "parameters": {
+          "fileName": "after.json",
+          "operation": "write",
+          "options": {
+          }
+        },
+        "position": [
+          1240,
+          320
+        ],
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "4d2a5941-65a3-41c3-8b5d-d4cad40d5aad",
+        "name": "Write to Disk1",
+        "parameters": {
+          "fileName": "before.json",
+          "operation": "write",
+          "options": {
+          }
+        },
+        "position": [
+          1240,
+          80
+        ],
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "12f0297c-c46f-42cc-b3f4-be54983355ee",
+        "name": "Deterministic JSON Before",
         "parameters": {
           "jsCode": "const DEFAULTS = {\n  space: \"\",\n  cycles: false,\n  replacer: (k, v) => v,\n  stringify: JSON.stringify,\n};\nconst isFunction = (v) => typeof v === \"function\";\nconst isBoolean = (v) => typeof v === \"boolean\";\nconst isObject = (v) => typeof v === \"object\";\nconst isArray = Array.isArray;\nconst isRegex = (v) => v instanceof RegExp;\nconst assign = Object.assign;\nconst keys = Object.keys;\n\nfunction serialize(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (isRegex(obj)) return obj.toString();\n  return obj.toJSON ? obj.toJSON() : obj;\n}\n\nfunction stringifyDeterministic(obj, opts) {\n  opts = opts || assign({}, DEFAULTS);\n\n  if (isFunction(opts)) opts = { compare: opts };\n\n  const space = opts.space || DEFAULTS.space;\n  const cycles = isBoolean(opts.cycles) ? opts.cycles : DEFAULTS.cycles;\n  const replacer = opts.replacer || DEFAULTS.replacer;\n  const stringify = opts.stringify || DEFAULTS.stringify;\n\n  const compare =\n    opts.compare &&\n    (function (f) {\n      return function (node) {\n        return function (a, b) {\n          const aobj = { key: a, value: node[a] };\n          const bobj = { key: b, value: node[b] };\n          return f(aobj, bobj);\n        };\n      };\n    })(opts.compare);\n\n  // Detect circular structure in obj and raise error efficiently.\n  if (!cycles) stringify(obj);\n\n  const seen = [];\n\n  return (function _deterministic(parent, key, node, level) {\n    const indent = space ? \"\\n\" + new Array(level + 1).join(space) : \"\";\n    const colonSeparator = space ? \": \" : \":\";\n\n    node = serialize(node);\n    node = replacer.call(parent, key, node);\n\n    if (node === undefined) return;\n\n    if (!isObject(node) || node === null) return stringify(node);\n\n    if (isArray(node)) {\n      const out = [];\n      for (let i = 0; i < node.length; i++) {\n        const item =\n          _deterministic(node, i, node[i], level + 1) || stringify(null);\n        out.push(indent + space + item);\n      }\n      return \"[\" + out.join(\",\") + indent + \"]\";\n    } else {\n      if (cycles) {\n        if (seen.indexOf(node) !== -1) {\n          return stringify(\"[Circular]\");\n        } else {\n          seen.push(node);\n        }\n      }\n\n      const nodeKeys = keys(node).sort(compare && compare(node));\n      const out = [];\n      for (let i = 0; i < nodeKeys.length; i++) {\n        const key = nodeKeys[i];\n        const value = _deterministic(node, key, node[key], level + 1);\n\n        if (!value) continue;\n\n        const keyValue = stringify(key) + colonSeparator + value;\n        out.push(indent + space + keyValue);\n      }\n      seen.splice(seen.indexOf(node), 1);\n      return \"{\" + out.join(\",\") + indent + \"}\";\n    }\n  })({ \"\": obj }, \"\", obj, 0);\n}\n\nconst deserialized = $input.item.json.data\nconst serialized = stringifyDeterministic(deserialized, { space: \"  \" });\n\nreturn {\n  json: {\n    deserialized,\n    serialized\n  }\n};\n",
           "mode": "runOnceForEachItem"
         },
         "position": [
-          860,
-          -320
+          880,
+          80
         ],
         "type": "n8n-nodes-base.code",
         "typeVersion": 2
       },
       {
-        "id": "22361dd4-fb38-4f11-bde7-3ab84e4b4b0c",
-        "name": "Schedule Trigger1",
+        "id": "a6f459e1-449f-4c9b-8c1e-436ed113c902",
+        "name": "Deterministic JSON After",
         "parameters": {
-          "rule": {
-            "interval": [
-              {
-                "triggerAtHour": 4
-              }
-            ]
-          }
+          "jsCode": "const DEFAULTS = {\n  space: \"\",\n  cycles: false,\n  replacer: (k, v) => v,\n  stringify: JSON.stringify,\n};\nconst isFunction = (v) => typeof v === \"function\";\nconst isBoolean = (v) => typeof v === \"boolean\";\nconst isObject = (v) => typeof v === \"object\";\nconst isArray = Array.isArray;\nconst isRegex = (v) => v instanceof RegExp;\nconst assign = Object.assign;\nconst keys = Object.keys;\n\nfunction serialize(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (isRegex(obj)) return obj.toString();\n  return obj.toJSON ? obj.toJSON() : obj;\n}\n\nfunction stringifyDeterministic(obj, opts) {\n  opts = opts || assign({}, DEFAULTS);\n\n  if (isFunction(opts)) opts = { compare: opts };\n\n  const space = opts.space || DEFAULTS.space;\n  const cycles = isBoolean(opts.cycles) ? opts.cycles : DEFAULTS.cycles;\n  const replacer = opts.replacer || DEFAULTS.replacer;\n  const stringify = opts.stringify || DEFAULTS.stringify;\n\n  const compare =\n    opts.compare &&\n    (function (f) {\n      return function (node) {\n        return function (a, b) {\n          const aobj = { key: a, value: node[a] };\n          const bobj = { key: b, value: node[b] };\n          return f(aobj, bobj);\n        };\n      };\n    })(opts.compare);\n\n  // Detect circular structure in obj and raise error efficiently.\n  if (!cycles) stringify(obj);\n\n  const seen = [];\n\n  return (function _deterministic(parent, key, node, level) {\n    const indent = space ? \"\\n\" + new Array(level + 1).join(space) : \"\";\n    const colonSeparator = space ? \": \" : \":\";\n\n    node = serialize(node);\n    node = replacer.call(parent, key, node);\n\n    if (node === undefined) return;\n\n    if (!isObject(node) || node === null) return stringify(node);\n\n    if (isArray(node)) {\n      const out = [];\n      for (let i = 0; i < node.length; i++) {\n        const item =\n          _deterministic(node, i, node[i], level + 1) || stringify(null);\n        out.push(indent + space + item);\n      }\n      return \"[\" + out.join(\",\") + indent + \"]\";\n    } else {\n      if (cycles) {\n        if (seen.indexOf(node) !== -1) {\n          return stringify(\"[Circular]\");\n        } else {\n          seen.push(node);\n        }\n      }\n\n      const nodeKeys = keys(node).sort(compare && compare(node));\n      const out = [];\n      for (let i = 0; i < nodeKeys.length; i++) {\n        const key = nodeKeys[i];\n        const value = _deterministic(node, key, node[key], level + 1);\n\n        if (!value) continue;\n\n        const keyValue = stringify(key) + colonSeparator + value;\n        out.push(indent + space + keyValue);\n      }\n      seen.splice(seen.indexOf(node), 1);\n      return \"{\" + out.join(\",\") + indent + \"}\";\n    }\n  })({ \"\": obj }, \"\", obj, 0);\n}\n\nconst deserialized = $input.item.json.data\nconst serialized = stringifyDeterministic(deserialized, { space: \"  \" });\n\nreturn {\n  json: {\n    deserialized,\n    serialized\n  }\n};\n",
+          "mode": "runOnceForEachItem"
         },
         "position": [
-          0,
-          -320
+          880,
+          320
         ],
-        "type": "n8n-nodes-base.scheduleTrigger",
-        "typeVersion": 1.2
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
       }
     ],
     "pinData": {
@@ -12238,7 +12159,7 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-15T19:53:40.000Z",
-    "versionId": "700fd56c-ee48-4a33-98ff-6eedf1a0fcc8"
+    "updatedAt": "2025-04-15T21:24:40.000Z",
+    "versionId": "b2500dbb-3dc4-4864-8e5a-55b55dcff79b"
   }
 ]
