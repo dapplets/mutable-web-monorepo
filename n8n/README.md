@@ -4,26 +4,36 @@ This repository contains several [n8n](https://n8n.io/) workflow JSON files. You
 
 ## Importing a Workflow
 
-1. Open your n8n Editor UI.
-
-2. Click on the “Import” button in the top right corner.
-
-3. Select “Import from File” and choose one of the JSON files from this repository.
-
-4. Adjust credentials, environment variables, or parameters as needed.
+```
+n8n import:workflow --input=workflows.json
+```
 
 ## Workflows Overview
 
-* `main.json` — The primary Telegram-based workflow. Manages user interactions, fetches or stores messages, integrates with memory (Postgres / Qdrant), and delegates tasks to sub-workflows or “tools” like Dept or Voice.
+* `main` — Serves as the primary assistant workflow. It processes user inputs, retrieves and synthesizes external market and database data, and returns interactive responses to users via chat channels.
 
-* `voice_tool.json` — Converts text input into a voice response using OpenAI’s text-to-speech and sends the result back to a specified Telegram chat.
+* `track` — Monitors real‐time market data and trading signals for a specific cryptocurrency. It uses a chain of language models, technical analysis, and external API calls to generate trade recommendations and then notifies users via Telegram.
 
-* `dept.json` — Handles “department” assignments: selects an agent from a database and forwards user queries to that agent on NEAR AI.
+* `dept` — Delegates tasks by selecting the most suitable AI agent for a given task. It aggregates information from the database and external sources, then passes the task to an agent for further processing.
 
-* `call_multiple_near_agents.json` — Finds the appropriate NEAR AI agents based on user query, then creates and retrieves responses from multiple agent threads.
+* `voice-tool` — Converts user text into speech by leveraging an audio-enabled language model. The workflow receives voice query inputs, processes them, and sends the generated audio output back to the user through Telegram.
 
-* `call_near_ai_agent.json` —  A simpler workflow that calls a single NEAR AI agent. Creates a thread, sends a message, and fetches the agent’s response.
+* `testing-only` — A dedicated workflow for running tests and experiments. It demonstrates integrations with file conversion, vector storage (using Qdrant), and embedding generation. It’s used for verifying internal processing and data transformations.
 
-* `get_all_near_ai_agents.json` — Retrieves a list of NEAR AI agents from the registry and upserts them into a local Postgres database for tracking.
+* `consciousness` — Acts as a memory guardian that extracts, aggregates, and summarizes personal data from ongoing conversations. This workflow maintains a record of user interactions to build a context-aware internal memory.
+
+* `task-checker` — Regularly checks and monitors tasks and reminders stored in the database. It verifies completion statuses and sends notifications to the user when items are due or require attention.
+
+* `forecast-reddits` — Aggregates and analyzes news from multiple subreddits. This workflow fetches Reddit RSS feeds, applies filters based on recency, and identifies important news items, helping to forecast trending topics.
+
+* `reddits` — Manages subreddit subscriptions by validating the input command, subscribing to the specified subreddit feed, and ensuring that only correctly formatted subreddit names are processed.
+
+* `Delivery` — Curates and delivers news to users based on personal preferences. It receives, formats, and sends news items that have been analyzed for relevance, ensuring that the most important information reaches the user.
+
+* `global-error-handler` — Catches workflow errors globally. When an error is detected, it packages the error message, stack trace, and relevant workflow details and sends a formatted report to a dedicated Telegram chat for prompt troubleshooting.
+
+* `backups` — Provides automated backups of workflow configurations. This workflow gathers workflow definitions, creates a deterministic JSON representation of each, and commits them to a GitHub repository for version control.
+
+* `Subscriptions` — Retrieves and displays a user’s active subscriptions. It queries the database for current subscriptions, aggregates the data, and summarizes the information for the user in a clear format.
 
 Use these workflows as references or building blocks for your own integrations. Ensure that any credentials (e.g., Telegram, Postgres, OpenAI) are properly configured in n8n before execution.
