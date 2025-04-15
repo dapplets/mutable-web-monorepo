@@ -588,12 +588,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-09T10:02:00.000Z",
-  "versionId": "42f59aa4-ea5f-461d-80fe-297a19c0197f"
+  "updatedAt": "2025-04-14T15:41:49.000Z",
+  "versionId": "706ba47f-0184-4f9b-8957-c62e62baf367"
 }

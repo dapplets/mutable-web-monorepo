@@ -135,6 +135,13 @@
             "node": "Get Account1",
             "type": "main"
           }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Stop and Error",
+            "type": "main"
+          }
         ]
       ]
     },
@@ -2431,6 +2438,31 @@
               },
               "outputKey": "Status",
               "renameOutput": true
+            },
+            {
+              "conditions": {
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "8f85e582-a1cd-4569-8df4-ceee13d8e1e7",
+                    "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                    "operator": {
+                      "name": "filter.operator.equals",
+                      "operation": "equals",
+                      "type": "string"
+                    },
+                    "rightValue": "/throw"
+                  }
+                ],
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                }
+              },
+              "outputKey": "Throw",
+              "renameOutput": true
             }
           ]
         }
@@ -4091,7 +4123,7 @@
       },
       "position": [
         1480,
-        340
+        240
       ],
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6
@@ -4126,7 +4158,7 @@
       },
       "position": [
         1700,
-        340
+        240
       ],
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2
@@ -4345,17 +4377,32 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+    },
+    {
+      "id": "b51cefd3-6c2e-46d9-8837-53da3929bbaa",
+      "name": "Stop and Error",
+      "parameters": {
+        "errorMessage": "Test error thrown"
+      },
+      "position": [
+        1480,
+        400
+      ],
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1
     }
   ],
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-11T13:54:56.000Z",
-  "versionId": "7062968b-dcc9-4de0-b2d7-5213e0b96da0"
+  "updatedAt": "2025-04-14T15:39:14.000Z",
+  "versionId": "69cbd84c-7284-4de4-ba06-d4724c926c51"
 }

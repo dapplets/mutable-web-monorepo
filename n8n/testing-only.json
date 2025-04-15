@@ -755,12 +755,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-08T10:01:48.000Z",
-  "versionId": "b28604ca-2cc7-4755-ab87-410a3b7719e8"
+  "updatedAt": "2025-04-14T15:42:09.000Z",
+  "versionId": "347ac66e-88a2-45a4-aafe-4f270a5490d5"
 }

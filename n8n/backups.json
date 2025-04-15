@@ -566,12 +566,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-04-11T11:58:23.000Z",
-  "versionId": "c294f39f-8307-467a-9afc-3c7b26e2afdf"
+  "updatedAt": "2025-04-14T15:41:18.000Z",
+  "versionId": "c66d3a45-8f86-475c-83a4-617f4cd348e1"
 }

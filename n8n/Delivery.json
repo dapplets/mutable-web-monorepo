@@ -447,12 +447,14 @@
   "pinData": {
   },
   "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "ATeafIxZxFrZ0jIR",
     "executionOrder": "v1"
   },
   "staticData": null,
   "tags": [
   ],
   "triggerCount": 1,
-  "updatedAt": "2025-04-09T10:40:13.000Z",
-  "versionId": "2141eb8f-3df1-48a2-aea3-fb0b8faf97b2"
+  "updatedAt": "2025-04-14T15:41:42.000Z",
+  "versionId": "a7b0fdba-5069-430a-83c1-6d79443e6ddf"
 }
