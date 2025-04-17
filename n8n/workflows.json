@@ -6111,9 +6111,10 @@
         "name": "Telegram",
         "parameters": {
           "additionalFields": {
+            "appendAttribution": false
           },
           "chatId": "={{ $json.id }}",
-          "text": "=Set your near wallet first using /setwallet command."
+          "text": "=Connect your NEAR wallet first using /login command."
         },
         "position": [
           1200,
@@ -6135,8 +6136,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-14T15:41:49.000Z",
-    "versionId": "706ba47f-0184-4f9b-8957-c62e62baf367"
+    "updatedAt": "2025-04-17T10:31:31.000Z",
+    "versionId": "4f5ba785-f8d5-4c60-92a2-c206c0612e60"
   },
   {
     "active": false,
