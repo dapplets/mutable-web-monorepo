@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import XEN_IMAGE from './assets/xen-girl-001.png'
-
-type TUserInfo = {
-  id: number
-  firstName: string
-  lastName?: string
-  username?: string
-}
+import Wallet from './components/Wallet'
+import { TUserInfo } from './types'
 
 function App() {
   const [user, setUserInfo] = useState<TUserInfo | null>(null)
@@ -63,21 +58,22 @@ function App() {
         {user ? (
           <div className="flex flex-col items-center justify-center gap-2 p-7">
             <p className="text-center">
-              <strong>ID:</strong> ${user.id}
+              <strong>ID:</strong> {user.id}
             </p>
             <p className="text-center">
-              <strong>First Name:</strong> ${user.firstName}
+              <strong>First Name:</strong> {user.firstName}
             </p>
             <p className="text-center">
-              <strong>Last Name:</strong> ${user.lastName ? user.lastName : '-'}
+              <strong>Last Name:</strong> {user.lastName ? user.lastName : '-'}
             </p>
             <p className="text-center">
-              <strong>Username:</strong> ${user.username ? user.username : '-'}
+              <strong>Username:</strong> {user.username ? user.username : '-'}
             </p>
           </div>
         ) : (
           <p className="text-center">User information is not available.</p>
         )}
+        <Wallet user={user} />
       </div>
     </>
   )
