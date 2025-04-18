@@ -1,222 +1,241 @@
 .wrapper {
   z-index: 100;
+  max-width: 75rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9375rem 1.25rem;
 }
 
-.linkBlock {
+.logoLink:hover img {
+  filter: invert(61%) sepia(91%) saturate(407%) hue-rotate(310deg)
+    brightness(79%) contrast(114%);
+}
+
+.navLinks {
   flex: 1 1 auto;
   max-width: 21%;
-  padding-top: 3px;
+  padding-top: 0.1875rem;
+  display: flex;
+  justify-content: space-between;
 }
 
 .linkHover {
   transition: all 0.2s ease;
+  font-size: 1rem;
 
   &:hover {
-    transition: all 0.2s ease;
-    color: #ff827c;
+    color: var(--red-ff);
   }
 }
 
 .active {
-  color: #db504a;
+  color: var(--red-db);
 
   &:hover {
-    transition: all 0.2s ease;
-    color: #ff827c;
+    color: var(--red-ff);
   }
 }
 
-.mode {
+.themeSwitcher {
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-right: 10px;
+  margin-right: 0.625rem;
 
   &:hover {
-    transition: all 0.2s ease;
     transform: scale(0.7);
   }
 }
 
-.hoverLogo {
-  &:hover {
-    transform: none !important;
-
-    img {
-      transform: none !important;
-      filter: invert(61%) sepia(91%) saturate(407%) hue-rotate(310deg)
-        brightness(79%) contrast(114%);
-    }
-  }
+.mvmButton {
+  height: 2.125rem !important;
+  width: 5.25rem;
 }
 
 .burger {
-  width: 34px;
-  height: 34px;
-  border: 1px solid #1d1d1d;
-  border-radius: 5px;
+  display: none;
+  width: 2.125rem;
+  height: 2.125rem;
+  border: 1px solid var(--black-1d);
+  border-radius: 0.3125rem;
   opacity: 0.6;
   cursor: pointer;
+  position: relative;
 
   &:hover {
     transform: scale(0.9);
   }
 }
 
-:global(.dark) .burger {
-  border: 1px solid #fff;
-}
+.burgerLines,
+.burgerLinesActive {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 0.125rem;
+  width: 0.9375rem;
+  background: var(--black-1d);
 
-.burgerMedium {
-  display: flex;
-  position: relative;
-  height: 2px;
-  width: 15px;
-  background: #1d1d1d;
-
-  &::before {
-    position: absolute;
+  &::before,
+  &::after {
     content: '';
-    height: 2px;
-    width: 15px;
+    position: absolute;
+    height: 0.125rem;
+    width: 0.9375rem;
+    background: var(--black-1d);
     left: 0;
-    top: 4px;
-    background: #1d1d1d;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    height: 2px;
-    width: 15px;
-    bottom: 4px;
-    background: #1d1d1d;
-  }
-}
-
-:global(.dark) .burgerMedium {
-  background: #fff;
-
-  &::after {
-    background: #fff;
   }
 
   &::before {
-    background: #fff;
+    top: 0.25rem;
+  }
+
+  &::after {
+    bottom: 0.25rem;
+  }
+}
+
+:global(.dark) {
+  .burgerLinesActive {
+    &::after {
+      background: var(--white);
+    }
+
+    &::before {
+      background: var(--white);
+    }
+  }
+}
+
+.burgerLinesActive {
+  transform: translate(-50%, -50%) rotate(-45deg);
+
+  &::after {
+    display: none;
+  }
+
+  &::before {
+    transform: rotate(90deg);
+    top: 0;
   }
 }
 
 .mobileMenu {
-  width: 100vw;
-  height: 100vh;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  background: #e7ecef;
+  width: 100vw;
+  height: 100vh;
+  background: var(--grey-e7);
   z-index: 99;
+}
 
-  .mobileMenuWrapper {
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 15px;
-    padding-bottom: 15px;
-  }
+.mobileMenuContent {
+  padding: 0.9375rem 1.25rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-  .mobileMenuTop {
-    .linkHover {
-      margin-top: 0;
-    }
+.mobileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 3.125rem;
+}
 
-    .active {
-      margin-top: 0;
-    }
+.mobileNav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 1.25rem;
 
-    .burgerMedium {
-      transform: rotate(-45deg);
-
-      &::after {
-        display: none;
-      }
-
-      &::before {
-        transform: rotate(90deg);
-        top: 0;
-      }
-    }
-  }
-
-  .mode {
-    width: 50px;
-    margin-right: 0;
-    transform: translateX(-10px);
+  a {
+    margin-left: auto;
   }
 
   .linkHover {
-    font-size: 24px;
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-
-  .mobileMenuBottom {
-    width: 300px;
+    font-size: 1.5rem;
+    margin: 1.25rem 0;
   }
 }
 
-:global(.dark) .mobileMenu {
-  background: #1d1d1d;
+.socialLinks {
+  display: flex;
+  justify-content: space-between;
+  width: 18.75rem;
+  margin-top: auto;
+  margin-left: auto;
+  margin-right: auto;
+  padding-bottom: 0.9375rem;
 }
 
-.mvm {
-  height: 34px;
-  width: 94px;
+.socialIcon {
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
 }
 
-@media (min-width: 1026px) {
+:global(.dark) {
+  .burger {
+    border-color: var(--white);
+
+    .burgerLines,
+    .burgerLinesActive,
+    .burgerLines::before,
+    .burgerLines::after {
+      background: var(--white);
+    }
+  }
+
   .mobileMenu {
+    background: var(--black-1d);
+  }
+}
+
+@media (max-width: 1185px) {
+  .navLinks {
     display: none;
   }
 
   .burger {
-    display: none;
-  }
-}
-
-@media (max-width: 1025px) {
-  .linkHover {
-    &:hover {
-      transform: none;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .mode {
-    margin-right: 25px;
+  .themeSwitcher {
+    margin-right: 1.5625rem;
+    margin-left: auto;
 
     &:hover {
       transform: none;
     }
-  }
-
-  .mobileMenu .mode:hover {
-    transform: translateX(-10px);
   }
 
   .mobileMenu {
-    -ms-overflow-style: none;
+    .themeSwitcher:hover {
+      transform: translateX(-0.625rem);
+    }
   }
 
-  .burger:hover {
-    transform: none;
-  }
-
-  .mvm {
-    margin-right: 10px;
+  .mvmButton {
+    margin-right: 0.625rem;
+    max-width: 5rem !important;
   }
 }
 
 @media (max-width: 719px) {
-  .mobileMenu .mobileMenuWrapper {
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+  .wrapper {
+    padding: 0.625rem 1.25rem;
+  }
+
+  .mobileMenuContent {
+    padding: 0.625rem;
   }
 }

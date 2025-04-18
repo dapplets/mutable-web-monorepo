@@ -1,139 +1,172 @@
 .wrapper {
-  width: 100vw;
-  height: 100vh;
-  background: rgba(#1b1b1b, 0.2);
   position: fixed;
   top: 0;
   left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--black-t2);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 5000;
 }
 
-:global(.dark) .wrapper {
-  background: rgba(#fff, 0.2);
-}
-
 .content {
-  width: 900px;
-  height: 80%;
-  border-radius: 10px;
-  background: rgba(222, 227, 230, 1);
-  padding: 40px;
-  position: relative;
-  padding-top: 0;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 149%;
+  width: 56.25rem;
+  max-height: 80vh;
+  background: var(--grey-de);
+  border-radius: 0.625rem;
+  padding: 2.5rem 2.5rem 1.875rem;
   display: flex;
-  overflow: hidden;
   flex-direction: column;
-  gap: 20px;
-}
-
-:global(.dark) .content {
-  background: rgba(27, 27, 27, 1);
+  overflow: hidden;
+  box-shadow: 0 0.25rem 1.875rem var(--black-t1);
 }
 
 .titleBlock {
-  width: 100%;
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: sticky;
-  top: 0px;
-  background: rgba(222, 227, 230, 1);
-  height: 100px;
-  padding-top: 40px;
-}
-
-:global(.dark) .titleBlock {
-  background: rgba(27, 27, 27, 1);
-}
-
-.scrollBlock {
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-  gap: 10px;
+  padding: 2.5rem 0 1.25rem;
+  background: var(--grey-de);
+  z-index: 10;
 }
 
 .title {
-  font-size: 32px;
-  line-height: 47.68px;
+  margin: 0;
+  font-size: var(--fs-20-32);
+  line-height: 1.5;
+  color: var(--black-1d);
+}
+
+.close {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 1.25rem;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.scrollBlock {
+  overflow-y: auto;
+  padding-right: 0.625rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.imgBlock {
+  width: 100%;
+  border-radius: 0.5rem;
+  aspect-ratio: 2.34 / 1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 2.34 / 1;
+  }
 }
 
 .textBlock {
   display: flex;
-  width: 100%;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.25rem;
+  color: var(--black-1d);
+}
+
+.subtitle {
+  font-size: var(--fs-16-18);
+  line-height: 1.5;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--fs-14-16);
+  line-height: 1.6;
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.buttonBlock {
+  margin-top: 1.25rem;
+  align-self: center;
+  width: 100%;
 }
 
 .titleBr {
   display: none;
 }
 
-.buttonBlock {
-  display: inline-block;
-  height: 52px;
+:global(.dark) {
+  .wrapper {
+    background: var(--white-t2);
+  }
+
+  .content,
+  .titleBlock {
+    background: var(--black-1d);
+  }
+
+  .title,
+  .textBlock {
+    color: var(--white);
+  }
 }
 
 @media (max-width: 1185px) {
   .content {
     width: 70%;
-    height: 80%;
+  }
+}
+
+@media (max-width: 992px) {
+  .content {
+    width: 85%;
+    padding: 1.875rem 1.5625rem 1.5625rem;
   }
 }
 
 @media (max-width: 719px) {
   .content {
-    width: 90dvw;
-    height: 90dvh;
-    padding: 20px;
-    padding-top: 0;
-  }
-
-  .scrollBlock {
-    padding-right: 15px;
-  }
-
-  .titleBr {
-    display: initial;
+    width: 90%;
+    max-height: 90vh;
+    padding: 1.25rem 0.9375rem;
   }
 
   .titleBlock {
+    padding: 1.25rem 0 0.9375rem;
     align-items: flex-start;
-    padding-top: 30px;
-
-    a {
-      margin-left: auto;
-      margin-right: -5px;
-    }
   }
 
   .title {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 149%;
-    text-align: left;
     width: 100%;
+    margin-bottom: 0.625rem;
   }
 
-  .textBlock {
-    div {
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 26.82px;
-      text-align: justified;
-    }
+  .titleBr {
+    display: inline;
+  }
 
-    p {
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 20.86px;
-      text-align: justified;
-    }
+  .close {
+    margin: 0;
+  }
+
+  .imgBlock img {
+    height: 12.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0.9375rem 0.625rem;
   }
 }

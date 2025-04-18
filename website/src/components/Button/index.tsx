@@ -23,17 +23,10 @@ export function Button({
   onClick,
 }: ButtonProps) {
   return (
-    <div
-      onClick={onClick}
-      className={cn(
-        styles.wrapper,
-        'flex items-center justify-center',
-        classNames
-      )}
-    >
+    <div onClick={onClick} className={cn(styles.wrapper, classNames)}>
       {link ? (
         <a
-          className={cn(styles.buttonDefault, 'fonts', {
+          className={cn(styles.buttonDefault, {
             [styles.buttonPrimary]: isPrimary,
             [styles.buttonOutline]: isOutline,
           })}
@@ -43,7 +36,7 @@ export function Button({
         >
           {icon ? (
             <ThemeImage
-              className={cn(styles.img)}
+              className={styles.img}
               width={24}
               height={24}
               alt='button'
@@ -54,14 +47,14 @@ export function Button({
         </a>
       ) : (
         <button
-          className={cn(styles.buttonDefault, 'fonts', {
+          className={cn(styles.buttonDefault, {
             [styles.buttonPrimary]: isPrimary,
             [styles.buttonOutline]: isOutline,
           })}
         >
           {icon ? (
             <Image
-              className={cn(styles.img)}
+              className={styles.img}
               width={24}
               height={24}
               alt='button'

@@ -1,8 +1,12 @@
 .wrapper {
   border: none;
   text-decoration: none;
-  width: 193px;
-  height: 52px;
+  width: 100%;
+  max-width: 12.0625rem;
+  height: 3.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .buttonDefault {
@@ -11,45 +15,43 @@
   justify-content: center;
   width: 100%;
   height: 100%;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 149%;
-  border-radius: 6px;
+  font-size: 1rem;
+  line-height: 1.49;
+  border-radius: 0.375rem;
 }
 
 .buttonPrimary {
-  background: #db504a;
+  background: var(--red-db);
   transition: all 0.2s ease;
-  color: #fff;
-  box-shadow:
-    0px 0px 0px 0px rgba(255, 64, 0, 0.1),
-    0px 3px 7px 0px rgba(255, 64, 0, 0.1),
-    0px 13px 13px 0px rgba(255, 64, 0, 0.09),
-    0px 30px 18px 0px rgba(255, 64, 0, 0.05),
-    0px 54px 21px 0px rgba(255, 64, 0, 0.01),
-    0px 84px 23px 0px rgba(255, 64, 0, 0);
+  color: var(--white);
+  box-shadow: 0px 0px 0px 0px var(--shadow-t1),
+    0px 0.1875rem 0.4375rem 0px var(--shadow-t1),
+    0px 0.8125rem 0.8125rem 0px var(--shadow-t09),
+    0px 1.875rem 1.125rem 0px var(--shadow-t05),
+    0px 3.375rem 1.3125rem 0px var(--shadow-t01),
+    0px 5.25rem 1.4375rem 0px var(--shadow-t00);
 
   &:hover {
     transition: all 0.2s ease;
-    background: #ff827c;
+    background: var(--red-ff);
   }
 }
 
 :global(.dark) .buttonPrimary:hover {
   transition: all 0.2s ease;
-  background: #ff827c;
+  background: var(--red-ff);
 }
 
 .buttonOutline {
   background: inherit;
-  border: 1px solid #7c43c5;
-  color: #7c43c5;
+  border: 1px solid var(--violet-7c);
+  color: var(--violet-7c);
   transition: all 0.2s ease;
 
   &:hover {
     transition: all 0.2s ease;
-    color: #fff;
-    background: #7c43c5;
+    color: var(--white);
+    background: var(--violet-7c);
 
     img {
       filter: brightness(0) invert(1);
@@ -58,12 +60,12 @@
 }
 
 .img {
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 
 @media (max-width: 1185px) {
   .wrapper {
-    width: 240px;
+    max-width: 15rem;
   }
 
   .buttonPrimary:hover {
@@ -77,7 +79,7 @@
 
 @media (max-width: 719px) {
   .wrapper {
-    width: 100%;
+    max-width: none;
   }
 
   .buttonPrimary:hover {

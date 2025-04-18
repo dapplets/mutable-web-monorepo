@@ -1,8 +1,8 @@
 <svg width="1920" height="761" viewBox="0 0 1920 761" fill="none" xmlns="http://www.w3.org/2000/svg">
 <line x1="1609.5" y1="20" x2="1609.5" y2="741" stroke="#303030" stroke-dasharray="2 2"/>
 <line x1="310.5" y1="20" x2="310.5" y2="741" stroke="#303030" stroke-dasharray="2 2"/>
-<line x1="697.5" y1="428" x2="697.5" y2="580" stroke="#303030" stroke-dasharray="2 2"/>
-<line x1="1223.5" y1="428" x2="1223.5" y2="580" stroke="#303030" stroke-dasharray="2 2"/>
+<line x1="737.5" y1="428" x2="737.5" y2="580" stroke="#303030" stroke-dasharray="2 2"/>
+<line x1="1183.5" y1="428" x2="1183.5" y2="580" stroke="#303030" stroke-dasharray="2 2"/>
 <line x1="310" y1="300.5" y2="300.5" stroke="#303030" stroke-dasharray="2 2"/>
 <line x1="1920" y1="300.5" x2="1610" y2="300.5" stroke="#303030" stroke-dasharray="2 2"/>
 <line x1="1610" y1="580.5" x2="310" y2="580.5" stroke="#303030" stroke-dasharray="2 2"/>
@@ -12,10 +12,10 @@
 <circle cx="310" cy="20" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
 <circle cx="310" cy="580" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
 <circle cx="310" cy="741" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
-<circle cx="697" cy="580" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
-<circle cx="697" cy="428" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
-<circle cx="1223" cy="580" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
-<circle cx="1223" cy="428" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
+<circle cx="737" cy="580" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
+<circle cx="737" cy="428" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
+<circle cx="1183" cy="580" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
+<circle cx="1183" cy="428" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
 <circle cx="1609" cy="580" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
 <circle cx="1609" cy="741" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>
 <circle cx="1609" cy="20" r="19.5" fill="#1D1D1D" stroke="#303030" stroke-dasharray="2 2"/>

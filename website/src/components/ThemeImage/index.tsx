@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import styles from './ThemeImage.module.scss';
 import Image, { ImageProps } from 'next/image';
 import cn from 'classnames';
@@ -12,8 +13,17 @@ type Props = Omit<ImageProps, 'src' | 'priority' | 'loading'> & {
 };
 
 export const ThemeImage = (props: Props) => {
+  const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const { src, alt, className, priority, width, height, ...rest } = props;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || !src) {
+    return <div style={{ width, height }} className={cn(className, 'unset')} />;
+  }
 
   const themeSrc =
     resolvedTheme === 'dark' ? '/themes/dark/' + src : '/themes/light/' + src;
@@ -28,7 +38,7 @@ export const ThemeImage = (props: Props) => {
         'unset',
         className,
         {
-          [styles.noTransition]: className == 'noTransition',
+          [styles.noTransition]: className === 'noTransition',
         }
       )}
       priority={priority}

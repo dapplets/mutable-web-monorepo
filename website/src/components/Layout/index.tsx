@@ -44,7 +44,7 @@ export const Layout: FC<LayoutProps> = ({ children, title, description }) => {
         />
         <link
           rel='icon'
-          href={`/themes/${theme}/favicon/favicon.\svg`}
+          href={`/themes/${theme}/favicon/favicon.svg`}
           type='image/svg+xml'
         />
         <link
@@ -56,13 +56,8 @@ export const Layout: FC<LayoutProps> = ({ children, title, description }) => {
         <title>{title}</title>
         <meta name='description' content={description} />
       </Head>
-      <div
-        className={cn(
-          styles.wrapper,
-          'dark:backgroundDark min-h-screen bg-dpl-white dark:bg-dpl-black'
-        )}
-      >
-        <div className={cn(styles.menu)}>
+      <div className={cn(styles.wrapper, styles.layoutContainer)}>
+        <div className={styles.menu}>
           <Header setModalOpen={setModalOpen} />
         </div>
 

@@ -1,213 +1,466 @@
 .titleWrapper {
-  padding: 185px 10px 45px 10px;
+  padding: 11.5625rem 0.625rem 2.8125rem 0.625rem;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: 75rem;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
 }
 
 .titleTitle {
-  font-size: 64px;
+  font-size: var(--fs-36-64);
   font-weight: 600;
   line-height: 100%;
-  padding-bottom: 35px;
+  padding-bottom: 2.1875rem;
 }
 
 .titleMessage {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 140%;
-  padding-bottom: 75px;
-  width: 630px;
+  font-size: var(--fs-14-16);
+  line-height: 1.4;
+  padding-bottom: 4.6875rem;
+  width: 39.375rem;
   opacity: 0.7;
   position: relative;
 
   &::before {
     content: '';
     position: absolute;
-    width: 670px;
-    height: 40px;
+    width: 41.875rem;
+    height: 2.5rem;
     background: url('/themes/dark/icons/about/title-icon.svg');
     background-repeat: no-repeat;
-    bottom: 25px;
-    left: -20px;
+    bottom: 1.5625rem;
+    left: -1.25rem;
   }
 }
 
 .titleButtons {
-  width: 406px;
+  width: 25.375rem;
+  display: flex;
+  justify-content: space-between;
 }
 
 .iconBlock {
-  margin-top: -60px;
-  transform: translateX(10px);
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -3.75rem;
+  transform: translateX(0.625rem);
+}
+
+.supportedBlockIcon {
+  margin: 0 auto;
+  max-width: 75rem;
 }
 
 .problemWrapper {
   position: relative;
-  padding: 73px 10px;
+  padding: 4.5625rem 0.625rem;
   width: 100%;
+  display: flex;
+  gap: 2.5rem;
+  margin: 0 auto;
+  max-width: 75rem;
 }
 
 .problemDelimeter {
   position: absolute;
-  top: -4px;
-  left: 10px;
-  width: 795px;
-  height: 4px;
-  background: #db504a;
+  top: -0.25rem;
+  left: 0.625rem;
+  width: 49.6875rem;
+  height: 0.25rem;
+  background: var(--red-db);
 }
 
 .problemTitle {
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 100%;
-  width: 390px;
+  font-size: var(--fs-24-48);
+  line-height: 1;
+  width: 24.375rem;
   display: flex;
+  align-items: center;
 }
 
 .problemText {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 139%;
+  font-size: var(--fs-14-16);
+  line-height: 1.39;
   opacity: 0.7;
-  width: calc(100% - 447px);
+  width: calc(100% - 27.9375rem);
   margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .missionBg {
   width: 100vw;
-  background: #1b1b1b;
+  background: var(--black-1d);
 }
 
 .missionWrapper {
-  padding: 70px 10px;
+  padding: 4.375rem 0.625rem;
   width: 100%;
+  display: flex;
+  gap: 2.5rem;
+  margin: 0 auto;
+  max-width: 75rem;
 }
 
 .missionTitleBlock {
-  width: 390px;
+  width: 24.375rem;
   display: flex;
+  flex-direction: column;
 }
 
 .missionTitle {
-  font-size: 48px;
+  font-size: var(--fs-24-48);
   font-weight: 600;
-  line-height: 100%;
-  padding-bottom: 10px;
+  line-height: 1;
+  padding-bottom: 0.625rem;
+  display: flex;
 }
 
 .missionHilight {
-  color: #db504a;
+  color: var(--red-db);
 }
 
 .missionMessage {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 130%;
+  font-size: var(--fs-14-16);
+  line-height: 1.3;
   opacity: 0.7;
 }
 
 .missionText {
-  width: calc(100% - 447px);
+  width: calc(100% - 27.9375rem);
   margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem 1.25rem;
 }
 
 .missionItem {
-  width: calc(50% - 20px);
-  padding: 20px 20px 5px 20px;
+  width: calc(50% - 1.25rem);
+  padding: 1.25rem 1.25rem 0.3125rem 1.25rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .missionItemTitle {
-  font-size: 24px;
+  font-size: var(--fs-18-24);
   font-weight: 600;
-  line-height: 149%;
+  line-height: 1.49;
   position: relative;
-  padding-left: 20px;
-  padding-bottom: 6px;
+  padding-left: 1.25rem;
+  padding-bottom: 0.375rem;
 
   &::before {
     content: '';
     position: absolute;
     left: 0px;
-    top: 13px;
+    top: 0.8125rem;
     border-radius: 50%;
-    width: 10px;
-    height: 10px;
+    width: 0.625rem;
+    height: 0.625rem;
     display: block;
-    background: #db504a;
+    background: var(--red-db);
   }
 }
 
 .missionItemMessage {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 130%;
+  font-size: var(--fs-14-16);
+  line-height: 1.3;
   opacity: 0.7;
 }
 
 .brandWrapper {
   width: 100%;
-  padding: 100px 10px 70px 10px;
+  padding: 6.25rem 0.625rem 4.375rem 0.625rem;
+  display: flex;
+  gap: 2.5rem;
+  margin: 0 auto;
+  max-width: 75rem;
 }
 
 .brandTitleBlock {
-  width: 407px;
+  width: 25.4375rem;
   display: flex;
+  flex-direction: column;
 }
 
 .brandTitle {
-  font-size: 48px;
+  font-size: var(--fs-24-48);
   font-weight: 600;
-  line-height: 100%;
-  padding-bottom: 40px;
-}
-
-.brandMessageBlock {
-  width: calc(100% - 447px);
+  line-height: 1;
+  padding-bottom: 2.5rem;
   display: flex;
 }
 
+.desktopBrandButton {
+  display: block;
+}
+
+.mobileBrandButton {
+  display: none;
+}
+
+.brandMessageBlock {
+  width: calc(100% - 27.9375rem);
+  display: flex;
+  justify-content: space-between;
+}
+
 .brandMessage {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 139%;
-  padding: 1px 20px;
-  width: calc(50% - 20px);
+  font-size: var(--fs-14-16);
+  line-height: 1.39;
+  padding: 1px 1.25rem;
+  width: calc(50% - 1.25rem);
   opacity: 0.7;
 }
 
 :global(.light) {
-  .titleMessage {
-    &::before {
-      content: '';
-      position: absolute;
-      width: 670px;
-      height: 40px;
-      background: url('/themes/light/icons/about/title-icon.svg');
-      bottom: 25px;
-      left: -20px;
-      background-repeat: no-repeat;
-    }
-
-    @media (max-width: 1185px) {
-      &::before {
-        width: 688px;
-        bottom: 0px;
-        left: 0px;
-        top: -175px;
-        left: 50%;
-        transform: translateX(-50%);
-      }
-    }
-
-    @media (max-width: 719px) {
-      &::before {
-        display: none;
-      }
-    }
+  .titleMessage::before {
+    background: url('/themes/light/icons/about/title-icon.svg');
   }
 
   .missionBg {
-    background: #e3e8eb;
+    background: var(--grey-e3);
   }
 }
 
-@import './adaptive';
+@media (max-width: 1185px) {
+  .titleWrapper {
+    padding: 6.25rem 0.625rem 2.8125rem 0.625rem;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .titleBlock {
+    order: 1;
+    padding-top: 6.5625rem;
+    width: 100%;
+    align-items: center;
+  }
+
+  .titleTitle {
+    padding-left: 0.625rem;
+  }
+
+  .titleMessage {
+    width: 100%;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    text-align: center;
+    padding-bottom: 6.25rem;
+
+    &::before {
+      width: 43rem;
+      bottom: 0px;
+      left: 50%;
+      top: -10.9375rem;
+      transform: translateX(-50%);
+    }
+  }
+
+  .titleButtons {
+    width: 30.375rem;
+
+    div {
+      width: 14.625rem !important;
+    }
+  }
+
+  .iconBlock {
+    order: 0;
+    width: 32rem;
+    height: 30rem;
+    margin-top: 0;
+    transform: none;
+  }
+
+  .supportedBlockIcon {
+    width: 32rem;
+    height: 30rem;
+  }
+
+  .problemWrapper {
+    padding: 4.0625rem 1.25rem;
+    flex-direction: column;
+  }
+
+  .problemDelimeter {
+    width: calc(100% - 2.5rem);
+    left: 1.25rem;
+  }
+
+  .problemTitle {
+    width: 100%;
+    padding-bottom: 3.75rem;
+  }
+
+  .problemText {
+    margin-left: unset;
+    width: 100%;
+  }
+
+  .missionWrapper {
+    padding: 4.6875rem 1.25rem;
+    flex-direction: column;
+  }
+
+  .missionTitleBlock {
+    width: 100%;
+    padding-bottom: 2.1875rem;
+  }
+
+  .missionText {
+    margin-left: unset;
+    width: 100%;
+  }
+
+  .missionItem {
+    padding-right: 0.3125rem;
+  }
+
+  .brandWrapper {
+    padding: 5rem 1.25rem 5.625rem 1.25rem;
+    flex-direction: column;
+  }
+
+  .brandTitleBlock {
+    width: 100%;
+  }
+
+  .brandMessageBlock {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .brandMessage {
+    width: 100%;
+    padding-left: 0;
+    padding-bottom: 1.875rem;
+  }
+}
+
+@media (max-width: 719px) {
+  .titleWrapper {
+    padding: 4.375rem 0.625rem 2.8125rem 0.625rem;
+  }
+
+  .titleBlock {
+    padding-top: 2.625rem;
+  }
+
+  .titleTitle {
+    padding-bottom: 1.25rem;
+  }
+
+  .titleMessage {
+    line-height: 1.3;
+    padding-left: 0.3125rem;
+    padding-right: 0.3125rem;
+    padding-bottom: 2.1875rem;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  .titleButtons {
+    flex-direction: column;
+    width: 17.5rem;
+
+    div {
+      width: 100% !important;
+      margin-bottom: 0.625rem;
+    }
+  }
+
+  .iconBlock {
+    width: 11rem;
+    height: 10.375rem;
+  }
+
+  .supportedBlockIcon {
+    width: 11rem;
+    height: 10.375rem;
+  }
+
+  .problemWrapper {
+    padding-top: 0;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    padding-bottom: 2.5rem;
+  }
+
+  .problemDelimeter {
+    display: none;
+  }
+
+  .problemTitle {
+    padding-bottom: 1.0625rem;
+  }
+
+  .problemText {
+    line-height: 1.3;
+  }
+
+  .missionWrapper {
+    padding-top: 2.375rem;
+    padding-bottom: 1.25rem;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+  }
+
+  .missionTitleBlock {
+    padding-bottom: 0.625rem;
+  }
+
+  .missionMessage {
+    padding-right: 0.625rem;
+  }
+
+  .missionItem {
+    width: 100%;
+    padding: 1.1875rem 0.625rem 0.3125rem 0.625rem;
+
+    &:nth-child(3),
+    &:nth-child(4) {
+      margin-top: -0.9375rem;
+    }
+  }
+
+  .missionItemTitle {
+    line-height: 1.3;
+
+    &::before {
+      top: 0.375rem;
+    }
+  }
+
+  .brandWrapper {
+    padding: 2.9375rem 1.25rem 2.1875rem 1.25rem;
+  }
+
+  .brandMessage {
+    padding-bottom: 2.1875rem;
+  }
+
+  .desktopBrandButton {
+    display: none;
+  }
+
+  .mobileBrandButton {
+    display: block;
+    width: 17.5rem !important;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 0.3125rem;
+  }
+}

@@ -1,3 +1,8 @@
+.wrapper {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
 .menu {
   position: fixed;
   top: 0;
@@ -5,20 +10,32 @@
   width: 100%;
   background: inherit;
   z-index: 100;
-  border-bottom: 1px solid #c1c6ce;
+  border-bottom: 1px solid var(--grey-c1);
 }
 
 .delimeter {
   display: block;
   width: 100%;
   height: 1px;
-  background: #c1c6ce;
+  background: var(--grey-c1);
 }
 
-:global(.dark) .delimeter {
-  background: #303030;
+:global(.dark) {
+  .wrapper {
+    background: var(--black-1d);
+  }
+
+  .delimeter {
+    background: var(--black-30);
+  }
+
+  .menu {
+    border-bottom: 1px solid var(--black-30);
+  }
 }
 
-:global(.dark) .menu {
-  border-bottom: 1px solid #303030;
+@media (max-width: 768px) {
+  .delimeter {
+    transform: translate3d(0, 2.5rem, 0);
+  }
 }

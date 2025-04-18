@@ -1,0 +1,100 @@
+.container {
+  max-width: 82.5rem;
+  margin: 0 auto;
+  background: var(--white);
+  color: var(--black-1d);
+  padding: 2.5rem;
+}
+
+.content {
+  max-width: 56.25rem;
+  margin: 0 auto;
+}
+
+.mainTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  padding-top: 5rem;
+  line-height: 1.2;
+}
+
+.lastUpdated {
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 2.5rem 0 1rem;
+}
+
+.subsectionTitle {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.subheading {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 1rem 0 0.5rem;
+}
+
+.paragraph {
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+
+.list {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  li {
+    line-height: 1.5;
+    padding-left: 0.5rem;
+  }
+}
+
+.link {
+  text-decoration: underline;
+  transition: color 0.2s ease;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .container {
+    padding: 1.875rem 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.25rem 0.9375rem;
+  }
+
+  .mainTitle {
+    font-size: 1.75rem;
+    padding-top: 3.75rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.25rem;
+  }
+
+  .subsectionTitle {
+    font-size: 1.125rem;
+  }
+}

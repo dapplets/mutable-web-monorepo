@@ -1,6 +1,5 @@
 import styles from './About.module.scss';
 import { Layout } from '@/components/Layout';
-import cn from 'classnames';
 import { brand, mission, problem, title } from '@/constants/constantsTextAbout';
 import { Button } from '@/components/Button';
 import { ThemeImage } from '@/components/ThemeImage';
@@ -9,28 +8,16 @@ function About() {
   return (
     <Layout
       title='Empowering Web Communities with Dapplets and Mutable Web: Solving Centralization Issues.'
-      description='Enhance web experiences with Dapplets and Mutable Web. Empowering web communities, fostering freedom, and enabling new business possibilities. Join us in building a more connected digital world.
-    '
+      description='Enhance web experiences with Dapplets and Mutable Web. Empowering web communities, fostering freedom, and enabling new business possibilities. Join us in building a more connected digital world.'
     >
-      <div className={cn(styles.wrapper, 'fonts  mx-auto flex flex-col ')}>
-        <div
-          className={cn(
-            styles.titleWrapper,
-            'container-xl max-xl:container-lg max-lg:container-mob mx-auto flex justify-between max-xl:flex-col max-xl:items-center'
-          )}
-        >
-          <div
-            className={cn(
-              styles.titleBlock,
-              'flex w-6/12 flex-col max-xl:w-full max-xl:items-center'
-            )}
-          >
-            <div className={cn(styles.titleTitle, '')}> {title.title}</div>
-            <div className={cn(styles.titleMessage, '')}> {title.message}</div>
-            <div className={cn(styles.titleButtons, 'flex justify-between')}>
+      <div className={styles.wrapper}>
+        <div className={styles.titleWrapper}>
+          <div className={styles.titleBlock}>
+            <h1 className={styles.titleTitle}>{title.title}</h1>
+            <p className={styles.titleMessage}>{title.message}</p>
+            <div className={styles.titleButtons}>
               <Button
-                classNames=''
-                link='https://chromewebstore.google.com/detail/mutable-web/cnahdmdbhkphpbpbjjbfdnmbphbenglc'
+                link='https://chrome.google.com/webstore/detail/dapplets/pjjnaojpjhgbhpfffnjleidmdbajagdj'
                 text='Get started'
                 isPrimary
                 icon='icons/button/download.svg'
@@ -43,116 +30,70 @@ function About() {
               />
             </div>
           </div>
-          <div
-            className={cn(
-              styles.iconBlock,
-              'flex w-6/12 items-center justify-center'
-            )}
-          >
+          <div className={styles.iconBlock}>
             <ThemeImage
-              className={cn(styles.supportedBlockIcon, 'noTransition')}
+              className={styles.supportedBlockIcon}
               width={439}
               height={411}
               alt='About'
               src='icons/about/bg-title.svg'
-              style={{ transform: 'none', cursor: 'default' }}
             />
           </div>
         </div>
-        <div
-          className={cn(
-            styles.problemWrapper,
-            'container-xl max-xl:container-lg max-lg:container-mob mx-auto flex gap-x-40tab max-xl:flex-col'
-          )}
-        >
-          <div className={cn(styles.problemDelimeter, '')}></div>
-          <div className={cn(styles.problemTitle, 'flex items-center')}>
-            problem statement
-          </div>
-          <div
-            className={cn(
-              styles.problemText,
-              'flex flex-col gap-y-20 max-xl:gap-y-17'
-            )}
-          >
+
+        <div className={styles.problemWrapper}>
+          <div className={styles.problemDelimeter}></div>
+          <h2 className={styles.problemTitle}>problem statement</h2>
+          <div className={styles.problemText}>
             {problem.map((x, i) => (
-              <p className={cn(styles.problemTextItem, 'flex')} key={i}>
+              <p className={styles.problemTextItem} key={i}>
                 {x.message}
               </p>
             ))}
           </div>
         </div>
-        <div className={cn(styles.missionBg)}>
-          <div
-            className={cn(
-              styles.missionWrapper,
-              'container-xl max-xl:container-lg max-lg:container-mob mx-auto flex gap-x-40tab max-xl:flex-col'
-            )}
-          >
-            <div className={cn(styles.missionTitleBlock, 'flex flex-col')}>
-              <div className={cn(styles.missionTitle, 'flex')}>
-                our&nbsp;{' '}
-                <div className={cn(styles.missionHilight, '')}>mission</div>
-              </div>
-              <div className={cn(styles.missionMessage, '')}>
-                {mission[0].message}
-              </div>
+
+        <div className={styles.missionBg}>
+          <div className={styles.missionWrapper}>
+            <div className={styles.missionTitleBlock}>
+              <h2 className={styles.missionTitle}>
+                our&nbsp;<span className={styles.missionHilight}>mission</span>
+              </h2>
+              <p className={styles.missionMessage}>{mission[0].message}</p>
             </div>
-            <div
-              className={cn(
-                styles.missionText,
-                'flex flex-wrap gap-x-40tab gap-y-45 max-xl:gap-y-40'
-              )}
-            >
+            <div className={styles.missionText}>
               {mission
                 .filter((x, i) => i !== 0)
                 .map((x, i) => (
-                  <div
-                    key={i}
-                    className={cn(styles.missionItem, 'flex flex-col')}
-                  >
-                    <div className={cn(styles.missionItemTitle, 'flex')}>
-                      {x.title}
-                    </div>
-                    <div className={cn(styles.missionItemMessage, 'flex')}>
-                      {x.message}
-                    </div>
+                  <div key={i} className={styles.missionItem}>
+                    <h3 className={styles.missionItemTitle}>{x.title}</h3>
+                    <p className={styles.missionItemMessage}>{x.message}</p>
                   </div>
                 ))}
             </div>
           </div>
         </div>
 
-        <div
-          className={cn(
-            styles.brandWrapper,
-            'container-xl max-xl:container-lg max-lg:container-mob mx-auto flex gap-x-40tab max-xl:flex-col'
-          )}
-        >
-          <div className={cn(styles.brandTitleBlock, 'flex flex-col')}>
-            <div className={cn(styles.brandTitle, 'flex')}>brand assets</div>
+        <div className={styles.brandWrapper}>
+          <div className={styles.brandTitleBlock}>
+            <h2 className={styles.brandTitle}>brand assets</h2>
             <Button
-              classNames='max-xl:hidden'
+              classNames={styles.desktopBrandButton}
               link='https://www.figma.com/community/file/1123896455146409779/dapplets-project-brand-assets'
               text='Watch Files'
               isPrimary
               icon='icons/button/download.svg'
             />
           </div>
-          <div
-            className={cn(
-              styles.brandMessageBlock,
-              'flex justify-between max-xl:flex-col'
-            )}
-          >
+          <div className={styles.brandMessageBlock}>
             {brand.map((x, i) => (
-              <div key={i} className={cn(styles.brandMessage, 'flex')}>
+              <p key={i} className={styles.brandMessage}>
                 {x.message}
-              </div>
+              </p>
             ))}
           </div>
           <Button
-            classNames={cn(styles.btnBrandMedia, 'xl:hidden')}
+            classNames={styles.mobileBrandButton}
             link='https://www.figma.com/community/file/1123896455146409779/dapplets-project-brand-assets'
             text='Watch Files'
             isPrimary
@@ -163,4 +104,5 @@ function About() {
     </Layout>
   );
 }
+
 export default About;
