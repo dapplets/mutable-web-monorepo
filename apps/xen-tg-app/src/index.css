@@ -5,6 +5,10 @@
 @theme {
   --color-white-text: rgba(248, 249, 255, 1);
   --color-black-text: rgba(34, 34, 34, 1);
+  --color-gray-text: rgba(122, 129, 139, 1);
+  --color-light-white-bg: rgba(248, 249, 255, 0.05);
+  --color-primary: rgba(25, 206, 174, 1);
+
 }
 
 html, body {

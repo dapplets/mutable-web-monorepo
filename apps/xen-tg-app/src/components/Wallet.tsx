@@ -33,10 +33,10 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
         <img src={NEAR_ICON} alt="near" />
         {MOCKED_DATA.wallet.balance}
       </div>
-      <div className="flex items-center gap-3 text-[22px]/[150%] font-normal">
+      <div className="me-3 flex items-center gap-3 text-[22px]/[150%] font-normal">
         {MOCKED_DATA.wallet.address}
         <button
-          className="flex cursor-pointer text-[#7A818B] transition hover:text-(--color-white-text)"
+          className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-white-text)"
           onClick={handleDisconnect}
         >
           <LogOutIcon />

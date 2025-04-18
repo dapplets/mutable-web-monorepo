@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import XEN_IMAGE from './assets/xen-girl-001.png'
 import Wallet from './components/Wallet'
+import Agents from './components/Agents'
 import { TUserInfo } from './types'
 
 function App() {
@@ -50,12 +51,12 @@ function App() {
           <div className="interactive"></div>
         </div>
       </div>
-      <div className="relative flex max-w-xl flex-col items-center justify-center gap-6 p-8 text-[var(--color-white-text)]">
-        <div className="flex w-[210px] justify-center overflow-hidden rounded-full">
+      <div className="relative flex w-full max-w-xl min-w-sm flex-col items-center justify-center gap-5 px-2.5 py-5 text-[var(--color-white-text)]">
+        <div className="m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full">
           <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
         </div>
-        <h1 className="text-center text-3xl font-bold">Welcome to Xen Telegram App</h1>
-        {user ? (
+        {/* <h1 className="text-center text-3xl font-bold">Welcome to Xen Telegram App</h1> */}
+        {/* {user ? (
           <div className="flex flex-col items-center justify-center gap-2 p-7">
             <p className="text-center">
               <strong>ID:</strong> {user.id}
@@ -72,8 +73,9 @@ function App() {
           </div>
         ) : (
           <p className="text-center">User information is not available.</p>
-        )}
+        )} */}
         <Wallet user={user} />
+        <Agents user={user} />
       </div>
     </>
   )
