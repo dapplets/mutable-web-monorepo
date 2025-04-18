@@ -19,7 +19,7 @@ const Agent: FC<TAgentProps> = ({ agent, onDisconnect }) => {
         </div>
       </div>
       <div
-        className={`flex w-15 items-center justify-center rounded-[10px] bg-(--color-light-white-bg) py-3 text-xs/[100%] font-normal ${agent.status === 'active' ? 'text-(--color-primary)' : 'text-(--color-gray-text)'} capitalize`}
+        className={`flex w-15 items-center justify-center rounded-[10px] bg-(--color-light-white-bg) py-3 text-xs/[100%] font-normal ${agent.status === 'active' ? 'text-(--color-my-primary)' : 'text-(--color-gray-text)'} capitalize`}
       >
         {agent.status}
       </div>

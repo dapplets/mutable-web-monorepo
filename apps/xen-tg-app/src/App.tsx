@@ -5,6 +5,7 @@ import Agents from './components/Agents'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
 import Memories from './components/Memories'
+import DeveloperMode from './components/DeveloperMode'
 import { TUserInfo } from './types'
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
         )} */}
         <Wallet user={user} />
         <Agents user={user} />
+        <DeveloperMode />
         <Warnings user={user} />
         <Memories user={user} />
       </div>
