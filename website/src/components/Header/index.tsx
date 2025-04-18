@@ -16,10 +16,10 @@ const menuItems = [
     title: 'About',
     path: '/about/',
   },
-  {
-    title: 'Documentation',
-    path: 'https://docs.dapplets.org/docs/',
-  },
+  // {
+  //   title: 'Documentation',
+  //   path: 'https://docs.dapplets.org/docs/',
+  // },
 ];
 export interface HeaderProps {
   setModalOpen: (x: boolean) => void;
