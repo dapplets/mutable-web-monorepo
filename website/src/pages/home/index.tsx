@@ -109,30 +109,36 @@ function Home() {
                 src='icons/home/swarm.svg'
                 style={{ transform: 'none', cursor: 'default' }}
               />
-              <ThemeImage
+              <Link target='_blank' rel='noopener noreferrer' href='https://build.boshacks.com/bos-hacks/winners#dapplets-or-general-prize-1st-place-or-usd2500-usdc-or-aspiro.near-alsakhaev.near'>  <ThemeImage
                 className={cn(styles.supportedBlockIcon, 'noTransition')}
                 width={233}
                 height={55}
                 alt='BOS HACKS Hackathon'
                 src='icons/home/bos-hacks.svg'
-                style={{ transform: 'none', cursor: 'default' }}
+                style={{ transform: 'none', cursor: 'pointer' }}
               />
+              </Link>
+
+                <Link target='_blank' rel='noopener noreferrer' href='https://devfolio.co/projects/dapplets-72b4'> 
               <ThemeImage
                 className={cn(styles.supportedBlockIcon, 'noTransition')}
                 width={223}
                 height={63}
                 alt='Web3Hackfest'
                 src='icons/home/web3hackfest.svg'
-                style={{ transform: 'none', cursor: 'default' }}
+                style={{ transform: 'none', cursor: 'pointer' }}
               />
-              <ThemeImage
+              </Link>
+              <Link  target='_blank' rel='noopener noreferrer' href='https://www.blog.encode.club/encode-x-near-horizon-hackathon-powered-by-near-devhub-prizewinners-and-summary-bc5430af5851#:~:text=Community%20Tools'> <ThemeImage
                 className={cn(styles.supportedBlockIcon, 'noTransition')}
                 width={119}
                 height={63}
                 alt='Encode x NEAR Horizon Hackathon'
                 src='icons/home/encode-near-horizon.svg'
-                style={{ transform: 'none', cursor: 'default' }}
-              />
+                style={{ transform: 'none', cursor: 'pointer' }}
+              /></Link>
+
+             
             </div>
             <div
               className={cn(
@@ -282,14 +288,14 @@ function Home() {
                     {dapplet.title}
                   </div>
 
-                <div
-                  className={cn(
-                    styles.powerText,
-                    'fonts text-base opacity-70 max-xl:hidden'
-                  )}
-                >
-                  {dapplet.text}
-                </div>
+                  <div
+                    className={cn(
+                      styles.powerText,
+                      'fonts text-base opacity-70 max-xl:hidden'
+                    )}
+                  >
+                    {dapplet.text}
+                  </div>
                 </Link>
 
                 <div

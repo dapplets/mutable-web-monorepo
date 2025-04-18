@@ -158,8 +158,11 @@
   max-width: 600px;
   z-index: 2;
 }
+
 .supportedLableBlock {
+  z-index: 2;
 }
+
 .supportedBlockIcon {
   object-fit: contain;
 }
@@ -185,11 +188,14 @@
 }
 .supportedBlock {
   padding: 10px 30px;
-  .supportedBlockIcon:nth-child(4) {
-    transform: scale(1.5) !important;
-  }
-  .supportedBlockIcon:nth-child(3) {
-    transform: scale(1.5) !important;
+
+  a {
+    transition: all 0.2s ease;
+    cursor: pointer !important;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 }
 .howWrapper {
@@ -229,9 +235,8 @@
   width: 385px;
 }
 
-.powerItemLink{
-  
-    &:hover {
+.powerItemLink {
+  &:hover {
     border-radius: 10px;
     border: 1px solid rgba(48, 48, 48, 0);
 
@@ -254,7 +259,6 @@
     outline: none;
     border-style: unset;
   }
-
 }
 .powerImg {
   padding-bottom: 10px;
