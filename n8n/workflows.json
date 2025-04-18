@@ -1170,6 +1170,13 @@
               "node": "If2",
               "type": "main"
             }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Telegram13",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -3235,7 +3242,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "text": "=Xen already knows you."
+          "text": "=Welcome back, {{ $('Telegram Trigger').item.json.message.from.username }}.\nI am XEN. I am here to be a helpful and pleasant companion in your daily life. You can text me, voice me in any language or send me pictures and I will proactively help you.\n\nThe more I know about you, the more efficiently I can support you.\n\nIf you are not satisfied with my work, please provide feedback using the command \"/f\". It will help the team improve me. \n\nTo start using NEAR.AI Agents connect your NEAR wallet first using \"/setwallet your.near wallet\".\n\n⚠️⚠️ DON'T FORGET: this installation is cloud-based. Use local hardware for better privacy. ⚠️⚠️"
         },
         "position": [
           1920,
@@ -3826,8 +3833,9 @@
       {
         "executeOnce": false,
         "id": "0c9c85cb-1b2a-4339-a8ea-62abb3bf9c5d",
-        "maxTries": 5,
+        "maxTries": 3,
         "name": "Basic LLM Chain1",
+        "onError": "continueErrorOutput",
         "parameters": {
           "hasOutputParser": true,
           "messages": {
@@ -5489,6 +5497,30 @@
         ],
         "type": "n8n-nodes-base.stopAndError",
         "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "db20387b-9ffe-4c14-9f4a-44500f8a741c",
+        "name": "Telegram13",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('If').item.json.id }}",
+          "text": "={{ $('AI Agent').item.json.output }}"
+        },
+        "position": [
+          6500,
+          320
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "1f602e28-ec9f-43fd-b776-8a0a652cecfa"
       }
     ],
     "pinData": {
@@ -5502,8 +5534,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-15T19:53:46.000Z",
-    "versionId": "69cbd84c-7284-4de4-ba06-d4724c926c51"
+    "updatedAt": "2025-04-17T08:47:43.000Z",
+    "versionId": "8314664b-90eb-496d-a0b8-3f6305b762d3"
   },
   {
     "active": false,
@@ -6079,9 +6111,10 @@
         "name": "Telegram",
         "parameters": {
           "additionalFields": {
+            "appendAttribution": false
           },
           "chatId": "={{ $json.id }}",
-          "text": "=Set your near wallet first using /setwallet command."
+          "text": "=Connect your NEAR wallet first using /login command."
         },
         "position": [
           1200,
@@ -6103,8 +6136,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-14T15:41:49.000Z",
-    "versionId": "706ba47f-0184-4f9b-8957-c62e62baf367"
+    "updatedAt": "2025-04-17T10:31:31.000Z",
+    "versionId": "4f5ba785-f8d5-4c60-92a2-c206c0612e60"
   },
   {
     "active": false,
