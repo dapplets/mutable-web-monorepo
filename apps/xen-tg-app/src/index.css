@@ -4,11 +4,18 @@
 
 @theme {
   --color-white-text: rgba(248, 249, 255, 1);
+  --color-black-text: rgba(34, 34, 34, 1);
 }
 
 html, body {
   margin: 0;
   padding: 0;
+  font-family: Roboto, system-ui, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
 }
 
 /* :root {

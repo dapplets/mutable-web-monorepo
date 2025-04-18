@@ -50,7 +50,7 @@ function App() {
           <div className="interactive"></div>
         </div>
       </div>
-      <div className="relative flex flex-col items-center justify-center gap-6 p-8 text-[var(--color-white-text)]">
+      <div className="relative flex max-w-xl flex-col items-center justify-center gap-6 p-8 text-[var(--color-white-text)]">
         <div className="flex w-[210px] justify-center overflow-hidden rounded-full">
           <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
         </div>
