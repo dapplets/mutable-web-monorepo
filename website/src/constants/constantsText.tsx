@@ -7,13 +7,13 @@ export const getStartedMessage = {
 };
 
 export const getStartedLinks = [
-  {
-    id: '1',
-    link: 'https://docs.dapplets.org/docs/get-started',
-    title: 'Run your own dapplet',
-    content:
-      'Visit the documentation to learn how to create your own dapplet in just a few minutes.',
-  },
+  // {
+  //   id: '1',
+  //   link: 'https://docs.dapplets.org/docs/get-started',
+  //   title: 'Run your own dapplet',
+  //   content:
+  //     'Visit the documentation to learn how to create your own dapplet in just a few minutes.',
+  // },
   {
     id: '2',
     link: 'https://t.me/dapplets',

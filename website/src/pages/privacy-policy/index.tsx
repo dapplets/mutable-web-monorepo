@@ -1,171 +1,276 @@
-import { Button } from "@/components/Button";
+import { Button } from '@/components/Button';
 import styles from '../about/About.module.scss';
 import { Layout } from '@/components/Layout';
 import cn from 'classnames';
 
-
 import { ThemeImage } from '@/components/ThemeImage';
 
 function PrivacyPolice() {
-    return (
-        <Layout
-            title='Privacy Policy'
-            description='  This Privacy Policy describes Our policies and procedures on the collection, use and
+  return (
+    <Layout
+      title='Privacy Policy'
+      description='  This Privacy Policy describes Our policies and procedures on the collection, use and
             disclosure of Your information when You use the Service and tells You about Your privacy
             rights and how the law protects You.
     '
-        >
+    >
+      <div className='mx-auto max-w-[1320px] bg-dpl-white p-10 text-dpl-black  md:p-20 lg:px-40  '>
+        <h1 className='mb-5 pt-[80px] text-4xl font-bold'>Privacy Policy</h1>
+        <p className='mb-5 text-sm'>Last updated: {new Date().getFullYear()}</p>
+        <p className='mb-5'>
+          This Privacy Policy describes Our policies and procedures on the
+          collection, use, and disclosure of Your information when You use the
+          Service and tells You about Your privacy rights and how the law
+          protects You. We use Your Personal data to provide and improve the
+          Service. By using the Service, You agree to the collection and use of
+          information in accordance with this Privacy Policy.
+        </p>
 
-            <div className="bg-dpl-white text-dpl-black p-10 md:p-20 lg:px-40  max-w-[1320px] mx-auto  ">
-                <h1 className="text-4xl font-bold mb-5 pt-[80px]">Privacy Policy</h1>
-                <p className="text-sm mb-5">Last updated: {new Date().getFullYear()}</p>
-                <p className="mb-5">
-                    This Privacy Policy describes Our policies and procedures on the collection, use,
-                    and disclosure of Your information when You use the Service and tells You about Your
-                    privacy rights and how the law protects You. We use Your Personal data to provide and
-                    improve the Service. By using the Service, You agree to the collection and use of
-                    information in accordance with this Privacy Policy.
-                </p>
+        {/* Interpretation and Definitions Section */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Interpretation and Definitions
+        </h2>
+        <h3 className='mb-3 mt-5 text-xl font-medium'>Interpretation</h3>
+        <p className='mb-5'>
+          The words of which the initial letter is capitalized have meanings
+          defined under the following conditions. The following definitions
+          shall have the same meaning regardless of whether they appear in
+          singular or plural.
+        </p>
 
-                {/* Interpretation and Definitions Section */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Interpretation and Definitions</h2>
-                <h3 className="text-xl font-medium mt-5 mb-3">Interpretation</h3>
-                <p className="mb-5">
-                    The words of which the initial letter is capitalized have meanings defined under
-                    the following conditions. The following definitions shall have the same meaning
-                    regardless of whether they appear in singular or plural.
-                </p>
+        {/* Definitions */}
+        <h3 className='mb-3 text-xl font-medium'>Definitions</h3>
+        <p className='mb-5'>For the purposes of this Privacy Policy:</p>
+        <ul className='list-disc space-y-3 pl-8'>
+          <li>
+            <strong>Account</strong> - means a unique account created for You to
+            access our Service or parts of our Service.
+          </li>
+          <li>
+            <strong>Company</strong> (referred to as either &quot;the
+            Company&quot; or &quot;We&quot; in this Agreement) refers to Crystal
+            Reality Media GmbH, Marienthaler Str. 173.
+          </li>
+          <li>
+            <strong>Cookies</strong> - small files placed on Your device by a
+            website, containing the details of Your browsing history.
+          </li>
+          <li>
+            <strong>Country</strong> - refers to Hamburg, Germany.
+          </li>
+          <li>
+            <strong>Device</strong> - any device that can access the Service,
+            such as a computer, cellphone, or digital tablet.
+          </li>
+          <li>
+            <strong>Personal Data</strong> - any information relating to an
+            identified or identifiable individual.
+          </li>
+          <li>
+            <strong>Service</strong> - refers to the Website.
+          </li>
+          <li>
+            <strong>Service Provider</strong> - any natural or legal person who
+            processes data on behalf of the Company.
+          </li>
+          <li>
+            <strong>Usage Data</strong> - data collected automatically,
+            generated by the use of the Service.
+          </li>
+          <li>
+            <strong>Website</strong> - refers to Dapplets Project, accessible
+            from{' '}
+            <a href='https://dapplets.org' className='text-accent underline'>
+              https://dapplets.org
+            </a>
+          </li>
+          <li>
+            <strong>You</strong> - refers to the individual or legal entity
+            accessing or using the Service.
+          </li>
+        </ul>
 
-                {/* Definitions */}
-                <h3 className="text-xl font-medium mb-3">Definitions</h3>
-                <p className="mb-5">For the purposes of this Privacy Policy:</p>
-                <ul className="list-disc pl-8 space-y-3">
-                    <li><strong>Account</strong> - means a unique account created for You to access our Service or parts of our Service.</li>
-                    <li><strong>Company</strong> (referred to as either &quot;the Company&quot; or &quot;We&quot; in this Agreement) refers to Crystal Reality Media GmbH, Marienthaler Str. 173.</li>
-                    <li><strong>Cookies</strong> - small files placed on Your device by a website, containing the details of Your browsing history.</li>
-                    <li><strong>Country</strong> - refers to Hamburg, Germany.</li>
-                    <li><strong>Device</strong> - any device that can access the Service, such as a computer, cellphone, or digital tablet.</li>
-                    <li><strong>Personal Data</strong> - any information relating to an identified or identifiable individual.</li>
-                    <li><strong>Service</strong> - refers to the Website.</li>
-                    <li><strong>Service Provider</strong> - any natural or legal person who processes data on behalf of the Company.</li>
-                    <li><strong>Usage Data</strong> - data collected automatically, generated by the use of the Service.</li>
-                    <li><strong>Website</strong> - refers to Dapplets Project, accessible from <a href="https://dapplets.org" className="text-accent underline">https://dapplets.org</a></li>
-                    <li><strong>You</strong> - refers to the individual or legal entity accessing or using the Service.</li>
-                </ul>
+        {/* Collecting and Using Your Personal Data Section */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Collecting and Using Your Personal Data
+        </h2>
 
-                {/* Collecting and Using Your Personal Data Section */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Collecting and Using Your Personal Data</h2>
+        {/* Types of Data Collected */}
+        <h3 className='mb-3 mt-5 text-xl font-medium'>
+          Types of Data Collected
+        </h3>
+        <p className='mb-2 mt-5 font-semibold'>Personal Data</p>
+        <p className='mb-5'>
+          While using Our Service, We may ask You to provide Us with certain
+          personally identifiable information that can be used to contact or
+          identify You. Personally identifiable information may include, but is
+          not limited to:
+        </p>
+        <ul className='list-disc space-y-3 pl-8'>
+          <li>Email address</li>
+          <li>Usage Data</li>
+        </ul>
 
-                {/* Types of Data Collected */}
-                <h3 className="text-xl font-medium mt-5 mb-3">Types of Data Collected</h3>
-                <p className="font-semibold mt-5 mb-2">Personal Data</p>
-                <p className="mb-5">
-                    While using Our Service, We may ask You to provide Us with certain personally
-                    identifiable information that can be used to contact or identify You. Personally
-                    identifiable information may include, but is not limited to:
-                </p>
-                <ul className="list-disc pl-8 space-y-3">
-                    <li>Email address</li>
-                    <li>Usage Data</li>
-                </ul>
+        {/* Usage Data */}
+        <p className='mb-2 mt-5 font-semibold'>Usage Data</p>
+        <p className='mb-5'>
+          Usage Data is collected automatically when using the Service. It may
+          include information such as Your Device&apos;s IP address, browser
+          type, browser version, pages of our Service that You visit, time and
+          date of Your visit, time spent on those pages, unique device
+          identifiers, and other diagnostic data.
+        </p>
 
-                {/* Usage Data */}
-                <p className="font-semibold mt-5 mb-2">Usage Data</p>
-                <p className="mb-5">
-                    Usage Data is collected automatically when using the Service. It may include
-                    information such as Your Device&apos;s IP address, browser type, browser version, pages
-                    of our Service that You visit, time and date of Your visit, time spent on those
-                    pages, unique device identifiers, and other diagnostic data.
-                </p>
+        {/* Tracking Technologies and Cookies */}
+        <h3 className='mb-3 mt-5 text-xl font-medium'>
+          Tracking Technologies and Cookies
+        </h3>
+        <p className='mb-5'>
+          We may use Cookies and similar tracking technologies to track the
+          activity on Our Service and store certain information. Tracking
+          technologies we use include beacons, tags, and scripts to collect and
+          track information and to improve and analyze Our Service.
+        </p>
 
-                {/* Tracking Technologies and Cookies */}
-                <h3 className="text-xl font-medium mt-5 mb-3">Tracking Technologies and Cookies</h3>
-                <p className="mb-5">
-                    We may use Cookies and similar tracking technologies to track the activity on Our
-                    Service and store certain information. Tracking technologies we use include beacons,
-                    tags, and scripts to collect and track information and to improve and analyze Our
-                    Service.
-                </p>
+        {/* Cookies Types */}
+        <h4 className='mb-2 mt-5 font-semibold'>Types of Cookies We Use</h4>
+        <ul className='list-disc space-y-3 pl-8'>
+          <li>
+            <strong>Necessary / Essential Cookies:</strong> These cookies are
+            essential to provide services through the Website.
+          </li>
+          <li>
+            <strong>Cookies Policy / Notice Acceptance Cookies:</strong>{' '}
+            Identify if users have accepted the use of cookies.
+          </li>
+          <li>
+            <strong>Functionality Cookies:</strong> Remember choices You make
+            when You use the Website.
+          </li>
+        </ul>
 
-                {/* Cookies Types */}
-                <h4 className="font-semibold mt-5 mb-2">Types of Cookies We Use</h4>
-                <ul className="list-disc pl-8 space-y-3">
-                    <li><strong>Necessary / Essential Cookies:</strong> These cookies are essential to provide services through the Website.</li>
-                    <li><strong>Cookies Policy / Notice Acceptance Cookies:</strong> Identify if users have accepted the use of cookies.</li>
-                    <li><strong>Functionality Cookies:</strong> Remember choices You make when You use the Website.</li>
-                </ul>
+        {/* Use of Your Personal Data Section */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Use of Your Personal Data
+        </h2>
+        <p className='mb-5'>
+          The Company may use Personal Data for various purposes, including:
+        </p>
+        <ul className='list-disc space-y-3 pl-8'>
+          <li>
+            To provide and maintain our Service, including to monitor usage.
+          </li>
+          <li>To manage Your Account and registration as a user.</li>
+          <li>
+            To perform contracts, including purchase contracts for products or
+            services.
+          </li>
+          <li>
+            To contact You via email, phone, SMS, or other electronic
+            communications.
+          </li>
+          <li>
+            To provide You with news, special offers, and general information.
+          </li>
+          <li>To manage Your requests to Us.</li>
+          <li>For business transfers in case of merger or sale of assets.</li>
+        </ul>
 
-                {/* Use of Your Personal Data Section */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Use of Your Personal Data</h2>
-                <p className="mb-5">The Company may use Personal Data for various purposes, including:</p>
-                <ul className="list-disc pl-8 space-y-3">
-                    <li>To provide and maintain our Service, including to monitor usage.</li>
-                    <li>To manage Your Account and registration as a user.</li>
-                    <li>To perform contracts, including purchase contracts for products or services.</li>
-                    <li>To contact You via email, phone, SMS, or other electronic communications.</li>
-                    <li>To provide You with news, special offers, and general information.</li>
-                    <li>To manage Your requests to Us.</li>
-                    <li>For business transfers in case of merger or sale of assets.</li>
-                </ul>
+        {/* Sharing Your Personal Information */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Sharing Your Personal Information
+        </h2>
+        <p className='mb-5'>
+          We may share Your personal information in the following situations:
+        </p>
+        <ul className='list-disc space-y-3 pl-8'>
+          <li>
+            With Service Providers to monitor and analyze the use of our
+            Service.
+          </li>
+          <li>
+            For business transfers, such as during negotiations of a merger or
+            sale.
+          </li>
+          <li>With Affiliates, requiring them to honor this Privacy Policy.</li>
+          <li>
+            With business partners to offer You products, services, or
+            promotions.
+          </li>
+          <li>With other users in public areas of our Service.</li>
+          <li>With Your consent for any other purpose.</li>
+        </ul>
 
-                {/* Sharing Your Personal Information */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Sharing Your Personal Information</h2>
-                <p className="mb-5">We may share Your personal information in the following situations:</p>
-                <ul className="list-disc pl-8 space-y-3">
-                    <li>With Service Providers to monitor and analyze the use of our Service.</li>
-                    <li>For business transfers, such as during negotiations of a merger or sale.</li>
-                    <li>With Affiliates, requiring them to honor this Privacy Policy.</li>
-                    <li>With business partners to offer You products, services, or promotions.</li>
-                    <li>With other users in public areas of our Service.</li>
-                    <li>With Your consent for any other purpose.</li>
-                </ul>
+        {/* Retention and Transfer of Your Personal Data */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Retention and Transfer of Your Personal Data
+        </h2>
+        <p className='mb-5'>
+          We retain Your Personal Data only for as long as is necessary for the
+          purposes outlined in this Privacy Policy and comply with legal
+          obligations. Your information may be transferred to and maintained on
+          computers located outside of Your jurisdiction with appropriate
+          safeguards in place.
+        </p>
 
-                {/* Retention and Transfer of Your Personal Data */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Retention and Transfer of Your Personal Data</h2>
-                <p className="mb-5">
-                    We retain Your Personal Data only for as long as is necessary for the purposes
-                    outlined in this Privacy Policy and comply with legal obligations. Your information
-                    may be transferred to and maintained on computers located outside of Your
-                    jurisdiction with appropriate safeguards in place.
-                </p>
+        {/* Disclosure of Your Personal Data */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Disclosure of Your Personal Data
+        </h2>
+        <p className='mb-5'>
+          We may disclose Your Personal Data to comply with legal obligations,
+          protect our rights and safety, or during business transactions such as
+          mergers or acquisitions.
+        </p>
 
-                {/* Disclosure of Your Personal Data */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Disclosure of Your Personal Data</h2>
-                <p className="mb-5">
-                    We may disclose Your Personal Data to comply with legal obligations, protect our
-                    rights and safety, or during business transactions such as mergers or acquisitions.
-                </p>
+        {/* Security of Your Personal Data */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Security of Your Personal Data
+        </h2>
+        <p className='mb-5'>
+          We take reasonable steps to protect Your data; however, no
+          transmission over the Internet or electronic storage is 100% secure.
+        </p>
 
-                {/* Security of Your Personal Data */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Security of Your Personal Data</h2>
-                <p className="mb-5">
-                    We take reasonable steps to protect Your data; however, no transmission over the
-                    Internet or electronic storage is 100% secure.
-                </p>
+        {/* Children's Privacy */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Children&apos;s Privacy
+        </h2>
+        <p className='mb-5'>
+          Our Service does not address anyone under 13, and we do not knowingly
+          collect information from children under 13 without parental consent.
+        </p>
 
-                {/* Children's Privacy */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Children&apos;s Privacy</h2>
-                <p className="mb-5">
-                    Our Service does not address anyone under 13, and we do not knowingly collect
-                    information from children under 13 without parental consent.
-                </p>
+        {/* Links to Other Websites */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>
+          Links to Other Websites
+        </h2>
+        <p className='mb-5'>
+          Our Service may contain links to external websites. We are not
+          responsible for their privacy practices and advise reviewing their
+          policies.
+        </p>
 
-                {/* Links to Other Websites */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Links to Other Websites</h2>
-                <p className="mb-5">
-                    Our Service may contain links to external websites. We are not responsible for their
-                    privacy practices and advise reviewing their policies.
-                </p>
-
-                {/* Contact Us */}
-                <h2 className="text-2xl font-semibold mt-10 mb-5">Contact Us</h2>
-                <p>If you have any questions about this Privacy Policy, You can contact us:</p>
-                <ul className="list-disc pl-8 space-y-3">
-                    <li>By email: <a href="mailto:contact@dapplets.org" className="text-accent underline">contact@dapplets.org</a></li>
-                </ul>
-            </div>
-        </Layout>
-    );
+        {/* Contact Us */}
+        <h2 className='mb-5 mt-10 text-2xl font-semibold'>Contact Us</h2>
+        <p>
+          If you have any questions about this Privacy Policy, You can contact
+          us:
+        </p>
+        <ul className='list-disc space-y-3 pl-8'>
+          <li>
+            By email:{' '}
+            <a
+              href='mailto:business@dapplets.org'
+              className='text-accent underline'
+            >
+              contact@dapplets.org
+            </a>
+          </li>
+        </ul>
+      </div>
+    </Layout>
+  );
 }
 
 export default PrivacyPolice;

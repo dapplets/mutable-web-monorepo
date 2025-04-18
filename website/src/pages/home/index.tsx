@@ -154,7 +154,6 @@ function Home() {
                   style={{ transform: 'none', cursor: 'pointer' }}
                 />
               </Link>
-
               <Link
                 target='_blank'
                 rel='noopener noreferrer'

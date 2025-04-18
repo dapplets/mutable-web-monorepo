@@ -28,12 +28,11 @@ export interface HeaderProps {
 export function Header({ setModalOpen }: HeaderProps) {
   const { resolvedTheme, setTheme } = useTheme();
   const pathname = usePathname();
-
   const [isMobileMenu, setMobileMenu] = useState(false);
 
-  function toggleDarkMode() {
+  const toggleDarkMode = () => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
-  }
+  };
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -44,8 +43,11 @@ export function Header({ setModalOpen }: HeaderProps) {
         }
       }
     };
+
     updateDimensions();
+
     window.addEventListener('resize', updateDimensions);
+
     return () => {
       window.removeEventListener('resize', updateDimensions);
       updateDimensions();
@@ -110,7 +112,7 @@ export function Header({ setModalOpen }: HeaderProps) {
       <Button
         onClick={() => setModalOpen(true)}
         classNames={styles.mvm}
-        text='MWM'
+        text='MANIFEST'
         isPrimary
       />
 

@@ -96,9 +96,9 @@ export function Modal({ isModalOpen, setModalOpen }: ModalProps) {
               </div>
               <span className={styles.buttonBlock}>
                 <Button
-                  onClick={() => setModalOpen(false)}
                   text='Join us'
                   isPrimary
+                  link='https://discord.com/invite/YcxbkcyjMV'
                 />
               </span>
             </div>

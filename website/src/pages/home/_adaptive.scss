@@ -1,5 +1,3 @@
-.howItem {
-}
 .howItemTitle {
   font-size: 24px;
   font-weight: 600;
@@ -8,6 +6,7 @@
   padding-left: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
+
   &::before {
     content: '';
     position: absolute;
@@ -20,6 +19,7 @@
     background-color: #db504a;
   }
 }
+
 .howItemTitleColor {
   &::before {
     content: '';
@@ -33,6 +33,7 @@
     background-color: #fff;
   }
 }
+
 .howItemText {
   font-size: 16px;
   font-weight: 400;
@@ -45,97 +46,115 @@
   .titleWrapper {
     padding: 240px 0 60px 0;
   }
+
   .titleBlock {
     padding-bottom: 120px;
   }
+
   .titleBlockTitle {
     font-size: 72px;
     padding-bottom: 35px;
   }
+
   .titleButtons {
     width: 568px;
     padding-bottom: 75px;
+
     div {
       width: 274px !important;
     }
   }
+
   .howWrapper {
     padding: 45px 0 43px 0;
   }
+
   .howTitle {
     padding-bottom: 25px;
   }
+
   .howSubitle {
     padding-bottom: 65px;
   }
-  .howTablet {
-    img {
-      transform: scale(1.65) !important;
-    }
+
+  .howTablet img {
+    transform: scale(1.65) !important;
   }
+
   .howItemWrapper {
     margin-top: 67px;
   }
-  .howItem {
-    &:nth-child(1) {
-      padding-bottom: 10px;
-    }
+
+  .howItem:nth-child(1) {
+    padding-bottom: 10px;
   }
+
   .exampleWrapper {
     padding: 0;
     padding-top: 20px;
   }
+
   .powerItem {
     max-width: none;
     width: 100%;
   }
+
   .powerImg {
     width: 240px;
     height: 240px;
     padding-bottom: 0;
   }
+
   .powerTextBlockTablet {
     max-width: 60%;
   }
+
   .powerTitle {
     padding-left: 0px;
     padding-top: 60px;
   }
+
   .powerText {
     max-width: 80%;
     padding-left: 0px;
   }
+
   .featureWrapper {
     padding-top: 150px;
   }
+
   .feature1 {
     .exampleTitle {
       padding-bottom: 12px;
     }
+
     .featureLink {
       transform: scale(1.5) translateY(5px) translateX(-5px);
     }
   }
+
   .featureTextBlock {
     margin-left: 0;
     width: auto;
     max-width: 728px;
   }
+
   .featureText {
     width: 80%;
   }
+
   .featureImg {
     width: 100%;
     margin-left: 0;
     height: 420px;
   }
-  .featureItemsBlock {
-    a {
-      display: flex;
-      flex: 1 1 auto;
-      max-width: 45%;
-    }
+
+  .featureItemsBlock a {
+    display: flex;
+    flex: 1 1 auto;
+    max-width: 45%;
   }
+
   .feature2 {
     .featureItemsBlock {
       width: 100%;
@@ -143,6 +162,7 @@
       margin-left: -10px;
       transform: none;
     }
+
     .featureImg {
       margin-top: -5px;
       margin-left: 0;
@@ -153,6 +173,7 @@
 
   .feature3 {
     padding-top: 35px;
+
     .featureItemsBlock {
       width: 100%;
       order: 1;
@@ -165,34 +186,39 @@
       transform: scale(1.2);
     }
   }
+
   .feature4 {
     .featureItemsBlock {
       width: 100%;
       margin-top: 0px;
       transform: none;
     }
+
     .featureImg {
       width: 421.893px;
       height: 373.994px;
       transform: none;
     }
   }
+
   .featureItem {
     width: auto;
-
     flex: 1 1 auto;
     display: flex;
     padding-left: 10px;
   }
+
   .featureId {
     width: auto;
     max-width: 47%;
     flex: 1 1 auto;
     display: flex;
   }
+
   .featureGet {
     padding: 65px 0 40px 0;
   }
+
   .getSubtitle {
     width: 100%;
   }
@@ -202,11 +228,13 @@
   @media (max-width: 1185px) {
     padding: 240px 0 60px 0;
   }
+
   @media (max-width: 719px) {
     padding: 90px 0 0px 0;
     background: none;
   }
 }
+
 :global(.light) {
   @media (max-width: 1185px) {
     .howItemTitleColor {
@@ -230,6 +258,7 @@
     .howSubitle {
       padding-bottom: 65px;
     }
+
     .howItemWrapper {
       margin-top: 65px;
     }
@@ -241,82 +270,99 @@
     .supportedBlockIcon:nth-child(4) {
       transform: none !important;
     }
+
     .supportedBlockIcon:nth-child(3) {
       transform: none !important;
     }
   }
+
   .titleWrapper {
     padding: 90px 0 0px 0;
   }
+
   .titleBlockTitle {
     font-size: 36px;
     padding-bottom: 20px;
   }
+
   .titleBlock {
     padding-bottom: 40px;
   }
+
   .supportedBlock {
     padding: 15px 5px;
   }
+
   .titleBlockSubtitle {
     font-size: 14px;
   }
+
   .titleButtons {
     width: 100%;
     padding-bottom: 10px;
+
     div {
       margin-bottom: 10px;
     }
   }
+
   .supportedLable {
     padding-bottom: 5px;
   }
+
   .featureLink {
     transform: scale(1.5) translateY(7px) translateX(5px);
   }
+
   .howWrapper {
     padding: 27px 0 23px 0;
   }
+
   .howTitle {
     font-size: 24px;
     padding-bottom: 10px;
   }
+
   .howSubitle {
     font-size: 14px;
     padding-bottom: 0;
   }
+
   .howItemTitle {
     font-size: 18px;
   }
+
   .howItemText {
     font-size: 14px;
     padding-top: 10px;
     padding-right: 10px;
   }
-  .howTablet {
-    img {
-      padding: 10px 0 20px 0;
-      width: 284px;
-      transform: scale(1.1) !important;
-    }
+
+  .howTablet img {
+    padding: 10px 0 20px 0;
+    width: 284px;
+    transform: scale(1.1) !important;
   }
+
   .howItemWrapper {
     margin-top: 20px;
+
     .howItem {
       padding-top: 0;
       padding-bottom: 52px;
     }
+
     .howItem:nth-child(2) {
       padding-bottom: 30px;
     }
   }
+
   .exampleTitle {
     font-size: 24px;
   }
-  .exampleWrapper {
-    .exampleTitle {
-      padding-bottom: 20px;
-    }
+
+  .exampleWrapper .exampleTitle {
+    padding-bottom: 20px;
   }
 
   .powerTitle {
@@ -324,6 +370,7 @@
     padding-left: 10px;
     padding-top: 5px;
   }
+
   .powerText {
     font-size: 14px;
     padding-left: 10px;
@@ -331,43 +378,53 @@
     max-width: 100%;
     padding-bottom: 40px;
   }
+
   .powerText:nth-child(3) {
     padding-bottom: 30px;
   }
+
   .powerImg {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
     height: auto;
     padding-bottom: 35px;
+
     img {
       margin-left: auto;
       margin-right: auto;
       width: calc(100% - 20px) !important;
     }
   }
+
   .powerTextBlockTablet {
     max-width: none;
     width: 100%;
   }
+
   .powerItem:nth-child(2) {
     margin-top: -20px;
   }
+
   .featureWrapper {
     padding-top: 0px;
     padding-bottom: 15px;
   }
+
   .exampleTitle {
     font-size: 24px;
   }
+
   .featureText {
     font-size: 14px;
     width: 100%;
   }
+
   .featureTextBlock {
     padding-left: 0;
     margin-top: -5px;
   }
+
   .featureId {
     width: 100%;
     max-width: none;
@@ -375,8 +432,10 @@
     font-size: 24px;
     padding: 10px;
   }
+
   .feature1 {
     width: 100%;
+
     .featureLink {
       transform: scale(1.5) translateY(10px) translateX(5px);
     }
@@ -384,35 +443,41 @@
 
   .feature2 {
     width: 100%;
+
     .featureImg {
       transform: translateY(-20px) translateX(5px);
       width: 100%;
+      height: 210px;
 
       img {
         margin-left: auto;
         margin-right: auto;
       }
-
-      height: 210px;
     }
+
     .featureItemsBlock {
       margin-top: -20px;
     }
   }
+
   .feature3 {
     width: 100%;
+
     .featureImg {
       height: 192px;
       margin-top: 0;
     }
+
     .featureItemsBlock {
       margin-top: -20px;
       padding-bottom: 20px;
     }
   }
+
   .feature4 {
     width: 100%;
     padding-top: 0;
+
     .featureImg {
       transform: translateY(-20px);
       width: 296px;
@@ -422,6 +487,7 @@
     .featureItemsBlock {
       margin-top: -55px;
     }
+
     .featureId {
       width: 100%;
       padding-right: 50px;
@@ -432,40 +498,47 @@
     font-size: 18px;
     padding-top: 0;
     padding-bottom: 5px;
+
     &::before {
       top: 5px;
     }
   }
+
   .featureItemText {
     font-size: 14px;
   }
-  .featureItemsBlock {
-    a {
-      max-width: none;
-      width: 100%;
-    }
+
+  .featureItemsBlock a {
+    max-width: none;
+    width: 100%;
   }
+
   .featureItem {
     height: auto;
     padding: 10px;
   }
+
   .featureGet {
     padding: 17px 0 0px 0;
+
     .howTitle {
       padding-bottom: 20px;
     }
   }
+
   .getSubtitle {
     font-size: 14px;
     width: 80%;
     line-height: 140%;
   }
 }
+
 :global(.dark) {
   @media (max-width: 719px) {
     .howSubitle {
       padding-bottom: 0;
     }
+
     .howItemWrapper {
       margin-top: 17px;
     }

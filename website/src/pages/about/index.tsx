@@ -30,7 +30,7 @@ function About() {
             <div className={cn(styles.titleButtons, 'flex justify-between')}>
               <Button
                 classNames=''
-                link='https://chrome.google.com/webstore/detail/dapplets/pjjnaojpjhgbhpfffnjleidmdbajagdj'
+                link='https://chromewebstore.google.com/detail/mutable-web/cnahdmdbhkphpbpbjjbfdnmbphbenglc'
                 text='Get started'
                 isPrimary
                 icon='icons/button/download.svg'

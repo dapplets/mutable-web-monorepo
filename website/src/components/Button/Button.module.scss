@@ -4,6 +4,7 @@
   width: 193px;
   height: 52px;
 }
+
 .buttonDefault {
   display: flex;
   align-items: center;
@@ -15,6 +16,7 @@
   line-height: 149%;
   border-radius: 6px;
 }
+
 .buttonPrimary {
   background: #db504a;
   transition: all 0.2s ease;
@@ -26,31 +28,35 @@
     0px 30px 18px 0px rgba(255, 64, 0, 0.05),
     0px 54px 21px 0px rgba(255, 64, 0, 0.01),
     0px 84px 23px 0px rgba(255, 64, 0, 0);
+
   &:hover {
     transition: all 0.2s ease;
     background: #ff827c;
   }
 }
-:global(.dark) .buttonPrimary {
-  &:hover {
-    transition: all 0.2s ease;
-    background: #ff827c;
-  }
+
+:global(.dark) .buttonPrimary:hover {
+  transition: all 0.2s ease;
+  background: #ff827c;
 }
+
 .buttonOutline {
   background: inherit;
   border: 1px solid #7c43c5;
   color: #7c43c5;
   transition: all 0.2s ease;
+
   &:hover {
     transition: all 0.2s ease;
     color: #fff;
     background: #7c43c5;
+
     img {
       filter: brightness(0) invert(1);
     }
   }
 }
+
 .img {
   margin-right: 10px;
 }
@@ -59,31 +65,27 @@
   .wrapper {
     width: 240px;
   }
-  .buttonPrimary {
-    &:hover {
-      transition: all 0.2s ease;
-    }
+
+  .buttonPrimary:hover {
+    transition: all 0.2s ease;
   }
-  .buttonOutline {
-    &:hover {
-      transition: all 0.2s ease;
-    }
+
+  .buttonOutline:hover {
+    transition: all 0.2s ease;
   }
 }
+
 @media (max-width: 719px) {
   .wrapper {
     width: 100%;
   }
-  .buttonPrimary {
-    &:hover {
-      transition: all 0.2s ease;
-    }
-  }
-  .buttonOutline {
-    &:hover {
-      transition: all 0.2s ease;
 
-      opacity: 1;
-    }
+  .buttonPrimary:hover {
+    transition: all 0.2s ease;
+  }
+
+  .buttonOutline:hover {
+    transition: all 0.2s ease;
+    opacity: 1;
   }
 }

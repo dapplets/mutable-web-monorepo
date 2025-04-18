@@ -1,18 +1,15 @@
-.wrapper {
-}
 .titleWrapper {
   padding: 185px 10px 45px 10px;
   width: 100%;
 }
 
-.titleBlock {
-}
 .titleTitle {
   font-size: 64px;
   font-weight: 600;
   line-height: 100%;
   padding-bottom: 35px;
 }
+
 .titleMessage {
   font-size: 16px;
   font-weight: 400;
@@ -21,6 +18,7 @@
   width: 630px;
   opacity: 0.7;
   position: relative;
+
   &::before {
     content: '';
     position: absolute;
@@ -32,20 +30,22 @@
     left: -20px;
   }
 }
+
 .titleButtons {
   width: 406px;
 }
+
 .iconBlock {
   margin-top: -60px;
   transform: translateX(10px);
 }
-.supportedBlockIcon {
-}
+
 .problemWrapper {
   position: relative;
   padding: 73px 10px;
   width: 100%;
 }
+
 .problemDelimeter {
   position: absolute;
   top: -4px;
@@ -54,6 +54,7 @@
   height: 4px;
   background: #db504a;
 }
+
 .problemTitle {
   font-size: 48px;
   font-weight: 400;
@@ -61,6 +62,7 @@
   width: 390px;
   display: flex;
 }
+
 .problemText {
   font-size: 16px;
   font-weight: 400;
@@ -69,53 +71,58 @@
   width: calc(100% - 447px);
   margin-left: auto;
 }
-.problemTextItem {
-}
+
 .missionBg {
   width: 100vw;
   background: #1b1b1b;
 }
+
 .missionWrapper {
   padding: 70px 10px;
   width: 100%;
 }
+
 .missionTitleBlock {
   width: 390px;
   display: flex;
 }
+
 .missionTitle {
   font-size: 48px;
-
   font-weight: 600;
   line-height: 100%;
   padding-bottom: 10px;
 }
+
 .missionHilight {
   color: #db504a;
 }
+
 .missionMessage {
   font-size: 16px;
-
   font-weight: 400;
   line-height: 130%;
   opacity: 0.7;
 }
+
 .missionText {
   width: calc(100% - 447px);
   margin-left: auto;
 }
+
 .missionItem {
   width: calc(50% - 20px);
   padding: 20px 20px 5px 20px;
 }
+
 .missionItemTitle {
   font-size: 24px;
-
   font-weight: 600;
   line-height: 149%;
   position: relative;
   padding-left: 20px;
   padding-bottom: 6px;
+
   &::before {
     content: '';
     position: absolute;
@@ -128,34 +135,38 @@
     background: #db504a;
   }
 }
+
 .missionItemMessage {
   font-size: 16px;
-
   font-weight: 400;
   line-height: 130%;
   opacity: 0.7;
 }
+
 .brandWrapper {
   width: 100%;
   padding: 100px 10px 70px 10px;
 }
+
 .brandTitleBlock {
   width: 407px;
   display: flex;
 }
+
 .brandTitle {
   font-size: 48px;
   font-weight: 600;
   line-height: 100%;
   padding-bottom: 40px;
 }
+
 .brandMessageBlock {
   width: calc(100% - 447px);
   display: flex;
 }
+
 .brandMessage {
   font-size: 16px;
-
   font-weight: 400;
   line-height: 139%;
   padding: 1px 20px;
@@ -175,6 +186,7 @@
       left: -20px;
       background-repeat: no-repeat;
     }
+
     @media (max-width: 1185px) {
       &::before {
         width: 688px;
@@ -185,12 +197,14 @@
         transform: translateX(-50%);
       }
     }
+
     @media (max-width: 719px) {
       &::before {
         display: none;
       }
     }
   }
+
   .missionBg {
     background: #e3e8eb;
   }

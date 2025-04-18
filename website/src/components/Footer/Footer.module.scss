@@ -1,12 +1,15 @@
 .wrapper {
   padding: 15px 10px 15px 15px;
 }
+
 .copy {
   width: 306px;
 }
+
 .copyUnderline {
   text-decoration: underline;
 }
+
 .links {
   width: 315px;
 }
@@ -20,34 +23,39 @@
     transform: scale(1.2);
   }
 }
+
 @media (max-width: 1185px) {
-  .img {
-    &:hover {
-      transition: all 0.2s ease;
-      transform: none;
-    }
+  .img:hover {
+    transition: all 0.2s ease;
+    transform: none;
   }
 }
+
 @media (max-width: 719px) {
   .wrapper {
     padding: 10px 10px 10px 15px;
   }
+
   .links {
     padding-left: 35px;
     padding-right: 35px;
   }
+
   .img {
     transform: scale(0.9);
+
     &:hover {
       transition: all 0.2s ease;
       transform: none;
     }
   }
+
   .copy {
     padding-top: 15px;
     padding-left: 20px;
     padding-right: 20px;
   }
+
   .copyText {
     font-size: 14px;
   }

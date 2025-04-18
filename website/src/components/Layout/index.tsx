@@ -19,7 +19,6 @@ export const Layout: FC<LayoutProps> = ({ children, title, description }) => {
   const router = useRouter();
   const id = router.asPath;
   const [mounted, setMounted] = useState(false);
-
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -34,6 +33,7 @@ export const Layout: FC<LayoutProps> = ({ children, title, description }) => {
       document.body.style.overflowY = 'auto';
     }
   }, [isModalOpen, id, mounted, router]);
+
   return (
     <>
       <Head>

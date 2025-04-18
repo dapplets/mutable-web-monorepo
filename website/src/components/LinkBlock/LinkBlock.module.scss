@@ -4,6 +4,7 @@
   height: 222px;
   border: 1px solid rgba(48, 48, 48, 0.8);
   background: #1b1b1b;
+
   &:hover {
     .linkIcon {
       transform: translateX(10px);
@@ -16,7 +17,6 @@
     border: none;
     border-radius: 10px;
     background: #e3e8eb;
-
     -webkit-box-shadow: 1px 1px 2px -1px rgba(0, 0, 0, 0.74);
     -moz-box-shadow: 1px 1px 2px -1px rgba(0, 0, 0, 0.74);
     box-shadow: 1px 1px 2px -1px rgba(0, 0, 0, 0.74);
@@ -35,20 +35,20 @@
         0px 7px 2px 0px rgba(0, 0, 0, 0.01),
         0px 1px 1px 0px rgba(0, 0, 0, 0);
       backdrop-filter: blur(20px);
+
       .linkIcon {
         transform: translateX(10px);
       }
     }
   }
   @media (max-width: 1185px) {
-    .link {
-      &:hover {
-        background: #e3e8eb;
-        box-shadow: 1px 1px 3px -1px rgba(0, 0, 0, 0.74);
-        backdrop-filter: none;
-        .linkIcon {
-          transform: none;
-        }
+    .link:hover {
+      background: #e3e8eb;
+      box-shadow: 1px 1px 3px -1px rgba(0, 0, 0, 0.74);
+      backdrop-filter: none;
+
+      .linkIcon {
+        transform: none;
       }
     }
   }
@@ -72,31 +72,37 @@
 .linkContent {
   text-align: center;
 }
+
 @media (max-width: 1300px) {
   .link {
     width: 265px;
     height: 222px;
   }
 }
+
 @media (max-width: 1185px) {
   .link {
     width: 216px;
     height: 256px;
     pointer-events: none;
+
     &:hover {
       border: none;
       background: inherit;
       box-shadow: none;
       backdrop-filter: none;
+
       .linkIcon {
         transform: none;
       }
     }
   }
+
   .linkContent {
     font-size: 16px;
   }
 }
+
 @media (max-width: 719px) {
   .link {
     width: 100%;
@@ -105,6 +111,7 @@
     flex-wrap: wrap;
     padding: 10px;
     margin-bottom: 20px;
+
     &:hover {
       border: none;
       background: inherit;
@@ -112,19 +119,23 @@
       backdrop-filter: none;
     }
   }
+
   .linkIcon {
     order: 1;
     width: 50px;
     height: 50px;
     margin-top: -5px;
     margin-right: -5px;
+
     img {
       transform: scale(1.2);
     }
   }
+
   .linkTitle {
     order: 0;
   }
+
   .linkContent {
     order: 2;
     width: 80%;
