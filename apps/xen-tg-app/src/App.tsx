@@ -3,6 +3,7 @@ import './App.css'
 import XEN_IMAGE from './assets/xen-girl-001.png'
 import Wallet from './components/Wallet'
 import Agents from './components/Agents'
+import Warnings from './components/Warnings'
 import { TUserInfo } from './types'
 
 function App() {
@@ -51,7 +52,7 @@ function App() {
           <div className="interactive"></div>
         </div>
       </div>
-      <div className="relative flex w-full max-w-xl min-w-sm flex-col items-center justify-center gap-5 px-2.5 py-5 text-[var(--color-white-text)]">
+      <div className="relative flex w-full max-w-xl min-w-80 flex-col items-center justify-center gap-5 px-2.5 py-5 text-[var(--color-white-text)]">
         <div className="m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full">
           <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
         </div>
@@ -76,6 +77,7 @@ function App() {
         )} */}
         <Wallet user={user} />
         <Agents user={user} />
+        <Warnings user={user} />
       </div>
     </>
   )
