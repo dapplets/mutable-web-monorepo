@@ -3,5 +3,6 @@ packages:
   - libs/*
   - contracts/*
   - agents/crawler
+  - website
 ignoredBuiltDependencies:
   - '@nestjs/core'

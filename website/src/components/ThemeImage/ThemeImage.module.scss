@@ -1,0 +1,64 @@
+:global(.light) {
+  .imgLight {
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transition: all 0.2s ease;
+      transform: scale(1.2);
+    }
+  }
+  .imgDark {
+    display: none;
+  }
+  .noTransition {
+    cursor: default;
+    &:hover {
+      transition: all 0.2s ease;
+      transform: none;
+    }
+  }
+  @media (max-width: 1185px) {
+    .imgLight {
+      &:hover {
+        transform: none;
+      }
+    }
+  }
+}
+
+:global(.dark) {
+  .imgLight {
+    display: none;
+  }
+  .imgDark {
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transition: all 0.2s ease;
+      transform: scale(1.2);
+    }
+    @media (max-width: 1185px) {
+      .imgDark {
+        &:hover {
+          transform: none;
+        }
+      }
+    }
+  }
+  .noTransition {
+    cursor: default;
+    &:hover {
+      transition: all 0.2s ease;
+      transform: none;
+    }
+  }
+}
+.noTransition {
+  cursor: default;
+  &:hover {
+    transition: all 0.2s ease;
+    transform: none;
+  }
+}

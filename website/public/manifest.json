@@ -1,0 +1,15 @@
+{
+  "name": "Dapplets Project",
+  "short_name": "Dapplets",
+  "description": "Dapplets and the Mutable Web enable communities to create a custom version (Mutation) of an existing website by enhancing it with add-on applications. Dapplets run in the user’s browser and allowing them to take control of UX/UI on any website",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#e7ecef",
+  "theme_color": "#e7ecef",
+  "icons": [
+    {
+      "src": "/themes/dark/favicon/favicon.svg",
+      "sizes": "any"
+    }
+  ]
+}

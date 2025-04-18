@@ -1,0 +1,25 @@
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: inherit;
+  z-index: 100;
+  border-bottom: 1px solid #c1c6ce;
+}
+.delimeter {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: #c1c6ce;
+}
+
+:global(.dark) {
+  .delimeter {
+    background: #303030;
+  }
+}
+
+:global(.dark) .menu {
+  border-bottom: 1px solid #303030;
+}

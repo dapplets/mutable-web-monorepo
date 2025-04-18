@@ -1,0 +1,199 @@
+.wrapper {
+}
+.titleWrapper {
+  padding: 185px 10px 45px 10px;
+  width: 100%;
+}
+
+.titleBlock {
+}
+.titleTitle {
+  font-size: 64px;
+  font-weight: 600;
+  line-height: 100%;
+  padding-bottom: 35px;
+}
+.titleMessage {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 140%;
+  padding-bottom: 75px;
+  width: 630px;
+  opacity: 0.7;
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    width: 670px;
+    height: 40px;
+    background: url('/themes/dark/icons/about/title-icon.svg');
+    background-repeat: no-repeat;
+    bottom: 25px;
+    left: -20px;
+  }
+}
+.titleButtons {
+  width: 406px;
+}
+.iconBlock {
+  margin-top: -60px;
+  transform: translateX(10px);
+}
+.supportedBlockIcon {
+}
+.problemWrapper {
+  position: relative;
+  padding: 73px 10px;
+  width: 100%;
+}
+.problemDelimeter {
+  position: absolute;
+  top: -4px;
+  left: 10px;
+  width: 795px;
+  height: 4px;
+  background: #db504a;
+}
+.problemTitle {
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 100%;
+  width: 390px;
+  display: flex;
+}
+.problemText {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 139%;
+  opacity: 0.7;
+  width: calc(100% - 447px);
+  margin-left: auto;
+}
+.problemTextItem {
+}
+.missionBg {
+  width: 100vw;
+  background: #1b1b1b;
+}
+.missionWrapper {
+  padding: 70px 10px;
+  width: 100%;
+}
+.missionTitleBlock {
+  width: 390px;
+  display: flex;
+}
+.missionTitle {
+  font-size: 48px;
+
+  font-weight: 600;
+  line-height: 100%;
+  padding-bottom: 10px;
+}
+.missionHilight {
+  color: #db504a;
+}
+.missionMessage {
+  font-size: 16px;
+
+  font-weight: 400;
+  line-height: 130%;
+  opacity: 0.7;
+}
+.missionText {
+  width: calc(100% - 447px);
+  margin-left: auto;
+}
+.missionItem {
+  width: calc(50% - 20px);
+  padding: 20px 20px 5px 20px;
+}
+.missionItemTitle {
+  font-size: 24px;
+
+  font-weight: 600;
+  line-height: 149%;
+  position: relative;
+  padding-left: 20px;
+  padding-bottom: 6px;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0px;
+    top: 13px;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: block;
+    background: #db504a;
+  }
+}
+.missionItemMessage {
+  font-size: 16px;
+
+  font-weight: 400;
+  line-height: 130%;
+  opacity: 0.7;
+}
+.brandWrapper {
+  width: 100%;
+  padding: 100px 10px 70px 10px;
+}
+.brandTitleBlock {
+  width: 407px;
+  display: flex;
+}
+.brandTitle {
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 100%;
+  padding-bottom: 40px;
+}
+.brandMessageBlock {
+  width: calc(100% - 447px);
+  display: flex;
+}
+.brandMessage {
+  font-size: 16px;
+
+  font-weight: 400;
+  line-height: 139%;
+  padding: 1px 20px;
+  width: calc(50% - 20px);
+  opacity: 0.7;
+}
+
+:global(.light) {
+  .titleMessage {
+    &::before {
+      content: '';
+      position: absolute;
+      width: 670px;
+      height: 40px;
+      background: url('/themes/light/icons/about/title-icon.svg');
+      bottom: 25px;
+      left: -20px;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 1185px) {
+      &::before {
+        width: 688px;
+        bottom: 0px;
+        left: 0px;
+        top: -175px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+    @media (max-width: 719px) {
+      &::before {
+        display: none;
+      }
+    }
+  }
+  .missionBg {
+    background: #e3e8eb;
+  }
+}
+
+@import './adaptive';

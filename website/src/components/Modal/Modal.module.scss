@@ -1,0 +1,127 @@
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  background: rgba(#1b1b1b, 0.2);
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+:global(.dark) .wrapper {
+  background: rgba(#fff, 0.2);
+}
+.content {
+  width: 900px;
+  height: 80%;
+  border-radius: 10px;
+  background: rgba(222, 227, 230, 1);
+  padding: 40px;
+  position: relative;
+  padding-top: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 149%;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  gap: 20px;
+}
+
+:global(.dark) .content {
+  background: rgba(27, 27, 27, 1);
+}
+
+.titleBlock {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0px;
+  background: rgba(222, 227, 230, 1);
+  height: 100px;
+  padding-top: 40px;
+}
+:global(.dark) .titleBlock {
+  background: rgba(27, 27, 27, 1);
+}
+.scrollBlock {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  gap: 10px;
+}
+.title {
+  font-size: 32px;
+  line-height: 47.68px;
+}
+.textBlock {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 20px;
+}
+.titleBr {
+  display: none;
+}
+.buttonBlock {
+  display: inline-block;
+  height: 52px;
+}
+@media (max-width: 1185px) {
+  .content {
+    width: 70%;
+    height: 80%;
+  }
+}
+
+@media (max-width: 719px) {
+  .content {
+    width: 90dvw;
+    height: 90dvh;
+    padding: 20px;
+    padding-top: 0;
+  }
+  
+  .scrollBlock{
+    padding-right: 15px;
+  }
+
+  .titleBr {
+    display: initial;
+  }
+  .titleBlock {
+    align-items: flex-start;
+    padding-top: 30px;
+    a {
+      margin-left: auto;
+      margin-right: -5px;
+    }
+  }
+  .title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 149%;
+    text-align: left;
+
+    width: 100%;
+  }
+
+  .textBlock {
+    div {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 26.82px;
+      text-align: justified;
+    }
+    p {
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 20.86px;
+      text-align: justified;
+    }
+  }
+}
