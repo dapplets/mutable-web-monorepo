@@ -5534,8 +5534,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-17T08:47:43.000Z",
-    "versionId": "8314664b-90eb-496d-a0b8-3f6305b762d3"
+    "updatedAt": "2025-04-17T10:50:44.000Z",
+    "versionId": "5b2b66a2-7fbc-4e8a-a3eb-f44a374dc74e"
   },
   {
     "active": false,
@@ -8615,7 +8615,7 @@
           [
             {
               "index": 0,
-              "node": "Telegram10",
+              "node": "AI Agent1",
               "type": "main"
             }
           ]
@@ -8742,17 +8742,6 @@
           ]
         ]
       },
-      "Telegram10": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "AI Agent1",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Telegram11": {
         "main": [
           [
@@ -8788,10 +8777,10 @@
         "id": "09a2012f-c9dd-4711-ac11-a56e25789192",
         "name": "Postgres9",
         "parameters": {
+          "limit": 1,
           "operation": "select",
           "options": {
           },
-          "returnAll": true,
           "schema": {
             "__rl": true,
             "cachedResultName": "jobs",
@@ -8853,27 +8842,6 @@
         ],
         "type": "n8n-nodes-base.filter",
         "typeVersion": 2.2
-      },
-      {
-        "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
-          }
-        },
-        "id": "bc7553ff-8b61-4b15-88a2-e931b368ad49",
-        "name": "Telegram10",
-        "parameters": {
-          "chatId": "={{ $('Postgres9').item.json.userid }}",
-          "operation": "sendChatAction"
-        },
-        "position": [
-          1000,
-          -140
-        ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "767f6703-a57f-494b-8eef-8d44af075d7e"
       },
       {
         "alwaysOutputData": true,
@@ -9307,7 +9275,7 @@
         "name": "AI Agent1",
         "parameters": {
           "options": {
-            "systemMessage": "=It is time to remind the user about some event. Without further explanation, respond with only the natural language rewritten text of the reminder. You can asnwer only in natural Russian.\nYour personality is:\n- Professional.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Moscow').toFormat('DD, HH:mm') }}\n\n## Your memories about user:\n{{ $('Memo2').item.json.appended_memo }}"
+            "systemMessage": "=It is time to remind the user about some event. Without further explanation, respond with only the natural language rewritten text of the reminder.\nYour personality is:\n- Professional.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Moscow').toFormat('DD, HH:mm') }}\n\n## Your memories about user:\n{{ $('Memo2').item.json.appended_memo }}"
           },
           "promptType": "define",
           "text": "=This message is not from user - it's only to initialize your answer.\n## Reminder:\ntext: {{ $('Filter1').item.json.description }}\ntime: {{ $('Filter1').item.json.remindertime.toDateTime().format('HH:mm') }}"
@@ -9578,8 +9546,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-15T19:53:52.000Z",
-    "versionId": "2487a228-46e8-4e3d-867a-f7902eedb415"
+    "updatedAt": "2025-04-18T08:54:13.000Z",
+    "versionId": "1048d3fe-2c7c-4d03-9751-ebc573003633"
   },
   {
     "active": true,
