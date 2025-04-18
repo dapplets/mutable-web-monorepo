@@ -1,3 +1,6 @@
+# import credentials
+n8n import:credentials --input=/backup/credentials.json
+
 # import workflows
 n8n import:workflow --input=/backup/workflows.json
 
