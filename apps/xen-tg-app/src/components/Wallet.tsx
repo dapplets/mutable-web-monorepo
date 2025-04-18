@@ -1,7 +1,7 @@
 import { FC } from 'react'
-import { TUserInfo } from '../types'
-import NEAR_ICON from '../assets/near-gray.svg'
 import LogOutIcon from '../assets/log-out'
+import NEAR_ICON from '../assets/near-gray.svg'
+import { TUserInfo } from '../types'
 
 type TWalletProps = {
   user: TUserInfo | null

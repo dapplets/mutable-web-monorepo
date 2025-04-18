@@ -4,3 +4,14 @@ export type TUserInfo = {
   lastName?: string
   username?: string
 }
+
+export type TAgent = {
+  name: string
+  source: string
+  status: string
+}
+
+export type TWarning = {
+  text: string
+  timestamp: string
+}

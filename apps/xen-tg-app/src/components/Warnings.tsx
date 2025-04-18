@@ -1,15 +1,9 @@
 import { FC } from 'react'
-import { TUserInfo } from '../types'
+import { TUserInfo, TWarning } from '../types'
 import Trash from '../assets/trash'
-import Agent from './Agent'
 
 type TWarningsProps = {
   user: TUserInfo | null
-}
-
-type TWarning = {
-  text: string
-  timestamp: string
 }
 
 // ToDo: remove mocked data

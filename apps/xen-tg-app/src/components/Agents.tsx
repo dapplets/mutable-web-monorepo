@@ -1,16 +1,10 @@
 import { FC } from 'react'
-import { TUserInfo } from '../types'
 import ExternalLinkIcon from '../assets/external-link'
+import { TAgent, TUserInfo } from '../types'
 import Agent from './Agent'
 
 type TAgentsProps = {
   user: TUserInfo | null
-}
-
-type TAgent = {
-  name: string
-  source: string
-  status: string
 }
 
 // ToDo: remove mocked data

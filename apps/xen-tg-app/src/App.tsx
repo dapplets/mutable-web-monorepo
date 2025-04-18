@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import XEN_IMAGE from './assets/xen-girl-001.png'
-import Wallet from './components/Wallet'
 import Agents from './components/Agents'
+import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
 import { TUserInfo } from './types'
 

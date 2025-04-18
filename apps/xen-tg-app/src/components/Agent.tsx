@@ -1,18 +1,13 @@
 import { FC } from 'react'
 import UnlinkOutlineIcon from '../assets/unlink-outline'
+import { TAgent } from '../types'
 
-type TAgent = {
-  name: string
-  source: string
-  status: string
-}
-
-type TAgentsProps = {
+type TAgentProps = {
   agent: TAgent
   onDisconnect: () => void
 }
 
-const Agent: FC<TAgentsProps> = ({ agent, onDisconnect }) => {
+const Agent: FC<TAgentProps> = ({ agent, onDisconnect }) => {
   console.log(agent)
 
   return (
