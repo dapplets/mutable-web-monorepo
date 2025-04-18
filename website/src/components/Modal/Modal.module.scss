@@ -1,0 +1,172 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--black-t2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+.content {
+  width: 56.25rem;
+  max-height: 80vh;
+  background: var(--grey-de);
+  border-radius: 0.625rem;
+  padding: 2.5rem 2.5rem 1.875rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0.25rem 1.875rem var(--black-t1);
+}
+
+.titleBlock {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem 0 1.25rem;
+  background: var(--grey-de);
+  z-index: 10;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-20-32);
+  line-height: 1.5;
+  color: var(--black-1d);
+}
+
+.close {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 1.25rem;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.scrollBlock {
+  overflow-y: auto;
+  padding-right: 0.625rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.imgBlock {
+  width: 100%;
+  border-radius: 0.5rem;
+  aspect-ratio: 2.34 / 1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 2.34 / 1;
+  }
+}
+
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--black-1d);
+}
+
+.subtitle {
+  font-size: var(--fs-16-18);
+  line-height: 1.5;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--fs-14-16);
+  line-height: 1.6;
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.buttonBlock {
+  margin-top: 1.25rem;
+  align-self: center;
+  width: 100%;
+}
+
+.titleBr {
+  display: none;
+}
+
+:global(.dark) {
+  .wrapper {
+    background: var(--white-t2);
+  }
+
+  .content,
+  .titleBlock {
+    background: var(--black-1d);
+  }
+
+  .title,
+  .textBlock {
+    color: var(--white);
+  }
+}
+
+@media (max-width: 1185px) {
+  .content {
+    width: 70%;
+  }
+}
+
+@media (max-width: 992px) {
+  .content {
+    width: 85%;
+    padding: 1.875rem 1.5625rem 1.5625rem;
+  }
+}
+
+@media (max-width: 719px) {
+  .content {
+    width: 90%;
+    max-height: 90vh;
+    padding: 1.25rem 0.9375rem;
+  }
+
+  .titleBlock {
+    padding: 1.25rem 0 0.9375rem;
+    align-items: flex-start;
+  }
+
+  .title {
+    width: 100%;
+    margin-bottom: 0.625rem;
+  }
+
+  .titleBr {
+    display: inline;
+  }
+
+  .close {
+    margin: 0;
+  }
+
+  .imgBlock img {
+    height: 12.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0.9375rem 0.625rem;
+  }
+}

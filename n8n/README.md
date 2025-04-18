@@ -2,6 +2,14 @@
 
 This repository contains several [n8n](https://n8n.io/) workflow JSON files. You can import them into your n8n instance to automate various tasks involving the NEAR AI API and other utilities.
 
+## Getting Started
+
+```
+cd n8n
+docker compose pull
+docker compose create && docker compose up
+```
+
 ## Importing a Workflow
 
 ```

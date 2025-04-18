@@ -1,0 +1,72 @@
+:root {
+  --black: #000000;
+  --black-1d: #1d1d1d;
+  --black-30: #303030;
+  --black-22: #222;
+  --black-48: rgba(48, 48, 48, 0);
+  --bg: #e7ecef;
+  --white: #fff;
+  --red-db: #db504a;
+  --red-ff: #ff827c;
+  --violet-7c: #7c43c5;
+  --grey-e7: #e7ecef;
+  --grey-e3: #e3e8eb;
+  --grey-c1: #c1c6ce;
+  --grey-de: #dee3e6;
+  --shadow-t1: rgba(255, 64, 0, 0.1);
+  --shadow-t09: rgba(255, 64, 0, 0.09);
+  --shadow-t05: rgba(255, 64, 0, 0.05);
+  --shadow-t01: rgba(255, 64, 0, 0.01);
+  --shadow-t00: rgba(255, 64, 0, 0);
+  --black-t8: rgba(48, 48, 48, 0.8);
+  --black-t01: rgba(0, 0, 0, 0.01);
+  --black-t00: rgba(0, 0, 0, 0);
+  --black-t1: rgba(0, 0, 0, 0.1);
+  --black-t2: rgba(27, 27, 27, 0.2);
+  --black-t09: rgba(0, 0, 0, 0.09);
+  --black-t05: rgba(0, 0, 0, 0.05);
+  --black-t74: rgba(0, 0, 0, 0.74);
+  --white-t2: rgba(255, 255, 255, 0.2);
+  --white-t02: rgba(255, 255, 255, 0.02);
+  --white-t05: rgba(255, 255, 255, 0.05);
+
+  //
+
+  --fs-14-16: 14px;
+  --fs-16-18: 16px;
+  --fs-20-32: 20px;
+  --fs-36-64: 36px;
+  --fs-24-48: 24px;
+  --fs-18-24: 18px;
+  --fs-36-96: 36px;
+  --fs-24-36: 24px;
+
+  //
+
+  --tablet: 1185px;
+  --mobile: 719px;
+
+  //
+
+  @media screen and (min-width: 320px) {
+    --fs-14-16: calc(14px + 2 * ((100vw - 375px) / 1065));
+    --fs-20-32: calc(20px + 12 * ((100vw - 375px) / 1065));
+    --fs-16-18: calc(16px + 2 * ((100vw - 375px) / 1065));
+    --fs-36-64: calc(36px + 28 * ((100vw - 375px) / 1065));
+    --fs-24-48: calc(24px + 24 * ((100vw - 375px) / 1065));
+    --fs-18-24: calc(18px + 6 * ((100vw - 375px) / 1065));
+    --fs-24-36: calc(24px + 12 * ((100vw - 375px) / 1065));
+    --fs-36-96: calc(36px + 60 * ((100vw - 375px) / 1065));
+  }
+
+  @media screen and (min-width: 1440px) {
+    --fs-14-16: 16px;
+    --fs-20-32: 32px;
+    --fs-16-18: 18px;
+    --fs-36-64: 64px;
+    --fs-24-48: 48px;
+    --fs-18-24: 24px;
+    --fs-36-96: 96px;
+    --fs-24-36: 36px;
+  }
+}
