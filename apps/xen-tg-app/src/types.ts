@@ -15,3 +15,8 @@ export type TWarning = {
   text: string
   timestamp: string
 }
+
+export type TMemory = {
+  text: string
+  timestamp: string
+}
