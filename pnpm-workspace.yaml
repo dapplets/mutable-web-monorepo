@@ -5,3 +5,4 @@ packages:
   - agents/crawler
 ignoredBuiltDependencies:
   - '@nestjs/core'
+  - esbuild
