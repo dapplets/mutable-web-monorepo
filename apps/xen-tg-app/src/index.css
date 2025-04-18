@@ -20,6 +20,7 @@ html, body {
 #root {
   display: flex;
   justify-content: center;
+  overflow-x: auto;
 }
 
 /* :root {
