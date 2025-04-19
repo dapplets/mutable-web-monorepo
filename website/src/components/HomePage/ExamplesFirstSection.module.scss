@@ -1,0 +1,84 @@
+.wrapper {
+  padding: 0 1.25rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 75rem;
+  margin: 8.5rem auto 0;
+}
+
+.title {
+  font-size: var(--fs-24-48);
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+}
+
+.examplesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  margin-top: 2.5rem;
+}
+
+.exampleBlock {
+  display: flex;
+  align-items: center;
+  gap: 3.75rem;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+}
+
+.imageContainer {
+  flex: 1;
+  min-width: 0;
+  will-change: transform, opacity;
+  transform: translateY(1.25rem);
+  opacity: 0;
+}
+
+.exampleImage {
+  width: 100%;
+  height: auto;
+  border-radius: .625rem;
+  transition: none;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.exampleTitle {
+  font-size: var(--fs-18-24);
+  font-weight: 600;
+}
+
+.exampleDescription {
+  display: block;
+  margin-top: 1.25rem;
+  font-size: var(--fs-14-16);
+  line-height: 1.49;
+}
+
+// Мобильная версия
+@media (max-width: 768px) {
+  .wrapper {
+   margin-top: 4rem;
+  }
+
+  .examplesContainer {
+    gap: 1.25rem;
+  }
+
+  .exampleBlock {
+    flex-direction: column;
+    gap: 1.25rem;
+
+    &.reverse {
+      flex-direction: column;
+    }
+  }
+}
