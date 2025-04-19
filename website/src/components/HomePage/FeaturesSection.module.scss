@@ -95,6 +95,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
 }
 
 .featureImage {
@@ -133,6 +134,7 @@
   transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
+  opacity: 0;
 
   &:hover {
     background: radial-gradient(
