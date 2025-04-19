@@ -41,7 +41,7 @@ const ExamplesSection = () => {
               defaults: { duration: 0.8, ease: 'power2.in' }
             });
 
-            tl.to(items[0], { x: 0, opacity: 1, delay: 0.3 })
+            tl.to(items[0], { x: 0, opacity: 1, delay: 0.1 })
               .to(items[1], { y: 0, opacity: 1 }, '-=0.6')
               .to(items[2], { x: 0, opacity: 1 }, '-=0.6');
 
