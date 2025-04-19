@@ -67,7 +67,7 @@ export const Header:FC<HeaderProps>=({ setModalOpen }) =>{
       y: 0,
       duration: 0.8,
       stagger: 0.15,
-      ease: 'back.out(1.7)',
+      ease: 'power2.in',
       delay: 0.3
     });
 
