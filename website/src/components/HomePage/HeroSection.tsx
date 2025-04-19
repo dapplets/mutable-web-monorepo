@@ -99,11 +99,18 @@ const HeroSection = () => {
       </div>
       <SupportedBySection />
       <ThemeImage
-        className={cn(styles.img, styles['img-left'])}
+        className={cn(styles.img, styles['img--desk'])}
         width={1920}
         height={761}
         alt='arrow'
         src='icons/home/bg-title.svg'
+      />
+       <ThemeImage
+        className={cn(styles.img,styles['img--mobile'])}
+        width={1185}
+        height={761}
+        alt='arrow'
+        src='icons/home/bg-tablet.svg'
       />
     </section>
   );

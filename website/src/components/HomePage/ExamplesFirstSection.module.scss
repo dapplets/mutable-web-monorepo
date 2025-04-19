@@ -44,6 +44,11 @@
   height: auto;
   border-radius: .625rem;
   transition: none;
+
+  &:hover{
+    transform: none!important;
+    cursor: default;
+  }
 }
 
 .content {

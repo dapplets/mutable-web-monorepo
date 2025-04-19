@@ -1,10 +1,116 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import styles from './About.module.scss';
 import { Layout } from '@/components/Layout';
 import { brand, mission, problem, title } from '@/constants/constantsTextAbout';
 import { Button } from '@/components/Button';
 import { ThemeImage } from '@/components/ThemeImage';
+import gsap from 'gsap';
 
 function About() {
+  const rotatingImageRef = useRef<HTMLDivElement>(null);
+  const mousePosition = useRef({ x: 0, y: 0 });
+  const animationRef = useRef<gsap.core.Tween | null>(null);
+  const floatAnimationRef = useRef<gsap.core.Tween | null>(null);
+
+  useEffect(() => {
+    if (!rotatingImageRef.current) return;
+
+    const initComplexAnimation = () => {
+      gsap.set(rotatingImageRef.current, {
+        transformPerspective: 1000,
+        transformOrigin: 'center center'
+      });
+
+      const appearTl = gsap.timeline();
+      appearTl.from(rotatingImageRef.current, {
+        scale: 0.7,
+        opacity: 0,
+        rotationY: 180,
+        duration: 1.8,
+        ease: 'elastic.out(1, 0.6)'
+      });
+
+      floatAnimationRef.current = gsap.to(rotatingImageRef.current, {
+        y: '-=15',
+        duration: 3,
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut'
+      });
+
+      gsap.to(rotatingImageRef.current, {
+        rotationY: 360,
+        duration: 25,
+        repeat: -1,
+        ease: 'none'
+      });
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!rotatingImageRef.current) return;
+
+      mousePosition.current = {
+        x: (e.clientX / window.innerWidth - 0.5) * 2,
+        y: (e.clientY / window.innerHeight - 0.5) * 2
+      };
+
+      if (animationRef.current) animationRef.current.kill();
+
+      animationRef.current = gsap.to(rotatingImageRef.current, {
+        rotationY: mousePosition.current.x * 15,
+        rotationX: -mousePosition.current.y * 10,
+        x: mousePosition.current.x * 20,
+        y: mousePosition.current.y * 20,
+        duration: 1.5,
+        ease: 'power2.out'
+      });
+    };
+
+    const handleMouseEnter = () => {
+      gsap.to(rotatingImageRef.current, {
+        scale: 1.1,
+        duration: 0.7,
+        ease: 'back.out(2)',
+        overwrite: true
+      });
+      
+      gsap.to(rotatingImageRef.current, {
+        '--glow-opacity': 0.3,
+        '--glow-spread': '20px',
+        duration: 0.5
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(rotatingImageRef.current, {
+        scale: 1,
+        rotationY: 0,
+        rotationX: 0,
+        x: 0,
+        y: 0,
+        '--glow-opacity': 0.1,
+        '--glow-spread': '10px',
+        duration: 1.5,
+        ease: 'elastic.out(1, 0.5)'
+      });
+    };
+
+    initComplexAnimation();
+    window.addEventListener('mousemove', handleMouseMove);
+    rotatingImageRef.current.addEventListener('mouseenter', handleMouseEnter);
+    rotatingImageRef.current.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      rotatingImageRef.current?.removeEventListener('mouseenter', handleMouseEnter);
+      rotatingImageRef.current?.removeEventListener('mouseleave', handleMouseLeave);
+      animationRef.current?.kill();
+      floatAnimationRef.current?.kill();
+    };
+  }, []);
+
   return (
     <Layout
       title='Empowering Web Communities with Dapplets and Mutable Web: Solving Centralization Issues.'
@@ -30,7 +136,15 @@ function About() {
               />
             </div>
           </div>
-          <div className={styles.iconBlock}>
+          <div 
+            className={styles.iconBlock} 
+            ref={rotatingImageRef}
+            style={{
+              '--glow-color': 'var(--accent-color)',
+              '--glow-opacity': '0.1',
+              '--glow-spread': '10px'
+            } as React.CSSProperties}
+          >
             <ThemeImage
               className={styles.supportedBlockIcon}
               width={439}
