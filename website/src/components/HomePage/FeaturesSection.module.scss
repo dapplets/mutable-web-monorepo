@@ -80,6 +80,7 @@
   grid-template-columns: 1fr 2fr;
   gap: var(--feature-gap);
   align-items: center;
+  will-change: transform, opacity;
 
   &--2 {
     grid-template-columns: 1fr 1fr 1fr;
