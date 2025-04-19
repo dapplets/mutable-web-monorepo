@@ -3,9 +3,10 @@ import styles from './Header.module.scss';
 import cn from 'classnames';
 import { useTheme } from 'next-themes';
 import { ThemeImage } from '../ThemeImage';
-import { useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Button } from '../Button';
+import gsap from 'gsap'
 
 const menuItems = [
   {
@@ -22,10 +23,15 @@ export interface HeaderProps {
   setModalOpen: (x: boolean) => void;
 }
 
-export function Header({ setModalOpen }: HeaderProps) {
+export const Header:FC<HeaderProps>=({ setModalOpen }) =>{
   const { resolvedTheme, setTheme } = useTheme();
   const pathname = usePathname();
   const [isMobileMenu, setMobileMenu] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLAnchorElement>(null);
+  const navLinksRef = useRef<HTMLDivElement>(null);
+  const themeSwitcherRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
   const toggleDarkMode = () => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
@@ -39,17 +45,41 @@ export function Header({ setModalOpen }: HeaderProps) {
     };
 
     updateDimensions();
-
     window.addEventListener('resize', updateDimensions);
+    
     return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 1024) return;
+
+    const elements = [
+      logoRef.current,
+      navLinksRef.current,
+      themeSwitcherRef.current,
+      buttonRef.current
+    ].filter(Boolean) as HTMLElement[];
+
+    gsap.set(elements, { opacity: 0, y: 40 });
+
+    gsap.to(elements, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'back.out(1.7)',
+      delay: 0.3
+    });
+
+  }, []);
+
   return (
-    <div className={styles.wrapper}>
+    <div className={styles.wrapper} ref={headerRef}>
       <Link
         prefetch={false}
         className={cn(styles.linkHover, styles.logoLink)}
         href='/'
+        ref={logoRef}
       >
         <ThemeImage
           width={178}
@@ -60,7 +90,7 @@ export function Header({ setModalOpen }: HeaderProps) {
         />
       </Link>
 
-      <div className={styles.navLinks}>
+      <div className={styles.navLinks} ref={navLinksRef}>
         {menuItems.map((menuItem, i) => (
           <Link prefetch={false} key={i} href={menuItem.path}>
             <div
@@ -74,7 +104,7 @@ export function Header({ setModalOpen }: HeaderProps) {
         ))}
       </div>
 
-      <div className={styles.themeSwitcher} onClick={toggleDarkMode}>
+      <div className={styles.themeSwitcher} onClick={toggleDarkMode} ref={themeSwitcherRef}>
         <ThemeImage
           width={34}
           height={34}
@@ -83,12 +113,15 @@ export function Header({ setModalOpen }: HeaderProps) {
         />
       </div>
 
-      <Button
-        onClick={() => setModalOpen(true)}
-        classNames={styles.mvmButton}
-        text='MWM'
-        isPrimary
-      />
+   
+        <Button
+          onClick={() => setModalOpen(true)}
+          classNames={styles.mvmButton}
+          text='MWM'
+          isPrimary
+          ref={buttonRef}
+        />
+  
 
       <div
         onClick={() => setMobileMenu(!isMobileMenu)}
@@ -171,3 +204,5 @@ export function Header({ setModalOpen }: HeaderProps) {
     </div>
   );
 }
+
+export default Header
