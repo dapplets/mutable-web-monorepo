@@ -67,9 +67,9 @@ const ExamplesSection = () => {
   return (
     <section className={styles.wrapper} ref={sectionRef}>
       <h2 className={styles.title}>
-        mutations
+        more
         <span className={cn(styles.title, styles['title--color'])}>
-          &nbsp;example
+          &nbsp;examples
         </span>
       </h2>
       <div className={styles.container}>
