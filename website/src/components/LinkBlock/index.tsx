@@ -22,6 +22,7 @@ export function LinkBlock({ content }: LinkBlockProps) {
             height={65}
             alt='arrow'
             src='icons/link/arrow.svg'
+            fetchPriority='high'
           />
         </div>
         <div className={styles.linkTitle}>{content.title}</div>
