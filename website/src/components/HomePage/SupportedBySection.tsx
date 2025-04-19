@@ -27,7 +27,7 @@ const SupportedBySection = () => {
       y: 0,
       duration: 0.8,
       stagger: 0.15,
-      ease: 'back.out(1.7)',
+      ease: 'power2.in',
     });
 
     animationDone.current = true;
