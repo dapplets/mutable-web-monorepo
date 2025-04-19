@@ -157,7 +157,7 @@ export class CustomWalletConnection {
     newUrl.searchParams.set(
       'transactions',
       transactions
-        .map((transaction) => serialize(NearApiJs.transactions.SCHEMA, transaction))
+        .map((transaction) => serialize(NearApiJs.transactions.SCHEMA.Transaction, transaction))
         .map((serialized) => Buffer.from(serialized).toString('base64'))
         .join(',')
     )

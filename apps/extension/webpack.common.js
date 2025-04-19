@@ -65,6 +65,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
+      {
         include: path.resolve(__dirname, 'src'),
         test: /\.tsx?$/,
         use: [
@@ -121,7 +127,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js'],
+    extensions: ['.ts', '.tsx', '.jsx', '.js', '.mjs'],
     fallback: {
       crypto: false,
       stream: require.resolve('stream-browserify'),

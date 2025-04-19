@@ -255,7 +255,7 @@ export class UserLinkService {
   /**
    * Source: https://gist.github.com/themikefuller/c1de46cbbdad02645b9dc006baedf88e
    */
-  static _base64EncodeURL(byteArray: ArrayLike<number> | ArrayBufferLike): string {
+  static _base64EncodeURL(byteArray: ArrayLike<number> | ArrayBuffer): string {
     return btoa(
       Array.from(new Uint8Array(byteArray))
         .map((val) => {
