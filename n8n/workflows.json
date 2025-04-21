@@ -1217,7 +1217,7 @@
           [
             {
               "index": 0,
-              "node": "Telegram18",
+              "node": "Telegram12",
               "type": "main"
             }
           ],
@@ -1246,6 +1246,13 @@
             {
               "index": 0,
               "node": "Stop and Error",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "If6",
               "type": "main"
             }
           ],
@@ -1546,6 +1553,24 @@
           ]
         ]
       },
+      "If6": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres16",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres19",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "If8": {
         "main": [
           [
@@ -1765,12 +1790,45 @@
           ]
         ]
       },
+      "Postgres16": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram18",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Postgres17": {
         "main": [
           [
             {
               "index": 0,
               "node": "Telegram14",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres18": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram19",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres19": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres18",
               "type": "main"
             }
           ]
@@ -3604,6 +3662,30 @@
                   }
                 },
                 "outputKey": "Throw",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "4e8c7001-df2b-41eb-99ba-4b411b7e721d",
+                      "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                      "operator": {
+                        "operation": "startsWith",
+                        "type": "string"
+                      },
+                      "rightValue": "/setabout"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "setabout",
                 "renameOutput": true
               },
               {
@@ -5565,6 +5647,284 @@
             "name": "Postgres account"
           }
         },
+        "id": "fb65c2a5-eb6a-4335-9c00-8e5107b6959b",
+        "name": "Postgres16",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "value",
+                "id": "value",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "default",
+                "id": "default",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "type": "about",
+              "value": "={{ $('If1').item.json.message.text.replace(/^\\/setabout\\s*/, '') }}"
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "environment",
+            "mode": "list",
+            "value": "environment"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "variables",
+            "mode": "list",
+            "value": "variables"
+          }
+        },
+        "position": [
+          2480,
+          -220
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "6fbaf52c-e0a1-4591-9ddb-b8dc248f90a0",
+        "name": "Telegram18",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=ℹ️ 'About' updated."
+        },
+        "position": [
+          2680,
+          -220
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+      },
+      {
+        "id": "460a1351-7ba5-4878-8f7a-30685bf1c360",
+        "name": "If6",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "6e7192d1-7c6c-4f34-b17f-fbd9b6d0400b",
+                "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                "operator": {
+                  "operation": "notEndsWith",
+                  "type": "string"
+                },
+                "rightValue": "/setabout"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2240,
+          -220
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "17094d43-3f0b-4239-b5b9-9aeef4a0cd2d",
+        "name": "Postgres18",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "value",
+                "id": "value",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "default",
+                "id": "default",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "type": "about",
+              "value": "={{ $json.default }}"
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "environment",
+            "mode": "list",
+            "value": "environment"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "variables",
+            "mode": "list",
+            "value": "variables"
+          }
+        },
+        "position": [
+          2680,
+          -60
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "56f7ec80-55e3-4068-9c2c-7872655a59d6",
+        "name": "Postgres19",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "environment",
+            "mode": "list",
+            "value": "environment"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "variables",
+            "mode": "list",
+            "value": "variables"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "type",
+                "value": "about"
+              }
+            ]
+          }
+        },
+        "position": [
+          2480,
+          -60
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "ca5baf20-46d4-4fde-987e-3a240dbc81c3",
+        "name": "Telegram19",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=ℹ️ 'About' set to default."
+        },
+        "position": [
+          2900,
+          -60
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
         "id": "41c0a12c-c2dd-444b-89a1-5606e4d27172",
         "name": "Get Account3",
         "parameters": {
@@ -5892,8 +6252,8 @@
           }
         },
         "executeOnce": true,
-        "id": "5383bc93-44ce-4fb5-b980-0f3791aaaad0",
-        "name": "Telegram18",
+        "id": "c35a2813-b048-4831-8cbe-c5ab59c7da1b",
+        "name": "Telegram12",
         "parameters": {
           "additionalFields": {
             "appendAttribution": false
@@ -5921,8 +6281,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-21T09:10:08.000Z",
-    "versionId": "fdc11468-238e-40fb-b5ac-6299d06945fd"
+    "updatedAt": "2025-04-21T09:31:17.000Z",
+    "versionId": "5a6d7358-7b70-413f-8f2d-e792d6174041"
   },
   {
     "active": false,
