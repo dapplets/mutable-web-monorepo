@@ -3,6 +3,7 @@ volumes:
   postgres_storage:
   ollama_storage:
   qdrant_storage:
+  traefik_data:
 
 networks:
   demo:
@@ -21,6 +22,11 @@ x-n8n: &service-n8n
     - N8N_ENCRYPTION_KEY
     - N8N_USER_MANAGEMENT_JWT_SECRET
     - OLLAMA_HOST=ollama:11434
+    - N8N_HOST=${SUBDOMAIN}.${DOMAIN_NAME}
+    - N8N_PORT=5678
+    - N8N_PROTOCOL=https
+    - NODE_ENV=production
+    - WEBHOOK_URL=https://${SUBDOMAIN}.${DOMAIN_NAME}/
   env_file:
     - .env
 
@@ -48,6 +54,30 @@ x-init-ollama: &init-ollama
     - 'sleep 3; ollama pull llama3.2'
 
 services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    networks: ['demo']
+    restart: unless-stopped
+    command:
+      - '--api=true'
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entryPoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+      - '--entrypoints.websecure.address=:443'
+      - '--certificatesresolvers.mytlschallenge.acme.tlschallenge=true'
+      - '--certificatesresolvers.mytlschallenge.acme.email=${SSL_EMAIL}'
+      - '--certificatesresolvers.mytlschallenge.acme.storage=/letsencrypt/acme.json'
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - traefik_data:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   postgres:
     image: postgres:16-alpine
     hostname: postgres
@@ -81,6 +111,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    labels:
+      - 'traefik.enable=false'
 
   n8n:
     <<: *service-n8n
@@ -88,7 +120,7 @@ services:
     container_name: n8n
     restart: unless-stopped
     ports:
-      - 5678:5678
+      - '127.0.0.1:5678:5678'
     volumes:
       - n8n_storage:/home/node/.n8n
       - ./:/backup
@@ -98,6 +130,21 @@ services:
         condition: service_healthy
       n8n-import:
         condition: service_completed_successfully
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n.rule=Host(`${SUBDOMAIN}.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.n8n.entrypoints=web,websecure"
+      - "traefik.http.routers.n8n.tls=true"
+      - "traefik.http.routers.n8n.tls.certresolver=mytlschallenge"
+      - "traefik.http.middlewares.n8n.headers.SSLRedirect=true"
+      - "traefik.http.middlewares.n8n.headers.STSSeconds=315360000"
+      - "traefik.http.middlewares.n8n.headers.browserXSSFilter=true"
+      - "traefik.http.middlewares.n8n.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.n8n.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.n8n.headers.SSLHost=${DOMAIN_NAME}"
+      - "traefik.http.middlewares.n8n.headers.STSIncludeSubdomains=true"
+      - "traefik.http.middlewares.n8n.headers.STSPreload=true"
+      - "traefik.http.routers.n8n.middlewares=n8n@docker"
 
   qdrant:
     image: qdrant/qdrant
