@@ -1,47 +1,76 @@
 # Aigency x Xen — n8n Workflows
 
-This repository contains several [n8n](https://n8n.io/) workflow JSON files. You can import them into your n8n instance to automate various tasks involving the NEAR AI API and other utilities.
+## Prerequisites
 
-## Getting Started
+1. **Provision a VPS** with a public IP address. We tested Aigency (without running an LLM locally) on a server with **2 vCPU, 4 GB RAM, 40 GB SSD** running **Ubuntu 24.04 LTS**.
 
+2. **Point a domain name** to your VPS by creating an **A‑record** for its IP address.
+
+3. **Install Docker** — for example, by following [this guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04).
+
+4. **Create a Telegram bot** via **@BotFather** and save its API token.
+
+5. **Generate an OpenAI API key** at <https://platform.openai.com/api-keys>.
+
+6. **Obtain a NEAR AI API key** from <https://near.ai/>. After signing in, look for a cookie named `auth`.
+
+## Installation
+
+1. **Clone the repository** and switch to the `n8n` directory:
+
+   ```bash
+   git clone https://github.com/dapplets/mutable-web-monorepo.git
+   cd mutable-web-monorepo/n8n
+   ```
+
+2. **Create and edit the environment file**:
+
+   ```bash
+   cp .env.example .env
+   nano .env
+   ```
+
+3. **Start the Docker containers**:
+
+   ```bash
+   docker compose pull
+   docker compose create
+   docker compose up -d
+   ```
+
+4. **Open** `https://<YOUR_DOMAIN>` in your browser.
+
+5. **Create your n8n user account** when prompted.
+
+6. **Verify that the workflows imported successfully** and that some are active.  
+   The `main` workflow will show an error at first; we’ll fix that next.
+
+7. **Open the "Credentials" tab** to add your keys.
+
+8. In **"Telegram API"**, paste your bot token.
+
+9. In **"NEAR AI API Key"**, set **Name** to `Authorization` and **Value** to:
+
+   ```
+   Bearer <YOUR_NEAR_AI_TOKEN>
+   ```
+
+   Example (do **not** copy verbatim):
+
+   ```
+   Bearer {"account_id":"example.near","public_key":"ed25519:deadbeef","signature":"cafebabe","callback_url":"https://app.near.ai/sign-in/callback","message":"Welcome to NEAR AI Hub!","recipient":"ai.near","nonce":"00000000000000000001744312345678"}
+   ```
+
+10. In **"OpenAI"**, paste your OpenAI API key.
+
+11. Return to the **"Workflows"** tab and confirm that all errors are gone.
+
+12. **Start chatting** with your Telegram bot—everything should be ready!
+
+### Uninstallation
+
+To stop and remove the containers, networks, volumes, and images created for Aigency, run the following command from the `n8n` directory:
+
+```bash
+docker compose down --volumes
 ```
-cd n8n
-docker compose pull
-docker compose create && docker compose up
-```
-
-## Importing a Workflow
-
-```
-n8n import:workflow --input=workflows.json
-```
-
-## Workflows Overview
-
-* `main` — Serves as the primary assistant workflow. It processes user inputs, retrieves and synthesizes external market and database data, and returns interactive responses to users via chat channels.
-
-* `track` — Monitors real‐time market data and trading signals for a specific cryptocurrency. It uses a chain of language models, technical analysis, and external API calls to generate trade recommendations and then notifies users via Telegram.
-
-* `dept` — Delegates tasks by selecting the most suitable AI agent for a given task. It aggregates information from the database and external sources, then passes the task to an agent for further processing.
-
-* `voice-tool` — Converts user text into speech by leveraging an audio-enabled language model. The workflow receives voice query inputs, processes them, and sends the generated audio output back to the user through Telegram.
-
-* `testing-only` — A dedicated workflow for running tests and experiments. It demonstrates integrations with file conversion, vector storage (using Qdrant), and embedding generation. It’s used for verifying internal processing and data transformations.
-
-* `consciousness` — Acts as a memory guardian that extracts, aggregates, and summarizes personal data from ongoing conversations. This workflow maintains a record of user interactions to build a context-aware internal memory.
-
-* `task-checker` — Regularly checks and monitors tasks and reminders stored in the database. It verifies completion statuses and sends notifications to the user when items are due or require attention.
-
-* `forecast-reddits` — Aggregates and analyzes news from multiple subreddits. This workflow fetches Reddit RSS feeds, applies filters based on recency, and identifies important news items, helping to forecast trending topics.
-
-* `reddits` — Manages subreddit subscriptions by validating the input command, subscribing to the specified subreddit feed, and ensuring that only correctly formatted subreddit names are processed.
-
-* `Delivery` — Curates and delivers news to users based on personal preferences. It receives, formats, and sends news items that have been analyzed for relevance, ensuring that the most important information reaches the user.
-
-* `global-error-handler` — Catches workflow errors globally. When an error is detected, it packages the error message, stack trace, and relevant workflow details and sends a formatted report to a dedicated Telegram chat for prompt troubleshooting.
-
-* `backups` — Provides automated backups of workflow configurations. This workflow gathers workflow definitions, creates a deterministic JSON representation of each, and commits them to a GitHub repository for version control.
-
-* `Subscriptions` — Retrieves and displays a user’s active subscriptions. It queries the database for current subscriptions, aggregates the data, and summarizes the information for the user in a clear format.
-
-Use these workflows as references or building blocks for your own integrations. Ensure that any credentials (e.g., Telegram, Postgres, OpenAI) are properly configured in n8n before execution.
