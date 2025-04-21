@@ -7,6 +7,7 @@ CREATE SCHEMA feedback;
 CREATE SCHEMA jobs;
 CREATE SCHEMA "near-ai";
 CREATE SCHEMA "personal-data";
+CREATE SCHEMA environment;
 
 CREATE TABLE delivered.reddits (
     id integer NOT NULL,
@@ -166,6 +167,19 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+CREATE TABLE environment.variables (
+    type character varying NOT NULL,
+    value character varying,
+    "default" character varying
+);
+
+COPY environment.variables (type, value, "default") FROM stdin;
+about	I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the first users of XEN (wohoo!) and this is a beta version, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\nWhat you were doing → What you expected → What actually happened\nThat way, we can find and fix bugs quickly.\n\n⸻\n\nWhat you can do with me right away:\n• Set reminders: “Remind me to pick up my kid at 3pm”\n• Ask questions: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• Track thoughts: “/memo” shows what I’ve remembered for you\n\n⸻\n\nAnd if you connect your NEAR wallet (with /login):\n• Track your wallet: I’ll notify you about transactions or balance changes\n• Use dApps more easily: I’ll guide you through actions like minting NFTs or joining token sales\n• Stay informed: I’ll remind you about DAO votes or ecosystem events\n• Get smart prompts: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But XEN is chain-agnostic by design - we’ll expand to other networks over time.\n\n⸻\n\nYou don’t need a wallet to enjoy using me - but connecting one unlocks new features.\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!	I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the first users of XEN (wohoo!) and this is a beta version, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\nWhat you were doing → What you expected → What actually happened\nThat way, we can find and fix bugs quickly.\n\n⸻\n\nWhat you can do with me right away:\n• Set reminders: “Remind me to pick up my kid at 3pm”\n• Ask questions: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• Track thoughts: “/memo” shows what I’ve remembered for you\n\n⸻\n\nAnd if you connect your NEAR wallet (with /login):\n• Track your wallet: I’ll notify you about transactions or balance changes\n• Use dApps more easily: I’ll guide you through actions like minting NFTs or joining token sales\n• Stay informed: I’ll remind you about DAO votes or ecosystem events\n• Get smart prompts: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But XEN is chain-agnostic by design - we’ll expand to other networks over time.\n\n⸻\n\nYou don’t need a wallet to enjoy using me - but connecting one unlocks new features.\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!
+\.
+
+ALTER TABLE ONLY environment.variables
+    ADD CONSTRAINT variables_pk PRIMARY KEY (type);
 
 ALTER TABLE ONLY delivered.reddits ALTER COLUMN id SET DEFAULT nextval('delivered.reddits_id_seq'::regclass);
 ALTER TABLE ONLY feedback.feedback ALTER COLUMN id SET DEFAULT nextval('feedback.feedback_id_seq'::regclass);
