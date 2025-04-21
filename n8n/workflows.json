@@ -6498,8 +6498,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-21T15:13:34.000Z",
-    "versionId": "d0f9e82b-a77c-4005-858e-a0d37c391f0a"
+    "updatedAt": "2025-04-21T16:11:48.000Z",
+    "versionId": "85adce44-f3e9-4755-a9d9-988b43587204"
   },
   {
     "active": false,
@@ -12454,12 +12454,23 @@
   {
     "active": false,
     "connections": {
-      "Error Trigger": {
+      "Crypto": {
         "main": [
           [
             {
               "index": 0,
               "node": "Telegram13",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Crypto",
               "type": "main"
             }
           ]
@@ -12498,15 +12509,29 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "=Error:\n{{ $json.execution.error.message }}\n\nNode: {{ $json.execution.lastNodeExecuted }}\n\n```\n{{ $json.execution.error.stack }}\n```\n\nWorkflow: [{{ $json.workflow.name }}]({{ $json.execution.url }})"
+          "text": "=Error #{{ $json.data.substring(0, 6) }}\n{{ $json.execution.error.message }}\n\nNode: {{ $json.execution.lastNodeExecuted }}\n\n```\n{{ $json.execution.error.stack }}\n```\n\nWorkflow: [{{ $json.workflow.name }}]({{ $json.execution.url }})"
         },
         "position": [
-          240,
+          460,
           0
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "id": "baebb711-a5db-4eaa-a4e0-e971b0a80899",
+        "name": "Crypto",
+        "parameters": {
+          "type": "SHA256",
+          "value": "={{ $json.execution.error.message }} {{ $json.execution.lastNodeExecuted }}"
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "n8n-nodes-base.crypto",
+        "typeVersion": 1
       }
     ],
     "pinData": {
@@ -12518,8 +12543,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-14T15:39:49.000Z",
-    "versionId": "23bf5e30-7d90-44d1-812d-f46c6bb6e794"
+    "updatedAt": "2025-04-21T16:17:43.000Z",
+    "versionId": "7dc9c2b3-a662-46f7-b036-ad4c8ee869ee"
   },
   {
     "active": false,
