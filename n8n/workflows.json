@@ -1621,6 +1621,11 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "no-rights error",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -6456,6 +6461,30 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "783810c8-2b8f-497a-8a92-5d00ceadcb84",
+        "name": "no-rights error",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=This command does not exist."
+        },
+        "position": [
+          2240,
+          -60
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "2e7b0d78-b0ad-462f-bac9-509f3556d886"
       }
     ],
     "pinData": {
@@ -6469,8 +6498,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-21T09:42:43.000Z",
-    "versionId": "948f0418-8590-4e13-9af3-3d5d13597fe2"
+    "updatedAt": "2025-04-21T09:45:09.000Z",
+    "versionId": "d6809da7-540d-4a00-9cea-781c60c94b68"
   },
   {
     "active": false,
@@ -12605,12 +12634,6 @@
           ]
         ]
       },
-      "GitHub": {
-        "main": [
-          [
-          ]
-        ]
-      },
       "Is Modified?": {
         "main": [
           [
@@ -12720,45 +12743,6 @@
         ],
         "type": "n8n-nodes-base.manualTrigger",
         "typeVersion": 1
-      },
-      {
-        "credentials": {
-          "githubApi": {
-            "id": "baRMPgIVSXufKRQj",
-            "name": "GitHub account"
-          }
-        },
-        "id": "a8c0ad46-ab34-4295-af64-d162de1f4332",
-        "name": "GitHub",
-        "parameters": {
-          "additionalParameters": {
-            "branch": {
-              "branch": "={{ $('Branch').item.json.branch }}"
-            }
-          },
-          "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
-          "fileContent": "={{ $('Deterministic JSON After').item.json.serialized }}",
-          "filePath": "=n8n/workflows.json",
-          "operation": "edit",
-          "owner": {
-            "__rl": true,
-            "mode": "name",
-            "value": "dapplets"
-          },
-          "repository": {
-            "__rl": true,
-            "mode": "name",
-            "value": "mutable-web-monorepo"
-          },
-          "resource": "file"
-        },
-        "position": [
-          1100,
-          540
-        ],
-        "type": "n8n-nodes-base.github",
-        "typeVersion": 1,
-        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
       },
       {
         "id": "41f2e4e9-81a4-4d05-9351-911bc41d0571",
@@ -13077,6 +13061,45 @@
         ],
         "type": "n8n-nodes-base.code",
         "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "githubApi": {
+            "id": "baRMPgIVSXufKRQj",
+            "name": "GitHub account"
+          }
+        },
+        "id": "276e4fb1-ef01-4c07-b271-410a7224f3fe",
+        "name": "GitHub",
+        "parameters": {
+          "additionalParameters": {
+            "branch": {
+              "branch": "={{ $('Branch').item.json.branch }}"
+            }
+          },
+          "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
+          "fileContent": "={{ $('Deterministic JSON After').item.json.serialized }}",
+          "filePath": "=n8n/workflows.json",
+          "operation": "edit",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "dapplets"
+          },
+          "repository": {
+            "__rl": true,
+            "mode": "name",
+            "value": "mutable-web-monorepo"
+          },
+          "resource": "file"
+        },
+        "position": [
+          1100,
+          540
+        ],
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
       }
     ],
     "pinData": {
@@ -13090,7 +13113,7 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-15T21:24:40.000Z",
-    "versionId": "b2500dbb-3dc4-4864-8e5a-55b55dcff79b"
+    "updatedAt": "2025-04-21T09:46:59.000Z",
+    "versionId": "022dfb07-816e-4a25-a9cf-0ae608e37de3"
   }
 ]
