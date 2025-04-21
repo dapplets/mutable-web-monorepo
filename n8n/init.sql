@@ -153,6 +153,7 @@ CREATE TABLE public.users (
     private_key character varying,
     network_id character varying,
     nearai_token character varying,
+    isdeveloper boolean DEFAULT false NOT NULL,
     CONSTRAINT users_username_check CHECK (((username)::text ~ '^[a-z0-9]+$'::text))
 );
 
