@@ -3049,7 +3049,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('If').item.json.id }}",
-          "text": "={{ $('AI Agent1').item.json.output.last() }}"
+          "text": "={{ $('AI Agent1').item.json.output }}"
         },
         "position": [
           8200,
@@ -6498,8 +6498,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-21T09:45:09.000Z",
-    "versionId": "d6809da7-540d-4a00-9cea-781c60c94b68"
+    "updatedAt": "2025-04-21T15:13:34.000Z",
+    "versionId": "d0f9e82b-a77c-4005-858e-a0d37c391f0a"
   },
   {
     "active": false,
@@ -13073,8 +13073,16 @@
         "name": "GitHub",
         "parameters": {
           "additionalParameters": {
+            "author": {
+              "email": "andtheworldisburning@gmail.com",
+              "name": "RidgeRock"
+            },
             "branch": {
               "branch": "={{ $('Branch').item.json.branch }}"
+            },
+            "committer": {
+              "email": "andtheworldisburning@gmail.com",
+              "name": "RidgeRock"
             }
           },
           "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
@@ -13113,7 +13121,7 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-21T09:46:59.000Z",
-    "versionId": "022dfb07-816e-4a25-a9cf-0ae608e37de3"
+    "updatedAt": "2025-04-21T09:51:10.000Z",
+    "versionId": "5401e034-b8f4-44a4-b71e-9f9a517e4f7c"
   }
 ]
