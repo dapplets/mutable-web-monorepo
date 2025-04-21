@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import XEN_IMAGE from './assets/xen-girl-001.png'
-import Agents from './components/Agents'
+import Capabilities from './components/Capabilities'
+import DeveloperMode from './components/DeveloperMode'
+import Memories from './components/Memories'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
-import Memories from './components/Memories'
-import DeveloperMode from './components/DeveloperMode'
 import { TUserInfo } from './types'
 
 function App() {
@@ -78,7 +78,7 @@ function App() {
           <p className="text-center">User information is not available.</p>
         )} */}
         <Wallet user={user} />
-        <Agents user={user} />
+        <Capabilities user={user} />
         <DeveloperMode />
         <Warnings user={user} />
         <Memories user={user} />

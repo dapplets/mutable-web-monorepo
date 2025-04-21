@@ -3,7 +3,7 @@ import ExternalLinkIcon from '../assets/external-link'
 import { TAgent, TUserInfo } from '../types'
 import Agent from './Agent'
 
-type TAgentsProps = {
+type TCapabilitiesProps = {
   user: TUserInfo | null
 }
 
@@ -33,7 +33,7 @@ const MOCKED_DATA: { agents: TAgent[] } = {
   ],
 }
 
-const Agents: FC<TAgentsProps> = ({ user }) => {
+const Capabilities: FC<TCapabilitiesProps> = ({ user }) => {
   console.log(user)
 
   const handleDisconnect = (id: string) => {
@@ -43,7 +43,7 @@ const Agents: FC<TAgentsProps> = ({ user }) => {
   return (
     <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5">
       <div className="my-1.5 flex w-full items-center justify-between">
-        <h1 className="text-center text-2xl font-bold">Connected agents</h1>
+        <h1 className="text-center text-2xl font-bold">Capabilities</h1>
         <a
           className="me-3 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-white-text)"
           href="https://near.ai" // ToDo: add link
@@ -58,4 +58,4 @@ const Agents: FC<TAgentsProps> = ({ user }) => {
   )
 }
 
-export default Agents
+export default Capabilities
