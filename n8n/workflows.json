@@ -12731,6 +12731,17 @@
           ]
         ]
       },
+      "GitHub": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Is Modified?": {
         "main": [
           [
@@ -13205,6 +13216,47 @@
         "type": "n8n-nodes-base.github",
         "typeVersion": 1,
         "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "a7cb25df-008d-48dd-95fa-9f062b178a74",
+        "name": "Telegram",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "250653513",
+          "inlineKeyboard": {
+            "rows": [
+              {
+                "row": {
+                  "buttons": [
+                    {
+                      "additionalFields": {
+                        "url": "=https://github.com/dapplets/mutable-web-monorepo/commit/9ec762dcc7241bedb667dae695d96fee3c720023"
+                      },
+                      "text": "Github"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "replyMarkup": "inlineKeyboard",
+          "text": "=Message: {{ $json.commit.message }}\nCommitter: {{ $json.commit.author.name }}\nDate: {{ $json.commit.committer.date }}"
+        },
+        "position": [
+          1240,
+          540
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "32b9d211-0ac8-43e4-8dc0-a25e514b2b7f"
       }
     ],
     "pinData": {
@@ -13218,7 +13270,7 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-21T09:51:10.000Z",
-    "versionId": "5401e034-b8f4-44a4-b71e-9f9a517e4f7c"
+    "updatedAt": "2025-04-22T08:26:38.000Z",
+    "versionId": "ea761b20-6b5b-4601-ab16-fa0c0440e4e4"
   }
 ]
