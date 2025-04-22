@@ -1896,6 +1896,28 @@
           ]
         ]
       },
+      "Postgres20": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram20",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres21": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram21",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Postgres3": {
         "main": [
           [
@@ -5491,7 +5513,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "text": "=Xen is logged in as: {{ $('Get Account1').item.json.near_account_id }}\n\nXen balance is: {{ $('Get Account Balance').item.json.formatted.available }} NEAR\n\n{{ $json.agent_ids.length === 0 ? \"No agents are connected to your Xen.\" : \"The following agents are connected to your Xen:\" }}\n{{ $json.agent_ids.map(x => `[${x}](https://app.near.ai/agents/${x}/latest)`).join('\\n') }}"
+          "text": "=Developer mode: {{ $('Get Account1').item.json.isdeveloper }}\n\nXen is logged in as: {{ $('Get Account1').item.json.near_account_id }}\n\nXen balance is: {{ $('Get Account Balance').item.json.formatted.available }} NEAR\n\n{{ $json.agent_ids.length === 0 ? \"No agents are connected to your Xen.\" : \"The following agents are connected to your Xen:\" }}\n{{ $json.agent_ids.map(x => `[${x}](https://app.near.ai/agents/${x}/latest)`).join('\\n') }}"
         },
         "position": [
           3320,
@@ -6485,6 +6507,56 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "2e7b0d78-b0ad-462f-bac9-509f3556d886"
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "eae46627-1fdd-4cdb-940b-fb9f873815f6",
+        "name": "Telegram20",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=ℹ️ DEV MODE OFF"
+        },
+        "position": [
+          2480,
+          160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "2d7961a3-ae39-4e7b-8362-c09547daf0c6",
+        "name": "Telegram21",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=ℹ️ DEV MODE ON"
+        },
+        "position": [
+          2480,
+          340
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
       }
     ],
     "pinData": {
@@ -6498,8 +6570,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-21T16:11:48.000Z",
-    "versionId": "85adce44-f3e9-4755-a9d9-988b43587204"
+    "updatedAt": "2025-04-22T08:16:56.000Z",
+    "versionId": "4db5b55e-6281-4699-b71d-2136307fe0f3"
   },
   {
     "active": false,
