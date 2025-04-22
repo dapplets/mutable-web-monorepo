@@ -26,6 +26,12 @@ function App() {
           }
         : null
     )
+    tg?.sendData(
+      JSON.stringify({
+        action: 'command',
+        command: '/help',
+      })
+    )
   }, [])
 
   return (
