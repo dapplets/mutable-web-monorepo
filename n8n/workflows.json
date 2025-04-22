@@ -13238,7 +13238,7 @@
                   "buttons": [
                     {
                       "additionalFields": {
-                        "url": "=https://github.com/dapplets/mutable-web-monorepo/commit/9ec762dcc7241bedb667dae695d96fee3c720023"
+                        "url": "={{ $json.commit.html_url }}"
                       },
                       "text": "Github"
                     }
@@ -13270,7 +13270,7 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-22T08:26:38.000Z",
-    "versionId": "ea761b20-6b5b-4601-ab16-fa0c0440e4e4"
+    "updatedAt": "2025-04-22T08:36:18.000Z",
+    "versionId": "a23db1fb-b34b-4112-978f-648d40493557"
   }
 ]
