@@ -51,12 +51,26 @@ html, body {
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --color-white-text: rgba(248, 249, 255, 1);
-  --color-black-text: rgba(34, 34, 34, 1);
-  --color-gray-text: rgba(122, 129, 139, 1);
-  --color-light-white-bg: rgba(248, 249, 255, 0.05);
-  --color-my-primary: rgba(25, 206, 174, 1);
-  --color-my-secondary: rgba(191, 191, 191, 1);
+
+  /* custom theme colors */
+  --color-main-text: var(--main-text);
+  --color-opposite-text: var(--opposite-text);
+  --color-gray-text: var(--gray-text);
+  --color-light-white-bg: var(--light-white-bg);
+  --color-my-primary: var(--my-primary);
+  --color-my-secondary: var(--my-secondary);
+
+  /* animated background */
+  --color-bg1: var(--bg1);
+  --color-bg2: var(--bg2);
+  --color1: var(--c1);
+  --color2: var(--c2);
+  --color3: var(--c3);
+  --color4: var(--c4);
+  --color5: var(--c5);
+  --color-interactive: var(--interactive);
+  --circle-size: var(--c-size);
+  --blending: var(--bl);
 }
 
 :root {
@@ -92,6 +106,26 @@ html, body {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* custom theme colors */
+  --main-text: rgba(34, 34, 34, 1);
+  --opposite-text: rgba(255, 255, 255, 1);
+  --gray-text: rgba(122, 129, 139, 1);
+  --light-white-bg: rgba(248, 249, 255, 0.05);
+  --my-primary: rgba(124, 67, 197, 1);
+  --my-secondary: rgba(191, 191, 191, 1);
+
+  /* animated background */
+  --bg1: rgb(222, 219, 224);
+  --bg2: rgb(227, 228, 235);
+  --c1: 18, 113, 255;
+  --c2: 221, 74, 255;
+  --c3: 100, 220, 255;
+  --c4: 200, 50, 50;
+  --c5: 180, 180, 50;
+  --interactive: 140, 100, 255;
+  --c-size: 80%;
+  --bl: hard-light;
 }
 
 .dark {
@@ -126,6 +160,24 @@ html, body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* custom theme colors */
+  --main-text: rgba(248, 249, 255, 1);
+  --opposite-text: rgba(34, 34, 34, 1);
+  --gray-text: rgba(122, 129, 139, 1);
+  --light-white-bg: rgba(248, 249, 255, 0.05);
+  --my-primary: rgba(25, 206, 174, 1);
+  --my-secondary: rgba(191, 191, 191, 1);
+
+  /* animated background */
+  --bg1: rgb(42, 0, 63);
+  --bg2: rgb(0, 11, 54);
+  --c1: 18, 113, 255;
+  --c2: 221, 74, 255;
+  --c3: 100, 220, 255;
+  --c4: 200, 50, 50;
+  --c5: 180, 180, 50;
+  --interactive: 140, 100, 255;
 }
 
 @layer base {

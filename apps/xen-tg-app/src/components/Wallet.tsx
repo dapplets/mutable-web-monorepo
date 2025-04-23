@@ -28,7 +28,7 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
   }
 
   return isLoggedIn ? (
-    <div className="flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4">
+    <div className="flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-50">
       <div className="flex gap-3 text-[22px]/[150%] font-semibold">
         <img src={NEAR_ICON} alt="near" />
         {MOCKED_DATA.wallet.balance}
@@ -36,7 +36,7 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
       <div className="me-3 flex items-center gap-3 text-[22px]/[150%] font-normal">
         {MOCKED_DATA.wallet.address}
         <button
-          className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-white-text)"
+          className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
           onClick={handleDisconnect}
         >
           <LogOutIcon />
@@ -47,7 +47,7 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
     <div className="flex w-full items-center justify-between gap-2.5 rounded-xl bg-[#f8f9ff19] px-2.5 py-4">
       <div className="text-[18px]/[150%] font-semibold">No wallet connected</div>
       <button
-        className="flex cursor-pointer flex-nowrap rounded-xl bg-[#f8f9ff] px-8 py-2 text-(--color-black-text)"
+        className="flex cursor-pointer flex-nowrap rounded-xl bg-[#f8f9ff] px-8 py-2 text-(--color-opposite-text)"
         onClick={handleConnect}
       >
         Connect

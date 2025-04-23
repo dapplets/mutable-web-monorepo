@@ -1,9 +1,11 @@
+import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect, useState } from 'react'
-import './App.css'
 import XEN_IMAGE from './assets/xen-girl-001.png'
+import AnimatedBackground from './components/AnimatedBackground'
 import Capabilities from './components/Capabilities'
 import DeveloperMode from './components/DeveloperMode'
 import Memories from './components/Memories'
+import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
 import { TUserInfo } from './types'
@@ -26,70 +28,25 @@ function App() {
           }
         : null
     )
-    tg?.sendData(
-      JSON.stringify({
-        action: 'command',
-        command: '/help',
-      })
-    )
   }, [])
 
   return (
-    <>
-      <div className="gradient-bg">
-        <svg xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <filter id="goo">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-              <feColorMatrix
-                in="blur"
-                mode="matrix"
-                values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
-                result="goo"
-              />
-              <feBlend in="SourceGraphic" in2="goo" />
-            </filter>
-          </defs>
-        </svg>
-        <div className="gradients-container">
-          <div className="g1"></div>
-          <div className="g2"></div>
-          <div className="g3"></div>
-          <div className="g4"></div>
-          <div className="g5"></div>
-          <div className="interactive"></div>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <AnimatedBackground />
+      <div className="relative flex w-full max-w-xl min-w-80 flex-col items-center justify-center gap-5 px-2.5 py-5 text-[var(--color-main-text)]">
+        <div className="absolute top-5 right-4">
+          <ThemeButton />
         </div>
-      </div>
-      <div className="relative flex w-full max-w-xl min-w-80 flex-col items-center justify-center gap-5 px-2.5 py-5 text-[var(--color-white-text)]">
-        <div className="m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full">
+        <div className="m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full select-none">
           <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
         </div>
-        {/* <h1 className="text-center text-3xl font-bold">Welcome to Xen Telegram App</h1> */}
-        {/* {user ? (
-          <div className="flex flex-col items-center justify-center gap-2 p-7">
-            <p className="text-center">
-              <strong>ID:</strong> {user.id}
-            </p>
-            <p className="text-center">
-              <strong>First Name:</strong> {user.firstName}
-            </p>
-            <p className="text-center">
-              <strong>Last Name:</strong> {user.lastName ? user.lastName : '-'}
-            </p>
-            <p className="text-center">
-              <strong>Username:</strong> {user.username ? user.username : '-'}
-            </p>
-          </div>
-        ) : (
-          <p className="text-center">User information is not available.</p>
-        )} */}
         <Wallet user={user} />
         <Capabilities user={user} />
         <DeveloperMode />
         <Warnings user={user} />
         <Memories user={user} />
       </div>
-    </>
+    </ThemeProvider>
   )
 }
 

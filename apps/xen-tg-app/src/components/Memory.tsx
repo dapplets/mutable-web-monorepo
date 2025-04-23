@@ -19,7 +19,7 @@ const Memory: FC<TMemoryProps> = ({ memory, onDisconnect }) => {
         <div className="flex py-0.25 text-[14px]/[150%] font-semibold">{memory.text}</div>
       </div>
       <button
-        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-white-text)"
+        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
         onClick={onDisconnect}
       >
         <Trash />

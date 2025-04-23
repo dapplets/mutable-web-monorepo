@@ -34,11 +34,11 @@ const Warnings: FC<TWarningsProps> = () => {
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5">
+    <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-50">
       <div className="my-1.5 flex w-full items-center justify-between">
         <h1 className="text-center text-2xl font-bold">Warnings</h1>
         <button
-          className="me-3 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-white-text)"
+          className="me-3 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
           onClick={handleDeleteAll}
         >
           <Trash />
@@ -46,7 +46,7 @@ const Warnings: FC<TWarningsProps> = () => {
       </div>
       {MOCKED_DATA.warnings.map((warning) => (
         <div key={warning.text} className="flex w-full items-center justify-between">
-          <div className="flex py-2.75 text-[14px]/[100%] font-normal text-(--color-white-text)">
+          <div className="flex py-2.75 text-[14px]/[100%] font-normal text-(--color-main-text)">
             {warning.text}
           </div>
           <div className="me-2.5 flex text-[14px]/[100%] font-normal text-(--color-gray-text)">

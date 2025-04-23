@@ -19,12 +19,12 @@ const Agent: FC<TAgentProps> = ({ agent, onDisconnect }) => {
         </div>
       </div>
       <div
-        className={`flex w-15 items-center justify-center rounded-[10px] bg-(--color-light-white-bg) py-3 text-xs/[100%] font-normal ${agent.status === 'active' ? 'text-(--color-my-primary)' : 'text-(--color-gray-text)'} capitalize`}
+        className={`flex w-15 items-center justify-center rounded-[10px] py-3 text-xs/[100%] font-normal dark:bg-(--color-light-white-bg) ${agent.status === 'active' ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
       >
         {agent.status}
       </div>
       <button
-        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-white-text)"
+        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
         onClick={onDisconnect}
       >
         <UnlinkOutlineIcon />
