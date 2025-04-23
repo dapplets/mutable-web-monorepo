@@ -13496,6 +13496,17 @@
           ]
         ]
       },
+      "Postgres21": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Switch": {
         "main": [
           [
@@ -13558,6 +13569,11 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres21",
+              "type": "main"
+            }
           ],
           [
           ],
@@ -14725,7 +14741,132 @@
         },
         "position": [
           2100,
-          1220
+          1200
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "44a31509-4a67-4a54-b728-3cd38cf9e912",
+        "name": "Postgres21",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": true,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "status",
+                "id": "status",
+                "removed": true,
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "near_account_id",
+                "id": "near_account_id",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "private_key",
+                "id": "private_key",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "network_id",
+                "id": "network_id",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "nearai_token",
+                "id": "nearai_token",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "isdeveloper",
+                "id": "isdeveloper",
+                "required": false,
+                "type": "boolean"
+              }
+            ],
+            "value": {
+              "id": "={{ $json.authToken.user.id }}",
+              "isdeveloper": false
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "users",
+            "mode": "list",
+            "value": "users"
+          }
+        },
+        "position": [
+          2100,
+          1360
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -14740,7 +14881,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-23T10:25:24.000Z",
-    "versionId": "29c30ad9-b518-4592-b820-14122a18692e"
+    "updatedAt": "2025-04-23T10:26:50.000Z",
+    "versionId": "66cd49a0-0e95-4aed-bce1-795d78f2b169"
   }
 ]
