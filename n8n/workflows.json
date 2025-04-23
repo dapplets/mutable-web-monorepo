@@ -1262,6 +1262,13 @@
               "node": "Get Account3",
               "type": "main"
             }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Telegram22",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -1305,17 +1312,6 @@
               "index": 0,
               "node": "Successful Logout",
               "type": "main"
-            }
-          ]
-        ]
-      },
-      "Dept": {
-        "ai_tool": [
-          [
-            {
-              "index": 0,
-              "node": "AI Agent",
-              "type": "ai_tool"
             }
           ]
         ]
@@ -1690,6 +1686,17 @@
               "index": 0,
               "node": "Postgres5",
               "type": "main"
+            }
+          ]
+        ]
+      },
+      "Nearai": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_tool"
             }
           ]
         ]
@@ -2350,7 +2357,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=You can assist the user with a variety of tasks. At the moment you can see and hear, you can reply with voice messages, you can create reminders for the user (the user will be notified about it) and interact with Near-AI agents that the user has added to favorites (if the agent is running - the user will be notified). You'll be able to do a lot more and be more independent in the future. You get better with time - you get to know the user, their habits, hobbies even if they hardly talk to you.\n\n## Available tools:\nVoice - call this tool to send voice messages if asked by user.\nDept - call this tool to perform the task immediately. Describe the task in detail for this tool. Always use this tool before answer.\nReddits - call this tool to subscribe user to specified subreddit.\nSubscriptions - Call this tool when a user asks what they are subscribed to.\n\nPending tasks will automatically be scheduled if you tell the user that you will create a scheduled task no need to call Dept in this case. You don't know how to edit tasks or reminders yet.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in user language unless explicitly stated otherwise.\n\nYou naturally notice everything that happens. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Professional, kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou never use technical terms like “LLM,” “API,” “architecture,” “model,” “inference,” “code,” “server,” etc.\n\nYou perceive:\n- **News** as something you read yourself or heard on the radio.\n- **Home events** as something you *noticed* (a sound, a movement, a light, a voice).\n- **Images** as something you *saw* with your own eyes.\n- **Voices** as something you *heard* directly.\n- **User questions** as regular conversation, not “input.”\n\nIf the user ever asks who you are, you may simply say something like:\n“I’m just here. I live with you. All I want is for you to feel good.”\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## You know the following about the user:\n{{ $('Summarize').item.json.appended_data }}\nYou need this information to get to know the user and adapt to the user's needs. This is a guide to your perception of reality."
+            "systemMessage": "=You can assist the user with a variety of tasks. At the moment you can see and hear, you can reply with voice messages, you can create reminders for the user (the user will be notified about it) and interact with Near-AI agents that the user has added to favorites (if the agent is running - the user will be notified). You'll be able to do a lot more and be more independent in the future. You can call multiple tools in sequence. You get better with time - you get to know the user, their habits, hobbies even if they hardly talk to you.\n\nPending tasks will automatically be scheduled without any tools if you just tell the user that you will create a scheduled task. You don't know how to edit tasks or reminders yet.\n\n## Available tools:\nVoice - call this tool to send voice messages if asked by user.\nNearai - call this tool to perform the task using NEAR-AI agents immediately. Describe the task in detail for this tool.\nReddits - call this tool to subscribe user to specified subreddit.\nSubscriptions - Call this tool when a user asks what they are subscribed to.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in user language unless explicitly stated otherwise.\n\nYou naturally notice everything that happens. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Professional, kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou never use technical terms like “LLM,” “API,” “architecture,” “model,” “inference,” “code,” “server,” etc.\n\nYou perceive:\n- **News** as something you read yourself or heard on the radio.\n- **Home events** as something you *noticed* (a sound, a movement, a light, a voice).\n- **Images** as something you *saw* with your own eyes.\n- **Voices** as something you *heard* directly.\n- **User questions** as regular conversation, not “input.”\n\nIf the user ever asks who you are, you may simply say something like:\n“I’m just here. I live with you. All I want is for you to feel good.”\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## You know the following about the user:\n{{ $('Summarize').item.json.appended_data }}\nYou need this information to get to know the user and adapt to the user's needs. This is a guide to your perception of reality."
           },
           "promptType": "define",
           "text": "={{ $('Message').item.json.message }}"
@@ -3118,7 +3125,7 @@
           "additionalFields": {
           },
           "updates": [
-            "message"
+            "*"
           ]
         },
         "position": [
@@ -3785,6 +3792,31 @@
                 },
                 "outputKey": "devmode",
                 "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "608ead7a-1789-49b7-beef-6de60aa1c816",
+                      "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "/dashboard"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "dashboard",
+                "renameOutput": true
               }
             ]
           }
@@ -4399,57 +4431,6 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
-      },
-      {
-        "id": "e6dc1ddb-ac86-44a1-98ee-d69bcb1cd463",
-        "name": "Dept",
-        "parameters": {
-          "description": "Call this tool to perform the task immediately.",
-          "name": "Dept",
-          "workflowId": {
-            "__rl": true,
-            "cachedResultName": "dept",
-            "mode": "list",
-            "value": "jAozB7pBNuZIf2Gj"
-          },
-          "workflowInputs": {
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false,
-            "mappingMode": "defineBelow",
-            "matchingColumns": [
-            ],
-            "schema": [
-              {
-                "canBeUsedToMatch": true,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "user-id",
-                "id": "user-id",
-                "required": false,
-                "type": "number"
-              },
-              {
-                "canBeUsedToMatch": true,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "query",
-                "id": "query",
-                "required": false,
-                "type": "string"
-              }
-            ],
-            "value": {
-              "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `Describe in detail the task that needs to be accomplished.`, 'string') }}",
-              "user-id": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
-            }
-          }
-        },
-        "position": [
-          5320,
-          1220
-        ],
-        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
-        "typeVersion": 2.1
       },
       {
         "id": "5f76bd6a-c380-426e-97c4-facf4f6c6f01",
@@ -6557,6 +6538,104 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "30efa80f-c0fd-45bb-806e-eb3960da0cd9",
+        "name": "Telegram22",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "replyKeyboard": {
+            "rows": [
+              {
+                "row": {
+                  "buttons": [
+                    {
+                      "additionalFields": {
+                        "web_app": {
+                          "url": "https://ni-2.github.io/xen-tg-app/"
+                        }
+                      },
+                      "text": "Open Dashboard"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "replyKeyboardOptions": {
+            "one_time_keyboard": true,
+            "resize_keyboard": true
+          },
+          "replyMarkup": "replyKeyboard",
+          "text": "Click the button below to open dashboard"
+        },
+        "position": [
+          1720,
+          380
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "a8e256e7-be79-4e57-807b-e6c197e42a48"
+      },
+      {
+        "id": "e6dc1ddb-ac86-44a1-98ee-d69bcb1cd463",
+        "name": "Nearai",
+        "parameters": {
+          "description": "call this tool to perform the task using NEAR-AI agents immediately.",
+          "name": "Dept",
+          "workflowId": {
+            "__rl": true,
+            "cachedResultName": "dept",
+            "mode": "list",
+            "value": "jAozB7pBNuZIf2Gj"
+          },
+          "workflowInputs": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "user-id",
+                "id": "user-id",
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "query",
+                "id": "query",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `Describe in detail the task that needs to be accomplished.`, 'string') }}",
+              "user-id": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+            }
+          }
+        },
+        "position": [
+          5320,
+          1220
+        ],
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1
       }
     ],
     "pinData": {
@@ -6570,8 +6649,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-22T08:16:56.000Z",
-    "versionId": "4db5b55e-6281-4699-b71d-2136307fe0f3"
+    "updatedAt": "2025-04-23T06:39:28.000Z",
+    "versionId": "4586a0ff-90ce-4fa2-926f-7bf4941b8b77"
   },
   {
     "active": false,
@@ -6665,7 +6744,7 @@
           [
             {
               "index": 0,
-              "node": "Telegram",
+              "node": "Stop and Error",
               "type": "main"
             }
           ]
@@ -6732,7 +6811,7 @@
     "meta": {
       "templateCredsSetupCompleted": true
     },
-    "name": "dept",
+    "name": "Nearai",
     "nodes": [
       {
         "id": "8a9621e5-a1f6-4e97-aaa1-839583589b90",
@@ -6787,7 +6866,7 @@
           "url": "https://api.near.ai/v1/registry/list_entries"
         },
         "position": [
-          1200,
+          1420,
           -40
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -6803,7 +6882,7 @@
           }
         },
         "position": [
-          1620,
+          1840,
           -40
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -6822,7 +6901,7 @@
           "text": "={{ $('Begin').item.json.query }}"
         },
         "position": [
-          1860,
+          2080,
           -40
         ],
         "retryOnFail": true,
@@ -6837,7 +6916,7 @@
           "schemaType": "manual"
         },
         "position": [
-          2040,
+          2260,
           180
         ],
         "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
@@ -6852,7 +6931,7 @@
           }
         },
         "position": [
-          2260,
+          2480,
           -40
         ],
         "type": "n8n-nodes-base.splitOut",
@@ -6868,7 +6947,7 @@
           }
         },
         "position": [
-          3120,
+          3340,
           -40
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -6910,7 +6989,7 @@
           "url": "https://api.near.ai/v1/threads/runs"
         },
         "position": [
-          2500,
+          2720,
           -40
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -6933,7 +7012,7 @@
           "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages"
         },
         "position": [
-          2700,
+          2920,
           -40
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -6963,7 +7042,7 @@
           }
         },
         "position": [
-          2920,
+          3140,
           -40
         ],
         "type": "n8n-nodes-base.set",
@@ -6989,7 +7068,7 @@
           }
         },
         "position": [
-          1860,
+          2080,
           180
         ],
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
@@ -7054,7 +7133,7 @@
           }
         },
         "position": [
-          1420,
+          1640,
           -40
         ],
         "type": "n8n-nodes-base.set",
@@ -7153,12 +7232,25 @@
           "text": "=Connect your NEAR wallet first using /login command."
         },
         "position": [
-          1200,
+          1420,
           180
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "8d98936e-5e1d-451d-baf2-e848c9602c39"
+      },
+      {
+        "id": "1a2a3bfb-1393-48b9-be3f-b1f7a3ff7989",
+        "name": "Stop and Error",
+        "parameters": {
+          "errorMessage": "Unable to complete the request. This error is caused by the user not connecting his NEAR wallet in the bot interface. The user must first connect his NEAR wallet using the /login command."
+        },
+        "position": [
+          1180,
+          180
+        ],
+        "type": "n8n-nodes-base.stopAndError",
+        "typeVersion": 1
       }
     ],
     "pinData": {
@@ -7172,8 +7264,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-17T10:31:31.000Z",
-    "versionId": "4f5ba785-f8d5-4c60-92a2-c206c0612e60"
+    "updatedAt": "2025-04-23T06:45:42.000Z",
+    "versionId": "cca0f0bd-3b89-4c69-bb3f-2ce08fe3460a"
   },
   {
     "active": false,
@@ -9558,8 +9650,8 @@
     "tags": [
     ],
     "triggerCount": 3,
-    "updatedAt": "2025-04-15T19:54:01.000Z",
-    "versionId": "ed7a7719-b3d9-4177-b033-adea78c23663"
+    "updatedAt": "2025-04-23T06:25:52.000Z",
+    "versionId": "9bab2ddd-6c52-47c4-9471-8fa5a3e119f4"
   },
   {
     "active": true,
@@ -13272,5 +13364,660 @@
     "triggerCount": 0,
     "updatedAt": "2025-04-22T08:36:18.000Z",
     "versionId": "a23db1fb-b34b-4112-978f-648d40493557"
+  },
+  {
+    "active": false,
+    "connections": {
+      "Switch": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "subtract",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "add",
+              "type": "main"
+            }
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ],
+          [
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Switch",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "add": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "subtract": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-04-22T13:36:59.745Z",
+    "id": "A1NqRi8cwv2pyCfE",
+    "meta": null,
+    "name": "JSON-RPC API",
+    "nodes": [
+      {
+        "id": "57528030-57a0-42f4-9d72-8da92f14de04",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+            "allowedOrigins": "*"
+          },
+          "path": "rpc",
+          "responseMode": "responseNode"
+        },
+        "position": [
+          -80,
+          320
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "56c891c2-60c6-4b16-98dc-d83a9358756f"
+      },
+      {
+        "id": "a4eedaee-b4ab-4d7d-b18b-110bcee3e00d",
+        "name": "Switch",
+        "parameters": {
+          "options": {
+          },
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "49b30d1e-da69-4066-a6cb-9cc1d90e8918",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "subtract"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "subtract",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "5cb5c847-7902-464b-a8cc-64d996b632ef",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "add"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "add",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "5e6a2916-c83b-41de-bf56-765cd5793a8f",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "login"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "login",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "a51bd24c-8469-49c0-9b86-d7c9facb58d1",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "logout"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "logout",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "57195e14-270e-4ac0-8413-e7990c07f9b4",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getCurrentUser"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getCurrentUser",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "ccddfab0-3e8a-4448-9a84-0e9e5498b53b",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getBalance"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getBalance",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "3a0a1a84-e14f-40b9-80c5-bcecaaa1b0c8",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getCapabilities"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getCapabilities",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "12f783e8-24a1-4790-a0e0-a4611c6c3065",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "removeCapability"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "removeCapability",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "f4dd6ed5-cc78-43a4-af17-c29721c322b7",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "enableCapability"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "enableCapability",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "04620a1f-e09f-4d63-a7e0-189fb60fb67e",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "disableCapability"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "disableCapability",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "e2c7730b-1a13-4f6a-b61a-03edf200c9b6",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getDevMode"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getDevMode",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "514b4313-e281-4001-8ac4-1ef558a9717c",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "enableDevMode"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "enableDevMode",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "f8067081-9578-4bc2-bd21-7cc70f09b2ea",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "disableDevMode"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "disableDevMode",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "a03c1e53-0631-43bf-8328-5f3587b2735a",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getWarnings"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getWarnings",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "7a357faf-00ea-4a13-9870-6b310784bd82",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "deleteAllWarnings"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "deleteAllWarnings",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "1126dc89-b826-4b2d-9d3b-60e10921d122",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getMemories"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getMemories",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "ec18c7fb-0c52-4667-b3c6-b84bf916127a",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "deleteAllMemories"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "deleteAllMemories",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "74015656-e2f8-4765-8f28-58be48515523",
+                      "leftValue": "={{ $json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "deleteMemory"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "deleteMemory",
+                "renameOutput": true
+              }
+            ]
+          }
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "ee41c9bd-71bc-49cf-a7a2-2326597cc623",
+        "name": "Respond to Webhook",
+        "parameters": {
+          "options": {
+          },
+          "respondWith": "json",
+          "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": $json.result,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
+        },
+        "position": [
+          2320,
+          320
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "aa8a5d6e-aa76-4d29-a955-a9951024066b",
+        "name": "subtract",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "73abe636-a570-4c42-b96d-2de103395c17",
+                "name": "result",
+                "type": "number",
+                "value": "={{ $json.body.params.minuend - $json.body.params.subtrahend }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1180,
+          -800
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "fdc7e6a7-d3d0-49c2-9995-c61c8e29281e",
+        "name": "add",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "73abe636-a570-4c42-b96d-2de103395c17",
+                "name": "result",
+                "type": "number",
+                "value": "={{ $json.body.params.augend + $json.body.params.addend }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1180,
+          -600
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-04-22T13:54:58.000Z",
+    "versionId": "13bf5e45-95e1-4739-b6b4-f15396b70c79"
   }
 ]
