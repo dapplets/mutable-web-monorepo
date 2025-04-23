@@ -41,7 +41,7 @@ const Capabilities: FC<TCapabilitiesProps> = ({ user }) => {
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
+    <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
       <div className="my-1.5 flex w-full items-center justify-between">
         <h1 className="text-center text-2xl font-bold">Capabilities</h1>
         <a

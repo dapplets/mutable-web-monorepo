@@ -28,7 +28,7 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
   }
 
   return isLoggedIn ? (
-    <div className="flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
+    <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
       <div className="flex gap-3 text-[22px]/[150%] font-semibold">
         <img src={NEAR_ICON} alt="near" />
         {MOCKED_DATA.wallet.balance}
