@@ -1,5 +1,7 @@
 import { FC } from 'react'
-import { TUserInfo, TMemory } from '../types'
+import { TMemory, TUserInfo } from '../types'
+import Header from './Header'
+import Layout from './Layout'
 import Memory from './Memory'
 
 type TMemoriesProps = {
@@ -36,24 +38,27 @@ const Memories: FC<TMemoriesProps> = ({ user }) => {
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-50">
-      <div className="my-1.5 flex w-full items-center justify-between">
-        <h1 className="text-center text-2xl font-bold">{`Memories (${MOCKED_DATA.memories.length})`}</h1>
-        <button
-          className="flex cursor-pointer px-2.5 py-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
-          onClick={handleDeleteAll}
-        >
-          Clear all
-        </button>
+    <Layout>
+      <Header />
+      <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
+        <div className="my-1.5 flex w-full items-center justify-between">
+          <h1 className="text-center text-2xl font-bold">{`Memories (${MOCKED_DATA.memories.length})`}</h1>
+          <button
+            className="flex cursor-pointer px-2.5 py-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+            onClick={handleDeleteAll}
+          >
+            Clear all
+          </button>
+        </div>
+        {MOCKED_DATA.memories.map((memory) => (
+          <Memory
+            key={memory.text}
+            memory={memory}
+            onDisconnect={() => handleDeleteMemory(memory.text)}
+          />
+        ))}
       </div>
-      {MOCKED_DATA.memories.map((memory) => (
-        <Memory
-          key={memory.text}
-          memory={memory}
-          onDisconnect={() => handleDeleteMemory(memory.text)}
-        />
-      ))}
-    </div>
+    </Layout>
   )
 }
 
