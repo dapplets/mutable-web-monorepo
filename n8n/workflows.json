@@ -13562,6 +13562,17 @@
           ]
         ]
       },
+      "Postgres3": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Switch": {
         "main": [
           [
@@ -13647,6 +13658,11 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres3",
+              "type": "main"
+            }
           ],
           [
           ]
@@ -15047,6 +15063,37 @@
         ],
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "e130eb85-ce9d-4636-b557-4a3b7d9a93c9",
+        "name": "Postgres3",
+        "parameters": {
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $json.authToken.user.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          2100,
+          2220
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -15058,7 +15105,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-23T11:07:18.000Z",
-    "versionId": "55303cca-db16-4788-85d3-b19a0c2866a7"
+    "updatedAt": "2025-04-23T11:09:37.000Z",
+    "versionId": "2649ef48-1620-4394-8623-47930a79420b"
   }
 ]
