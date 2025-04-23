@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import XEN_IMAGE from './assets/xen-girl-001.png'
 import Capabilities from './components/Capabilities'
 import DeveloperMode from './components/DeveloperMode'
@@ -7,27 +7,49 @@ import Layout from './components/Layout'
 import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
-import { TUserInfo } from './types'
+import { TXenUser } from './types'
 
 function App() {
-  const [user, setUserInfo] = useState<TUserInfo | null>(null)
+  const {
+    isPending,
+    isError,
+    data: user,
+    error,
+  } = useQuery<TXenUser>({
+    queryKey: ['user'],
+    queryFn: async () => {
+      if (!window.Telegram.WebApp.initData) {
+        throw new Error('Telegram is not available')
+      }
+      const headers = {
+        Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+        'Content-Type': 'application/json',
+      }
+      const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'getCurrentUser',
+          params: {},
+          id: 1,
+        }),
+      })
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      const data = await response.json()
+      return data.result
+    },
+  })
 
-  useEffect(() => {
-    const tg = window?.Telegram?.WebApp
-    console.log(tg)
-    const userInfo = tg?.initDataUnsafe?.user
-    console.log(userInfo)
-    setUserInfo(
-      userInfo
-        ? {
-            id: userInfo.id,
-            firstName: userInfo.first_name,
-            lastName: userInfo.last_name,
-            username: userInfo.username,
-          }
-        : null
-    )
-  }, [])
+  if (isPending) {
+    return <span>Loading...</span>
+  }
+
+  if (isError) {
+    return <span>Error: {error.message}</span>
+  }
 
   return (
     <Layout>

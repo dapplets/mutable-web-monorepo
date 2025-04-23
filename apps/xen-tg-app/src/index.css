@@ -59,6 +59,7 @@ html, body {
   --color-light-white-bg: var(--light-white-bg);
   --color-my-primary: var(--my-primary);
   --color-my-secondary: var(--my-secondary);
+  --color-my-primary-01: var(--my-primary-01);
 
   /* animated background */
   --color-bg1: var(--bg1);
@@ -114,6 +115,7 @@ html, body {
   --light-white-bg: rgba(248, 249, 255, 0.05);
   --my-primary: rgba(124, 67, 197, 1);
   --my-secondary: rgba(191, 191, 191, 1);
+  --my-primary-01: rgba(124, 67, 197, 0.1);
 
   /* animated background */
   --bg1: rgb(222, 219, 224);
@@ -168,6 +170,7 @@ html, body {
   --light-white-bg: rgba(248, 249, 255, 0.05);
   --my-primary: rgba(25, 206, 174, 1);
   --my-secondary: rgba(191, 191, 191, 1);
+  --my-primary-01: rgba(25, 206, 174, 0.1);
 
   /* animated background */
   --bg1: rgb(42, 0, 63);
