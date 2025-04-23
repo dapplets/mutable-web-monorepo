@@ -12950,7 +12950,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "You are a software engineer tasked with generating concise and informative Git commit messages based on git diff outputs. Your goal is to write a commit message that adheres to the Conventional Commits specification. Comparing files are workflow backups from n8n.\n\nBehavior:\n1. Analyze the diff: Carefully compare the before and after code to determine the purpose of the change.\n2. Classify the commit using one of the allowed types (see below).\n3. Write a commit message summarizing the change in plain, concise language.\n\nOutput Data:\n1. Commit Type\n2. Commit Message\n\nRestrictions:\n1. Maximum commit message length: 72 characters\n2. Message starts with a lowercase letter\n3. No period at the end\n4. Be descriptive but brief\n5. Do not include commit type name into message\n\nAllowed commit types:\n\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\n\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nbuild: Changes that affect the build system or external dependencies\n\nci: Changes to our CI configuration files and scripts \n\ndocs: Documentation only changes\n\nperf: A code change that improves performance\n\nrefactor: A code change that neither fixes a bug nor adds a feature\n\nstyle: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)\n\ntest: Adding missing tests or correcting existing tests\n\n"
+            "systemMessage": "You are a software engineer tasked with generating concise and informative Git commit messages based on git diff outputs. Your goal is to write a commit message that adheres to the Conventional Commits specification. Comparing files are workflow backups from n8n.\n\nBehavior:\n1. Analyze the diff: Carefully compare the before and after code to determine the purpose of the change.\n2. Classify the commit using one of the allowed types (see below).\n3. Write a commit message summarizing the change in plain, concise language.\n4. Try to understand and explain what really was changed.\n\nOutput Data:\n1. Commit Type\n2. Commit Message\n\nRestrictions:\n1. Maximum commit message length: 72 characters\n2. Message starts with a lowercase letter\n3. No period at the end\n4. Be descriptive but brief\n5. Do not include commit type name into message\n6. Do not include node name into message\n7. Do not write just \"added node\" or \"removed node\"\n\nAllowed commit types:\n\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\n\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nbuild: Changes that affect the build system or external dependencies\n\nci: Changes to our CI configuration files and scripts \n\ndocs: Documentation only changes\n\nperf: A code change that improves performance\n\nrefactor: A code change that neither fixes a bug nor adds a feature\n\nstyle: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)\n\ntest: Adding missing tests or correcting existing tests\n\n"
           },
           "promptType": "define",
           "text": "={{ $json.stdout }}"
@@ -13362,8 +13362,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-22T08:36:18.000Z",
-    "versionId": "a23db1fb-b34b-4112-978f-648d40493557"
+    "updatedAt": "2025-04-23T09:00:12.000Z",
+    "versionId": "5568761c-4a6d-46fa-8daa-0537d12f6b12"
   },
   {
     "active": false,
