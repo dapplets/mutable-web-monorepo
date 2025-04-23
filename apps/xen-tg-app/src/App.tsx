@@ -1,10 +1,9 @@
-import { ThemeProvider } from '@/components/theme-provider'
 import { useEffect, useState } from 'react'
 import XEN_IMAGE from './assets/xen-girl-001.png'
-import AnimatedBackground from './components/AnimatedBackground'
 import Capabilities from './components/Capabilities'
 import DeveloperMode from './components/DeveloperMode'
-import Memories from './components/Memories'
+import FooterMenu from './components/FooterMenu'
+import Layout from './components/Layout'
 import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
@@ -31,22 +30,21 @@ function App() {
   }, [])
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AnimatedBackground />
-      <div className="relative flex w-full max-w-xl min-w-80 flex-col items-center justify-center gap-5 px-2.5 py-5 text-[var(--color-main-text)]">
-        <div className="absolute top-5 right-4">
-          <ThemeButton />
-        </div>
-        <div className="m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full select-none">
-          <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
-        </div>
-        <Wallet user={user} />
-        <Capabilities user={user} />
-        <DeveloperMode />
-        <Warnings user={user} />
-        <Memories user={user} />
+    <Layout>
+      <div className="absolute top-5 right-4">
+        <ThemeButton />
       </div>
-    </ThemeProvider>
+      <div className="z-1 m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full select-none">
+        <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
+      </div>
+      <Wallet user={user} />
+      <Capabilities user={user} />
+      <DeveloperMode />
+      <Warnings user={user} />
+      <div className="fixed top-[calc(100vh-94px)] left-1/2 z-1 -translate-x-1/2">
+        <FooterMenu memoriesNumber={3} />
+      </div>
+    </Layout>
   )
 }
 

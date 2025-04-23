@@ -1112,6 +1112,9 @@ importers:
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
+      react-router:
+        specifier: ^7.0.2
+        version: 7.5.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       tailwind-merge:
         specifier: ^3.2.0
         version: 3.2.0
@@ -25619,7 +25622,7 @@ snapshots:
   '@webpack-cli/configtest@2.1.1(webpack-cli@5.1.4)(webpack@5.99.6)':
     dependencies:
       webpack: 5.99.6(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@4.15.2)(webpack@5.99.6)
+      webpack-cli: 5.1.4(webpack@5.99.6)
 
   '@webpack-cli/info@1.5.0(webpack-cli@4.10.0)':
     dependencies:
@@ -25629,7 +25632,7 @@ snapshots:
   '@webpack-cli/info@2.0.2(webpack-cli@5.1.4)(webpack@5.99.6)':
     dependencies:
       webpack: 5.99.6(webpack-cli@5.1.4)
-      webpack-cli: 5.1.4(webpack-dev-server@4.15.2)(webpack@5.99.6)
+      webpack-cli: 5.1.4(webpack@5.99.6)
 
   '@webpack-cli/serve@1.7.0(webpack-cli@4.10.0)(webpack-dev-server@4.15.2)':
     dependencies:
@@ -34505,6 +34508,15 @@ snapshots:
     optionalDependencies:
       react-dom: 18.3.1(react@18.3.1)
 
+  react-router@7.5.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      cookie: 1.0.2
+      react: 19.1.0
+      set-cookie-parser: 2.7.1
+      turbo-stream: 2.4.0
+    optionalDependencies:
+      react-dom: 19.1.0(react@19.1.0)
+
   react-scripts@5.0.1(@babel/plugin-syntax-flow@7.26.0(@babel/core@7.26.10))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.26.10))(@types/babel__core@7.20.5)(eslint@9.25.0(jiti@2.4.2))(react@18.3.1)(sass@1.86.3)(ts-node@10.9.2(@types/node@16.18.126)(typescript@5.7.3))(type-fest@4.40.0)(typescript@5.7.3):
     dependencies:
       '@babel/core': 7.26.10
@@ -36045,7 +36057,7 @@ snapshots:
       schema-utils: 4.3.0
       serialize-javascript: 6.0.2
       terser: 5.39.0
-      webpack: 5.99.6(webpack-cli@5.1.4)
+      webpack: 5.99.6(webpack-cli@4.10.0)
 
   terser@5.39.0:
     dependencies:
@@ -37269,7 +37281,7 @@ snapshots:
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     optionalDependencies:
-      webpack-cli: 5.1.4(webpack-dev-server@4.15.2)(webpack@5.99.6)
+      webpack-cli: 5.1.4(webpack@5.99.6)
     transitivePeerDependencies:
       - '@swc/core'
       - esbuild

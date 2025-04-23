@@ -1,6 +1,6 @@
 import { FC } from 'react'
-import { TUserInfo, TWarning } from '../types'
 import Trash from '../assets/trash'
+import { TUserInfo, TWarning } from '../types'
 
 type TWarningsProps = {
   user: TUserInfo | null
@@ -34,7 +34,7 @@ const Warnings: FC<TWarningsProps> = () => {
   }
 
   return (
-    <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-50">
+    <div className="flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
       <div className="my-1.5 flex w-full items-center justify-between">
         <h1 className="text-center text-2xl font-bold">Warnings</h1>
         <button

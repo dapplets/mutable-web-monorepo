@@ -9,7 +9,7 @@ const DeveloperMode = () => {
     setIsDevModeTurnedOn((v) => !v)
   }
   return (
-    <div className="flex w-full items-center justify-between ps-2.5 pe-5">
+    <div className="z-1 flex w-full items-center justify-between ps-2.5 pe-5">
       <span className="text-[18px]/[150%] font-normal text-(--color-main-text)">
         Developer mode
       </span>
