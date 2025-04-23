@@ -13573,6 +13573,17 @@
           ]
         ]
       },
+      "Postgres4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Switch": {
         "main": [
           [
@@ -13665,6 +13676,11 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres4",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -15079,8 +15095,9 @@
           },
           "schema": {
             "__rl": true,
+            "cachedResultName": "personal-data",
             "mode": "list",
-            "value": "public"
+            "value": "personal-data"
           },
           "table": {
             "__rl": true,
@@ -15091,6 +15108,47 @@
         "position": [
           2100,
           2220
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "e3f8049e-a63e-4fd5-b495-725ceca5140d",
+        "name": "Postgres4",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "personal-data",
+            "mode": "list",
+            "value": "personal-data"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $json.authToken.user.username.toLowerCase() }}"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "=id",
+                "value": "={{ $json.body.params.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2100,
+          2380
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -15105,7 +15163,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-23T11:09:37.000Z",
-    "versionId": "2649ef48-1620-4394-8623-47930a79420b"
+    "updatedAt": "2025-04-23T11:14:17.000Z",
+    "versionId": "e8657be9-24f1-4113-b463-eaaaa50628c7"
   }
 ]
