@@ -13368,6 +13368,17 @@
   {
     "active": true,
     "connections": {
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Construct Response": {
         "main": [
           [
@@ -13412,6 +13423,17 @@
           ]
         ]
       },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Get Account Balance": {
         "main": [
           [
@@ -13436,6 +13458,17 @@
             {
               "index": 0,
               "node": "User is not logged in",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields2",
               "type": "main"
             }
           ]
@@ -13469,6 +13502,28 @@
             {
               "index": 0,
               "node": "If",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres12": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres13": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
               "type": "main"
             }
           ]
@@ -13580,6 +13635,16 @@
           [
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres12",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Postgres13",
+              "type": "main"
+            }
           ],
           [
           ],
@@ -14135,7 +14200,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": $json.result,\n  \"error\": $json.error ? { \"message\": $json.error } : undefined,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          3420,
+          3640,
           320
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -14870,6 +14935,118 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": false,
+        "id": "124051b7-2cd2-495a-9dec-5bf749ff5954",
+        "name": "Postgres12",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+          },
+          "query": "select * \nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}\norder by id desc\nlimit $1\noffset $2"
+        },
+        "position": [
+          2100,
+          1860
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "853590cb-110b-428f-9de8-d16d0d3f838c",
+        "name": "Aggregate",
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "items",
+          "options": {
+          }
+        },
+        "position": [
+          2320,
+          1860
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "f71fee16-372b-41df-a698-3a017a8e835f",
+        "name": "Edit Fields2",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a9167abe-5e1d-4b2c-82ea-686ada653d03",
+                "name": "result.items",
+                "type": "array",
+                "value": "={{ $json.items.filter(x => Object.keys(x).length) ?? [] }}"
+              },
+              {
+                "id": "78fadd62-c7cc-43b2-a569-4ffde09ea903",
+                "name": "result.total",
+                "type": "number",
+                "value": "={{ $json.count }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2780,
+          1940
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "c48643f9-a3fb-4b76-bc02-c6e9d635931f",
+        "name": "Postgres13",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('Switch').item.json.body.params.limit }},{{ $('Switch').item.json.body.params.offset }}"
+          },
+          "query": "select count(*) as count\nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}"
+        },
+        "position": [
+          2100,
+          2040
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "28b01f0a-ce36-46c9-9e1b-b99d1948a273",
+        "name": "Merge",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2560,
+          1940
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
       }
     ],
     "pinData": {
@@ -14881,7 +15058,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-23T10:26:50.000Z",
-    "versionId": "66cd49a0-0e95-4aed-bce1-795d78f2b169"
+    "updatedAt": "2025-04-23T11:07:18.000Z",
+    "versionId": "55303cca-db16-4788-85d3-b19a0c2866a7"
   }
 ]
