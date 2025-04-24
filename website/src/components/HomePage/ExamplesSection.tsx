@@ -15,7 +15,7 @@ const ExamplesSection = () => {
 
   const addToItemsRef = (el: HTMLElement | null, index: number) => {
     if (el) {
-      gsap.set(el, { opacity: 0 });
+      gsap.set(el, { opacity: 0, y: 100 });
       itemsRef.current[index] = el;
     }
   };
@@ -33,17 +33,15 @@ const ExamplesSection = () => {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting && !animationTriggered.current) {
-            gsap.set(items[0], { x: -100 });
-            gsap.set(items[1], { y: 100 });
-            gsap.set(items[2], { x: 100 });
-
             const tl = gsap.timeline({
-              defaults: { duration: 0.8, ease: 'power2.in' }
+              defaults: { duration: 0.8, ease: 'power2.out' }
             });
-
-            tl.to(items[0], { x: 0, opacity: 1, delay: 0.1 })
-              .to(items[1], { y: 0, opacity: 1 }, '-=0.6')
-              .to(items[2], { x: 0, opacity: 1 }, '-=0.6');
+            tl.to(items, {
+              y: 0,
+              opacity: 1,
+              stagger: 0.15, 
+              ease: 'power2.out' 
+            });
 
             animationTriggered.current = true;
             observer.unobserve(entry.target);

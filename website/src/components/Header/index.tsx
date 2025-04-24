@@ -37,80 +37,68 @@ export const Header: FC<HeaderProps> = ({ setModalOpen }) => {
     setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
   };
 
-useEffect(() => {
-  if (typeof window === 'undefined' || window.innerWidth < 1024 || !headerRef.current) return;
+  useEffect(() => {
+    if (typeof window === 'undefined' || window.innerWidth < 1024 || !headerRef.current) return;
 
-  const logo = headerRef.current.querySelector(`.${styles.logoLink}`);
-  const navLinks = Array.from(headerRef.current.querySelectorAll(`.${styles.navLinks} a`));
-  const themeSwitcher = headerRef.current.querySelector(`.${styles.themeSwitcher}`);
-  const button = headerRef.current.querySelector(`.${styles.mvmButton}`);
+    const logo = headerRef.current.querySelector(`.${styles.logoLink}`);
+    const navLinks = Array.from(headerRef.current.querySelectorAll(`.${styles.navLinks} a`));
+    const themeSwitcher = headerRef.current.querySelector(`.${styles.themeSwitcher}`);
+    const button = headerRef.current.querySelector(`.${styles.mvmButton}`);
 
-  const animatableElements: gsap.TweenTarget[] = [];
-  
-  if (logo) animatableElements.push(logo);
-  animatableElements.push(...navLinks);
-  if (themeSwitcher) animatableElements.push(themeSwitcher);
-  if (button) animatableElements.push(button);
+    gsap.set([logo, ...navLinks, themeSwitcher, button], { 
+      opacity: 0, 
+      y: 20 
+    });
 
-  timelineRef.current = gsap.timeline()
-    .fromTo(logo, 
-      { opacity: 0, x: -30 },
-      { opacity: 1, x: 0, duration: 0.6, ease: 'power3.out' }
-    )
-    .fromTo(navLinks,
-      { opacity: 0, y: 15 },
-      { 
+    timelineRef.current = gsap.timeline()
+      .to(logo, { 
         opacity: 1, 
         y: 0, 
-        duration: 0.5, 
+        duration: 0.6, 
+        ease: 'power2.in' 
+      })
+      .to(navLinks, {
+        opacity: 1,
+        y: 0,
+        duration: 0.5,
         stagger: 0.1,
-        ease: 'back.out(1.2)'
-      },
-      '-=0.4'
-    );
+        ease: 'power2.in'
+      }, '-=0.4')
+      .to([themeSwitcher, button], {
+        opacity: 1,
+        y: 0,
+        duration: 0.4,
+        stagger: 0.1,
+        ease: 'power2.in'
+      }, '-=0.3');
 
-  if (themeSwitcher && button) {
-    timelineRef.current
-      .fromTo([themeSwitcher, button],
-        { opacity: 0, scale: 0.8 },
-        {
-          opacity: 1,
-          scale: 1,
-          duration: 0.4,
-          stagger: 0.1,
-          ease: 'elastic.out(1, 0.5)'
-        },
-        '-=0.3'
-      );
-  }
-
-  return () => {
-    timelineRef.current?.kill();
-  };
-}, []);
+    return () => {
+      timelineRef.current?.kill();
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined' || !mobileMenuRef.current) return;
 
     if (isMobileMenu) {
       gsap.fromTo(mobileMenuRef.current,
-        { opacity: 0, y: -20 },
+        { opacity: 0, y: -50 },
         { 
           opacity: 1, 
           y: 0, 
-          duration: 0.3,
-          ease: 'power2.out'
+          duration: 0.4,
+          ease: 'power2.in'
         }
       );
 
       gsap.fromTo(mobileMenuRef.current.querySelectorAll('a'),
-        { opacity: 0, y: 10 },
+        { opacity: 0, y: 20 },
         {
           opacity: 1,
           y: 0,
-          duration: 0.4,
+          duration: 0.5,
           stagger: 0.08,
-          ease: 'back.out(1.2)',
+          ease: 'power2.in',
           delay: 0.2
         }
       );
@@ -118,8 +106,8 @@ useEffect(() => {
       gsap.to(mobileMenuRef.current,
         { 
           opacity: 0, 
-          y: -20, 
-          duration: 0.2,
+          y: -50, 
+          duration: 0.3,
           ease: 'power2.in'
         }
       );

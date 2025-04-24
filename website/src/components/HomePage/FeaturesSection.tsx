@@ -34,21 +34,6 @@ const FeaturesSection = () => {
 const FeatureLink = () => {
   const linkRef = useRef<HTMLAnchorElement>(null);
 
-  useEffect(() => {
-    if (!linkRef.current) return;
-    
-    gsap.fromTo(linkRef.current, 
-      { x: 50, opacity: 0 },
-      { 
-        x: 0, 
-        opacity: 1, 
-        duration: 0.8, 
-        delay: 0.3,
-        ease: 'power2.in' 
-      }
-    );
-  }, []);
-
   return (
     <Link
       ref={linkRef}
@@ -79,16 +64,25 @@ function FeatureBlock({
   index: number;
 }) {
   const blockRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
   const isSecondFeature = index === 1;
 
   useEffect(() => {
-    if (!blockRef.current) return;
+    if (!imageRef.current) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            animateBlock(entry.target);
+            gsap.fromTo(imageRef.current, 
+              { y: 100, opacity: 0 },
+              { 
+                y: 0, 
+                opacity: 1, 
+                duration: 0.8, 
+                ease: 'power2.out'
+              }
+            );
             observer.unobserve(entry.target);
           }
         });
@@ -99,60 +93,12 @@ function FeatureBlock({
       }
     );
 
-    observer.observe(blockRef.current);
+    observer.observe(imageRef.current);
 
     return () => {
       observer.disconnect();
     };
   }, []);
-
-  const animateBlock = (block: Element) => {
-    const image = block.querySelector(`.${styles.featureImageContainer}`);
-    if (image) {
-      gsap.fromTo(image, 
-        { y: 100, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: 'power2.in' }
-      );
-    }
-
-    const items = Array.from(block.querySelectorAll(`.${styles.featureItem}`));
-    
-    items.forEach((item, itemIndex) => {
-      let direction = {};
-      switch(itemIndex % 4) {
-        case 0: direction = { x: -100, y: -50 }; break; 
-        case 1: direction = { x: 100, y: -50 }; break;  
-        case 2: direction = { x: -100, y: 50 }; break;  
-        case 3: direction = { x: 100, y: 50 }; break;   
-      }
-
-      gsap.fromTo(item, 
-        { ...direction, opacity: 0 },
-        { 
-          x: 0, 
-          y: 0, 
-          opacity: 1, 
-          duration: 0.8, 
-          delay: 0.1 * itemIndex,
-          ease: 'power2.in)' 
-        }
-      );
-    });
-
-    const idElement = block.querySelector(`.${styles.featureId}`);
-    if (idElement) {
-      gsap.fromTo(idElement, 
-        { scale: 0.5, opacity: 0 },
-        { 
-          scale: 1, 
-          opacity: 1, 
-          duration: 0.5, 
-          delay: 0.5,
-          ease: 'power2.in' 
-        }
-      );
-    }
-  };
 
   return (
     <div
@@ -163,7 +109,7 @@ function FeatureBlock({
     >
       {!isSecondFeature ? (
         <>
-          <div className={styles.featureImageContainer}>
+          <div ref={imageRef} className={styles.featureImageContainer}>
             <ThemeImage
               width={395}
               height={275}
@@ -191,7 +137,7 @@ function FeatureBlock({
             ))}
           </div>
 
-          <div className={styles.featureImageContainer}>
+          <div ref={imageRef} className={styles.featureImageContainer}>
             <ThemeImage
               width={395}
               height={275}
@@ -222,16 +168,8 @@ function FeatureItem({
   item: (typeof PlatformFeatures)[0]['features'][0];
   index: number;
 }) {
-  const itemRef = useRef<HTMLAnchorElement>(null);
-
-  useEffect(() => {
-    if (!itemRef.current) return;
-    gsap.set(itemRef.current, { opacity: 0 });
-  }, []);
-
   return (
     <Link
-      ref={itemRef}
       prefetch={false}
       target='_blank'
       href={item.link}
