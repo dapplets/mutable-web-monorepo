@@ -13971,6 +13971,17 @@
           ]
         ]
       },
+      "Postgres8": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Switch": {
         "main": [
           [
@@ -14063,6 +14074,11 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres8",
+              "type": "main"
+            }
           ],
           [
             {
@@ -15277,7 +15293,7 @@
         },
         "position": [
           2100,
-          1860
+          2060
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -15294,7 +15310,7 @@
         },
         "position": [
           2320,
-          1860
+          2060
         ],
         "type": "n8n-nodes-base.aggregate",
         "typeVersion": 1
@@ -15324,7 +15340,7 @@
         },
         "position": [
           2780,
-          1940
+          2140
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
@@ -15347,7 +15363,7 @@
         },
         "position": [
           2100,
-          2040
+          2240
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -15364,7 +15380,7 @@
         },
         "position": [
           2560,
-          1940
+          2140
         ],
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.1
@@ -15396,7 +15412,7 @@
         },
         "position": [
           2100,
-          2220
+          2420
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -15437,7 +15453,7 @@
         },
         "position": [
           2100,
-          2380
+          2580
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -15558,40 +15574,8 @@
         "id": "85aeef13-7b49-4eef-a901-c46599cc8e35",
         "name": "Edit Fields4",
         "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "1730dd84-3727-42a6-af3a-af38718209a1",
-                "name": "domain",
-                "type": "string",
-                "value": "={{ $json.domain }}"
-              },
-              {
-                "id": "969369ac-a744-4400-95a6-602a88e63f27",
-                "name": "name",
-                "type": "string",
-                "value": "={{ $json.name }}"
-              },
-              {
-                "id": "7413ec08-e47e-4eac-9ba8-0cd49d4c8d39",
-                "name": "title",
-                "type": "string",
-                "value": "={{ $json.title }}"
-              },
-              {
-                "id": "2ce2493e-8d4c-4693-8c72-90a7bfc4da03",
-                "name": "description",
-                "type": "string",
-                "value": "={{ $json.description }}"
-              },
-              {
-                "id": "b7995e0e-c6d1-46c8-b16a-a79a4bed4e66",
-                "name": "isEnabled",
-                "type": "boolean",
-                "value": "={{ $json.is_enabled }}"
-              }
-            ]
-          },
+          "jsonOutput": "={{({\n  \"domain\": $json.domain,\n  \"name\": $json.name,\n  \"title\": $json.title,\n  \"description\": $json.description,\n  \"isEnabled\": $json.is_enabled\n})}}",
+          "mode": "raw",
           "options": {
           }
         },
@@ -16020,34 +16004,8 @@
         "id": "dbd2b87a-d8a9-4629-a097-42e547ce433b",
         "name": "Edit Fields6",
         "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "8c0021cd-7158-4c20-85d8-e003dd35f76a",
-                "name": "id",
-                "type": "string",
-                "value": "={{ $json.id }}"
-              },
-              {
-                "id": "bdf316ef-8a12-440a-b10e-405bb9a0ac30",
-                "name": "title",
-                "type": "string",
-                "value": "={{ $json.title }}"
-              },
-              {
-                "id": "54e91500-bd30-4249-a294-f912aaf900f8",
-                "name": "description",
-                "type": "string",
-                "value": "={{ $json.description }}"
-              },
-              {
-                "id": "456399fd-9818-4bc1-ad6d-1f872ff386bf",
-                "name": "createdAt",
-                "type": "string",
-                "value": "={{ $json.created_at }}"
-              }
-            ]
-          },
+          "jsonOutput": "={{({\n  \"id\": $json.id,\n  \"title\": $json.title,\n  \"description\": $json.description,\n  \"createdAt\": $json.created_at\n})}}",
+          "mode": "raw",
           "options": {
           }
         },
@@ -16057,6 +16015,48 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "3cea6672-0eb5-43b1-8463-b872f4a41930",
+        "name": "Postgres8",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "warning",
+            "mode": "list",
+            "value": "warning"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "username",
+                "value": "={{ $json.authToken.user.username }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2100,
+          1880
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -16068,8 +16068,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-24T15:20:07.000Z",
-    "versionId": "ad870dea-fe91-4d1b-b9cc-69916ab88e3f"
+    "updatedAt": "2025-04-24T15:29:16.000Z",
+    "versionId": "42bab524-945b-4858-b39f-da4543299b00"
   },
   {
     "active": true,
