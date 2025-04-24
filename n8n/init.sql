@@ -8,6 +8,7 @@ CREATE SCHEMA jobs;
 CREATE SCHEMA "near-ai";
 CREATE SCHEMA "personal-data";
 CREATE SCHEMA environment;
+CREATE SCHEMA "default";
 
 CREATE TABLE delivered.reddits (
     id integer NOT NULL,
@@ -181,6 +182,29 @@ about	I’m XEN - your personal assistant, here to help you organize your life, 
 ALTER TABLE ONLY environment.variables
     ADD CONSTRAINT variables_pk PRIMARY KEY (type);
 
+CREATE TABLE "default".capability (
+    domain character varying NOT NULL,
+    name character varying NOT NULL,
+    title character varying,
+    description character varying
+);
+
+CREATE TABLE "default".user_capability (
+    username character varying NOT NULL,
+    is_enabled boolean DEFAULT true NOT NULL,
+    is_deleted boolean DEFAULT false NOT NULL,
+    capability_domain character varying NOT NULL,
+    capability_name character varying NOT NULL
+);
+
+CREATE TABLE "default".warning (
+    id uuid NOT NULL,
+    username character varying NOT NULL,
+    title character varying,
+    description character varying,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
 ALTER TABLE ONLY delivered.reddits ALTER COLUMN id SET DEFAULT nextval('delivered.reddits_id_seq'::regclass);
 ALTER TABLE ONLY feedback.feedback ALTER COLUMN id SET DEFAULT nextval('feedback.feedback_id_seq'::regclass);
 ALTER TABLE ONLY jobs.reminders ALTER COLUMN id SET DEFAULT nextval('jobs.reminders_id_seq'::regclass);
@@ -219,3 +243,14 @@ ALTER TABLE ONLY "near-ai".available
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY "default".capability
+    ADD CONSTRAINT capability_unique UNIQUE (domain, name);
+
+ALTER TABLE ONLY "default".user_capability
+    ADD CONSTRAINT user_capability_unique UNIQUE (username, capability_domain, capability_name);
+
+ALTER TABLE ONLY "default".warning
+    ADD CONSTRAINT warning_pk PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX capability_domain_idx ON "default".capability USING btree (domain, name);
