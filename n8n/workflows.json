@@ -6712,7 +6712,7 @@
           ]
         ]
       },
-      "Get favourite agents": {
+      "Get Enabled Capabilities": {
         "main": [
           [
             {
@@ -6728,7 +6728,7 @@
           [
             {
               "index": 0,
-              "node": "Get favourite agents",
+              "node": "Get Enabled Capabilities",
               "type": "main"
             }
           ],
@@ -6804,65 +6804,6 @@
     },
     "name": "Nearai",
     "nodes": [
-      {
-        "id": "8a9621e5-a1f6-4e97-aaa1-839583589b90",
-        "name": "Get favourite agents",
-        "parameters": {
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "accept",
-                "value": "application/json"
-              }
-            ]
-          },
-          "method": "POST",
-          "options": {
-            "pagination": {
-              "pagination": {
-                "parameters": {
-                  "parameters": [
-                    {
-                      "name": "offset",
-                      "value": "={{ $pageCount * 20}}"
-                    }
-                  ]
-                },
-                "requestInterval": 1000
-              }
-            }
-          },
-          "queryParameters": {
-            "parameters": [
-              {
-                "name": "total",
-                "value": "20"
-              },
-              {
-                "name": "show_hidden",
-                "value": "false"
-              },
-              {
-                "name": "show_latest_version",
-                "value": "true"
-              },
-              {
-                "name": "starred_by",
-                "value": "={{ $json.near_account_id }}"
-              }
-            ]
-          },
-          "sendHeaders": true,
-          "sendQuery": true,
-          "url": "https://api.near.ai/v1/registry/list_entries"
-        },
-        "position": [
-          1420,
-          -40
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2
-      },
       {
         "id": "6ecde618-0bd1-46fc-9fd2-9915990560f1",
         "name": "Aggregate",
@@ -6964,7 +6905,7 @@
               }
             ]
           },
-          "jsonBody": "={\n  \"agent_id\": \"{{ $json.agent_id }}\",\n  \"new_message\": {{ $json.query.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
+          "jsonBody": "={\n  \"agent_id\": \"{{ $json.agent_id }}/latest\",\n  \"new_message\": {{ $json.query.toJsonString() }},\n  \"max_iterations\": \"1\"\n}",
           "method": "POST",
           "options": {
             "response": {
@@ -7098,25 +7039,19 @@
                 "id": "6c45176b-c40e-4944-af38-7321ce59f7dd",
                 "name": "agent_id",
                 "type": "string",
-                "value": "={{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}"
+                "value": "={{ $json.capability_name }}"
+              },
+              {
+                "id": "ce866fd8-3d9f-460f-96e3-e882c61e2965",
+                "name": "title",
+                "type": "string",
+                "value": "={{ $json.title }}"
               },
               {
                 "id": "f3f626c2-3863-47af-a933-440629d58c0d",
                 "name": "description",
                 "type": "string",
                 "value": "={{ $json.description }}"
-              },
-              {
-                "id": "ce866fd8-3d9f-460f-96e3-e882c61e2965",
-                "name": "welcome_title",
-                "type": "string",
-                "value": "={{ $json.details.agent.welcome.title }}"
-              },
-              {
-                "id": "2e4aba58-ca7d-4652-b6ab-2fa4d9ea28b0",
-                "name": "welcome_description",
-                "type": "string",
-                "value": "={{ $json.details.agent.welcome.description }}"
               }
             ]
           },
@@ -7242,6 +7177,30 @@
         ],
         "type": "n8n-nodes-base.stopAndError",
         "typeVersion": 1
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "c60746f4-6444-4c52-9368-a39f5a905a86",
+        "name": "Get Enabled Capabilities",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $json.username }}"
+          },
+          "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\n  and is_enabled = true\norder by uc.capability_domain asc, uc.capability_name asc"
+        },
+        "position": [
+          1420,
+          -40
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -7255,8 +7214,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-23T06:45:42.000Z",
-    "versionId": "cca0f0bd-3b89-4c69-bb3f-2ce08fe3460a"
+    "updatedAt": "2025-04-24T15:55:52.000Z",
+    "versionId": "a2a61705-bbf3-4762-adbf-07a42f2fc798"
   },
   {
     "active": false,
