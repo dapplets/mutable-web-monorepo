@@ -1420,7 +1420,7 @@
           [
             {
               "index": 0,
-              "node": "Get favourite agents",
+              "node": "Get Enabled Capabilities",
               "type": "main"
             }
           ]
@@ -1459,7 +1459,7 @@
           ]
         ]
       },
-      "Get favourite agents": {
+      "Get Enabled Capabilities": {
         "main": [
           [
             {
@@ -5497,7 +5497,7 @@
           "text": "=Developer mode: {{ $('Get Account1').item.json.isdeveloper }}\n\nXen is logged in as: {{ $('Get Account1').item.json.near_account_id }}\n\nXen balance is: {{ $('Get Account Balance').item.json.formatted.available }} NEAR\n\n{{ $json.agent_ids.length === 0 ? \"No agents are connected to your Xen.\" : \"The following agents are connected to your Xen:\" }}\n{{ $json.agent_ids.map(x => `[${x}](https://app.near.ai/agents/${x}/latest)`).join('\\n') }}"
         },
         "position": [
-          3320,
+          3300,
           -560
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5527,66 +5527,6 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "2e7b0d78-b0ad-462f-bac9-509f3556d886"
-      },
-      {
-        "alwaysOutputData": true,
-        "id": "09d3c830-ec0c-4489-a2a2-b6be3f89bd89",
-        "name": "Get favourite agents",
-        "parameters": {
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "accept",
-                "value": "application/json"
-              }
-            ]
-          },
-          "method": "POST",
-          "options": {
-            "pagination": {
-              "pagination": {
-                "parameters": {
-                  "parameters": [
-                    {
-                      "name": "offset",
-                      "value": "={{ $pageCount * 20}}"
-                    }
-                  ]
-                },
-                "requestInterval": 1000
-              }
-            }
-          },
-          "queryParameters": {
-            "parameters": [
-              {
-                "name": "total",
-                "value": "20"
-              },
-              {
-                "name": "show_hidden",
-                "value": "false"
-              },
-              {
-                "name": "show_latest_version",
-                "value": "true"
-              },
-              {
-                "name": "starred_by",
-                "value": "={{ $('Get Account1').item.json.near_account_id }}"
-              }
-            ]
-          },
-          "sendHeaders": true,
-          "sendQuery": true,
-          "url": "https://api.near.ai/v1/registry/list_entries"
-        },
-        "position": [
-          2680,
-          -560
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2
       },
       {
         "credentials": {
@@ -5627,7 +5567,7 @@
           }
         },
         "position": [
-          3100,
+          3080,
           -560
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -5643,7 +5583,7 @@
                 "id": "efd25a3c-b2b2-403a-bd3d-98267d8a72ce",
                 "name": "agent_id",
                 "type": "string",
-                "value": "={{ $json.namespace && $json.name ? `${$json.namespace}/${$json.name}` : null }}"
+                "value": "={{ $json.capability_name ? $json.capability_name : null }}"
               }
             ]
           },
@@ -5651,7 +5591,7 @@
           }
         },
         "position": [
-          2900,
+          2880,
           -560
         ],
         "type": "n8n-nodes-base.set",
@@ -6636,6 +6576,57 @@
         ],
         "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
         "typeVersion": 2.1
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "4caf126c-da94-4d46-b044-80eb5e53689f",
+        "name": "Get Enabled Capabilities",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "user_capability",
+            "mode": "list",
+            "value": "user_capability"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "username",
+                "value": "={{ $('Telegram Trigger').item.json.message.from.username }}"
+              },
+              {
+                "column": "is_enabled",
+                "value": "true"
+              },
+              {
+                "column": "is_deleted",
+                "value": "false"
+              }
+            ]
+          }
+        },
+        "position": [
+          2680,
+          -560
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -6649,8 +6640,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-23T06:39:28.000Z",
-    "versionId": "4586a0ff-90ce-4fa2-926f-7bf4941b8b77"
+    "updatedAt": "2025-04-24T15:48:34.000Z",
+    "versionId": "0070c787-87ff-4d07-b290-23e66405f285"
   },
   {
     "active": false,
