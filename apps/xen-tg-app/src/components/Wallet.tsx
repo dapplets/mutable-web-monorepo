@@ -2,7 +2,7 @@ import { FC } from 'react'
 import LogOutIcon from '../assets/log-out'
 import NEAR_ICON from '../assets/near-gray.svg'
 import { Balance, TXenUser } from '../types'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const queryFn =
   (shouldMakeRequest: boolean, name: string, params?: { [key: string]: string }) => async () => {
@@ -59,6 +59,7 @@ type TWalletProps = {
 }
 
 const Wallet: FC<TWalletProps> = ({ user }) => {
+  const queryClient = useQueryClient()
   const isLoggedIn = !!user?.nearAccountId
 
   const {
@@ -67,12 +68,16 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
     data: balance,
     // error: errorBalance,
   } = useQuery<Balance>({
-    queryKey: ['balance'],
+    queryKey: ['balance', isLoggedIn],
     queryFn: queryFn(isLoggedIn, 'getBalance'),
   })
 
   const handleLogout = useMutation({
     mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+      queryClient.invalidateQueries({ queryKey: ['balance'] })
+    },
   })
 
   const handleConnect = () => {
