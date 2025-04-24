@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import XEN_IMAGE from './assets/xen-girl-001.png'
+import { useQuery } from '@tanstack/react-query'
+import XEN_IMAGE from './assets/xen-anime-style-portrait.png'
 import Capabilities from './components/Capabilities'
 import DeveloperMode from './components/DeveloperMode'
 import FooterMenu from './components/FooterMenu'
@@ -7,27 +7,59 @@ import Layout from './components/Layout'
 import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
-import { TUserInfo } from './types'
+import { TXenUser } from './types'
+
+const queryFn =
+  (
+    tgDataStr: string,
+    tgDataObj: WebAppInitData,
+    name: string,
+    params?: { [key: string]: string }
+  ) =>
+  async () => {
+    if (!tgDataStr) {
+      throw new Error('Telegram is not available')
+    }
+    const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: name,
+        params: params ?? {},
+        id: 1,
+      }),
+    })
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const data = await response.json()
+    return data.result
+  }
 
 function App() {
-  const [user, setUserInfo] = useState<TUserInfo | null>(null)
+  const tgDataStr = window.Telegram.WebApp.initData
+  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
+  const {
+    isPending: isPendingUser,
+    isError: isErrorUser,
+    data: user,
+    error: errorUser,
+  } = useQuery<TXenUser>({
+    queryKey: ['user', tgDataStr, tgDataObj],
+    queryFn: queryFn(tgDataStr, tgDataObj, 'getCurrentUser'),
+  })
 
-  useEffect(() => {
-    const tg = window?.Telegram?.WebApp
-    console.log(tg)
-    const userInfo = tg?.initDataUnsafe?.user
-    console.log(userInfo)
-    setUserInfo(
-      userInfo
-        ? {
-            id: userInfo.id,
-            firstName: userInfo.first_name,
-            lastName: userInfo.last_name,
-            username: userInfo.username,
-          }
-        : null
-    )
-  }, [])
+  if (isPendingUser) {
+    return <span>Loading...</span>
+  }
+
+  if (isErrorUser) {
+    return <span>Error: {errorUser.message}</span>
+  }
 
   return (
     <Layout>

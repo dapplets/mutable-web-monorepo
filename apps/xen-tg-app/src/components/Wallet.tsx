@@ -1,53 +1,110 @@
 import { FC } from 'react'
 import LogOutIcon from '../assets/log-out'
 import NEAR_ICON from '../assets/near-gray.svg'
-import { TUserInfo } from '../types'
+import { Balance, TXenUser } from '../types'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-type TWalletProps = {
-  user: TUserInfo | null
+const queryFn =
+  (shouldMakeRequest: boolean, name: string, params?: { [key: string]: string }) => async () => {
+    if (!shouldMakeRequest) return
+    if (!window.Telegram.WebApp.initData) {
+      throw new Error('Telegram is not available')
+    }
+    const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: name,
+        params: params ?? {},
+        id: 1,
+      }),
+    })
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const data = await response.json()
+    return data.result
+  }
+
+const mutationFn = async () => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
+  }
+  const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'logout',
+      params: {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
 }
 
-// ToDo: remove mocked data
-const MOCKED_DATA = {
-  wallet: {
-    address: 'ridgerock.near',
-    balance: 230.26,
-  },
+type TWalletProps = {
+  user: TXenUser | null
 }
 
 const Wallet: FC<TWalletProps> = ({ user }) => {
-  console.log(user)
-  const isLoggedIn = true
+  const queryClient = useQueryClient()
+  const isLoggedIn = !!user?.nearAccountId
+
+  const {
+    // isPending: isPendingBalance,
+    // isError: isErrorBalance,
+    data: balance,
+    // error: errorBalance,
+  } = useQuery<Balance>({
+    queryKey: ['balance', isLoggedIn],
+    queryFn: queryFn(isLoggedIn, 'getBalance'),
+  })
+
+  const handleLogout = useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user'] })
+      queryClient.invalidateQueries({ queryKey: ['balance'] })
+    },
+  })
 
   const handleConnect = () => {
     console.log('connect')
   }
 
-  const handleDisconnect = () => {
-    console.log('disconnect')
-  }
-
-  return isLoggedIn ? (
+  return user && isLoggedIn ? (
     <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
       <div className="flex gap-3 text-[22px]/[150%] font-semibold">
         <img src={NEAR_ICON} alt="near" />
-        {MOCKED_DATA.wallet.balance}
+        {balance?.formatted.available ?? '-'}
       </div>
       <div className="me-3 flex items-center gap-3 text-[22px]/[150%] font-normal">
-        {MOCKED_DATA.wallet.address}
+        {user.nearAccountId}
         <button
           className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
-          onClick={handleDisconnect}
+          onClick={() => handleLogout.mutate()}
         >
           <LogOutIcon />
         </button>
       </div>
     </div>
   ) : (
-    <div className="flex w-full items-center justify-between gap-2.5 rounded-xl bg-[#f8f9ff19] px-2.5 py-4">
+    <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4">
       <div className="text-[18px]/[150%] font-semibold">No wallet connected</div>
       <button
-        className="flex cursor-pointer flex-nowrap rounded-xl bg-[#f8f9ff] px-8 py-2 text-(--color-opposite-text)"
+        className="flex cursor-pointer flex-nowrap rounded-xl bg-(--color-my-primary) px-8 py-2 text-(--color-opposite-text) dark:bg-[#f8f9ff] dark:text-(--color-opposite-text)"
         onClick={handleConnect}
       >
         Connect

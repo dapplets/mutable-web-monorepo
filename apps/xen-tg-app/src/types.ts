@@ -5,6 +5,28 @@ export type TUserInfo = {
   username?: string
 }
 
+export type TXenUser = {
+  id: number
+  firstName: string
+  nearAccountId: string
+  isDeveloper: boolean
+}
+
+export type Balance = {
+  balance: {
+    total: number
+    stateStacked: number
+    staked: number
+    available: number
+  }
+  formatted: {
+    total: number
+    stateStacked: number
+    staked: number
+    available: number
+  }
+}
+
 export type TAgent = {
   name: string
   source: string
