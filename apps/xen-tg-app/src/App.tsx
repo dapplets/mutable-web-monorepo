@@ -7,7 +7,7 @@ import Layout from './components/Layout'
 import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
-import { Balance, TXenUser } from './types'
+import { TXenUser } from './types'
 
 const queryFn = (name: string, params?: { [key: string]: string }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -43,26 +43,13 @@ function App() {
     queryKey: ['user'],
     queryFn: queryFn('getCurrentUser'),
   })
-  const {
-    isPending: isPendingBalance,
-    isError: isErrorBalance,
-    data: balance,
-    error: errorBalance,
-  } = useQuery<Balance>({
-    queryKey: ['balance'],
-    queryFn: queryFn('getBalance'),
-  })
 
-  if (isPendingUser || isPendingBalance) {
+  if (isPendingUser) {
     return <span>Loading...</span>
   }
 
   if (isErrorUser) {
     return <span>Error: {errorUser.message}</span>
-  }
-
-  if (isErrorBalance) {
-    return <span>Error: {errorBalance.message}</span>
   }
 
   return (
@@ -73,7 +60,7 @@ function App() {
       <div className="z-1 m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full select-none">
         <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
       </div>
-      <Wallet user={user} balance={balance.formatted.available} />
+      <Wallet user={user} />
       <Capabilities user={user} />
       <DeveloperMode />
       <Warnings user={user} />
