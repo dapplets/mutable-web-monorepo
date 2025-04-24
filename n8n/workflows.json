@@ -13587,20 +13587,6 @@
       "Switch": {
         "main": [
           [
-            {
-              "index": 0,
-              "node": "subtract",
-              "type": "main"
-            }
-          ],
-          [
-            {
-              "index": 0,
-              "node": "add",
-              "type": "main"
-            }
-          ],
-          [
           ],
           [
             {
@@ -13705,28 +13691,6 @@
             }
           ]
         ]
-      },
-      "add": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Respond to Webhook",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "subtract": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Respond to Webhook",
-              "type": "main"
-            }
-          ]
-        ]
       }
     },
     "createdAt": "2025-04-22T13:36:59.745Z",
@@ -13763,55 +13727,6 @@
           },
           "rules": {
             "values": [
-              {
-                "conditions": {
-                  "combinator": "and",
-                  "conditions": [
-                    {
-                      "id": "49b30d1e-da69-4066-a6cb-9cc1d90e8918",
-                      "leftValue": "={{ $json.body.method }}",
-                      "operator": {
-                        "operation": "equals",
-                        "type": "string"
-                      },
-                      "rightValue": "subtract"
-                    }
-                  ],
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 2
-                  }
-                },
-                "outputKey": "subtract",
-                "renameOutput": true
-              },
-              {
-                "conditions": {
-                  "combinator": "and",
-                  "conditions": [
-                    {
-                      "id": "5cb5c847-7902-464b-a8cc-64d996b632ef",
-                      "leftValue": "={{ $json.body.method }}",
-                      "operator": {
-                        "name": "filter.operator.equals",
-                        "operation": "equals",
-                        "type": "string"
-                      },
-                      "rightValue": "add"
-                    }
-                  ],
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 2
-                  }
-                },
-                "outputKey": "add",
-                "renameOutput": true
-              },
               {
                 "conditions": {
                   "combinator": "and",
@@ -14237,54 +14152,6 @@
         ],
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1
-      },
-      {
-        "id": "aa8a5d6e-aa76-4d29-a955-a9951024066b",
-        "name": "subtract",
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "73abe636-a570-4c42-b96d-2de103395c17",
-                "name": "result",
-                "type": "number",
-                "value": "={{ $json.body.params.minuend - $json.body.params.subtrahend }}"
-              }
-            ]
-          },
-          "options": {
-          }
-        },
-        "position": [
-          2280,
-          -800
-        ],
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4
-      },
-      {
-        "id": "fdc7e6a7-d3d0-49c2-9995-c61c8e29281e",
-        "name": "add",
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "73abe636-a570-4c42-b96d-2de103395c17",
-                "name": "result",
-                "type": "number",
-                "value": "={{ $json.body.params.augend + $json.body.params.addend }}"
-              }
-            ]
-          },
-          "options": {
-          }
-        },
-        "position": [
-          2280,
-          -620
-        ],
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4
       },
       {
         "credentials": {
@@ -15163,7 +15030,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-23T11:14:17.000Z",
-    "versionId": "e8657be9-24f1-4113-b463-eaaaa50628c7"
+    "updatedAt": "2025-04-24T08:08:35.000Z",
+    "versionId": "6a061570-ea96-4d78-8bb0-364bc4b8ebe7"
   }
 ]
