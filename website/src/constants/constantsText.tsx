@@ -51,11 +51,11 @@ export const Examples = [
   {
     title:'YouSure',
     description:'YouShure\u00A0- embeds seamlessly prediction markets into social networks so\u00A0that every statement posted can be\u00A0challenged with a\u00A0bet for money or\u00A0reputation. It\u00A0promotes responsible communication so\u00A0that bullshit posters lose either reputation or\u00A0money, or\u00A0both.',
-     labelTop:{
+    labelBottom:{
       label:'Captures user context',
       subLabel:'on the fly'
     },
-    labelBottom:{
+    labelTop:{
       label:'Embeds agentic output',
       subLabel:'on the fly'
     } 

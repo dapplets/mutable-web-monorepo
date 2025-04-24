@@ -41,14 +41,14 @@ const HeroSection = () => {
         trigger: buttonsContainerRef.current,
         start: 'top 30%',
         end: 'top 70%',
-        onLeave: () => gsap.to(buttons, { 
-          opacity: 0, 
-          y: 40, 
+        onLeave: () => gsap.to(buttons, {
+          opacity: 0,
+          y: 40,
           duration: 0.6,
-          ease: 'power2.in' 
+          ease: 'power2.in'
         }),
         onEnterBack: () => tl.restart(true),
-     
+
       });
 
       buttons.forEach((button, index) => {
@@ -105,8 +105,8 @@ const HeroSection = () => {
         alt='arrow'
         src='icons/home/bg-title.svg'
       />
-       <ThemeImage
-        className={cn(styles.img,styles['img--mobile'])}
+      <ThemeImage
+        className={cn(styles.img, styles['img--mobile'])}
         width={1185}
         height={761}
         alt='arrow'
