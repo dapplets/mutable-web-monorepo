@@ -6,6 +6,7 @@ import { ThemeImage } from '../ThemeImage';
 import { Examples } from '@/constants/constantsText';
 import cn from 'classnames';
 import gsap from 'gsap';
+import Label from '../Label';
 
 export const ExamplesFirstSection = () => {
   const exampleBlocksRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -89,6 +90,26 @@ export const ExamplesFirstSection = () => {
               <h3 className={styles.exampleTitle}>{example.title}</h3>
               <p className={styles.exampleDescription}>{example.description}</p>
             </div>
+            <div className={cn(styles.label,styles['label--top'], index % 2 == 0 && styles['label--top-2'], index % 2 !== 0 && styles['label--top-1'])}>
+              <Label title={example.labelTop.label} subtitle={example.labelTop.subLabel}/>
+              </div>
+             <ThemeImage
+                width={500}
+                height={61}
+                alt={example.title}
+                src={`icons/home/arrow-example-${index + 1}.svg`}
+                className={cn(styles.labelImg,index % 2 !== 0 && styles['labelImg--top-1'],index % 2 == 0 && styles['labelImg--top-2'])}
+              />
+               <ThemeImage
+                width={500}
+                height={61}
+                alt={example.title}
+                src={`icons/home/arrow-example-${index + 1}-bottom.svg`}
+                className={cn(styles.labelImg,index % 2 !== 0 && styles['labelImg--bottom-1'],index % 2 == 0 && styles['labelImg--bottom-2'])}
+              />
+            <div className={cn(styles.label,styles['label--bottom'], index % 2 == 0 && styles['label--bottom-2'],index % 2 !== 0 && styles['label--bottom-1'])}>
+              <Label title={example.labelBottom.label} subtitle={example.labelBottom.subLabel}/>
+              </div>
           </div>
         ))}
       </div>
