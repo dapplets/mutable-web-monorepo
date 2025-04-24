@@ -52,6 +52,10 @@
 .mvmButton {
   height: 2.125rem !important;
   width: 5.25rem;
+
+  a,button {
+    text-transform: uppercase;
+  }
 }
 
 .burger {
