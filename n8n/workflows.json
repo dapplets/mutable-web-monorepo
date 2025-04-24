@@ -13612,6 +13612,17 @@
           ]
         ]
       },
+      "Aggregate2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Construct Response": {
         "main": [
           [
@@ -13689,6 +13700,28 @@
           ]
         ]
       },
+      "Edit Fields5": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields6": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Get Account Balance": {
         "main": [
           [
@@ -13735,6 +13768,17 @@
             {
               "index": 0,
               "node": "Edit Fields3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields5",
               "type": "main"
             }
           ]
@@ -13812,6 +13856,28 @@
             {
               "index": 1,
               "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres16": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields6",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres17": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge2",
               "type": "main"
             }
           ]
@@ -13985,6 +14051,16 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres16",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Postgres17",
+              "type": "main"
+            }
           ],
           [
           ],
@@ -14493,7 +14569,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": $json.result,\n  \"error\": $json.error ? { \"message\": $json.error } : undefined,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          3860,
+          4080,
           320
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -15827,6 +15903,160 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": false,
+        "id": "45797b02-36b7-4da2-b0cc-d5d7aab6504c",
+        "name": "Postgres16",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $json.authToken.user.username }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+          },
+          "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1\norder by created_at desc\nlimit $2\noffset $3"
+        },
+        "position": [
+          2100,
+          1520
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "7a4f5a75-c31a-4dc0-b998-ecc366624ba8",
+        "name": "Aggregate2",
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "items",
+          "options": {
+          }
+        },
+        "position": [
+          2540,
+          1520
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "a62d5630-3267-4388-b3d9-92be864b4098",
+        "name": "Edit Fields5",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a9167abe-5e1d-4b2c-82ea-686ada653d03",
+                "name": "result.items",
+                "type": "array",
+                "value": "={{ $json.items.filter(x => Object.keys(x).length) ?? [] }}"
+              },
+              {
+                "id": "78fadd62-c7cc-43b2-a569-4ffde09ea903",
+                "name": "result.total",
+                "type": "number",
+                "value": "={{ $json.count }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3000,
+          1600
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "1bf1119d-ea00-4766-99c4-5cb3ff1ca363",
+        "name": "Postgres17",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $json.authToken.user.username }}"
+          },
+          "query": "select count(*) as count\nfrom \"default\".\"warning\"\nwhere username = $1"
+        },
+        "position": [
+          2100,
+          1700
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "1a73a226-a7fe-4b0a-b7db-8775ca114402",
+        "name": "Merge2",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2780,
+          1600
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "dbd2b87a-d8a9-4629-a097-42e547ce433b",
+        "name": "Edit Fields6",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "8c0021cd-7158-4c20-85d8-e003dd35f76a",
+                "name": "id",
+                "type": "string",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "bdf316ef-8a12-440a-b10e-405bb9a0ac30",
+                "name": "title",
+                "type": "string",
+                "value": "={{ $json.title }}"
+              },
+              {
+                "id": "54e91500-bd30-4249-a294-f912aaf900f8",
+                "name": "description",
+                "type": "string",
+                "value": "={{ $json.description }}"
+              },
+              {
+                "id": "456399fd-9818-4bc1-ad6d-1f872ff386bf",
+                "name": "createdAt",
+                "type": "string",
+                "value": "={{ $json.created_at }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2320,
+          1520
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
       }
     ],
     "pinData": {
@@ -15838,8 +16068,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-24T14:26:03.000Z",
-    "versionId": "22c31b18-6413-49a3-86af-af55ea5b69de"
+    "updatedAt": "2025-04-24T15:20:07.000Z",
+    "versionId": "ad870dea-fe91-4d1b-b9cc-69916ab88e3f"
   },
   {
     "active": true,
