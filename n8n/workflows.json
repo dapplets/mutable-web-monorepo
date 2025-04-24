@@ -13672,6 +13672,17 @@
           ]
         ]
       },
+      "Postgres7": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Switch": {
         "main": [
           [
@@ -13724,6 +13735,11 @@
             }
           ],
           [
+            {
+              "index": 0,
+              "node": "Postgres7",
+              "type": "main"
+            }
           ],
           [
             {
@@ -15488,6 +15504,107 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "a3dca91e-f474-412e-94c4-8f5b939c96a2",
+        "name": "Postgres7",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "username",
+              "capability_domain",
+              "capability_name"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_enabled",
+                "id": "is_enabled",
+                "removed": false,
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_deleted",
+                "id": "is_deleted",
+                "removed": true,
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_domain",
+                "id": "capability_domain",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_name",
+                "id": "capability_name",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "capability_domain": "={{ $json.body.params.domain }}",
+              "capability_name": "={{ $json.body.params.name }}",
+              "is_enabled": false,
+              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username }}"
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "user_capability",
+            "mode": "list",
+            "value": "user_capability"
+          }
+        },
+        "position": [
+          2100,
+          900
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -15499,8 +15616,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-24T14:25:36.000Z",
-    "versionId": "ee0e95e9-3e83-4abe-a29f-b156907ed21c"
+    "updatedAt": "2025-04-24T14:26:03.000Z",
+    "versionId": "22c31b18-6413-49a3-86af-af55ea5b69de"
   },
   {
     "active": true,
