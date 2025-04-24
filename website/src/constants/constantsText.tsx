@@ -35,6 +35,33 @@ export const HomeTitle = {
   subtitle: `Dapplets Project - open-source platform which empowers developers to create a community-driven web, giving users and developers the ability to take control of the UX/UI on any existing websites.`,
 };
 
+export const Examples = [
+  {
+    title:'Xen/Aigency',
+    description:'Xen/Aigency\u00A0- is\u00A0your private\u00A0AI assistant that uses your custom set of\u00A0agents for inference.\nXen uses Mutable Web to\u00A0capture user context and render agentic output back into the web page, extending its\u00A0UX on\u00A0the fly.',
+    labelTop:{
+      label:'Embeds agentic output',
+      subLabel:'on the fly'
+    },
+    labelBottom:{
+      label:'Captures user context',
+      subLabel:'on the fly'
+    }
+  },
+  {
+    title:'YouSure',
+    description:'YouShure\u00A0- embeds seamlessly prediction markets into social networks so\u00A0that every statement posted can be\u00A0challenged with a\u00A0bet for money or\u00A0reputation. It\u00A0promotes responsible communication so\u00A0that bullshit posters lose either reputation or\u00A0money, or\u00A0both.',
+     labelTop:{
+      label:'Captures user context',
+      subLabel:'on the fly'
+    },
+    labelBottom:{
+      label:'Embeds agentic output',
+      subLabel:'on the fly'
+    } 
+  }
+]
+
 export const HowItWorks = {
   title: 'how it works?',
   subtitle:

@@ -5,6 +5,7 @@ import HowItWorksSection from '@/components/HomePage/HowItWorksSection';
 import ExamplesSection from '@/components/HomePage/ExamplesSection';
 import FeaturesSection from '@/components/HomePage/FeaturesSection';
 import GetStartedSection from '@/components/HomePage/GetStartedSection';
+import ExamplesFirstSection from '@/components/HomePage/ExamplesFirstSection';
 
 const Home = () => {
   return (
@@ -14,8 +15,9 @@ const Home = () => {
     >
       <div className={styles.wrapper}>
         <HeroSection />
-        <HowItWorksSection />
+        <ExamplesFirstSection/>
         <ExamplesSection />
+        <HowItWorksSection />
         <FeaturesSection />
         <GetStartedSection />
       </div>

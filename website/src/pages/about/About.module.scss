@@ -53,11 +53,24 @@
   justify-content: center;
   margin-top: -3.75rem;
   transform: translateX(0.625rem);
+  position: relative;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+
+  img:hover{
+    transform: none!important;
+  }
 }
 
 .supportedBlockIcon {
   margin: 0 auto;
   max-width: 75rem;
+  transition: transform 0.3s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+  
+  &:hover {
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.2));
+  }
 }
 
 .problemWrapper {

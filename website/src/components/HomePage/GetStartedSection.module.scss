@@ -7,12 +7,16 @@
   max-width: 75rem;
   margin: 0 auto;
   gap: 2.5rem;
+  will-change: transform, opacity;
 }
 
 .container {
   display: flex;
   flex-direction: column;
   max-width: 18.4375rem;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: none !important;
 }
 
 .title {

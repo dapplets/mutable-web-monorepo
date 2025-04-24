@@ -80,6 +80,7 @@
   grid-template-columns: 1fr 2fr;
   gap: var(--feature-gap);
   align-items: center;
+  will-change: transform, opacity;
 
   &--2 {
     grid-template-columns: 1fr 1fr 1fr;
@@ -94,6 +95,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 0;
 }
 
 .featureImage {
@@ -132,6 +134,7 @@
   transition: all 0.2s ease;
   text-decoration: none;
   color: inherit;
+
 
   &:hover {
     background: radial-gradient(

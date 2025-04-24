@@ -1,0 +1,198 @@
+.wrapper {
+  padding: 0 1.25rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 75rem;
+  margin: 8.5rem auto 0;
+}
+
+.title {
+  font-size: var(--fs-24-48);
+  font-weight: 600;
+  line-height: 1;
+  display: flex;
+}
+
+.examplesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  margin-top: 2.5rem;
+  position: relative;
+}
+
+.label {
+  position: absolute;
+  z-index: 2;
+
+  &--top-1 {
+    right: 20em;
+    top: 19em;
+  }
+
+  &--bottom-1 {
+    right: 15em;
+    top: -1em;
+  }
+
+  &--top-2 {
+    left: 14em;
+    bottom: 17em;
+  }
+
+  &--bottom-2 {
+    left: 20em;
+    bottom: 1em;
+  }
+}
+
+.labelImg {
+  position: absolute;
+
+  &--bottom-1 {
+    left: 10em;
+    bottom: -7em;
+  }
+
+  &--top-1 {
+    bottom: 17em;
+    left: 7em;
+  }
+
+  &--bottom-2 {
+    right: 10em;
+    top: 9em;
+  }
+
+  &--top-2 {
+    top: 1em;
+    right: 10em;
+  }
+}
+
+.exampleBlock {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 3.75rem;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+}
+
+.imageContainer {
+  flex: 1;
+  min-width: 0;
+  will-change: transform, opacity;
+  transform: translateY(1.25rem);
+  opacity: 0;
+  max-width: 50%;
+}
+
+.exampleImage {
+  width: 100%;
+  height: auto;
+  border-radius: .625rem;
+  transition: none;
+
+  &:hover {
+    transform: none !important;
+    cursor: default;
+  }
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  max-width: 25rem;
+
+}
+
+.exampleTitle {
+  font-size: var(--fs-18-24);
+  font-weight: 600;
+}
+
+.exampleDescription {
+  display: block;
+  margin-top: 1.25rem;
+  font-size: var(--fs-14-16);
+  line-height: 1.49;
+  white-space: pre-line;
+}
+
+
+
+@media (max-width: 1185px) {
+
+  .label {
+    &--top-1 {
+      right: 15em;
+      top: 17em;
+    }
+
+    &--top-2 {
+      left: 14em;
+      bottom: 15em;
+    }
+
+    &--bottom-2 {
+      left: 15em;
+      bottom: 0;
+    }
+  }
+
+  .labelImg {
+    &--bottom-1 {
+      bottom: -8em;
+    }
+
+    &--top-1 {
+      bottom: 15em;
+    }
+
+    &--bottom-2 {
+      top: 7em;
+    }
+  }
+}
+
+@media (max-width: 950px) {
+  .labelImg{
+    display: none;
+  }
+  
+  .label{
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    margin-top: 4rem;
+  }
+
+  .examplesContainer {
+    gap: 1.25rem;
+  }
+
+  .exampleBlock {
+    flex-direction: column;
+    gap: 1.25rem;
+
+    &.reverse {
+      flex-direction: column;
+      margin-top: 2.5rem;
+    }
+  }
+
+  .content{
+    max-width: none;
+  }
+
+  .imageContainer{
+    max-width: none;
+  }
+}

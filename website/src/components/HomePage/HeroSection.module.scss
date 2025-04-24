@@ -11,7 +11,7 @@
 
 .img {
   position: absolute;
-  top: -2.1875rem;
+  top: -3rem;
   left: 0;
   right: 0;
   bottom: 0;
@@ -21,6 +21,10 @@
   transform: scale(1.01);
   z-index: 1;
   pointer-events: none;
+
+  &--mobile{
+    display: none;
+  }
 }
 
 .titleBlock {
@@ -67,7 +71,17 @@
   }
 
   .img {
-    display: none;
+    &--desk{
+      display: none;
+    }
+
+    &--mobile{
+      display: block;
+      width: auto;
+      height: auto;
+      top: -14rem;
+      object-fit: contain;
+    }
   }
 
   .buttons {
@@ -77,6 +91,12 @@
 
   .subtitle {
     margin-top: 2.1875rem;
+  }
+}
+
+@media (max-width: 849px)  {
+   .img--mobile{
+      display: none;
   }
 }
 

@@ -1,0 +1,36 @@
+.wrapper{
+  border: 1px solid var(--grey-c1);
+  background: var(--grey-de);
+  width: 100%;
+  max-width: 13.4375rem;
+  border-radius: .625rem;
+  padding: .625rem;
+  
+}
+
+.title{
+  font-size: var(--fs-12-14);
+  line-height: 1.4;
+  text-transform: uppercase;
+  display: block;
+}
+
+
+.subtitle{
+  font-size: var(--fs-10-12);
+  display: block;
+  margin-left: auto;
+  text-align: right;
+  opacity: .6;
+}
+
+:global(.dark) {
+.wrapper{
+  background: var(--black-1b);
+  border: 1px solid var(--black-30);
+}
+
+  .title, .subtitle{
+    color: var(--white);
+  }
+}
