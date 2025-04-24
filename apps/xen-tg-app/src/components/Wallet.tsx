@@ -5,20 +5,10 @@ import { TXenUser } from '../types'
 
 type TWalletProps = {
   user: TXenUser | null
+  balance: number
 }
 
-// ToDo: remove mocked data
-const MOCKED_DATA = {
-  wallet: {
-    address: 'ridgerock.near',
-    balance: 230.26,
-  },
-}
-
-const Wallet: FC<TWalletProps> = ({ user }) => {
-  console.log(user)
-  const isLoggedIn = !!user?.nearAccountId
-
+const Wallet: FC<TWalletProps> = ({ user, balance }) => {
   const handleConnect = () => {
     console.log('connect')
   }
@@ -27,11 +17,12 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
     console.log('disconnect')
   }
 
+  const isLoggedIn = !!user?.nearAccountId
   return user && isLoggedIn ? (
     <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
       <div className="flex gap-3 text-[22px]/[150%] font-semibold">
         <img src={NEAR_ICON} alt="near" />
-        {MOCKED_DATA.wallet.balance}
+        {balance}
       </div>
       <div className="me-3 flex items-center gap-3 text-[22px]/[150%] font-normal">
         {user.nearAccountId}
