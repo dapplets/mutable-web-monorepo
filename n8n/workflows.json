@@ -15575,7 +15575,7 @@
             ],
             "value": {
               "capability_domain": "Near AI",
-              "capability_name": "={{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}",
+              "capability_name": "={{ $json.namespace }}/{{ $json.name }}",
               "username": "={{ $('Loop Over Items').item.json.username }}"
             }
           },
@@ -15737,7 +15737,7 @@
             "value": {
               "description": "={{ $json.description }}\n{{ $json.details.agent.welcome.description }}",
               "domain": "Near AI",
-              "name": "={{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}",
+              "name": "={{ $json.namespace }}/{{ $json.name }}",
               "title": "={{ $json.details.agent.welcome.title }}"
             }
           },
@@ -15867,7 +15867,7 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-04-24T13:43:11.000Z",
-    "versionId": "17689aa9-2070-4b96-bc7e-2d19d7b9fce6"
+    "updatedAt": "2025-04-24T14:05:28.000Z",
+    "versionId": "d923bbab-5f51-405d-aefc-4176c9a38a49"
   }
 ]
