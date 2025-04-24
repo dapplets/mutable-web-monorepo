@@ -15032,5 +15032,606 @@
     "triggerCount": 1,
     "updatedAt": "2025-04-24T08:08:35.000Z",
     "versionId": "6a061570-ea96-4d78-8bb0-364bc4b8ebe7"
+  },
+  {
+    "active": true,
+    "connections": {
+      "24h": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "HTTP Request",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "24h1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get favourite agents": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Not Empty?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Get favourite agents",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Not Empty?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres1",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres3": {
+        "main": [
+          [
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-04-24T12:40:40.820Z",
+    "id": "kxL7VE6UEY3sbt1V",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Sync Capabilities",
+    "nodes": [
+      {
+        "alwaysOutputData": true,
+        "id": "475ced12-bee5-4cab-922f-3ea197756452",
+        "name": "Get favourite agents",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "method": "POST",
+          "options": {
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "offset",
+                      "value": "={{ $pageCount * 20}}"
+                    }
+                  ]
+                },
+                "requestInterval": 1000
+              }
+            }
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "total",
+                "value": "20"
+              },
+              {
+                "name": "show_hidden",
+                "value": "false"
+              },
+              {
+                "name": "show_latest_version",
+                "value": "true"
+              },
+              {
+                "name": "starred_by",
+                "value": "={{ $json.near_account_id }}"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "sendQuery": true,
+          "url": "https://api.near.ai/v1/registry/list_entries"
+        },
+        "position": [
+          580,
+          880
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "13ae3d91-8e2d-4201-9af1-01779d76866e",
+        "name": "Postgres",
+        "parameters": {
+          "operation": "select",
+          "options": {
+            "outputColumns": [
+              "username",
+              "near_account_id"
+            ]
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "users",
+            "mode": "list",
+            "value": "users"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "near_account_id",
+                "condition": "IS NOT NULL"
+              }
+            ]
+          }
+        },
+        "position": [
+          140,
+          760
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "0d3dde95-88ec-471c-8c01-5889683475a3",
+        "name": "Loop Over Items",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          360,
+          760
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "cdf099f8-263a-4b1e-a094-93750dc83ca3",
+        "name": "Postgres1",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "username",
+              "capability_domain",
+              "capability_name"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_enabled",
+                "id": "is_enabled",
+                "removed": true,
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_deleted",
+                "id": "is_deleted",
+                "removed": true,
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_domain",
+                "id": "capability_domain",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_name",
+                "id": "capability_name",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "capability_domain": "Near AI",
+              "capability_name": "={{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}",
+              "username": "={{ $('Loop Over Items').item.json.username }}"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "user_capability",
+            "mode": "list",
+            "value": "user_capability"
+          }
+        },
+        "position": [
+          940,
+          900
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "05380c28-0c9a-42d2-b9b3-c5abbdca65d8",
+        "name": "HTTP Request",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "method": "POST",
+          "options": {
+            "pagination": {
+              "pagination": {
+                "parameters": {
+                  "parameters": [
+                    {
+                      "name": "offset",
+                      "value": "={{ $pageCount * 20}}"
+                    }
+                  ]
+                },
+                "requestInterval": 1000
+              }
+            }
+          },
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "total",
+                "value": "20"
+              },
+              {
+                "name": "show_hidden",
+                "value": "false"
+              },
+              {
+                "name": "show_latest_version",
+                "value": "true"
+              }
+            ]
+          },
+          "sendHeaders": true,
+          "sendQuery": true,
+          "url": "https://api.near.ai/v1/registry/list_entries"
+        },
+        "position": [
+          140,
+          520
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "e1457158-0698-45cd-a2eb-071c6812aacc",
+        "name": "24h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 3
+              }
+            ]
+          }
+        },
+        "position": [
+          -100,
+          520
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "4282035c-2a35-47fc-af35-13a046dab8a7",
+        "name": "Postgres3",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "domain",
+              "name"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "domain",
+                "id": "domain",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "name",
+                "id": "name",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "title",
+                "id": "title",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "description",
+                "id": "description",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "description": "={{ $json.description }}\n{{ $json.details.agent.welcome.description }}",
+              "domain": "Near AI",
+              "name": "={{ $json.namespace }}/{{ $json.name }}/{{ $json.version }}",
+              "title": "={{ $json.details.agent.welcome.title }}"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "capability",
+            "mode": "list",
+            "value": "capability"
+          }
+        },
+        "position": [
+          360,
+          520
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "359c11ba-6065-45c5-9972-c3c79a8be59f",
+        "name": "Sticky Note",
+        "parameters": {
+          "content": "Import all NEAR AI agents",
+          "height": 200,
+          "width": 460
+        },
+        "position": [
+          80,
+          480
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "id": "308f0b77-1bf0-426d-bd60-f51911e6f7a8",
+        "name": "Sticky Note1",
+        "parameters": {
+          "content": "Import user favourite agents",
+          "height": 400,
+          "width": 1180
+        },
+        "position": [
+          80,
+          720
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "id": "e4856ec3-1203-4ca9-9af0-e3f7414d1d5f",
+        "name": "24h1",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 3
+              }
+            ]
+          }
+        },
+        "position": [
+          -100,
+          760
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "6bc50b5b-036b-4050-9e59-febebf1dce69",
+        "name": "Not Empty?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "c4878ef1-6b27-4e1a-ae19-12d765086d77",
+                "leftValue": "={{$json}}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "object"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          740,
+          880
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:24h": {
+        "recurrenceRules": [
+        ]
+      },
+      "node:24h1": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 2,
+    "updatedAt": "2025-04-24T13:43:11.000Z",
+    "versionId": "17689aa9-2070-4b96-bc7e-2d19d7b9fce6"
   }
 ]
