@@ -6723,6 +6723,17 @@
           ]
         ]
       },
+      "Get Variables": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Transfer NEAR",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "If": {
         "main": [
           [
@@ -6781,6 +6792,11 @@
               "index": 0,
               "node": "Create Thread1",
               "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Get Variables",
+              "type": "main"
             }
           ]
         ]
@@ -6792,6 +6808,24 @@
               "index": 0,
               "node": "Find suitable agent",
               "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Transfer NEAR": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "NotifySuccessReward",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "NotifyFailedReward",
+              "type": "main"
             }
           ]
         ]
@@ -7201,9 +7235,121 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "id": "bce91c09-2790-46de-bd2b-82083143e4f5",
+        "name": "Transfer NEAR",
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "amount": "={{ $json.usage_reward_amount }}",
+          "privateKey": "={{ $json.reward_account_private_key }}",
+          "recipientId": "={{ $('Split Out').item.json.agent_id.split('/')[0] }}",
+          "senderId": "={{ $json.reward_account_id }}"
+        },
+        "position": [
+          2940,
+          -380
+        ],
+        "type": "@dapplets/n8n-nodes-near-protocol.transfer",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "7575a708-27b0-4fe4-be32-9ab1899b044b",
+        "name": "Get Variables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key"
+        },
+        "position": [
+          2720,
+          -380
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "d368ea29-ee33-4157-84e9-c95a5f205893",
+        "name": "NotifySuccessReward",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": 789
+          },
+          "chatId": "-1002043984595",
+          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+        },
+        "position": [
+          3180,
+          -460
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "1cdd68b6-1a96-4657-a54f-ef91816c9161",
+        "name": "NotifyFailedReward",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": 789
+          },
+          "chatId": "-1002043984595",
+          "text": "=Cannot send reward transaction"
+        },
+        "position": [
+          3180,
+          -300
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "id": "a5a685ed-fbe2-4bb0-a202-51a105e940f1",
+        "name": "Sticky Note",
+        "parameters": {
+          "content": "## Reward users for NEAR AI agents usage",
+          "height": 340,
+          "width": 740
+        },
+        "position": [
+          2680,
+          -480
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
       }
     ],
     "pinData": {
+      "Begin": [
+        {
+          "json": {
+            "query": "improve tweet: holy fucking shit!",
+            "user-id": 159914533
+          }
+        }
+      ]
     },
     "settings": {
       "callerPolicy": "workflowsFromSameOwner",
@@ -7214,8 +7360,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-24T15:55:52.000Z",
-    "versionId": "a2a61705-bbf3-4762-adbf-07a42f2fc798"
+    "updatedAt": "2025-04-25T12:08:05.000Z",
+    "versionId": "d4ca5bb8-0ef0-4795-a96f-279731dd073f"
   },
   {
     "active": false,
