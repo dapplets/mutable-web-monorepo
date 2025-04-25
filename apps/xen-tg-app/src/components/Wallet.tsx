@@ -83,7 +83,10 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
 
   const handleLogin = useMutation({
     mutationFn: mutationFn('login'),
-    onSuccess: (result) => window.Telegram.WebApp.openLink(result.url),
+    onSuccess: (result) => {
+      window.Telegram.WebApp.openLink(result.url)
+      setTimeout(() => window.Telegram.WebApp.close(), 1000)
+    },
   })
 
   return user && isLoggedIn ? (
