@@ -3,6 +3,7 @@ import LogOutIcon from '../assets/log-out'
 import NEAR_ICON from '../assets/near-gray.svg'
 import { Balance, TXenUser } from '../types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import Spinner from './Spinner'
 
 const queryFn =
   (shouldMakeRequest: boolean, name: string, params?: { [key: string]: string }) => async () => {
@@ -30,7 +31,7 @@ const queryFn =
     return data.result
   }
 
-const mutationFn = async () => {
+const mutationFn = (name: string) => async () => {
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
@@ -42,7 +43,7 @@ const mutationFn = async () => {
     },
     body: JSON.stringify({
       jsonrpc: '2.0',
-      method: 'logout',
+      method: name,
       params: {},
       id: 1,
     }),
@@ -73,16 +74,19 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
   })
 
   const handleLogout = useMutation({
-    mutationFn,
+    mutationFn: mutationFn('logout'),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user'] })
       queryClient.invalidateQueries({ queryKey: ['balance'] })
     },
   })
 
-  const handleConnect = () => {
-    console.log('connect')
-  }
+  const handleLogin = useMutation({
+    mutationFn: mutationFn('login'),
+    onSuccess: (result) => {
+      window.location.href = result.url
+    },
+  })
 
   return user && isLoggedIn ? (
     <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
@@ -104,10 +108,10 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
     <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4">
       <div className="text-[18px]/[150%] font-semibold">No wallet connected</div>
       <button
-        className="flex cursor-pointer flex-nowrap rounded-xl bg-(--color-my-primary) px-8 py-2 text-(--color-opposite-text) dark:bg-[#f8f9ff] dark:text-(--color-opposite-text)"
-        onClick={handleConnect}
+        className="flex w-[118px] cursor-pointer flex-nowrap items-center justify-center rounded-xl bg-(--color-my-primary) py-2 text-(--color-opposite-text) dark:bg-[#f8f9ff] dark:text-(--color-opposite-text)"
+        onClick={() => handleLogin.mutate()}
       >
-        Connect
+        {handleLogin.isPending || handleLogin.isSuccess ? <Spinner /> : 'Connect'}
       </button>
     </div>
   )
