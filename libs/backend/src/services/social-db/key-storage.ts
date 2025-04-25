@@ -1,5 +1,6 @@
 import { KeyPair, keyStores } from 'near-api-js'
 import { LocalDbService } from '../local-db/local-db.service'
+import { KeyPairString } from 'near-api-js/lib/utils'
 
 const LOCAL_STORAGE_KEY_PREFIX = 'near-api-js:keystore:'
 
@@ -28,7 +29,7 @@ export class KeyStorage extends keyStores.KeyStore {
       return null as any as KeyPair
     }
 
-    return KeyPair.fromString(result)
+    return KeyPair.fromString(result as KeyPairString)
   }
 
   async removeKey(networkId: string, accountId: string): Promise<void> {

@@ -6,3 +6,4 @@ packages:
   - website
 ignoredBuiltDependencies:
   - '@nestjs/core'
+  - esbuild
