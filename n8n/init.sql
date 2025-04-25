@@ -8,6 +8,7 @@ CREATE SCHEMA jobs;
 CREATE SCHEMA "near-ai";
 CREATE SCHEMA "personal-data";
 CREATE SCHEMA environment;
+CREATE SCHEMA "default";
 
 CREATE TABLE delivered.reddits (
     id integer NOT NULL,
@@ -181,6 +182,50 @@ about	I’m XEN - your personal assistant, here to help you organize your life, 
 ALTER TABLE ONLY environment.variables
     ADD CONSTRAINT variables_pk PRIMARY KEY (type);
 
+CREATE TABLE "default".capability (
+    domain character varying NOT NULL,
+    name character varying NOT NULL,
+    title character varying,
+    description character varying
+);
+
+CREATE TABLE "default".user_capability (
+    username character varying NOT NULL,
+    is_enabled boolean DEFAULT true NOT NULL,
+    is_deleted boolean DEFAULT false NOT NULL,
+    capability_domain character varying NOT NULL,
+    capability_name character varying NOT NULL
+);
+
+CREATE TABLE "default".warning (
+    id uuid NOT NULL,
+    username character varying NOT NULL,
+    title character varying,
+    description character varying,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    is_deleted boolean DEFAULT false NOT NULL,
+    hash character varying NOT NULL
+);
+
+CREATE TABLE "default".transfer (
+    id integer NOT NULL,
+    recipient_account_id character varying NOT NULL,
+    amount character varying NOT NULL,
+    tx_hash character varying NOT NULL,
+    notes character varying,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+CREATE SEQUENCE "default".transfer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE "default".transfer_id_seq OWNED BY "default".transfer.id;
+
 ALTER TABLE ONLY delivered.reddits ALTER COLUMN id SET DEFAULT nextval('delivered.reddits_id_seq'::regclass);
 ALTER TABLE ONLY feedback.feedback ALTER COLUMN id SET DEFAULT nextval('feedback.feedback_id_seq'::regclass);
 ALTER TABLE ONLY jobs.reminders ALTER COLUMN id SET DEFAULT nextval('jobs.reminders_id_seq'::regclass);
@@ -188,6 +233,7 @@ ALTER TABLE ONLY jobs.subscriptions ALTER COLUMN id SET DEFAULT nextval('jobs.su
 ALTER TABLE ONLY jobs.tasks ALTER COLUMN id SET DEFAULT nextval('jobs.tasks_id_seq'::regclass);
 ALTER TABLE ONLY "near-ai".available ALTER COLUMN id SET DEFAULT nextval('"near-ai".available_id_seq'::regclass);
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+ALTER TABLE ONLY "default".transfer ALTER COLUMN id SET DEFAULT nextval('"default".transfer_id_seq'::regclass);
 
 SELECT pg_catalog.setval('delivered.reddits_id_seq', 4, true);
 SELECT pg_catalog.setval('feedback.feedback_id_seq', 7, true);
@@ -198,6 +244,7 @@ SELECT pg_catalog.setval('"near-ai".available_forks_seq', 1, false);
 SELECT pg_catalog.setval('"near-ai".available_id_seq', 1, false);
 SELECT pg_catalog.setval('"near-ai".available_stars_seq', 1, false);
 SELECT pg_catalog.setval('public.users_id_seq', 1, false);
+SELECT pg_catalog.setval('"default".transfer_id_seq', 1, false);
 
 ALTER TABLE ONLY delivered.reddits
     ADD CONSTRAINT reddits_pk PRIMARY KEY (id);
@@ -219,3 +266,17 @@ ALTER TABLE ONLY "near-ai".available
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY "default".capability
+    ADD CONSTRAINT capability_unique UNIQUE (domain, name);
+
+ALTER TABLE ONLY "default".user_capability
+    ADD CONSTRAINT user_capability_unique UNIQUE (username, capability_domain, capability_name);
+
+ALTER TABLE ONLY "default".warning
+    ADD CONSTRAINT warning_pk PRIMARY KEY (id);
+
+ALTER TABLE ONLY "default".transfer
+    ADD CONSTRAINT reward_transaction_pk PRIMARY KEY (id);
+
+CREATE UNIQUE INDEX capability_domain_idx ON "default".capability USING btree (domain, name);

@@ -169,7 +169,7 @@ export const Header: FC<HeaderProps> = ({ setModalOpen }) => {
       <Button
         onClick={() => setModalOpen(true)}
         classNames={styles.mvmButton}
-        text='MWM'
+        text='manifest'
         isPrimary
       />
 
