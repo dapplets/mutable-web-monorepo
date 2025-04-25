@@ -50,10 +50,6 @@ const Memories = () => {
     console.log('delete all')
   }
 
-  const handleDeleteMemory = (id: string) => {
-    console.log('delete memory', id)
-  }
-
   return (
     <Layout>
       <Header />
@@ -67,13 +63,7 @@ const Memories = () => {
             Clear all
           </button>
         </div>
-        {memories?.items.map((memory) => (
-          <Memory
-            key={memory.data}
-            memory={memory}
-            onDisconnect={() => handleDeleteMemory(memory.data)}
-          />
-        ))}
+        {memories?.items.map((memory) => <Memory key={memory.data} memory={memory} />)}
       </div>
     </Layout>
   )
