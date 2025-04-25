@@ -33,7 +33,7 @@ export const getStartedLinks = [
 export const Examples = [
   {
     title:'Xen/Aigency',
-    description:'Xen/Aigency\u00A0- is\u00A0your private\u00A0AI assistant that uses your custom set of\u00A0agents for inference.\nXen uses Mutable Web to\u00A0capture user context and render agentic output back into the web page, extending its\u00A0UX on\u00A0the fly.',
+    description:'Xen/Aigency\u00A0- is\u00A0your private\u00A0AI assistant that uses your custom set of\u00A0agents for inference.\n\nXen uses Mutable Web to\u00A0capture user context and render agentic output back into the web page, extending its\u00A0UX on\u00A0the fly.',
     labelBottom:{
       label:'Embeds agentic output',
       subLabel:'on the fly'

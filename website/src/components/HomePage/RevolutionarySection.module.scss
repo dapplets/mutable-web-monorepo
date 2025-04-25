@@ -37,6 +37,8 @@
     backdrop-filter: blur(1.25rem);
 }
 
+
+
 .text {
     font-size: var(--fs-14-16);
     line-height: 1.49;
@@ -45,9 +47,20 @@
     margin-top: .5rem;
 
     &--hilight {
-        color: var(--black-22);
         opacity: 1;
         margin-top: 1.5rem;
+    }
+}
+
+:global(.dark){
+    .article{
+         background-color: var(--black-1b);
+    }
+
+    .text--bold{
+        opacity: 1 !important;
+        color: var(--white);
+        opacity: 1;
     }
 }
 
