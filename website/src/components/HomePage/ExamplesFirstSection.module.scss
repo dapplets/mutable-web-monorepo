@@ -17,7 +17,7 @@
 .examplesContainer {
   display: flex;
   flex-direction: column;
-  gap: 5rem;
+  gap: 6.875rem;
   margin-top: 2.5rem;
   position: relative;
 }
@@ -32,18 +32,18 @@
   }
 
   &--bottom-1 {
-    right: 15em;
-    top: -1em;
+    right: 20em;
+    top: -4em;
   }
 
   &--top-2 {
-    left: 14em;
-    bottom: 17em;
+    left: 20em;
+    bottom: 23em;
   }
 
   &--bottom-2 {
     left: 20em;
-    bottom: 1em;
+    bottom: 5em;
   }
 }
 
@@ -52,11 +52,12 @@
 
   &--bottom-1 {
     left: 10em;
-    bottom: -7em;
+    bottom: -3em;
   }
 
   &--top-1 {
-    bottom: 17em;
+    width: 60em;
+    bottom: 3.5em;
     left: 7em;
   }
 
@@ -66,19 +67,27 @@
   }
 
   &--top-2 {
-    top: 1em;
-    right: 10em;
+    top: -12em;
+    right: 13em;
   }
 }
 
 .exampleBlock {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 3.75rem;
 
   &.reverse {
     flex-direction: row-reverse;
+
+    .content {
+      margin-top: 0;
+    }
+  }
+
+  .content {
+    margin-top: 1.5rem;
   }
 }
 
@@ -127,41 +136,9 @@
 
 
 
-@media (max-width: 1185px) {
 
-  .label {
-    &--top-1 {
-      right: 15em;
-      top: 17em;
-    }
 
-    &--top-2 {
-      left: 14em;
-      bottom: 15em;
-    }
-
-    &--bottom-2 {
-      left: 15em;
-      bottom: 0;
-    }
-  }
-
-  .labelImg {
-    &--bottom-1 {
-      bottom: -8em;
-    }
-
-    &--top-1 {
-      bottom: 15em;
-    }
-
-    &--bottom-2 {
-      top: 7em;
-    }
-  }
-}
-
-@media (max-width: 950px) {
+@media (max-width: 69.6875rem) {
   .labelImg {
     display: none;
   }
