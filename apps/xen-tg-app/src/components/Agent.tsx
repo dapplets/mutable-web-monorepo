@@ -3,6 +3,7 @@ import { FC } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TAgent } from '../types'
 import Spinner from './Spinner'
+import { API_URL } from '@/env'
 
 const mutationFn = async ({
   methodName,
@@ -14,7 +15,7 @@ const mutationFn = async ({
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
-  const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,

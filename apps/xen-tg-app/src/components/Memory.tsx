@@ -4,12 +4,13 @@ import { FC } from 'react'
 import Trash from '../assets/trash'
 import { TMemory } from '../types'
 import Spinner from './Spinner'
+import { API_URL } from '@/env'
 
 const mutationFn = (name: string, params?: { [key: string]: string | number }) => async () => {
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
-  const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,

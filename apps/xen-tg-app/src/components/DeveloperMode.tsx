@@ -1,4 +1,5 @@
 import { Switch } from '@/components/ui/switch'
+import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const queryFn =
@@ -12,7 +13,7 @@ const queryFn =
     if (!tgDataStr) {
       throw new Error('Telegram is not available')
     }
-    const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
@@ -36,7 +37,7 @@ const mutationFn = async (isDevModeTurnedOn: boolean) => {
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
-  const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,

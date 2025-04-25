@@ -4,6 +4,7 @@ import Header from './Header'
 import Layout from './Layout'
 import Memory from './Memory'
 import Spinner from './Spinner'
+import { API_URL } from '@/env'
 
 const queryFn =
   (
@@ -16,7 +17,7 @@ const queryFn =
     if (!tgDataStr) {
       throw new Error('Telegram is not available')
     }
-    const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
@@ -40,7 +41,7 @@ const mutationFn = (name: string, params?: { [key: string]: string | number }) =
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
-  const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+  const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
