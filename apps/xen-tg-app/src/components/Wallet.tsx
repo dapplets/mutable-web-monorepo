@@ -1,26 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { FC } from 'react'
 import LogOutIcon from '../assets/log-out'
 import NEAR_ICON from '../assets/near-gray.svg'
 import { Balance, TXenUser } from '../types'
 import Spinner from './Spinner'
 
 const queryFn =
-  (shouldMakeRequest: boolean, name: string, params?: { [key: string]: string }) => async () => {
-    if (!shouldMakeRequest) return
-    if (!window.Telegram.WebApp.initData) {
+  (tgDataStr: string, tgDataObj: WebAppInitData, name: string, isLoggedIn?: boolean) =>
+  async () => {
+    if (isLoggedIn === false) return
+    if (!tgDataStr) {
       throw new Error('Telegram is not available')
     }
     const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         jsonrpc: '2.0',
         method: name,
-        params: params ?? {},
+        params: {},
         id: 1,
       }),
     })
@@ -55,22 +55,20 @@ const mutationFn = (name: string) => async () => {
   return data.result
 }
 
-type TWalletProps = {
-  user: TXenUser | null
-}
-
-const Wallet: FC<TWalletProps> = ({ user }) => {
+const Wallet = () => {
   const queryClient = useQueryClient()
+  const tgDataStr = window.Telegram.WebApp.initData
+  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
+  const { isPending: isPendingUser, data: user } = useQuery<TXenUser>({
+    queryKey: ['user', tgDataStr, tgDataObj],
+    queryFn: queryFn(tgDataStr, tgDataObj, 'getCurrentUser'),
+  })
+
   const isLoggedIn = !!user?.nearAccountId
 
-  const {
-    // isPending: isPendingBalance,
-    // isError: isErrorBalance,
-    data: balance,
-    // error: errorBalance,
-  } = useQuery<Balance>({
-    queryKey: ['balance', isLoggedIn],
-    queryFn: queryFn(isLoggedIn, 'getBalance'),
+  const { data: balance } = useQuery<Balance>({
+    queryKey: ['balance', tgDataStr, tgDataObj, isLoggedIn],
+    queryFn: queryFn(tgDataStr, tgDataObj, 'getBalance', isLoggedIn),
   })
 
   const handleLogout = useMutation({
@@ -106,14 +104,22 @@ const Wallet: FC<TWalletProps> = ({ user }) => {
       </div>
     </div>
   ) : (
-    <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4">
-      <div className="text-[18px]/[150%] font-semibold">No wallet connected</div>
-      <button
-        className="flex w-[118px] cursor-pointer flex-nowrap items-center justify-center rounded-xl bg-(--color-my-primary) py-2 text-(--color-opposite-text) dark:bg-[#f8f9ff] dark:text-(--color-opposite-text)"
-        onClick={() => handleLogin.mutate()}
-      >
-        {handleLogin.isPending || handleLogin.isSuccess ? <Spinner /> : 'Connect'}
-      </button>
+    <div
+      className={`z-1 flex w-full items-center ${isPendingUser ? 'justify-center' : 'justify-between'} gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4`}
+    >
+      {isPendingUser ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="text-[18px]/[150%] font-semibold">No wallet connected</div>
+          <button
+            className="flex w-[118px] cursor-pointer flex-nowrap items-center justify-center rounded-xl bg-(--color-my-primary) py-2 text-(--color-opposite-text) dark:bg-[#f8f9ff] dark:text-(--color-opposite-text)"
+            onClick={() => handleLogin.mutate()}
+          >
+            {handleLogin.isPending || handleLogin.isSuccess ? <Spinner /> : 'Connect'}
+          </button>
+        </>
+      )}
     </div>
   )
 }

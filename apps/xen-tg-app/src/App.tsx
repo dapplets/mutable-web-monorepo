@@ -7,7 +7,7 @@ import Layout from './components/Layout'
 import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
-import { TMemory, TXenUser } from './types'
+import { TMemory } from './types'
 
 const queryFn =
   (
@@ -43,15 +43,6 @@ const queryFn =
 function App() {
   const tgDataStr = window.Telegram.WebApp.initData
   const tgDataObj = window.Telegram.WebApp.initDataUnsafe
-  const {
-    isPending: isPendingUser,
-    isError: isErrorUser,
-    data: user,
-    error: errorUser,
-  } = useQuery<TXenUser>({
-    queryKey: ['user', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getCurrentUser'),
-  })
   const { data: memories } = useQuery<{ items: TMemory[]; total: number }>({
     queryKey: ['memories', tgDataStr, tgDataObj],
     queryFn: queryFn(tgDataStr, tgDataObj, 'getMemories', {
@@ -59,14 +50,6 @@ function App() {
       limit: 10,
     }),
   })
-
-  if (isPendingUser) {
-    return <span>Loading...</span>
-  }
-
-  if (isErrorUser) {
-    return <span>Error: {errorUser.message}</span>
-  }
 
   return (
     <Layout>
@@ -76,7 +59,7 @@ function App() {
       <div className="z-1 m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full select-none">
         <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
       </div>
-      <Wallet user={user} />
+      <Wallet />
       <Capabilities />
       <DeveloperMode />
       <Warnings />
