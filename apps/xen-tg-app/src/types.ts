@@ -39,6 +39,7 @@ export type TWarning = {
 }
 
 export type TMemory = {
-  text: string
-  timestamp: string
+  id: string
+  data: string
+  datetime: string
 }

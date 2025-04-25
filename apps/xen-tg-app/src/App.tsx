@@ -7,14 +7,14 @@ import Layout from './components/Layout'
 import ThemeButton from './components/ThemeButton'
 import Wallet from './components/Wallet'
 import Warnings from './components/Warnings'
-import { TXenUser } from './types'
+import { TMemory, TXenUser } from './types'
 
 const queryFn =
   (
     tgDataStr: string,
     tgDataObj: WebAppInitData,
     name: string,
-    params?: { [key: string]: string }
+    params?: { [key: string]: string | number }
   ) =>
   async () => {
     if (!tgDataStr) {
@@ -52,6 +52,13 @@ function App() {
     queryKey: ['user', tgDataStr, tgDataObj],
     queryFn: queryFn(tgDataStr, tgDataObj, 'getCurrentUser'),
   })
+  const { data: memories } = useQuery<{ items: TMemory[]; total: number }>({
+    queryKey: ['memories', tgDataStr, tgDataObj],
+    queryFn: queryFn(tgDataStr, tgDataObj, 'getMemories', {
+      offset: 0,
+      limit: 10,
+    }),
+  })
 
   if (isPendingUser) {
     return <span>Loading...</span>
@@ -74,7 +81,7 @@ function App() {
       <DeveloperMode />
       <Warnings user={user} />
       <div className="fixed top-[calc(100vh-94px)] left-1/2 z-1 -translate-x-1/2">
-        <FooterMenu memoriesNumber={3} />
+        <FooterMenu memoriesNumber={memories?.total} />
       </div>
     </Layout>
   )
