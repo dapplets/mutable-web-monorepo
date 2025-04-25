@@ -13198,7 +13198,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "={{ $json.reward_account_id }} rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
         },
         "position": [
           2040,
@@ -13312,8 +13312,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-25T12:01:28.000Z",
-    "versionId": "b5c1e6fa-5c6e-44c2-b23e-0bba00143d7f"
+    "updatedAt": "2025-04-25T12:53:37.000Z",
+    "versionId": "812708a2-199b-4aea-8117-978c51263451"
   },
   {
     "active": false,
