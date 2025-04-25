@@ -16465,7 +16465,7 @@
           "options": {
             "queryReplacement": "={{ $json.authToken.user.username }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
           },
-          "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1\norder by created_at desc\nlimit $2\noffset $3"
+          "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false\norder by created_at desc\nlimit $2\noffset $3"
         },
         "position": [
           2100,
@@ -16535,7 +16535,7 @@
           "options": {
             "queryReplacement": "={{ $json.authToken.user.username }}"
           },
-          "query": "select count(*) as count\nfrom \"default\".\"warning\"\nwhere username = $1"
+          "query": "select count(*) as count\nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false"
         },
         "position": [
           2100,
@@ -16587,8 +16587,80 @@
         "id": "3cea6672-0eb5-43b1-8463-b872f4a41930",
         "name": "Postgres8",
         "parameters": {
-          "deleteCommand": "delete",
-          "operation": "deleteTable",
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "username"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "title",
+                "id": "title",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "description",
+                "id": "description",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "created_at",
+                "id": "created_at",
+                "removed": true,
+                "required": false,
+                "type": "dateTime"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_deleted",
+                "id": "is_deleted",
+                "required": false,
+                "type": "boolean"
+              }
+            ],
+            "value": {
+              "is_deleted": true,
+              "username": "={{ $json.authToken.user.username }}"
+            }
+          },
+          "operation": "update",
           "options": {
           },
           "schema": {
@@ -16602,14 +16674,6 @@
             "cachedResultName": "warning",
             "mode": "list",
             "value": "warning"
-          },
-          "where": {
-            "values": [
-              {
-                "column": "username",
-                "value": "={{ $json.authToken.user.username }}"
-              }
-            ]
           }
         },
         "position": [
@@ -17170,8 +17234,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-25T12:26:48.000Z",
-    "versionId": "1dfe4d9d-b424-4876-8e5d-e32e92fbeffb"
+    "updatedAt": "2025-04-25T13:45:05.000Z",
+    "versionId": "0e9317de-ac97-4f60-b8dc-d8d1a1402293"
   },
   {
     "active": true,
