@@ -121,6 +121,7 @@
   font-size: var(--fs-14-16);
   line-height: 1.49;
   white-space: pre-line;
+  opacity: 0.7;
 }
 
 
@@ -160,11 +161,11 @@
 }
 
 @media (max-width: 950px) {
-  .labelImg{
+  .labelImg {
     display: none;
   }
-  
-  .label{
+
+  .label {
     display: none;
   }
 }
@@ -188,11 +189,11 @@
     }
   }
 
-  .content{
+  .content {
     max-width: none;
   }
 
-  .imageContainer{
+  .imageContainer {
     max-width: none;
   }
 }

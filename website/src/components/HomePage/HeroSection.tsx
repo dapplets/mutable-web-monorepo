@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Button } from '../Button';
 import styles from './HeroSection.module.scss';
 import SupportedBySection from './SupportedBySection';
-import { HomeTitle } from '@/constants/constantsText';
 import { ThemeImage } from '../ThemeImage';
 import cn from 'classnames';
 import gsap from 'gsap';
@@ -79,7 +78,9 @@ const HeroSection = () => {
           The Home <br />
           of Mutable Web
         </h1>
-        <p className={styles.subtitle}>{HomeTitle.subtitle}</p>
+        <p className={styles.subtitle}>Dapplets Project&nbsp;&mdash; open source platform that enables small applications (dapplets)
+          to&nbsp;run on&nbsp;top of&nbsp;any existing website, extending its functionality
+          and adding new services to&nbsp;the website on&nbsp;the fly.</p>
       </header>
       <div className={styles.buttons} ref={buttonsContainerRef}>
         <Button

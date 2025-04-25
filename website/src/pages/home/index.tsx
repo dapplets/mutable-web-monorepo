@@ -6,6 +6,7 @@ import ExamplesSection from '@/components/HomePage/ExamplesSection';
 import FeaturesSection from '@/components/HomePage/FeaturesSection';
 import GetStartedSection from '@/components/HomePage/GetStartedSection';
 import ExamplesFirstSection from '@/components/HomePage/ExamplesFirstSection';
+import RevolutionarySection from '@/components/HomePage/RevolutionarySection';
 
 const Home = () => {
   return (
@@ -15,6 +16,7 @@ const Home = () => {
     >
       <div className={styles.wrapper}>
         <HeroSection />
+        <RevolutionarySection/>
         <ExamplesFirstSection/>
         <ExamplesSection />
         <HowItWorksSection />
