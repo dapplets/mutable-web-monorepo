@@ -34,8 +34,9 @@ export type TAgent = {
 }
 
 export type TWarning = {
-  text: string
-  timestamp: string
+  title: string
+  description: string
+  createdAt: string
 }
 
 export type TMemory = {
