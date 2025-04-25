@@ -2463,7 +2463,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $('Postgres5').item.json.username }}"
+            "value": "={{ $('Postgres5').item.json.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -3184,7 +3184,7 @@
           "operation": "executeQuery",
           "options": {
           },
-          "query": "CREATE TABLE \"personal-data\".{{ $json.username }} (\n    id SERIAL PRIMARY KEY,\n    data VARCHAR NOT NULL,\n    datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n"
+          "query": "CREATE TABLE \"personal-data\".{{ $json.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    data VARCHAR NOT NULL,\n    datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n"
         },
         "position": [
           2360,
@@ -3416,7 +3416,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
+          "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
           2160,
@@ -3441,7 +3441,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
+          "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
           3020,
@@ -6029,7 +6029,7 @@
                 "id": "e6cfc844-74ee-41b3-87a7-796c06431648",
                 "name": "value",
                 "type": "string",
-                "value": "=Hi @{{ $('Telegram Trigger').item.json.message.from.username }}, great to meet you! {{ $json.value }}"
+                "value": "=Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! {{ $json.value }}"
               }
             ]
           },
@@ -6607,7 +6607,7 @@
             "values": [
               {
                 "column": "username",
-                "value": "={{ $('Telegram Trigger').item.json.message.from.username }}"
+                "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
               },
               {
                 "column": "is_enabled",
@@ -7348,7 +7348,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.username }}"
+            "queryReplacement": "={{ $json.username.toLowerCase() }}"
           },
           "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\n  and is_enabled = true\norder by uc.capability_domain asc, uc.capability_name asc"
         },
@@ -7553,7 +7553,7 @@
             ],
             "value": {
               "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
-              "notes": "=NEAR AI agent {{ $('Split Out').item.json.agent_id }} used by {{ $('Postgres').item.json.username }} logged in as {{ $('Postgres').item.json.near_account_id }}",
+              "notes": "=NEAR AI agent {{ $('Split Out').item.json.agent_id }} used by {{ $('Postgres').item.json.username.toLowerCase() }} logged in as {{ $('Postgres').item.json.near_account_id }}",
               "recipient_account_id": "={{ $('Split Out').item.json.agent_id.split('/')[0] }}",
               "tx_hash": "={{ $json.result.transaction_outcome.id }}"
             }
@@ -8966,7 +8966,7 @@
             ]
           },
           "promptType": "define",
-          "text": "=username: {{ $json.username }}\nid: {{ $json.data.id }}\n{{ $json.data.message }}"
+          "text": "=username: {{ $json.username.toLowerCase() }}\nid: {{ $json.data.id }}\n{{ $json.data.message }}"
         },
         "position": [
           820,
@@ -9044,7 +9044,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.username }}"
+            "value": "={{ $json.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -9120,7 +9120,7 @@
                 "id": "573d9c67-b67a-4484-a386-6a3dc2510f9b",
                 "name": "username",
                 "type": "string",
-                "value": "={{ $('Postgres').item.json.username }}"
+                "value": "={{ $('Postgres').item.json.username.toLowerCase() }}"
               }
             ]
           },
@@ -9144,7 +9144,7 @@
                 "id": "0b2b03fc-7341-4911-bdbb-d60576a90631",
                 "name": "output.username",
                 "type": "string",
-                "value": "={{ $json.output.username }}"
+                "value": "={{ $json.output.username.toLowerCase() }}"
               },
               {
                 "id": "5382f94a-3884-4e70-8007-0fd3dd197576",
@@ -9240,7 +9240,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.output.username }}"
+            "value": "={{ $json.output.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -9655,7 +9655,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.body.username }}"
+            "value": "={{ $json.body.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -9747,7 +9747,7 @@
               "isdone": false,
               "remindertime": "={{ $json.reminder.reminderTime }}",
               "userid": "={{ $('Extract Tasks').item.json.body.userid }}",
-              "username": "={{ $('Extract Tasks').item.json.body.username }}"
+              "username": "={{ $('Extract Tasks').item.json.body.username.toLowerCase() }}"
             }
           },
           "options": {
@@ -9861,7 +9861,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $('Extract Personal Data').item.json.body.username }}"
+            "value": "={{ $('Extract Personal Data').item.json.body.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -10035,7 +10035,7 @@
               "ispermanent": "={{ $json.output[0].isPermanent }}",
               "tasktime": "={{ $json.output[0].dueDate }}",
               "userid": "={{ $('Extract Tasks').item.json.body.userid }}",
-              "username": "={{ $('Extract Tasks').item.json.body.username }}"
+              "username": "={{ $('Extract Tasks').item.json.body.username.toLowerCase() }}"
             }
           },
           "options": {
@@ -10442,7 +10442,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.username }}"
+            "value": "={{ $json.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -10658,7 +10658,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.username }}"
+            "value": "={{ $json.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -10982,7 +10982,7 @@
         "parameters": {
           "sessionIdType": "customKey",
           "sessionKey": "={{ $('Postgres9').item.json.userid }}",
-          "tableName": "={{ $('Filter1').item.json.username }}"
+          "tableName": "={{ $('Filter1').item.json.username.toLowerCase() }}"
         },
         "position": [
           1420,
@@ -11325,7 +11325,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.body.username }}"
+            "value": "={{ $json.body.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -11388,7 +11388,7 @@
         "parameters": {
           "sessionIdType": "customKey",
           "sessionKey": "={{ $('Delivery').item.json.body.userid }}",
-          "tableName": "={{ $('Delivery').item.json.body.username }}"
+          "tableName": "={{ $('Delivery').item.json.body.username.toLowerCase() }}"
         },
         "position": [
           980,
@@ -11450,7 +11450,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $('Delivery').item.json.body.username }}"
+            "value": "={{ $('Delivery').item.json.body.username.toLowerCase() }}"
           },
           "where": {
             "values": [
@@ -11499,7 +11499,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $('Delivery').item.json.body.username }}"
+            "value": "={{ $('Delivery').item.json.body.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -12195,7 +12195,7 @@
               },
               {
                 "name": "username",
-                "value": "={{ $('Loop Over Items').item.json.username }}"
+                "value": "={{ $('Loop Over Items').item.json.username.toLowerCase() }}"
               },
               {
                 "name": "user-input",
@@ -12265,7 +12265,7 @@
           "table": {
             "__rl": true,
             "mode": "name",
-            "value": "={{ $json.username }}"
+            "value": "={{ $json.username.toLowerCase() }}"
           }
         },
         "position": [
@@ -13408,7 +13408,7 @@
             "values": [
               {
                 "column": "username",
-                "value": "={{ $('ExtractExecutorInfo').item.json.username }}"
+                "value": "={{ $('ExtractExecutorInfo').item.json.username.toLowerCase() }}"
               }
             ]
           }
@@ -13579,7 +13579,7 @@
         "name": "HashErrorUsername",
         "parameters": {
           "type": "SHA256",
-          "value": "={{ $('HashError').item.json.data }} {{ $('ExtractExecutorInfo').item.json.username }}"
+          "value": "={{ $('HashError').item.json.data }} {{ $('ExtractExecutorInfo').item.json.username.toLowerCase() }}"
         },
         "position": [
           260,
@@ -13774,7 +13774,7 @@
               "hash": "={{ $('HashError').item.json.data }}",
               "id": "={{ $('UserErrorId').item.json.user_error_id }}",
               "title": "={{ $('Error Trigger').item.json.execution.error.message }}",
-              "username": "={{ $('ExtractExecutorInfo').item.json.username }}"
+              "username": "={{ $('ExtractExecutorInfo').item.json.username.toLowerCase() }}"
             }
           },
           "operation": "upsert",
@@ -13842,7 +13842,7 @@
               },
               {
                 "id": "dd3fc30e-d481-4e59-a883-dc95da572126",
-                "leftValue": "={{ $json.username }}",
+                "leftValue": "={{ $json.username.toLowerCase() }}",
                 "operator": {
                   "operation": "exists",
                   "singleValue": true,
@@ -15928,7 +15928,7 @@
                 "id": "9ade9853-8dfa-4f42-bc18-edac86ce7f31",
                 "name": "result.username",
                 "type": "string",
-                "value": "={{ $json.username }}"
+                "value": "={{ $json.username.toLowerCase() }}"
               },
               {
                 "id": "6de2501a-ce6c-4e13-a085-fa93ea0c7175",
@@ -16727,7 +16727,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.authToken.user.username }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
           },
           "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\norder by uc.capability_domain asc, uc.capability_name asc\nlimit $2\noffset $3"
         },
@@ -16797,7 +16797,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.authToken.user.username }}"
+            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }}"
           },
           "query": "select count(*) as count\nfrom \"default\".user_capability\nwhere username = $1 and is_deleted = false"
         },
@@ -16915,7 +16915,7 @@
               "capability_domain": "={{ $json.body.params.domain }}",
               "capability_name": "={{ $json.body.params.name }}",
               "is_deleted": true,
-              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username }}"
+              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
           },
           "operation": "update",
@@ -17016,7 +17016,7 @@
               "capability_domain": "={{ $json.body.params.domain }}",
               "capability_name": "={{ $json.body.params.name }}",
               "is_enabled": true,
-              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username }}"
+              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
           },
           "operation": "update",
@@ -17117,7 +17117,7 @@
               "capability_domain": "={{ $json.body.params.domain }}",
               "capability_name": "={{ $json.body.params.name }}",
               "is_enabled": false,
-              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username }}"
+              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
           },
           "operation": "update",
@@ -17157,7 +17157,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.authToken.user.username }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
           },
           "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false\norder by created_at desc\nlimit $2\noffset $3"
         },
@@ -17227,7 +17227,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.authToken.user.username }}"
+            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }}"
           },
           "query": "select count(*) as count\nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false"
         },
@@ -17351,7 +17351,7 @@
             ],
             "value": {
               "is_deleted": true,
-              "username": "={{ $json.authToken.user.username }}"
+              "username": "={{ $json.authToken.user.username.toLowerCase() }}"
             }
           },
           "operation": "update",
@@ -17508,7 +17508,7 @@
               "near_account_id": "={{ $('Sign Message').item.json.query.account_id }}",
               "nearai_token": "={{ $json.toJsonString() }}",
               "private_key": "={{ $('Generate Key Pair').item.json.privateKey }}",
-              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username }}"
+              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
           },
           "operation": "upsert",
@@ -17792,7 +17792,7 @@
             "value": {
               "capability_domain": "Near AI",
               "capability_name": "={{ $json.namespace }}/{{ $json.name }}",
-              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username }}"
+              "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
           },
           "operation": "upsert",
@@ -18238,7 +18238,7 @@
             "value": {
               "capability_domain": "Near AI",
               "capability_name": "={{ $json.namespace }}/{{ $json.name }}",
-              "username": "={{ $('Loop Over Items').item.json.username }}"
+              "username": "={{ $('Loop Over Items').item.json.username.toLowerCase() }}"
             }
           },
           "operation": "upsert",
