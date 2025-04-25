@@ -1,8 +1,8 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TMemory } from '../types'
 import Header from './Header'
 import Layout from './Layout'
 import Memory from './Memory'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Spinner from './Spinner'
 
 const queryFn =

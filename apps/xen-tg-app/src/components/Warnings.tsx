@@ -1,7 +1,7 @@
-import Trash from '../assets/trash'
-import { TWarning } from '../types'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatDistance } from 'date-fns'
+import Trash from '../assets/trash'
+import { TWarning } from '../types'
 import Spinner from './Spinner'
 
 const queryFn =

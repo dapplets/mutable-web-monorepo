@@ -1,8 +1,8 @@
 import SyncIcon from '@/assets/sync'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import ExternalLinkIcon from '../assets/external-link'
 import { TAgent } from '../types'
 import Agent from './Agent'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const queryFn =
   (

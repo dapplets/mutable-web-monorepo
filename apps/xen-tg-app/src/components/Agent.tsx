@@ -1,8 +1,8 @@
 import { FC } from 'react'
 // import UnlinkOutlineIcon from '../assets/unlink-outline'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TAgent } from '../types'
 import Spinner from './Spinner'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 const mutationFn = async ({
   methodName,
