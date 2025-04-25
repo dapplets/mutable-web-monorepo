@@ -16,14 +16,7 @@ const router = createBrowserRouter([
   },
   {
     path: 'memories',
-    element: (
-      <Memories
-        user={{
-          id: 1,
-          firstName: '',
-        }}
-      />
-    ),
+    element: <Memories />,
   },
 ])
 
