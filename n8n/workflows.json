@@ -16095,7 +16095,7 @@
               "entries": [
                 {
                   "name": "Location",
-                  "value": "https://t.me/dapplets_receiver_bot"
+                  "value": "https://t.me/dapplets_receiver_bot?startapp"
                 }
               ]
             },
@@ -16330,8 +16330,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-24T15:33:29.000Z",
-    "versionId": "85b3533e-29e0-4f55-bf4c-8bb75da923d3"
+    "updatedAt": "2025-04-25T09:58:23.000Z",
+    "versionId": "0623c781-dcde-401c-89f9-0f3859397115"
   },
   {
     "active": true,
