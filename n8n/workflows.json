@@ -12714,28 +12714,12 @@
   {
     "active": false,
     "connections": {
-      "Crypto": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Telegram13",
-              "type": "main"
-            },
-            {
-              "index": 0,
-              "node": "n8n",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Error Trigger": {
         "main": [
           [
             {
               "index": 0,
-              "node": "Crypto",
+              "node": "HashError",
               "type": "main"
             }
           ]
@@ -12746,7 +12730,7 @@
           [
             {
               "index": 0,
-              "node": "If",
+              "node": "IsThereUser",
               "type": "main"
             }
           ]
@@ -12763,6 +12747,17 @@
           ]
         ]
       },
+      "GetErrorCount": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "ShouldBeRewarded",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "GetUser": {
         "main": [
           [
@@ -12774,17 +12769,39 @@
           ]
         ]
       },
-      "If": {
+      "HashError": {
         "main": [
           [
             {
               "index": 0,
-              "node": "Postgres",
+              "node": "Telegram13",
               "type": "main"
             },
             {
               "index": 0,
-              "node": "GetUser",
+              "node": "n8n",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "HashErrorUsername": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "UserErrorId",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "IsErrorExist": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "IsNewUserError?",
               "type": "main"
             }
           ]
@@ -12801,9 +12818,36 @@
           ]
         ]
       },
-      "Postgres": {
+      "IsNewUserError?": {
         "main": [
           [
+            {
+              "index": 0,
+              "node": "UpsertUserError",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "IsThereUser": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "HashErrorUsername",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "ShouldBeRewarded": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetUser",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -12830,6 +12874,28 @@
           ]
         ]
       },
+      "UpsertUserError": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetErrorCount",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "UserErrorId": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "IsErrorExist",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "n8n": {
         "main": [
           [
@@ -12850,13 +12916,13 @@
     "name": "global-error-handler",
     "nodes": [
       {
-        "id": "e85d21ee-4002-4ca0-9a6d-6eb3885bab37",
+        "id": "59a83a8a-96db-488e-b26f-922245689c4e",
         "name": "Error Trigger",
         "parameters": {
         },
         "position": [
-          0,
-          200
+          -880,
+          580
         ],
         "type": "n8n-nodes-base.errorTrigger",
         "typeVersion": 1
@@ -12868,7 +12934,7 @@
             "name": "@yourxenbot"
           }
         },
-        "id": "96baa1b8-b3b8-4962-a672-dc0fd6d19ef0",
+        "id": "17d9b437-4358-4468-9856-a9332f0388d3",
         "name": "Telegram13",
         "parameters": {
           "additionalFields": {
@@ -12879,26 +12945,12 @@
           "text": "=Error #{{ $json.data.substring(0, 6) }}\n{{ $json.execution.error.message }}\n\nNode: {{ $json.execution.lastNodeExecuted }}\n\n```\n{{ $json.execution.error.stack }}\n```\n\nWorkflow: [{{ $json.workflow.name }}]({{ $json.execution.url }})"
         },
         "position": [
-          460,
-          -120
+          -440,
+          260
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
-      },
-      {
-        "id": "baebb711-a5db-4eaa-a4e0-e971b0a80899",
-        "name": "Crypto",
-        "parameters": {
-          "type": "SHA256",
-          "value": "={{ $json.execution.error.message }} {{ $json.execution.lastNodeExecuted }}"
-        },
-        "position": [
-          220,
-          200
-        ],
-        "type": "n8n-nodes-base.crypto",
-        "typeVersion": 1
       },
       {
         "credentials": {
@@ -12907,7 +12959,7 @@
             "name": "n8n account"
           }
         },
-        "id": "dc3f8270-b727-4b1d-a9f8-2e807ca00b68",
+        "id": "f91df85d-32cb-43ef-9253-f30e8b3d3c28",
         "name": "n8n",
         "onError": "continueErrorOutput",
         "parameters": {
@@ -12921,10 +12973,27 @@
           "resource": "execution"
         },
         "position": [
-          460,
-          200
+          -440,
+          580
         ],
         "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1
+      },
+      {
+        "id": "0d69bec2-8f13-4372-a6b8-6270f75fc009",
+        "name": "Transfer NEAR",
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "amount": "={{ $json.bug_reward_amount }}",
+          "privateKey": "={{ $json.reward_account_private_key }}",
+          "recipientId": "={{ $('GetUser').item.json.near_account_id }}",
+          "senderId": "={{ $json.reward_account_id }}"
+        },
+        "position": [
+          460,
+          1080
+        ],
+        "type": "@dapplets/n8n-nodes-near-protocol.transfer",
         "typeVersion": 1
       },
       {
@@ -12934,8 +13003,334 @@
             "name": "Postgres account"
           }
         },
-        "id": "95368be9-b90b-4c67-b6b9-3e5707400025",
-        "name": "Postgres",
+        "id": "627025f4-d846-4b35-ac28-d71330d52c79",
+        "name": "Get Variables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key"
+        },
+        "position": [
+          240,
+          1080
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "fc881c15-4eef-4d47-932b-3ba554bffc14",
+        "name": "GetUser",
+        "parameters": {
+          "limit": 1,
+          "operation": "select",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "users",
+            "mode": "list",
+            "value": "users"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "username",
+                "value": "={{ $('ExtractExecutorInfo').item.json.username }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          -180,
+          1080
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "41b14715-b442-4c2b-b009-5316e967e7f4",
+        "name": "IsLoggedIn",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "6d32d1a1-8c69-4f2b-b9dc-2cafbff97b25",
+                "leftValue": "={{ $json.near_account_id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          40,
+          1080
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "fee21c07-7712-442f-bdfe-ad06f9f7934b",
+        "name": "NotifySuccessReward",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": 789
+          },
+          "chatId": "-1002043984595",
+          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+        },
+        "position": [
+          700,
+          1000
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "2e78d22a-ace0-4404-9adf-c6e0aa395767",
+        "name": "NotifyFailedReward",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": 789
+          },
+          "chatId": "-1002043984595",
+          "text": "=Cannot send reward transaction"
+        },
+        "position": [
+          700,
+          1160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "id": "d2f2fd3d-956c-43e5-8a8a-564fb18883af",
+        "name": "Sticky Note",
+        "parameters": {
+          "content": "## Reward users for unhandled exceptions",
+          "height": 680,
+          "width": 1980
+        },
+        "position": [
+          -680,
+          800
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "id": "a9f2951b-fc47-4699-89f1-dcbfdff0dde1",
+        "name": "ExtractExecutorInfo",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "5879a110-3876-48b1-a47c-1e06e73225d0",
+                "name": "username",
+                "type": "string",
+                "value": "={{ $json.data.resultData.runData['Telegram Trigger'][0].data.main[0][0].json.message.from.username.toLowerCase() }}"
+              },
+              {
+                "id": "653ecc10-7466-4611-b328-8f9f1344ee5b",
+                "name": "user_id",
+                "type": "number",
+                "value": "={{ $json.data.resultData.runData['Telegram Trigger'][0].data.main[0][0].json.message.from.id }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -200,
+          580
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "8491dabe-4889-4387-b65e-831fa97db388",
+        "name": "NotifyUser",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('ExtractExecutorInfo').item.json.user_id }}",
+          "text": "=You're rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+        },
+        "position": [
+          700,
+          840
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "15319ae4-c933-41ab-a423-a693daf9d794"
+      },
+      {
+        "id": "0271c72c-5945-46d8-981f-ab7269e43d46",
+        "name": "HashErrorUsername",
+        "parameters": {
+          "type": "SHA256",
+          "value": "={{ $('HashError').item.json.data }} {{ $('ExtractExecutorInfo').item.json.username }}"
+        },
+        "position": [
+          260,
+          580
+        ],
+        "type": "n8n-nodes-base.crypto",
+        "typeVersion": 1
+      },
+      {
+        "id": "b15cae04-ec6b-460a-b021-2d771f526f86",
+        "name": "HashError",
+        "parameters": {
+          "type": "SHA256",
+          "value": "={{ $json.execution.error.message }} {{ $json.execution.lastNodeExecuted }}"
+        },
+        "position": [
+          -660,
+          580
+        ],
+        "type": "n8n-nodes-base.crypto",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "471c251a-d256-483b-b929-d1957c49f081",
+        "name": "IsErrorExist",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $json.user_error_id }}"
+          },
+          "query": "select count(*)\nfrom \"default\".warning as w\nwhere w.id = $1"
+        },
+        "position": [
+          700,
+          580
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "98acbd1c-0816-4932-8b5c-dbb274841080",
+        "name": "UserErrorId",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "83574c41-454d-41a8-8c00-d8638977d80c",
+                "name": "user_error_id",
+                "type": "string",
+                "value": "={{ $('HashErrorUsername').item.json.data.substring(0,8) }}-{{ $('HashErrorUsername').item.json.data.substring(8,12) }}-{{ $('HashErrorUsername').item.json.data.substring(13,17) }}-{{ $('HashErrorUsername').item.json.data.substring(18,22) }}-{{ $('HashErrorUsername').item.json.data.substring(23,35) }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          480,
+          580
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "cd94f37c-a0bb-4cd5-ae86-2379d33bbe34",
+        "name": "IsNewUserError?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "5f2befd7-3a2f-49f7-9ac5-d193ee69d3f3",
+                "leftValue": "={{ $json.count.toNumber() }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "number"
+                },
+                "rightValue": 0
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          920,
+          580
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "a4e9eb42-1e4f-4a73-badb-113cf878acb5",
+        "name": "UpsertUserError",
         "parameters": {
           "columns": {
             "attemptToConvertTypes": false,
@@ -12991,13 +13386,34 @@
                 "removed": true,
                 "required": false,
                 "type": "dateTime"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_deleted",
+                "id": "is_deleted",
+                "removed": false,
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "hash",
+                "id": "hash",
+                "removed": false,
+                "required": true,
+                "type": "string"
               }
             ],
             "value": {
               "description": "=Node: {{ $('Error Trigger').item.json.execution.lastNodeExecuted }}\n\n```\n{{ $('Error Trigger').item.json.execution.error.stack }}\n```\n\nWorkflow: [{{ $('Error Trigger').item.json.workflow.name }}]({{ $('Error Trigger').item.json.execution.url }})",
-              "id": "={{ $('Crypto').item.json.data.substring(0,8) }}-{{ $('Crypto').item.json.data.substring(8,12) }}-{{ $('Crypto').item.json.data.substring(13,17) }}-{{ $('Crypto').item.json.data.substring(18,22) }}-{{ $('Crypto').item.json.data.substring(23,35) }}",
+              "hash": "={{ $('HashError').item.json.data }}",
+              "id": "={{ $('UserErrorId').item.json.user_error_id }}",
               "title": "={{ $('Error Trigger').item.json.execution.error.message }}",
-              "username": "={{ $json.username }}"
+              "username": "={{ $('ExtractExecutorInfo').item.json.username }}"
             }
           },
           "operation": "upsert",
@@ -13017,15 +13433,38 @@
           }
         },
         "position": [
-          1160,
-          200
+          1140,
+          580
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
       },
       {
-        "id": "43eb2e8f-4cc6-4828-8c0c-5f4f53c704b3",
-        "name": "If",
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "f420c5e9-7842-48ea-8bf5-93fcee5a9eed",
+        "name": "GetErrorCount",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('HashError').item.json.data }}"
+          },
+          "query": "select count(*)\nfrom \"default\".warning as w\nwhere w.hash = $1"
+        },
+        "position": [
+          -600,
+          1240
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "c8aa47e3-4723-4934-be04-6d5f1d3ff474",
+        "name": "IsThereUser",
         "parameters": {
           "conditions": {
             "combinator": "and",
@@ -13062,108 +13501,27 @@
           }
         },
         "position": [
-          920,
-          200
+          20,
+          580
         ],
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2
       },
       {
-        "id": "6c4076a8-4d98-4bfc-9fe4-260f6664e22f",
-        "name": "Transfer NEAR",
-        "onError": "continueErrorOutput",
-        "parameters": {
-          "amount": "={{ $json.bug_reward_amount }}",
-          "privateKey": "={{ $json.reward_account_private_key }}",
-          "recipientId": "={{ $('GetUser').item.json.near_account_id }}",
-          "senderId": "={{ $json.reward_account_id }}"
-        },
-        "position": [
-          1800,
-          -120
-        ],
-        "type": "@dapplets/n8n-nodes-near-protocol.transfer",
-        "typeVersion": 1
-      },
-      {
-        "credentials": {
-          "postgres": {
-            "id": "8ZOLCkWqvhw8gGkU",
-            "name": "Postgres account"
-          }
-        },
-        "id": "2ca47a58-2f3a-43f0-934a-5836270e03f6",
-        "name": "Get Variables",
-        "parameters": {
-          "operation": "executeQuery",
-          "options": {
-          },
-          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key"
-        },
-        "position": [
-          1580,
-          -120
-        ],
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.6
-      },
-      {
-        "credentials": {
-          "postgres": {
-            "id": "8ZOLCkWqvhw8gGkU",
-            "name": "Postgres account"
-          }
-        },
-        "id": "37b238ee-0be0-413b-83f8-05fad875588a",
-        "name": "GetUser",
-        "parameters": {
-          "limit": 1,
-          "operation": "select",
-          "options": {
-          },
-          "schema": {
-            "__rl": true,
-            "mode": "list",
-            "value": "public"
-          },
-          "table": {
-            "__rl": true,
-            "cachedResultName": "users",
-            "mode": "list",
-            "value": "users"
-          },
-          "where": {
-            "values": [
-              {
-                "column": "username",
-                "value": "={{ $json.username }}"
-              }
-            ]
-          }
-        },
-        "position": [
-          1160,
-          -120
-        ],
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.6
-      },
-      {
-        "id": "4229096b-fa4f-45d3-abd4-dfc2466f6f1b",
-        "name": "IsLoggedIn",
+        "id": "781088e1-7172-424c-9cd7-c4a10dc18f7e",
+        "name": "ShouldBeRewarded",
         "parameters": {
           "conditions": {
             "combinator": "and",
             "conditions": [
               {
-                "id": "6d32d1a1-8c69-4f2b-b9dc-2cafbff97b25",
-                "leftValue": "={{ $json.near_account_id }}",
+                "id": "86485f99-e3f1-49bf-84f9-db554972ab42",
+                "leftValue": "={{ $json.count.toNumber() }}",
                 "operator": {
-                  "operation": "exists",
-                  "singleValue": true,
-                  "type": "string"
+                  "operation": "lt",
+                  "type": "number"
                 },
-                "rightValue": ""
+                "rightValue": 3
               }
             ],
             "options": {
@@ -13177,130 +13535,11 @@
           }
         },
         "position": [
-          1380,
-          -120
+          -380,
+          1240
         ],
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2
-      },
-      {
-        "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
-          }
-        },
-        "id": "84dbe063-bb4a-47a9-8534-e4c1db24c4df",
-        "name": "NotifySuccessReward",
-        "parameters": {
-          "additionalFields": {
-            "appendAttribution": false,
-            "message_thread_id": 789
-          },
-          "chatId": "-1002043984595",
-          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
-        },
-        "position": [
-          2040,
-          -200
-        ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
-      },
-      {
-        "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
-          }
-        },
-        "id": "dc24b0fb-fe48-4b24-b194-f62397176282",
-        "name": "NotifyFailedReward",
-        "parameters": {
-          "additionalFields": {
-            "appendAttribution": false,
-            "message_thread_id": 789
-          },
-          "chatId": "-1002043984595",
-          "text": "=Cannot send reward transaction"
-        },
-        "position": [
-          2040,
-          -40
-        ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
-      },
-      {
-        "id": "1e188a26-a817-44a4-b270-7178180e1190",
-        "name": "Sticky Note",
-        "parameters": {
-          "content": "## Reward users for unhandled exceptions",
-          "height": 500,
-          "width": 1160
-        },
-        "position": [
-          1120,
-          -380
-        ],
-        "type": "n8n-nodes-base.stickyNote",
-        "typeVersion": 1
-      },
-      {
-        "id": "59f4d19c-13a8-4f4b-b268-e647016abd48",
-        "name": "ExtractExecutorInfo",
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "5879a110-3876-48b1-a47c-1e06e73225d0",
-                "name": "username",
-                "type": "string",
-                "value": "={{ $json.data.resultData.runData['Telegram Trigger'][0].data.main[0][0].json.message.from.username.toLowerCase() }}"
-              },
-              {
-                "id": "653ecc10-7466-4611-b328-8f9f1344ee5b",
-                "name": "user_id",
-                "type": "number",
-                "value": "={{ $json.data.resultData.runData['Telegram Trigger'][0].data.main[0][0].json.message.from.id }}"
-              }
-            ]
-          },
-          "options": {
-          }
-        },
-        "position": [
-          700,
-          200
-        ],
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4
-      },
-      {
-        "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
-          }
-        },
-        "id": "e49f6c7e-77e1-4010-9867-a47ef3390545",
-        "name": "NotifyUser",
-        "parameters": {
-          "additionalFields": {
-            "appendAttribution": false
-          },
-          "chatId": "={{ $('ExtractExecutorInfo').item.json.user_id }}",
-          "text": "=You're rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
-        },
-        "position": [
-          2040,
-          -360
-        ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "15319ae4-c933-41ab-a423-a693daf9d794"
       }
     ],
     "pinData": {
@@ -13312,8 +13551,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-25T12:53:37.000Z",
-    "versionId": "812708a2-199b-4aea-8117-978c51263451"
+    "updatedAt": "2025-04-25T14:36:26.000Z",
+    "versionId": "7b1de91f-e755-4def-95ea-45ff0548c647"
   },
   {
     "active": false,
