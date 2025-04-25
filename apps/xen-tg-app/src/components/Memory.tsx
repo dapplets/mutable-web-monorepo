@@ -35,7 +35,6 @@ type TMemoryProps = {
 
 const Memory: FC<TMemoryProps> = ({ memory }) => {
   const queryClient = useQueryClient()
-  console.log(memory)
 
   const handleDelete = useMutation({
     mutationFn: mutationFn('deleteMemory', {
