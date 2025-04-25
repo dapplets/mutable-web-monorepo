@@ -82,7 +82,8 @@ export class CustomConnectedWalletAccount extends ConnectedWalletAccount {
         return this.walletConnection._near.connection.provider.txStatus(
           // @ts-ignore
           serialize.base_decode(txHash),
-          this.accountId
+          this.accountId,
+          'EXECUTED'
         )
       })
     )

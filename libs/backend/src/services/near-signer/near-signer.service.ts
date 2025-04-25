@@ -76,7 +76,7 @@ export class NearSigner {
           contractId: contractName,
           methodName,
           args,
-          gas: gas ? new BN(gas) : undefined,
+          gas: gas ? BigInt(gas) : undefined,
         })
       } catch (e) {
         if (e instanceof TypedError && e.type === 'NotEnoughAllowance') {
