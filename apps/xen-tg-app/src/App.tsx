@@ -77,7 +77,7 @@ function App() {
         <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
       </div>
       <Wallet user={user} />
-      <Capabilities user={user} />
+      <Capabilities />
       <DeveloperMode />
       <Warnings user={user} />
       <div className="fixed top-[calc(100vh-94px)] left-1/2 z-1 -translate-x-1/2">
