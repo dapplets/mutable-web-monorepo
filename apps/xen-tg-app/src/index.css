@@ -72,6 +72,13 @@ html, body {
   --color-interactive: var(--interactive);
   --circle-size: var(--c-size);
   --blending: var(--bl);
+
+  --animate-spin-back: spin-back 1s linear infinite;
+  @keyframes spin-back {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
 }
 
 :root {

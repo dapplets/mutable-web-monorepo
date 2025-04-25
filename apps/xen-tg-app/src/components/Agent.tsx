@@ -1,34 +1,102 @@
 import { FC } from 'react'
-import UnlinkOutlineIcon from '../assets/unlink-outline'
+// import UnlinkOutlineIcon from '../assets/unlink-outline'
 import { TAgent } from '../types'
+import Spinner from './Spinner'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-type TAgentProps = {
-  agent: TAgent
-  onDisconnect: () => void
+const mutationFn = async ({
+  methodName,
+  params,
+}: {
+  methodName: string
+  params?: { [key: string]: string | number }
+}) => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
+  }
+  const response = await fetch('https://n8n.aigency.test.dapplets.org/webhook/rpc', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: methodName,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
 }
 
-const Agent: FC<TAgentProps> = ({ agent, onDisconnect }) => {
-  console.log(agent)
+type TAgentProps = {
+  capabilitiy: TAgent
+}
 
+const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
+  const queryClient = useQueryClient()
+
+  const handleToggleCapability = useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['capabilities'] })
+    },
+  })
+
+  // const handleRemoveCapability = useMutation({
+  //   mutationFn,
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['capabilities'] })
+  //   },
+  // })
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) p-2.5">
-      <div className="flex flex-1 flex-col gap-0.5">
-        <div className="flex py-0.25 text-[14px]/[100%] font-semibold">{agent.name}</div>
+      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+        <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
+          {capabilitiy.name}
+        </div>
         <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-gray-text)">
-          {agent.source}
+          {capabilitiy.domain}
         </div>
       </div>
-      <div
-        className={`flex w-15 items-center justify-center rounded-[10px] py-3 text-xs/[100%] font-normal dark:bg-(--color-light-white-bg) ${agent.status === 'active' ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
-      >
-        {agent.status}
-      </div>
       <button
-        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
-        onClick={onDisconnect}
+        className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal dark:bg-(--color-light-white-bg) ${capabilitiy.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
+        onClick={() =>
+          handleToggleCapability.mutate({
+            methodName: capabilitiy.isEnabled ? 'disableCapability' : 'enableCapability',
+            params: {
+              domain: capabilitiy.domain,
+              name: capabilitiy.name,
+            },
+          })
+        }
       >
-        <UnlinkOutlineIcon />
+        {handleToggleCapability.isPending ? (
+          <Spinner />
+        ) : capabilitiy.isEnabled ? (
+          'active'
+        ) : (
+          'disabled'
+        )}
       </button>
+      {/* <button
+        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+        onClick={() =>
+            handleRemoveCapability.mutate({
+              methodName: 'removeCapability',
+              params: {
+                domain: capabilitiy.domain,
+                name: capabilitiy.name,
+              },
+            })}
+      >
+        {handleRemoveCapability.isPending ? <Spinner /> : <UnlinkOutlineIcon />}
+      </button> */}
     </div>
   )
 }

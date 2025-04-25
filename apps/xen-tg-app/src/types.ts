@@ -29,8 +29,8 @@ export type Balance = {
 
 export type TAgent = {
   name: string
-  source: string
-  status: string
+  domain: string
+  isEnabled: boolean
 }
 
 export type TWarning = {
