@@ -3727,8 +3727,7 @@
                       "id": "8f85e582-a1cd-4569-8df4-ceee13d8e1e7",
                       "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
                       "operator": {
-                        "name": "filter.operator.equals",
-                        "operation": "equals",
+                        "operation": "startsWith",
                         "type": "string"
                       },
                       "rightValue": "/throw"
@@ -5626,7 +5625,7 @@
         "id": "b51cefd3-6c2e-46d9-8837-53da3929bbaa",
         "name": "Stop and Error",
         "parameters": {
-          "errorMessage": "Test error thrown"
+          "errorMessage": "=Test error thrown"
         },
         "position": [
           1720,
@@ -6640,12 +6639,23 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-24T15:48:34.000Z",
-    "versionId": "0070c787-87ff-4d07-b290-23e66405f285"
+    "updatedAt": "2025-04-25T14:55:57.000Z",
+    "versionId": "d84576c3-bf6e-4e48-846e-16c4e3043dd3"
   },
   {
     "active": false,
     "connections": {
+      "AddHistory": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Aggregate": {
         "main": [
           [
@@ -6679,12 +6689,29 @@
           ]
         ]
       },
+      "DevNull": {
+        "main": [
+          [
+          ]
+        ]
+      },
       "Edit Fields3": {
         "main": [
           [
             {
               "index": 0,
               "node": "Aggregate1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "ExtractAgentOwnerId": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetTodayTransfers",
               "type": "main"
             }
           ]
@@ -6723,12 +6750,23 @@
           ]
         ]
       },
-      "Get Variables": {
+      "GetTodayTransfers": {
         "main": [
           [
             {
               "index": 0,
-              "node": "Transfer NEAR",
+              "node": "SumBigInts",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GetVariables": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "ShouldBeRewarded1",
               "type": "main"
             }
           ]
@@ -6747,6 +6785,46 @@
             {
               "index": 0,
               "node": "Stop and Error",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "DevNull",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "ExtractAgentOwnerId",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "NotifyFailedReward": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "NotifySuccessReward": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
               "type": "main"
             }
           ]
@@ -6785,6 +6863,35 @@
           ]
         ]
       },
+      "ShouldBeRewarded": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Transfer NEAR",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "ShouldBeRewarded1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "ShouldBeRewarded",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Split Out": {
         "main": [
           [
@@ -6795,7 +6902,7 @@
             },
             {
               "index": 0,
-              "node": "Get Variables",
+              "node": "Loop Over Items",
               "type": "main"
             }
           ]
@@ -6812,12 +6919,28 @@
           ]
         ]
       },
+      "SumBigInts": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetVariables",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Transfer NEAR": {
         "main": [
           [
             {
               "index": 0,
               "node": "NotifySuccessReward",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "AddHistory",
               "type": "main"
             }
           ],
@@ -6913,7 +7036,7 @@
           }
         },
         "position": [
-          3340,
+          3560,
           -40
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -6955,7 +7078,7 @@
           "url": "https://api.near.ai/v1/threads/runs"
         },
         "position": [
-          2720,
+          2940,
           -40
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -6978,7 +7101,7 @@
           "url": "=https://api.near.ai/v1/threads/{{ $json.ThreadId }}/messages"
         },
         "position": [
-          2920,
+          3140,
           -40
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -7008,7 +7131,7 @@
           }
         },
         "position": [
-          3140,
+          3360,
           -40
         ],
         "type": "n8n-nodes-base.set",
@@ -7241,39 +7364,17 @@
         "name": "Transfer NEAR",
         "onError": "continueErrorOutput",
         "parameters": {
-          "amount": "={{ $json.usage_reward_amount }}",
-          "privateKey": "={{ $json.reward_account_private_key }}",
-          "recipientId": "={{ $('Split Out').item.json.agent_id.split('/')[0] }}",
-          "senderId": "={{ $json.reward_account_id }}"
+          "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
+          "privateKey": "={{ $('GetVariables').item.json.reward_account_private_key }}",
+          "recipientId": "={{ $('ExtractAgentOwnerId').item.json.agent_owner_account_id }}",
+          "senderId": "={{ $('GetVariables').item.json.reward_account_id }}"
         },
         "position": [
-          2940,
-          -380
+          4240,
+          460
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.transfer",
         "typeVersion": 1
-      },
-      {
-        "credentials": {
-          "postgres": {
-            "id": "8ZOLCkWqvhw8gGkU",
-            "name": "Postgres account"
-          }
-        },
-        "id": "7575a708-27b0-4fe4-be32-9ab1899b044b",
-        "name": "Get Variables",
-        "parameters": {
-          "operation": "executeQuery",
-          "options": {
-          },
-          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key"
-        },
-        "position": [
-          2720,
-          -380
-        ],
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.6
       },
       {
         "credentials": {
@@ -7293,8 +7394,8 @@
           "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
         },
         "position": [
-          3180,
-          -460
+          4800,
+          460
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
@@ -7318,8 +7419,8 @@
           "text": "=Cannot send reward transaction"
         },
         "position": [
-          3180,
-          -300
+          4420,
+          480
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
@@ -7330,26 +7431,281 @@
         "name": "Sticky Note",
         "parameters": {
           "content": "## Reward users for NEAR AI agents usage",
-          "height": 340,
-          "width": 740
+          "height": 540,
+          "width": 2420
         },
         "position": [
-          2680,
-          -480
+          2660,
+          180
         ],
         "type": "n8n-nodes-base.stickyNote",
         "typeVersion": 1
+      },
+      {
+        "id": "7e499ed2-b6c7-43d1-acbc-a5be80a6d500",
+        "name": "ShouldBeRewarded",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "7b87b0b8-710a-4d5f-826a-14da26df62b2",
+                "leftValue": "={{ $json.shouldBeRewarded }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          4020,
+          460
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "02edb0be-34ec-412d-995c-38068547205b",
+        "name": "AddHistory",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "recipient_account_id",
+                "id": "recipient_account_id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "amount",
+                "id": "amount",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "tx_hash",
+                "id": "tx_hash",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "notes",
+                "id": "notes",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "created_at",
+                "id": "created_at",
+                "removed": true,
+                "required": false,
+                "type": "dateTime"
+              }
+            ],
+            "value": {
+              "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
+              "notes": "=NEAR AI agent {{ $('Split Out').item.json.agent_id }} used by {{ $('Postgres').item.json.username }} logged in as {{ $('Postgres').item.json.near_account_id }}",
+              "recipient_account_id": "={{ $('Split Out').item.json.agent_id.split('/')[0] }}",
+              "tx_hash": "={{ $json.result.transaction_outcome.id }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "transfer",
+            "mode": "list",
+            "value": "transfer"
+          }
+        },
+        "position": [
+          4620,
+          440
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "a3336078-2cdc-473b-b7b8-6916c9a1372a",
+        "name": "DevNull",
+        "parameters": {
+          "jsCode": "return [];"
+        },
+        "position": [
+          3040,
+          300
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5e4690b6-2a8f-4c92-af7a-4f1b62c6ae23",
+        "name": "GetTodayTransfers",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $json.agent_owner_account_id }}"
+          },
+          "query": "select string_agg(amount, ',') as amounts\nfrom \"default\".transfer\nwhere recipient_account_id = $1 and created_at >= now()::date"
+        },
+        "position": [
+          3260,
+          460
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "5ec83243-e99a-4550-b9c8-b13f5e664c1c",
+        "name": "SumBigInts",
+        "parameters": {
+          "jsCode": "return {\n  json: {\n    total: $input.item.json.amounts.split(',').reduce((acc, cur) => BigInt(cur) + acc, BigInt(0))\n  }\n}",
+          "mode": "runOnceForEachItem"
+        },
+        "position": [
+          3440,
+          460
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "7575a708-27b0-4fe4-be32-9ab1899b044b",
+        "name": "GetVariables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'MAX_USAGE_REWARD_AMOUNT') as max_usage_reward_amount"
+        },
+        "position": [
+          3640,
+          460
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "acc565a5-39a7-4f77-a1c8-4e5907340425",
+        "name": "ShouldBeRewarded1",
+        "parameters": {
+          "jsCode": "const rewardsPerDay = BigInt($('SumBigInts').first().json.total)\nconst maxRewardsPerDay = BigInt($('GetVariables').first().json.max_usage_reward_amount)\n\nreturn [{\n  json: {\n    shouldBeRewarded: rewardsPerDay < maxRewardsPerDay\n  }\n}]"
+        },
+        "position": [
+          3840,
+          460
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "928e174e-60a7-477f-ad2f-aba115eff325",
+        "name": "Loop Over Items",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          2780,
+          320
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "id": "15900e83-e1da-4449-98c4-2523ebe20ba4",
+        "name": "ExtractAgentOwnerId",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "63dd2cde-dbda-4a0f-8741-c7b5b6063f46",
+                "name": "agent_owner_account_id",
+                "type": "string",
+                "value": "={{ $json.agent_id.split('/')[0] }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3040,
+          460
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
       }
     ],
     "pinData": {
-      "Begin": [
-        {
-          "json": {
-            "query": "improve tweet: holy fucking shit!",
-            "user-id": 159914533
-          }
-        }
-      ]
     },
     "settings": {
       "callerPolicy": "workflowsFromSameOwner",
@@ -7360,8 +7716,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-25T12:08:05.000Z",
-    "versionId": "d4ca5bb8-0ef0-4795-a96f-279731dd073f"
+    "updatedAt": "2025-04-25T16:22:03.000Z",
+    "versionId": "6e8f1a60-e3c7-40d0-a7cf-0f03607744aa"
   },
   {
     "active": false,
@@ -12863,6 +13219,11 @@
               "index": 0,
               "node": "NotifyUser",
               "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Postgres",
+              "type": "main"
             }
           ],
           [
@@ -13109,7 +13470,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception #{{ $('HashError').item.json.data.substring(0, 6) }}\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
         },
         "position": [
           700,
@@ -13138,7 +13499,7 @@
         },
         "position": [
           700,
-          1160
+          1300
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
@@ -13540,6 +13901,100 @@
         ],
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "f234f02e-dff4-4982-9d5b-be038b8e7e94",
+        "name": "Postgres",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "recipient_account_id",
+                "id": "recipient_account_id",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "amount",
+                "id": "amount",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "tx_hash",
+                "id": "tx_hash",
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "notes",
+                "id": "notes",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "amount": "={{ $json.bug_reward_amount }}",
+              "notes": "unhandled exception",
+              "recipient_account_id": "={{ $json.reward_account_id }}",
+              "tx_hash": "={{ $json.result.transaction_outcome.id }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "transfer",
+            "mode": "list",
+            "value": "transfer"
+          }
+        },
+        "position": [
+          700,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -13551,8 +14006,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-25T14:36:26.000Z",
-    "versionId": "7b1de91f-e755-4def-95ea-45ff0548c647"
+    "updatedAt": "2025-04-25T15:24:44.000Z",
+    "versionId": "e153e864-c658-4d25-a6a3-6f7329072cf6"
   },
   {
     "active": false,
