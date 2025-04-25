@@ -1,8 +1,8 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { formatDistance } from 'date-fns'
 import { FC } from 'react'
 import Trash from '../assets/trash'
 import { TMemory } from '../types'
-import { formatDistance } from 'date-fns'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Spinner from './Spinner'
 
 const mutationFn = (name: string, params?: { [key: string]: string | number }) => async () => {

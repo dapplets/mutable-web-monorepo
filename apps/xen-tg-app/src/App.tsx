@@ -79,7 +79,7 @@ function App() {
       <Wallet user={user} />
       <Capabilities />
       <DeveloperMode />
-      <Warnings user={user} />
+      <Warnings />
       <div className="fixed top-[calc(100vh-94px)] left-1/2 z-1 -translate-x-1/2">
         <FooterMenu memoriesNumber={memories?.total} />
       </div>

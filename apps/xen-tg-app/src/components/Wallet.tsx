@@ -1,8 +1,8 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FC } from 'react'
 import LogOutIcon from '../assets/log-out'
 import NEAR_ICON from '../assets/near-gray.svg'
 import { Balance, TXenUser } from '../types'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Spinner from './Spinner'
 
 const queryFn =
