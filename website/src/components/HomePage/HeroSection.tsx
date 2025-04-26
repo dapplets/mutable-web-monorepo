@@ -79,7 +79,7 @@ const HeroSection = () => {
           of Mutable Web
         </h1>
         <p className={styles.subtitle}>Dapplets Project&nbsp;&mdash; open source platform that enables small applications (dapplets)
-          to&nbsp;run on&nbsp;top of&nbsp;any existing website, extending its functionality
+          to&nbsp;run on&nbsp;top of&nbsp;any existing website, extending its functionality<br/>
           and adding new services to&nbsp;the website on&nbsp;the fly.</p>
       </header>
       <div className={styles.buttons} ref={buttonsContainerRef}>

@@ -33,7 +33,7 @@ export const getStartedLinks = [
 export const Examples = [
   {
     title:'Xen/Aigency',
-    description:'Xen/Aigency\u00A0- is\u00A0your private\u00A0AI assistant that uses your custom set of\u00A0agents for inference.\nXen uses Mutable Web to\u00A0capture user context and render agentic output back into the web page, extending its\u00A0UX on\u00A0the fly.',
+    description:'Xen/Aigency\u00A0- is\u00A0your private\u00A0AI assistant that uses\n your custom set of\u00A0agents for inference.\n\nXen uses Mutable Web to\u00A0capture user context and\n render agentic output back into the web page,\n extending its\u00A0UX on\u00A0the fly.',
     labelBottom:{
       label:'Embeds agentic output',
       subLabel:'on the fly'
@@ -45,7 +45,7 @@ export const Examples = [
   },
   {
     title:'YouSure',
-    description:'YouShure\u00A0- embeds seamlessly prediction markets into social networks so\u00A0that every statement posted can be\u00A0challenged with a\u00A0bet for money or\u00A0reputation. It\u00A0promotes responsible communication so\u00A0that bullshit posters lose either reputation or\u00A0money, or\u00A0both.',
+    description:'YouShure\u00A0- embeds seamlessly prediction markets\n into social networks so\u00A0that every statement posted\n can be\u00A0challenged with a\u00A0bet for money or \nreputation. It\u00A0promotes responsible communication\n so\u00A0that bullshit posters lose either reputation or\n money, or\u00A0both.',
     labelTop:{
       label:'Captures user context',
       subLabel:'on the fly'

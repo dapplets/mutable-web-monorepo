@@ -5,7 +5,7 @@
     justify-content: space-between;
     max-width: 75rem;
     margin: 0 auto;
-    gap: 1.5rem;
+    gap: 1rem;
 
 }
 
@@ -22,32 +22,46 @@
 
 .subtitle {
     margin-top: .75rem;
-    font-size: var(--fs-14-16);
+    font-size: var( --fs-12-14);
     line-height: 1.49;
     opacity: 0.7;
-    max-width: 22.5rem;
+
 }
 
 .article {
-    max-width: 51.25rem;
+    max-width: 50.625rem;
     width: 100%;
     border-radius: .625rem;
     padding: 2.5rem 1.25rem;
+    padding-right: 0;
     background-color: var(--grey-de);
     backdrop-filter: blur(1.25rem);
 }
 
+
+
 .text {
-    font-size: var(--fs-14-16);
+    font-size: var(--fs-12-15);
     line-height: 1.49;
     opacity: 0.7;
     display: block;
     margin-top: .5rem;
 
     &--hilight {
-        color: var(--black-22);
         opacity: 1;
         margin-top: 1.5rem;
+    }
+}
+
+:global(.dark){
+    .article{
+         background-color: var(--black-1b);
+    }
+
+    .text--bold{
+        opacity: 1 !important;
+        color: var(--white);
+        opacity: 1;
     }
 }
 
