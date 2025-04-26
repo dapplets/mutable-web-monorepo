@@ -89,12 +89,12 @@ const Wallet = () => {
   })
 
   return user && isLoggedIn ? (
-    <div className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
-      <div className="flex gap-3 text-[22px]/[150%] font-semibold">
+    <div className="z-1 flex w-full flex-wrap items-center justify-between gap-2.5 overflow-hidden rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
+      <div className="flex shrink-0 justify-between gap-3 text-[22px]/[150%] font-semibold">
         <img src={NEAR_ICON} alt="near" />
         {balance?.formatted.available ?? '-'}
       </div>
-      <div className="me-3 flex items-center gap-3 text-[22px]/[150%] font-normal">
+      <div className="me-3 flex items-center justify-between gap-3 text-[22px]/[150%] font-normal wrap-anywhere">
         {user.nearAccountId}
         <button
           className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
