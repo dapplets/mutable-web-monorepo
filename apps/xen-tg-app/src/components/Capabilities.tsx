@@ -4,6 +4,7 @@ import ExternalLinkIcon from '../assets/external-link'
 import { TAgent } from '../types'
 import Agent from './Agent'
 import { API_URL } from '@/env'
+import { useNavigate } from 'react-router'
 
 const queryFn =
   (
@@ -67,6 +68,7 @@ const mutationFn = async ({
 }
 
 const Capabilities = () => {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const tgDataStr = window.Telegram.WebApp.initData
   const tgDataObj = window.Telegram.WebApp.initDataUnsafe
@@ -114,6 +116,15 @@ const Capabilities = () => {
           <ExternalLinkIcon />
         </button>
       </div>
+      <Agent
+        key="news-monitor"
+        capabilitiy={{
+          name: 'News Monitor',
+          domain: 'Core',
+          isEnabled: true,
+          action: () => navigate('/news-monitor'),
+        }}
+      />
       {capabilities?.items.map((capabilitiy) => (
         <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />
       ))}

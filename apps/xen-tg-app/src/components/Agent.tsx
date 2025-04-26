@@ -57,14 +57,14 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
   // })
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) p-2.5">
-      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+      <button className="flex flex-1 flex-col gap-0.5 overflow-hidden" onClick={capabilitiy.action}>
         <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
           {capabilitiy.name}
         </div>
         <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-gray-text)">
           {capabilitiy.domain}
         </div>
-      </div>
+      </button>
       <button
         className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal dark:bg-(--color-light-white-bg) ${capabilitiy.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
         onClick={() =>
