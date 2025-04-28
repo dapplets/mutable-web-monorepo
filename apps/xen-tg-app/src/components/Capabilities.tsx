@@ -4,6 +4,7 @@ import ExternalLinkIcon from '../assets/external-link'
 import { TAgent } from '../types'
 import Agent from './Agent'
 import { API_URL } from '@/env'
+import { useEffect } from 'react'
 
 const queryFn =
   (
@@ -86,6 +87,8 @@ const Capabilities = () => {
     },
   })
 
+  useEffect(() => handleUpdateCapability.mutate({ methodName: 'syncCapabilities' }), [])
+
   const openNearAI = () => window.Telegram.WebApp.openLink('https://app.near.ai/agents')
 
   return (
@@ -96,12 +99,7 @@ const Capabilities = () => {
           <button
             disabled={handleUpdateCapability.isPending}
             className={`${handleUpdateCapability.isPending ? 'animate-spin-back' : ''} flex cursor-pointer items-center justify-between p-1.5 text-[#7A818B] transition ${handleUpdateCapability.isPending ? '' : 'hover:text-(--color-main-text)'}`}
-            onClick={() => {
-              handleUpdateCapability.mutate({
-                methodName: 'syncCapabilities',
-                params: {},
-              })
-            }}
+            onClick={() => handleUpdateCapability.mutate({ methodName: 'syncCapabilities' })}
           >
             <SyncIcon />
           </button>
