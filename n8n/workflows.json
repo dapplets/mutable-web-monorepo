@@ -6492,7 +6492,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "replyKeyboard": {
+          "inlineKeyboard": {
             "rows": [
               {
                 "row": {
@@ -6500,22 +6500,18 @@
                     {
                       "additionalFields": {
                         "web_app": {
-                          "url": "https://ni-2.github.io/xen-tg-app/"
+                          "url": "https://tgapp.aigency.test.dapplets.org/"
                         }
                       },
-                      "text": "Open Dashboard"
+                      "text": "Open"
                     }
                   ]
                 }
               }
             ]
           },
-          "replyKeyboardOptions": {
-            "one_time_keyboard": true,
-            "resize_keyboard": true
-          },
-          "replyMarkup": "replyKeyboard",
-          "text": "Click the button below to open dashboard"
+          "replyMarkup": "inlineKeyboard",
+          "text": "💎 Dashboard 📊"
         },
         "position": [
           1720,
@@ -6639,8 +6635,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-25T14:55:57.000Z",
-    "versionId": "d84576c3-bf6e-4e48-846e-16c4e3043dd3"
+    "updatedAt": "2025-04-28T13:05:16.000Z",
+    "versionId": "0f4d2b0d-b2d7-4986-86a1-b372ffcb8e50"
   },
   {
     "active": false,
@@ -6650,7 +6646,7 @@
           [
             {
               "index": 0,
-              "node": "Loop Over Items",
+              "node": "NotifySuccessReward",
               "type": "main"
             }
           ]
@@ -6662,6 +6658,28 @@
             {
               "index": 0,
               "node": "Find suitable agent",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aggregate1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aggregate2": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
               "type": "main"
             }
           ]
@@ -6692,6 +6710,11 @@
       "DevNull": {
         "main": [
           [
+            {
+              "index": 0,
+              "node": "Aggregate2",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -6803,6 +6826,17 @@
             {
               "index": 0,
               "node": "ExtractAgentOwnerId",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Execution Info",
               "type": "main"
             }
           ]
@@ -6933,11 +6967,6 @@
       "Transfer NEAR": {
         "main": [
           [
-            {
-              "index": 0,
-              "node": "NotifySuccessReward",
-              "type": "main"
-            },
             {
               "index": 0,
               "node": "AddHistory",
@@ -7391,7 +7420,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}]"
         },
         "position": [
           4800,
@@ -7575,7 +7604,7 @@
         },
         "position": [
           4620,
-          440
+          460
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -7584,7 +7613,7 @@
         "id": "a3336078-2cdc-473b-b7b8-6916c9a1372a",
         "name": "DevNull",
         "parameters": {
-          "jsCode": "return [];"
+          "jsCode": "return [{}];"
         },
         "position": [
           3040,
@@ -7621,7 +7650,7 @@
         "id": "5ec83243-e99a-4550-b9c8-b13f5e664c1c",
         "name": "SumBigInts",
         "parameters": {
-          "jsCode": "return {\n  json: {\n    total: $input.item.json.amounts.split(',').reduce((acc, cur) => BigInt(cur) + acc, BigInt(0))\n  }\n}",
+          "jsCode": "if (!$input.item.json.amounts) {\n  return { json: { total: 0 } }\n}\n\nreturn {\n  json: {\n    total: $input.item.json.amounts.split(',').reduce((acc, cur) => BigInt(cur) + acc, BigInt(0))\n  }\n}",
           "mode": "runOnceForEachItem"
         },
         "position": [
@@ -7703,6 +7732,84 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "id": "5f162f33-61d2-4e73-9920-6460d32b0b50",
+        "name": "Merge",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          4080,
+          -40
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "04ba6488-7409-4963-a97f-f423868697d4",
+        "name": "Aggregate2",
+        "parameters": {
+          "fieldsToAggregate": {
+            "fieldToAggregate": [
+              {
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3260,
+          300
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "b04bd8d6-e2ac-4f24-a3bf-c01735832a32",
+        "name": "Execution Info",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "3d7d56cc-79e9-4215-ad43-2517ebf28a2d",
+                "name": "agentId",
+                "type": "string",
+                "value": "={{ $json.responses[0].agentId }}"
+              },
+              {
+                "id": "0620b12b-a827-4b06-bbca-9de05f20fed1",
+                "name": "response",
+                "type": "string",
+                "value": "={{ $json.responses[0].response }}"
+              },
+              {
+                "id": "91cfac18-f131-4760-97b8-5e26a7731883",
+                "name": "in-workflow-query",
+                "type": "string",
+                "value": "={{ $('Split Out').item.json.query }}"
+              },
+              {
+                "id": "c8730ea4-01a0-4cc9-987f-a33974aea92f",
+                "name": "begin-query",
+                "type": "string",
+                "value": "={{ $('Begin').item.json.query }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          4300,
+          -40
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
       }
     ],
     "pinData": {
@@ -7716,8 +7823,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-25T16:22:03.000Z",
-    "versionId": "6e8f1a60-e3c7-40d0-a7cf-0f03607744aa"
+    "updatedAt": "2025-04-29T08:01:13.000Z",
+    "versionId": "302ca1e4-13ae-41ab-a5d0-8d8e7cd586c1"
   },
   {
     "active": false,
@@ -10102,7 +10209,7 @@
     "tags": [
     ],
     "triggerCount": 3,
-    "updatedAt": "2025-04-23T06:25:52.000Z",
+    "updatedAt": "2025-04-25T18:27:33.000Z",
     "versionId": "9bab2ddd-6c52-47c4-9471-8fa5a3e119f4"
   },
   {
@@ -11121,7 +11228,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-21T08:17:39.000Z",
+    "updatedAt": "2025-04-25T18:27:39.000Z",
     "versionId": "9a776477-a237-48ff-aba5-db59ab06f4a7"
   },
   {
@@ -11581,7 +11688,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-15T19:53:57.000Z",
+    "updatedAt": "2025-04-25T18:27:46.000Z",
     "versionId": "a7b0fdba-5069-430a-83c1-6d79443e6ddf"
   },
   {
@@ -17928,7 +18035,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-25T13:45:05.000Z",
+    "updatedAt": "2025-04-25T18:27:51.000Z",
     "versionId": "0e9317de-ac97-4f60-b8dc-d8d1a1402293"
   },
   {
@@ -18529,7 +18636,7 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-04-24T14:05:28.000Z",
+    "updatedAt": "2025-04-25T18:27:57.000Z",
     "versionId": "d923bbab-5f51-405d-aefc-4176c9a38a49"
   }
 ]
