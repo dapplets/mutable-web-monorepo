@@ -7420,7 +7420,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}]"
+          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}]\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}"
         },
         "position": [
           4800,
@@ -7445,7 +7445,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "=Cannot send reward transaction"
+          "text": "=Cannot reward {{ $('Split Out').item.json.agent_id.split('/')[0] }} for agent usage\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}"
         },
         "position": [
           4420,
@@ -7823,8 +7823,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-29T13:04:22.000Z",
-    "versionId": "f700e197-2826-43bb-8dd6-b90154bb19bb"
+    "updatedAt": "2025-04-29T13:18:23.000Z",
+    "versionId": "09be8d45-1629-46d5-8062-505cb7e1edd1"
   },
   {
     "active": false,
@@ -13577,7 +13577,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception #{{ $('HashError').item.json.data.substring(0, 6) }}\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+          "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception #{{ $('HashError').item.json.data.substring(0, 6) }}\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]\nCaller: @{{ $('ExtractExecutorInfo').item.json.username.toLowerCase() }}"
         },
         "position": [
           700,
@@ -14113,8 +14113,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-25T15:24:44.000Z",
-    "versionId": "e153e864-c658-4d25-a6a3-6f7329072cf6"
+    "updatedAt": "2025-04-29T13:20:49.000Z",
+    "versionId": "8164779a-633a-4641-80d5-49b03a8ffd73"
   },
   {
     "active": false,
