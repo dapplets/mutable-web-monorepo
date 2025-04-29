@@ -34,13 +34,27 @@
   }
 }
 
+.noise{
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  background: var(--color-bg2);
+  background-image: url(@/assets/noise-dark.png);
+  background-blend-mode: screen;
+}
+
+.dark .noise {
+  background-blend-mode: soft-light;
+}
 
 .gradient-bg {
   width: 100vw;
   height: 100vh;
   position: fixed;
   overflow: hidden;
-  background: linear-gradient(40deg, var(--color-bg1), var(--color-bg2));
   top: 0;
   left: 0;
 
@@ -51,7 +65,6 @@
     width: 0;
     height: 0;
   }
-
 
   .gradients-container {
     filter: url(#goo) blur(40px) ;
