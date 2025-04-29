@@ -11,20 +11,14 @@ import { TMemory } from './types'
 import { API_URL } from './env'
 
 const queryFn =
-  (
-    tgDataStr: string,
-    tgDataObj: WebAppInitData,
-    name: string,
-    params?: { [key: string]: string | number }
-  ) =>
-  async () => {
+  (tgDataStr: string, name: string, params?: { [key: string]: string | number }) => async () => {
     if (!tgDataStr) {
       throw new Error('Telegram is not available')
     }
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
+        Authorization: `Bearer ${tgDataStr}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -43,10 +37,9 @@ const queryFn =
 
 function App() {
   const tgDataStr = window.Telegram.WebApp.initData
-  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
   const { data: memories } = useQuery<{ items: TMemory[]; total: number }>({
-    queryKey: ['memories', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getMemories', {
+    queryKey: ['memories', tgDataStr],
+    queryFn: queryFn(tgDataStr, 'getMemories', {
       offset: 0,
       limit: 10,
     }),
