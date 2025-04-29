@@ -7823,8 +7823,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-29T08:01:13.000Z",
-    "versionId": "302ca1e4-13ae-41ab-a5d0-8d8e7cd586c1"
+    "updatedAt": "2025-04-29T13:04:22.000Z",
+    "versionId": "f700e197-2826-43bb-8dd6-b90154bb19bb"
   },
   {
     "active": false,
@@ -14986,6 +14986,42 @@
           ]
         ]
       },
+      "IsDebugBot": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Parse Auth Token",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Unauthorized",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "IsMainBot": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Parse Auth Token",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "IsDebugBot",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Merge": {
         "main": [
           [
@@ -15461,7 +15497,7 @@
           [
             {
               "index": 0,
-              "node": "Parse Auth Token",
+              "node": "IsMainBot",
               "type": "main"
             }
           ]
@@ -15487,8 +15523,8 @@
           "responseMode": "responseNode"
         },
         "position": [
-          880,
-          320
+          200,
+          760
         ],
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
@@ -15508,7 +15544,7 @@
                   "conditions": [
                     {
                       "id": "5e6a2916-c83b-41de-bf56-765cd5793a8f",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15533,7 +15569,7 @@
                   "conditions": [
                     {
                       "id": "a51bd24c-8469-49c0-9b86-d7c9facb58d1",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15558,7 +15594,7 @@
                   "conditions": [
                     {
                       "id": "57195e14-270e-4ac0-8413-e7990c07f9b4",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15583,7 +15619,7 @@
                   "conditions": [
                     {
                       "id": "ccddfab0-3e8a-4448-9a84-0e9e5498b53b",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15608,7 +15644,7 @@
                   "conditions": [
                     {
                       "id": "3a0a1a84-e14f-40b9-80c5-bcecaaa1b0c8",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15633,7 +15669,7 @@
                   "conditions": [
                     {
                       "id": "12f783e8-24a1-4790-a0e0-a4611c6c3065",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15658,7 +15694,7 @@
                   "conditions": [
                     {
                       "id": "f4dd6ed5-cc78-43a4-af17-c29721c322b7",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15683,7 +15719,7 @@
                   "conditions": [
                     {
                       "id": "04620a1f-e09f-4d63-a7e0-189fb60fb67e",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15708,7 +15744,7 @@
                   "conditions": [
                     {
                       "id": "e2c7730b-1a13-4f6a-b61a-03edf200c9b6",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15733,7 +15769,7 @@
                   "conditions": [
                     {
                       "id": "514b4313-e281-4001-8ac4-1ef558a9717c",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15758,7 +15794,7 @@
                   "conditions": [
                     {
                       "id": "f8067081-9578-4bc2-bd21-7cc70f09b2ea",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15783,7 +15819,7 @@
                   "conditions": [
                     {
                       "id": "a03c1e53-0631-43bf-8328-5f3587b2735a",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15808,7 +15844,7 @@
                   "conditions": [
                     {
                       "id": "7a357faf-00ea-4a13-9870-6b310784bd82",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15833,7 +15869,7 @@
                   "conditions": [
                     {
                       "id": "1126dc89-b826-4b2d-9d3b-60e10921d122",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15858,7 +15894,7 @@
                   "conditions": [
                     {
                       "id": "ec18c7fb-0c52-4667-b3c6-b84bf916127a",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15883,7 +15919,7 @@
                   "conditions": [
                     {
                       "id": "74015656-e2f8-4765-8f28-58be48515523",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15908,7 +15944,7 @@
                   "conditions": [
                     {
                       "id": "0f702016-5f18-4b9f-a697-6a0eb87251df",
-                      "leftValue": "={{ $json.body.method }}",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
                       "operator": {
                         "name": "filter.operator.equals",
                         "operation": "equals",
@@ -15993,31 +16029,6 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
-      },
-      {
-        "id": "0627a85d-1393-47bd-b150-735deed26379",
-        "name": "Parse Auth Token",
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "80b428e5-ea6e-4e60-af6d-ec54ac45ebde",
-                "name": "authToken",
-                "type": "object",
-                "value": "={{ JSON.parse($json.headers.authorization.substring(7)) }}"
-              }
-            ]
-          },
-          "includeOtherFields": true,
-          "options": {
-          }
-        },
-        "position": [
-          1100,
-          320
-        ],
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4
       },
       {
         "id": "c99065db-f4f1-43a5-af97-c6294fa2c377",
@@ -16649,7 +16660,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+            "queryReplacement": "={{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
           },
           "query": "select * \nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}\norder by id desc\nlimit $1\noffset $2"
         },
@@ -16719,7 +16730,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $('Switch').item.json.body.params.limit }},{{ $('Switch').item.json.body.params.offset }}"
+            "queryReplacement": "={{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
           },
           "query": "select count(*) as count\nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}"
         },
@@ -16808,7 +16819,7 @@
             "values": [
               {
                 "column": "=id",
-                "value": "={{ $json.body.params.id }}"
+                "value": "={{ $('Webhook').item.json.body.params.id }}"
               }
             ]
           }
@@ -16834,7 +16845,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }},{{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
           },
           "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\norder by uc.capability_domain asc, uc.capability_name asc\nlimit $2\noffset $3"
         },
@@ -17019,8 +17030,8 @@
               }
             ],
             "value": {
-              "capability_domain": "={{ $json.body.params.domain }}",
-              "capability_name": "={{ $json.body.params.name }}",
+              "capability_domain": "={{ $('Webhook').item.json.body.params.domain }}",
+              "capability_name": "={{ $('Webhook').item.json.body.params.name }}",
               "is_deleted": true,
               "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
@@ -17120,8 +17131,8 @@
               }
             ],
             "value": {
-              "capability_domain": "={{ $json.body.params.domain }}",
-              "capability_name": "={{ $json.body.params.name }}",
+              "capability_domain": "={{ $('Webhook').item.json.body.params.domain }}",
+              "capability_name": "={{ $('Webhook').item.json.body.params.name }}",
               "is_enabled": true,
               "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
@@ -17221,8 +17232,8 @@
               }
             ],
             "value": {
-              "capability_domain": "={{ $json.body.params.domain }}",
-              "capability_name": "={{ $json.body.params.name }}",
+              "capability_domain": "={{ $('Webhook').item.json.body.params.domain }}",
+              "capability_name": "={{ $('Webhook').item.json.body.params.name }}",
               "is_enabled": false,
               "username": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
             }
@@ -17264,7 +17275,7 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }},{{ $json.body.params.limit }},{{ $json.body.params.offset }}"
+            "queryReplacement": "={{ $json.authToken.user.username.toLowerCase() }},{{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
           },
           "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false\norder by created_at desc\nlimit $2\noffset $3"
         },
@@ -18024,6 +18035,66 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "id": "d938ba00-a7ee-4f50-a9d6-84d4eda798f2",
+        "name": "Parse Auth Token",
+        "parameters": {
+          "jsCode": "var initData = $('Webhook').item.json.headers.authorization.substring(7)\n\nconst authToken = Object.fromEntries(initData.split('&').map(x => x.split('=').map(decodeURIComponent)))\n\nauthToken.user = JSON.parse(authToken.user);\n\n$input.item.json = { authToken };\n\nreturn $input.item;",
+          "mode": "runOnceForEachItem"
+        },
+        "position": [
+          1000,
+          520
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "0519be33-af8e-490a-a5c4-d87c482ca84d",
+        "name": "Unauthorized",
+        "parameters": {
+          "options": {
+          },
+          "respondWith": "json",
+          "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"error\": {\n    \"message\": \"Unauthorized\"\n  },\n  \"id\": $('Webhook').item.json.body.id\n})}}"
+        },
+        "position": [
+          900,
+          1060
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "6c348cb4-959b-4baa-a74c-332221491ffb",
+        "name": "IsMainBot",
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "botId": 7532634429,
+          "initData": "={{ $json.headers.authorization.substring(7) }}"
+        },
+        "position": [
+          460,
+          760
+        ],
+        "type": "@dapplets/n8n-nodes-telegram-utils.validateThirdParty",
+        "typeVersion": 1
+      },
+      {
+        "id": "06a5e32c-a609-4ca9-b8d7-347a6f1bd1de",
+        "name": "IsDebugBot",
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "botId": 7602225819,
+          "initData": "={{ $json.headers.authorization.substring(7) }}"
+        },
+        "position": [
+          680,
+          920
+        ],
+        "type": "@dapplets/n8n-nodes-telegram-utils.validateThirdParty",
+        "typeVersion": 1
       }
     ],
     "pinData": {
@@ -18035,8 +18106,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-25T18:27:51.000Z",
-    "versionId": "0e9317de-ac97-4f60-b8dc-d8d1a1402293"
+    "updatedAt": "2025-04-29T13:15:39.000Z",
+    "versionId": "353e819a-e5eb-4d04-9410-4ceadba11173"
   },
   {
     "active": true,
