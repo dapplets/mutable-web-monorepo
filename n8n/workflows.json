@@ -1266,7 +1266,7 @@
           [
             {
               "index": 0,
-              "node": "Telegram22",
+              "node": "GetEnvVariables",
               "type": "main"
             }
           ]
@@ -1465,6 +1465,17 @@
             {
               "index": 0,
               "node": "Edit Fields2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GetEnvVariables": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram22",
               "type": "main"
             }
           ]
@@ -3187,7 +3198,7 @@
           "query": "CREATE TABLE \"personal-data\".{{ $json.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    data VARCHAR NOT NULL,\n    datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n"
         },
         "position": [
-          2360,
+          2580,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3262,7 +3273,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3284,7 +3295,7 @@
           "query": "CREATE TABLE \"public\".{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    session_id VARCHAR NOT NULL,\n    message JSONB NOT NULL,\n    timestamp TIMESTAMP DEFAULT NOW()\n);\n"
         },
         "position": [
-          2580,
+          2800,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3327,7 +3338,7 @@
           }
         },
         "position": [
-          2800,
+          3020,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3360,7 +3371,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3395,7 +3406,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1920
         ],
         "type": "n8n-nodes-base.if",
@@ -3419,7 +3430,7 @@
           "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
-          2160,
+          2380,
           -2080
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3444,7 +3455,7 @@
           "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
-          3020,
+          3240,
           -1920
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3915,7 +3926,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1760
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3940,7 +3951,7 @@
           "text": "=Thanks for your feedback! We've received it, and we're already looking into how we can use it to improve Xen. We appreciate your help in making Xen better."
         },
         "position": [
-          2160,
+          2380,
           -1760
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3973,7 +3984,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -1480
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3994,7 +4005,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1480
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -4018,7 +4029,7 @@
           "text": "={{ $json.result }}"
         },
         "position": [
-          2360,
+          2580,
           -1480
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4032,7 +4043,7 @@
           "jsCode": "const dataArray = $json.data;\n\nif (!Array.isArray(dataArray)) {\n  return [{ json: { error: \"Input 'data' is not an array.\" } }]; // Handle non-array input\n}\n\nconst outputString = dataArray.join('\\n\\n');\n\nreturn [{ json: { result: outputString } }];"
         },
         "position": [
-          2160,
+          2380,
           -1480
         ],
         "type": "n8n-nodes-base.code",
@@ -4056,7 +4067,7 @@
           "text": "={{ $json.value }}"
         },
         "position": [
-          2160,
+          2380,
           -1320
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4473,7 +4484,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -1680
         ],
         "type": "n8n-nodes-base.if",
@@ -4582,7 +4593,7 @@
           }
         },
         "position": [
-          2580,
+          2800,
           -1160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -4606,7 +4617,7 @@
           "text": "=📰 You're now subscribed to {{ $json.link }} 📰\n\nXen will monitor this source and report news that is important to you. This intelligent feature improves as Xen gets to know you."
         },
         "position": [
-          2780,
+          3000,
           -1160
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4641,7 +4652,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -1160
         ],
         "type": "n8n-nodes-base.if",
@@ -4658,7 +4669,7 @@
           "url": "=https://www.reddit.com/{{ $json.message.text.replace(/^\\/sub\\s*/, '') }}.rss"
         },
         "position": [
-          1940,
+          2160,
           -1160
         ],
         "type": "n8n-nodes-base.rssFeedRead",
@@ -4695,7 +4706,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -1160
         ],
         "type": "n8n-nodes-base.if",
@@ -4719,7 +4730,7 @@
           "text": "=⚠️ Xen could not find the subreddit you are trying to add or it is empty."
         },
         "position": [
-          2360,
+          2580,
           -1020
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4744,7 +4755,7 @@
           "text": "=⚠️ Invalid Command ⚠️\n\nYou are unable to create a subscription because an invalid format is specified. Subreddits usually named like \"r/Somename\". The command to add in this case is /sub r/Somename ."
         },
         "position": [
-          1940,
+          2160,
           -1020
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4757,7 +4768,7 @@
         "parameters": {
         },
         "position": [
-          2240,
+          2460,
           -720
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.generateKeyPair",
@@ -4782,7 +4793,7 @@
           "resume": "webhook"
         },
         "position": [
-          2660,
+          2880,
           -720
         ],
         "type": "n8n-nodes-base.wait",
@@ -4807,7 +4818,7 @@
           "text": "=Please authorize this bot in your NEAR account by following the URL: \n\n[https://app.mynearwallet.com/login/?title=Xen+Bot&public_key={{$json.publicKey.urlEncode()}}&contract_id=social.dapplets.near&success_url={{$execution.resumeUrl.urlEncode()}}/webhook]\n\nYou may easily revoke access at any time."
         },
         "position": [
-          2460,
+          2680,
           -720
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4926,7 +4937,7 @@
           }
         },
         "position": [
-          3320,
+          3540,
           -720
         ],
         "type": "n8n-nodes-base.postgres",
@@ -4949,7 +4960,7 @@
           "text": "=You are logged in with `{{ $('Wait for Signing').item.json.query.account_id }}`"
         },
         "position": [
-          3760,
+          3980,
           -720
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4971,7 +4982,7 @@
           "operation": "deleteMessage"
         },
         "position": [
-          3540,
+          3760,
           -720
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5088,7 +5099,7 @@
           }
         },
         "position": [
-          2240,
+          2460,
           -860
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5111,7 +5122,7 @@
           "text": "=You are logged out"
         },
         "position": [
-          2460,
+          2680,
           -860
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5126,7 +5137,7 @@
           "privateKey": "={{ $('Generate Key Pair').item.json.privateKey }}"
         },
         "position": [
-          2880,
+          3100,
           -720
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.signMessage",
@@ -5186,7 +5197,7 @@
           }
         },
         "position": [
-          3100,
+          3320,
           -720
         ],
         "type": "n8n-nodes-base.set",
@@ -5227,7 +5238,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -780
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5262,7 +5273,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -780
         ],
         "type": "n8n-nodes-base.if",
@@ -5425,7 +5436,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -560
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5460,7 +5471,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -560
         ],
         "type": "n8n-nodes-base.if",
@@ -5473,7 +5484,7 @@
           "accountId": "={{ $('Get Account1').item.json.near_account_id }}"
         },
         "position": [
-          2460,
+          2680,
           -560
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.getAccountBalance",
@@ -5496,7 +5507,7 @@
           "text": "=Developer mode: {{ $('Get Account1').item.json.isdeveloper }}\n\nXen is logged in as: {{ $('Get Account1').item.json.near_account_id }}\n\nXen balance is: {{ $('Get Account Balance').item.json.formatted.available }} NEAR\n\n{{ $json.agent_ids.length === 0 ? \"No agents are connected to your Xen.\" : \"The following agents are connected to your Xen:\" }}\n{{ $json.agent_ids.map(x => `[${x}](https://app.near.ai/agents/${x}/latest)`).join('\\n') }}"
         },
         "position": [
-          3300,
+          3520,
           -560
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5520,7 +5531,7 @@
           "text": "=Xen is not logged in.\nNo agents are connected to your Xen."
         },
         "position": [
-          2240,
+          2460,
           -400
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5542,7 +5553,7 @@
           "operation": "sendChatAction"
         },
         "position": [
-          2240,
+          2460,
           -560
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5566,7 +5577,7 @@
           }
         },
         "position": [
-          3080,
+          3300,
           -560
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -5590,7 +5601,7 @@
           }
         },
         "position": [
-          2880,
+          3100,
           -560
         ],
         "type": "n8n-nodes-base.set",
@@ -5614,7 +5625,7 @@
           "text": "=⚠️ Invalid Command ⚠️\n\nOops! It looks like you didn’t include any feedback text.\nTo send feedback, please use the format:\n/f Your feedback goes here"
         },
         "position": [
-          1940,
+          2160,
           -1620
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5628,7 +5639,7 @@
           "errorMessage": "=Test error thrown"
         },
         "position": [
-          1720,
+          1940,
           -400
         ],
         "type": "n8n-nodes-base.stopAndError",
@@ -5694,7 +5705,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -1320
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5770,7 +5781,7 @@
           }
         },
         "position": [
-          2480,
+          2700,
           -220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5811,7 +5822,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           -220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5835,7 +5846,7 @@
           "text": "=ℹ️ 'About' updated."
         },
         "position": [
-          2680,
+          2900,
           -220
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5870,7 +5881,7 @@
           }
         },
         "position": [
-          2240,
+          2460,
           -220
         ],
         "type": "n8n-nodes-base.if",
@@ -5946,7 +5957,7 @@
           }
         },
         "position": [
-          2680,
+          2900,
           -60
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5988,7 +5999,7 @@
           }
         },
         "position": [
-          2480,
+          2700,
           -60
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6012,7 +6023,7 @@
           "text": "=ℹ️ 'About' set to default."
         },
         "position": [
-          2900,
+          3120,
           -60
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6037,7 +6048,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1320
         ],
         "type": "n8n-nodes-base.set",
@@ -6072,7 +6083,7 @@
           }
         },
         "position": [
-          1960,
+          2180,
           -220
         ],
         "type": "n8n-nodes-base.if",
@@ -6113,7 +6124,7 @@
           }
         },
         "position": [
-          1720,
+          1940,
           160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6148,7 +6159,7 @@
           }
         },
         "position": [
-          1960,
+          2180,
           160
         ],
         "type": "n8n-nodes-base.if",
@@ -6273,7 +6284,7 @@
           }
         },
         "position": [
-          2240,
+          2460,
           160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6398,7 +6409,7 @@
           }
         },
         "position": [
-          2240,
+          2460,
           340
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6421,7 +6432,7 @@
           "text": "=This command does not exist."
         },
         "position": [
-          2240,
+          2460,
           -60
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6446,7 +6457,7 @@
           "text": "=ℹ️ DEV MODE OFF"
         },
         "position": [
-          2480,
+          2700,
           160
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6471,7 +6482,7 @@
           "text": "=ℹ️ DEV MODE ON"
         },
         "position": [
-          2480,
+          2700,
           340
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6500,7 +6511,7 @@
                     {
                       "additionalFields": {
                         "web_app": {
-                          "url": "https://tgapp.aigency.test.dapplets.org/"
+                          "url": "={{ $('GetEnvVariables').item.json.telegram_web_app_url }}"
                         }
                       },
                       "text": "Open"
@@ -6514,7 +6525,7 @@
           "text": "💎 Dashboard 📊"
         },
         "position": [
-          1720,
+          2140,
           380
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6617,8 +6628,30 @@
           }
         },
         "position": [
-          2680,
+          2900,
           -560
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "56c3ad05-60d2-44e5-a566-68c894681c05",
+        "name": "GetEnvVariables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'TELEGRAM_WEB_APP_URL') as telegram_web_app_url"
+        },
+        "position": [
+          1940,
+          380
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -6635,8 +6668,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-28T13:05:16.000Z",
-    "versionId": "0f4d2b0d-b2d7-4986-86a1-b372ffcb8e50"
+    "updatedAt": "2025-04-29T14:03:34.000Z",
+    "versionId": "35684c7f-f6b6-4a75-89c8-1dc79d34175e"
   },
   {
     "active": false,
