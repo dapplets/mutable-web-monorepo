@@ -85,7 +85,7 @@ const Warnings = () => {
         <h1 className="text-center text-2xl font-bold">Warnings</h1>
         <button
           disabled={!warnings?.items.length}
-          className={`me-3 flex h-5 w-5 cursor-pointer items-center justify-center text-[#7A818B] transition ${warnings?.items.length ? 'hover:text-(--color-main-text)' : ''}`}
+          className={`me-2 flex h-5 w-5 cursor-pointer items-center justify-center text-[#7A818B] transition ${warnings?.items.length ? 'hover:text-(--color-main-text)' : ''}`}
           onClick={() => handleDeleteAll.mutate({ methodName: 'deleteAllWarnings' })}
         >
           {handleDeleteAll.isPending ? <Spinner /> : <Trash />}
