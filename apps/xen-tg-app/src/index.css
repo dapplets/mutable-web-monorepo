@@ -120,7 +120,7 @@ html, body {
   --main-text: rgba(34, 34, 34, 1);
   --opposite-text: rgba(255, 255, 255, 1);
   --gray-text: rgba(122, 129, 139, 1);
-  --light-white-bg: rgba(248, 249, 255, 0.05);
+  --light-white-bg: rgba(255, 255, 255, 0.3);
   --my-primary: rgba(124, 67, 197, 1);
   --my-secondary: rgba(191, 191, 191, 1);
   --my-primary-01: rgba(124, 67, 197, 0.1);
@@ -128,7 +128,7 @@ html, body {
 
   /* animated background */
   --bg1: rgb(222, 219, 224);
-  --bg2: rgb(227, 228, 235);
+  --bg2: rgba(247, 246, 243, 0.5);
   --c1: 18, 113, 255;
   --c2: 221, 74, 255;
   --c3: 100, 220, 255;
@@ -184,7 +184,7 @@ html, body {
 
   /* animated background */
   --bg1: rgb(42, 0, 63);
-  --bg2: rgb(0, 11, 54);
+  --bg2: rgba(0, 4, 22, 0.5);
   --c1: 18, 113, 255;
   --c2: 221, 74, 255;
   --c3: 100, 220, 255;
