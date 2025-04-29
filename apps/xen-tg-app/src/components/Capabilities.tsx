@@ -101,7 +101,7 @@ const Capabilities = () => {
         </div>
         <button
           role="link"
-          className="me-3 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+          className="me-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
           onClick={openNearAI}
         >
           <ExternalLinkIcon />
