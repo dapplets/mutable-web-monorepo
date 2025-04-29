@@ -14950,6 +14950,17 @@
           ]
         ]
       },
+      "GetEnvVariables": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "IsMainBot",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "If": {
         "main": [
           [
@@ -15497,7 +15508,7 @@
           [
             {
               "index": 0,
-              "node": "IsMainBot",
+              "node": "GetEnvVariables",
               "type": "main"
             }
           ]
@@ -15967,7 +15978,7 @@
           }
         },
         "position": [
-          1320,
+          1540,
           0
         ],
         "type": "n8n-nodes-base.switch",
@@ -15983,7 +15994,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": $json.result,\n  \"error\": $json.error ? { \"message\": $json.error } : undefined,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          4080,
+          4300,
           320
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -16024,7 +16035,7 @@
           }
         },
         "position": [
-          2280,
+          2500,
           -220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16066,7 +16077,7 @@
           }
         },
         "position": [
-          2500,
+          2720,
           -220
         ],
         "type": "n8n-nodes-base.set",
@@ -16182,7 +16193,7 @@
           }
         },
         "position": [
-          2280,
+          2500,
           -380
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16195,7 +16206,7 @@
           "accountId": "={{ $json.near_account_id }}"
         },
         "position": [
-          2520,
+          2740,
           -40
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.getAccountBalance",
@@ -16236,7 +16247,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           20
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16271,7 +16282,7 @@
           }
         },
         "position": [
-          2260,
+          2480,
           20
         ],
         "type": "n8n-nodes-base.if",
@@ -16295,7 +16306,7 @@
           }
         },
         "position": [
-          2520,
+          2740,
           100
         ],
         "type": "n8n-nodes-base.set",
@@ -16325,7 +16336,7 @@
           }
         },
         "position": [
-          2680,
+          2900,
           -40
         ],
         "type": "n8n-nodes-base.set",
@@ -16366,7 +16377,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           1040
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16390,7 +16401,7 @@
           }
         },
         "position": [
-          2280,
+          2500,
           1040
         ],
         "type": "n8n-nodes-base.set",
@@ -16515,7 +16526,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           1200
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16640,7 +16651,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           1360
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16665,7 +16676,7 @@
           "query": "select * \nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}\norder by id desc\nlimit $1\noffset $2"
         },
         "position": [
-          2100,
+          2320,
           2060
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16682,7 +16693,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           2060
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -16712,7 +16723,7 @@
           }
         },
         "position": [
-          2780,
+          3000,
           2140
         ],
         "type": "n8n-nodes-base.set",
@@ -16735,7 +16746,7 @@
           "query": "select count(*) as count\nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}"
         },
         "position": [
-          2100,
+          2320,
           2240
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16752,7 +16763,7 @@
           }
         },
         "position": [
-          2560,
+          2780,
           2140
         ],
         "type": "n8n-nodes-base.merge",
@@ -16784,7 +16795,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           2420
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16825,7 +16836,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           2580
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16850,7 +16861,7 @@
           "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\norder by uc.capability_domain asc, uc.capability_name asc\nlimit $2\noffset $3"
         },
         "position": [
-          2100,
+          2320,
           260
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16867,7 +16878,7 @@
           }
         },
         "position": [
-          2520,
+          2740,
           260
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -16897,7 +16908,7 @@
           }
         },
         "position": [
-          3000,
+          3220,
           340
         ],
         "type": "n8n-nodes-base.set",
@@ -16920,7 +16931,7 @@
           "query": "select count(*) as count\nfrom \"default\".user_capability\nwhere username = $1 and is_deleted = false"
         },
         "position": [
-          2100,
+          2320,
           420
         ],
         "type": "n8n-nodes-base.postgres",
@@ -16937,7 +16948,7 @@
           }
         },
         "position": [
-          2780,
+          3000,
           340
         ],
         "type": "n8n-nodes-base.merge",
@@ -16953,7 +16964,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           260
         ],
         "type": "n8n-nodes-base.set",
@@ -17053,7 +17064,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           580
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17154,7 +17165,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17255,7 +17266,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           900
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17280,7 +17291,7 @@
           "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false\norder by created_at desc\nlimit $2\noffset $3"
         },
         "position": [
-          2100,
+          2320,
           1520
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17297,7 +17308,7 @@
           }
         },
         "position": [
-          2540,
+          2760,
           1520
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -17327,7 +17338,7 @@
           }
         },
         "position": [
-          3000,
+          3220,
           1600
         ],
         "type": "n8n-nodes-base.set",
@@ -17350,7 +17361,7 @@
           "query": "select count(*) as count\nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false"
         },
         "position": [
-          2100,
+          2320,
           1700
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17367,7 +17378,7 @@
           }
         },
         "position": [
-          2780,
+          3000,
           1600
         ],
         "type": "n8n-nodes-base.merge",
@@ -17383,7 +17394,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           1520
         ],
         "type": "n8n-nodes-base.set",
@@ -17489,7 +17500,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           1880
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17501,7 +17512,7 @@
         "parameters": {
         },
         "position": [
-          2280,
+          2500,
           -540
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.generateKeyPair",
@@ -17526,7 +17537,7 @@
           "resume": "webhook"
         },
         "position": [
-          2700,
+          2920,
           -540
         ],
         "type": "n8n-nodes-base.wait",
@@ -17645,7 +17656,7 @@
           }
         },
         "position": [
-          3360,
+          3580,
           -540
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17659,7 +17670,7 @@
           "privateKey": "={{ $('Generate Key Pair').item.json.privateKey }}"
         },
         "position": [
-          2920,
+          3140,
           -540
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.signMessage",
@@ -17719,7 +17730,7 @@
           }
         },
         "position": [
-          3140,
+          3360,
           -540
         ],
         "type": "n8n-nodes-base.set",
@@ -17735,7 +17746,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": {\n    \"url\": \"https://app.mynearwallet.com/login/?title=Xen+Bot&public_key=\" + $json.publicKey.urlEncode() + \"&contract_id=social.dapplets.near&success_url=\" + $execution.resumeUrl.urlEncode() + \"/webhook\"\n  },\n  \"error\": $json.error ? { \"message\": $json.error } : undefined,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          2480,
+          2700,
           -540
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -17795,7 +17806,7 @@
           "url": "https://api.near.ai/v1/registry/list_entries"
         },
         "position": [
-          2520,
+          2740,
           2680
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -17830,7 +17841,7 @@
           }
         },
         "position": [
-          2700,
+          2920,
           2680
         ],
         "type": "n8n-nodes-base.if",
@@ -17930,7 +17941,7 @@
           }
         },
         "position": [
-          2940,
+          3160,
           2680
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17971,7 +17982,7 @@
           }
         },
         "position": [
-          2100,
+          2320,
           2740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18006,7 +18017,7 @@
           }
         },
         "position": [
-          2300,
+          2520,
           2740
         ],
         "type": "n8n-nodes-base.if",
@@ -18030,7 +18041,7 @@
           }
         },
         "position": [
-          2520,
+          2740,
           2840
         ],
         "type": "n8n-nodes-base.set",
@@ -18044,7 +18055,7 @@
           "mode": "runOnceForEachItem"
         },
         "position": [
-          1000,
+          1220,
           520
         ],
         "type": "n8n-nodes-base.code",
@@ -18060,7 +18071,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"error\": {\n    \"message\": \"Unauthorized\"\n  },\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          900,
+          1120,
           1060
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -18071,11 +18082,11 @@
         "name": "IsMainBot",
         "onError": "continueErrorOutput",
         "parameters": {
-          "botId": 7532634429,
-          "initData": "={{ $json.headers.authorization.substring(7) }}"
+          "botId": "={{ $json.telegram_main_bot_id }}",
+          "initData": "={{ $('Webhook').item.json.headers.authorization.substring(7) }}"
         },
         "position": [
-          460,
+          680,
           760
         ],
         "type": "@dapplets/n8n-nodes-telegram-utils.validateThirdParty",
@@ -18086,15 +18097,37 @@
         "name": "IsDebugBot",
         "onError": "continueErrorOutput",
         "parameters": {
-          "botId": 7602225819,
-          "initData": "={{ $json.headers.authorization.substring(7) }}"
+          "botId": "={{ $('GetEnvVariables').item.json.telegram_debug_bot_id }}",
+          "initData": "={{ $('Webhook').item.json.headers.authorization.substring(7) }}"
         },
         "position": [
-          680,
+          900,
           920
         ],
         "type": "@dapplets/n8n-nodes-telegram-utils.validateThirdParty",
         "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "47f22e4c-c6d0-4ea1-8c00-6732b9919616",
+        "name": "GetEnvVariables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'TELEGRAM_MAIN_BOT_ID') as telegram_main_bot_id,\n\t(select value from environment.variables where type = 'TELEGRAM_DEBUG_BOT_ID') as telegram_debug_bot_id"
+        },
+        "position": [
+          420,
+          760
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -18106,8 +18139,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-29T13:15:39.000Z",
-    "versionId": "353e819a-e5eb-4d04-9410-4ceadba11173"
+    "updatedAt": "2025-04-29T13:57:56.000Z",
+    "versionId": "37a97a55-c861-4500-817b-35e563e188bb"
   },
   {
     "active": true,
