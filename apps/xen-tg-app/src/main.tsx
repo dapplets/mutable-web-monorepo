@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import App from './App.tsx'
 import Memories from './components/Memories.tsx'
+import NewsMonitor from './components/NewsMonitor.tsx'
 import './index.css'
 
 const queryClient = new QueryClient()
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: 'memories',
     element: <Memories />,
+  },
+  {
+    path: 'news-monitor',
+    element: <NewsMonitor />,
   },
 ])
 
