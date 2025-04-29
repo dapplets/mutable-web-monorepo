@@ -58,7 +58,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) p-2.5">
       <button className="flex flex-1 flex-col gap-0.5 overflow-hidden" onClick={capabilitiy.action}>
-        <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
+        <div className="flex py-0.25 text-left text-[14px]/[100%] font-semibold wrap-anywhere">
           {capabilitiy.name}
         </div>
         <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-gray-text)">
