@@ -5,32 +5,30 @@ import { Balance, TXenUser } from '../types'
 import Spinner from './Spinner'
 import { API_URL } from '@/env'
 
-const queryFn =
-  (tgDataStr: string, tgDataObj: WebAppInitData, name: string, isLoggedIn?: boolean) =>
-  async () => {
-    if (isLoggedIn === false) return
-    if (!tgDataStr) {
-      throw new Error('Telegram is not available')
-    }
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: name,
-        params: {},
-        id: 1,
-      }),
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const data = await response.json()
-    return data.result
+const queryFn = (tgDataStr: string, name: string, isLoggedIn?: boolean) => async () => {
+  if (isLoggedIn === false) return
+  if (!tgDataStr) {
+    throw new Error('Telegram is not available')
   }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${tgDataStr}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
 
 const mutationFn = (name: string) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -39,7 +37,7 @@ const mutationFn = (name: string) => async () => {
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -59,17 +57,16 @@ const mutationFn = (name: string) => async () => {
 const Wallet = () => {
   const queryClient = useQueryClient()
   const tgDataStr = window.Telegram.WebApp.initData
-  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
   const { isPending: isPendingUser, data: user } = useQuery<TXenUser>({
-    queryKey: ['user', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getCurrentUser'),
+    queryKey: ['user', tgDataStr],
+    queryFn: queryFn(tgDataStr, 'getCurrentUser'),
   })
 
   const isLoggedIn = !!user?.nearAccountId
 
   const { data: balance } = useQuery<Balance>({
-    queryKey: ['balance', tgDataStr, tgDataObj, isLoggedIn],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getBalance', isLoggedIn),
+    queryKey: ['balance', tgDataStr, isLoggedIn],
+    queryFn: queryFn(tgDataStr, 'getBalance', isLoggedIn),
   })
 
   const handleLogout = useMutation({

@@ -3,20 +3,14 @@ import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 const queryFn =
-  (
-    tgDataStr: string,
-    tgDataObj: WebAppInitData,
-    name: string,
-    params?: { [key: string]: string }
-  ) =>
-  async () => {
+  (tgDataStr: string, name: string, params?: { [key: string]: string }) => async () => {
     if (!tgDataStr) {
       throw new Error('Telegram is not available')
     }
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
+        Authorization: `Bearer ${tgDataStr}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -40,7 +34,7 @@ const mutationFn = async (isDevModeTurnedOn: boolean) => {
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -60,10 +54,9 @@ const mutationFn = async (isDevModeTurnedOn: boolean) => {
 const DeveloperMode = () => {
   const queryClient = useQueryClient()
   const tgDataStr = window.Telegram.WebApp.initData
-  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
   const { data: isDevModeTurnedOn } = useQuery<boolean>({
-    queryKey: ['dev-mode', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getDevMode'),
+    queryKey: ['dev-mode', tgDataStr],
+    queryFn: queryFn(tgDataStr, 'getDevMode'),
   })
 
   const switchDveloperMode = useMutation({
