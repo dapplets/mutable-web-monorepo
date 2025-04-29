@@ -13,7 +13,7 @@ const mutationFn = (name: string, params?: { [key: string]: string | number }) =
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
