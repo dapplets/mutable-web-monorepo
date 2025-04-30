@@ -18102,6 +18102,7 @@
         "name": "Unauthorized",
         "parameters": {
           "options": {
+            "responseCode": 401
           },
           "respondWith": "json",
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"error\": {\n    \"message\": \"Unauthorized\"\n  },\n  \"id\": $('Webhook').item.json.body.id\n})}}"
@@ -18175,8 +18176,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-30T09:00:11.000Z",
-    "versionId": "3f03849c-dd62-40a0-bc66-2ead391770a6"
+    "updatedAt": "2025-04-30T09:10:36.000Z",
+    "versionId": "50346888-fbf3-43f2-b0dc-d78476eb7db5"
   },
   {
     "active": true,
