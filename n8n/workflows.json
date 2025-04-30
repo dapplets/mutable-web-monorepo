@@ -1098,7 +1098,7 @@
     "versionId": "fa984183-11c4-40f4-909a-67a212d2c6a7"
   },
   {
-    "active": false,
+    "active": true,
     "connections": {
       "AI Agent": {
         "main": [
@@ -6593,7 +6593,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-30T11:09:25.000Z",
+    "updatedAt": "2025-04-30T11:44:49.000Z",
     "versionId": "e4b4aac4-7987-4d46-a2a9-8fe8e8fc7473"
   },
   {
@@ -6883,6 +6883,17 @@
         ]
       },
       "NotifySuccessReward1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "NotifyUser",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "NotifyUser": {
         "main": [
           [
             {
@@ -7415,30 +7426,6 @@
         "typeVersion": 2.2
       },
       {
-        "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
-          }
-        },
-        "id": "234a5b3a-4c69-4886-a843-4a89611936e3",
-        "name": "Telegram",
-        "parameters": {
-          "additionalFields": {
-            "appendAttribution": false
-          },
-          "chatId": "={{ $json.id }}",
-          "text": "=Connect your NEAR wallet first using /login command."
-        },
-        "position": [
-          1420,
-          180
-        ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "8d98936e-5e1d-451d-baf2-e848c9602c39"
-      },
-      {
         "id": "1a2a3bfb-1393-48b9-be3f-b1f7a3ff7989",
         "name": "Stop and Error",
         "parameters": {
@@ -7504,9 +7491,9 @@
         "parameters": {
           "additionalFields": {
             "appendAttribution": false,
-            "message_thread_id": 789
+            "message_thread_id": "={{ $('GetVariables').item.json.telegram_monitoring_topic_id }}"
           },
-          "chatId": "-1002043984595",
+          "chatId": "={{ $('GetVariables').item.json.telegram_monitoring_chat_id }}",
           "text": "=Agent owner {{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}\nRequest: {{ $('Split Out').item.json.query }}"
         },
         "position": [
@@ -7529,9 +7516,9 @@
         "parameters": {
           "additionalFields": {
             "appendAttribution": false,
-            "message_thread_id": 789
+            "message_thread_id": "={{ $('GetVariables').item.json.telegram_monitoring_topic_id }}"
           },
-          "chatId": "-1002043984595",
+          "chatId": "={{ $('GetVariables').item.json.telegram_monitoring_chat_id }}",
           "text": "=Cannot reward {{ $('Split Out').item.json.agent_id.split('/')[0] }} for agent usage\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}\nRequest: {{ $('Split Out').item.json.query }}"
         },
         "position": [
@@ -7760,7 +7747,7 @@
           "operation": "executeQuery",
           "options": {
           },
-          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'MAX_USAGE_REWARD_AMOUNT') as max_usage_reward_amount"
+          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'MAX_USAGE_REWARD_AMOUNT') as max_usage_reward_amount,\n    (select value from environment.variables where type = 'TELEGRAM_MONITORING_CHAT_ID') as telegram_monitoring_chat_id,\n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_TOPIC_ID') as telegram_monitoring_topic_id"
         },
         "position": [
           3640,
@@ -7927,9 +7914,9 @@
         "parameters": {
           "additionalFields": {
             "appendAttribution": false,
-            "message_thread_id": 789
+            "message_thread_id": "={{ $('GetVariables1').item.json.telegram_monitoring_topic_id }}"
           },
-          "chatId": "-1002043984595",
+          "chatId": "={{ $('GetVariables1').item.json.telegram_monitoring_chat_id }}",
           "text": "=Caller {{ $('Postgres').item.json.near_account_id }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR1').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}\nRequest: {{ $('Split Out').item.json.query }}"
         },
         "position": [
@@ -7952,9 +7939,9 @@
         "parameters": {
           "additionalFields": {
             "appendAttribution": false,
-            "message_thread_id": 789
+            "message_thread_id": "={{ $('GetVariables1').item.json.telegram_monitoring_topic_id }}"
           },
-          "chatId": "-1002043984595",
+          "chatId": "={{ $('GetVariables1').item.json.telegram_monitoring_chat_id }}",
           "text": "=Cannot reward caller {{ $('Postgres').item.json.near_account_id }} for agent usage\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}\nRequest: {{ $('Split Out').item.json.query }}"
         },
         "position": [
@@ -8155,7 +8142,7 @@
           "operation": "executeQuery",
           "options": {
           },
-          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'MAX_USAGE_REWARD_AMOUNT') as max_usage_reward_amount"
+          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'MAX_USAGE_REWARD_AMOUNT') as max_usage_reward_amount,\n    (select value from environment.variables where type = 'TELEGRAM_MONITORING_CHAT_ID') as telegram_monitoring_chat_id,\n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_TOPIC_ID') as telegram_monitoring_topic_id"
         },
         "position": [
           3640,
@@ -8189,17 +8176,33 @@
         ],
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "f8a67a95-6190-4879-9aff-78a2f3e4b8d8",
+        "name": "NotifyUser",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Begin').item.json['user-id'] }}",
+          "text": "=You rewarded for using a NEAR AI agent.\n[https://nearblocks.io/txns/{{ $('Transfer NEAR1').item.json.result.transaction_outcome.id }}]"
+        },
+        "position": [
+          4840,
+          680
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "15319ae4-c933-41ab-a423-a693daf9d794"
       }
     ],
     "pinData": {
-      "Begin": [
-        {
-          "json": {
-            "query": "improve tweet text: holy fucking shit!",
-            "user-id": 159914533
-          }
-        }
-      ]
     },
     "settings": {
       "callerPolicy": "workflowsFromSameOwner",
@@ -8210,8 +8213,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-30T10:15:17.000Z",
-    "versionId": "d950653c-57d4-4310-bc9d-80b78fe6b1b9"
+    "updatedAt": "2025-04-30T11:56:19.000Z",
+    "versionId": "6541dbfb-03ea-4bb4-9f96-0d7c9ff55956"
   },
   {
     "active": false,
@@ -13597,6 +13600,17 @@
           ]
         ]
       },
+      "GetEnvVariables": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "NotifyMonitoring",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "GetErrorCount": {
         "main": [
           [
@@ -13624,12 +13638,12 @@
           [
             {
               "index": 0,
-              "node": "Telegram13",
+              "node": "n8n",
               "type": "main"
             },
             {
               "index": 0,
-              "node": "n8n",
+              "node": "GetEnvVariables",
               "type": "main"
             }
           ]
@@ -13784,31 +13798,6 @@
       },
       {
         "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
-          }
-        },
-        "id": "17d9b437-4358-4468-9856-a9332f0388d3",
-        "name": "Telegram13",
-        "parameters": {
-          "additionalFields": {
-            "appendAttribution": false,
-            "message_thread_id": 789
-          },
-          "chatId": "-1002043984595",
-          "text": "=Error #{{ $json.data.substring(0, 6) }}\n{{ $json.execution.error.message }}\n\nNode: {{ $json.execution.lastNodeExecuted }}\n\n```\n{{ $json.execution.error.stack }}\n```\n\nWorkflow: [{{ $json.workflow.name }}]({{ $json.execution.url }})"
-        },
-        "position": [
-          -440,
-          260
-        ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
-      },
-      {
-        "credentials": {
           "n8nApi": {
             "id": "29pMkB66wmwgdc6w",
             "name": "n8n account"
@@ -13864,7 +13853,7 @@
           "operation": "executeQuery",
           "options": {
           },
-          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key"
+          "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_CHAT_ID') as telegram_monitoring_chat_id,\n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_TOPIC_ID') as telegram_monitoring_topic_id"
         },
         "position": [
           240,
@@ -13961,9 +13950,9 @@
         "parameters": {
           "additionalFields": {
             "appendAttribution": false,
-            "message_thread_id": 789
+            "message_thread_id": "={{ $('Get Variables').item.json.telegram_monitoring_topic_id }}"
           },
-          "chatId": "-1002043984595",
+          "chatId": "={{ $('Get Variables').item.json.telegram_monitoring_chat_id }}",
           "text": "={{ $('GetUser').item.json.near_account_id }} rewarded for unhandled exception #{{ $('HashError').item.json.data.substring(0, 6) }}\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]\nCaller: @{{ $('ExtractExecutorInfo').item.json.username.toLowerCase() }}"
         },
         "position": [
@@ -13986,9 +13975,9 @@
         "parameters": {
           "additionalFields": {
             "appendAttribution": false,
-            "message_thread_id": 789
+            "message_thread_id": "={{ $('Get Variables').item.json.telegram_monitoring_topic_id }}"
           },
-          "chatId": "-1002043984595",
+          "chatId": "={{ $('Get Variables').item.json.telegram_monitoring_chat_id }}",
           "text": "=Cannot send reward transaction"
         },
         "position": [
@@ -14058,7 +14047,7 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('ExtractExecutorInfo').item.json.user_id }}",
-          "text": "=You're rewarded for unhandled exception\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
+          "text": "=You have been rewarded for found error\nTx: [https://nearblocks.io/txns/{{ $json.result.transaction_outcome.id }}]"
         },
         "position": [
           700,
@@ -14489,6 +14478,53 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "90e8f885-d9d3-4b88-85ef-63b5fe7dc878",
+        "name": "GetEnvVariables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_CHAT_ID') as telegram_monitoring_chat_id,\n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_TOPIC_ID') as telegram_monitoring_topic_id"
+        },
+        "position": [
+          -440,
+          260
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "17d9b437-4358-4468-9856-a9332f0388d3",
+        "name": "NotifyMonitoring",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": "={{ $('GetEnvVariables').item.json.telegram_monitoring_topic_id }}"
+          },
+          "chatId": "={{ $('GetEnvVariables').item.json.telegram_monitoring_chat_id }}",
+          "text": "=Error #{{ $('HashError').item.json.data.substring(0, 6) }}\n{{ $('Error Trigger').item.json.execution.error.message }}\n\nNode: {{ $('Error Trigger').item.json.execution.lastNodeExecuted }}\n\n```\n{{ $('Error Trigger').item.json.execution.error.stack }}\n```\n\nWorkflow: [{{ $('Error Trigger').item.json.workflow.name }}]({{ $('Error Trigger').item.json.execution.url }})"
+        },
+        "position": [
+          -280,
+          260
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
       }
     ],
     "pinData": {
@@ -14500,8 +14536,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-29T13:20:49.000Z",
-    "versionId": "8164779a-633a-4641-80d5-49b03a8ffd73"
+    "updatedAt": "2025-04-30T12:00:33.000Z",
+    "versionId": "39b9ffc3-4f58-4079-a1ce-c42ede8e6d03"
   },
   {
     "active": false,
