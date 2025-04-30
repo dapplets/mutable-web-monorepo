@@ -44,6 +44,7 @@
   background: var(--color-bg2);
   background-image: url(@/assets/noise-dark.png);
   background-blend-mode: screen;
+  background-size: 110px 110px;
 }
 
 .dark .noise {
