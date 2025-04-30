@@ -5,32 +5,30 @@ import { Balance, TXenUser } from '../types'
 import Spinner from './Spinner'
 import { API_URL } from '@/env'
 
-const queryFn =
-  (tgDataStr: string, tgDataObj: WebAppInitData, name: string, isLoggedIn?: boolean) =>
-  async () => {
-    if (isLoggedIn === false) return
-    if (!tgDataStr) {
-      throw new Error('Telegram is not available')
-    }
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: name,
-        params: {},
-        id: 1,
-      }),
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const data = await response.json()
-    return data.result
+const queryFn = (name: string, isLoggedIn?: boolean) => async () => {
+  if (isLoggedIn === false) return
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
   }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
 
 const mutationFn = (name: string) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -39,7 +37,7 @@ const mutationFn = (name: string) => async () => {
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -58,18 +56,16 @@ const mutationFn = (name: string) => async () => {
 
 const Wallet = () => {
   const queryClient = useQueryClient()
-  const tgDataStr = window.Telegram.WebApp.initData
-  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
   const { isPending: isPendingUser, data: user } = useQuery<TXenUser>({
-    queryKey: ['user', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getCurrentUser'),
+    queryKey: ['user'],
+    queryFn: queryFn('getCurrentUser'),
   })
 
   const isLoggedIn = !!user?.nearAccountId
 
   const { data: balance } = useQuery<Balance>({
-    queryKey: ['balance', tgDataStr, tgDataObj, isLoggedIn],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getBalance', isLoggedIn),
+    queryKey: ['balance', isLoggedIn],
+    queryFn: queryFn('getBalance', isLoggedIn),
   })
 
   const handleLogout = useMutation({
@@ -94,7 +90,7 @@ const Wallet = () => {
         <img src={NEAR_ICON} alt="near" />
         {balance?.formatted.available ?? '-'}
       </div>
-      <div className="me-3 flex items-center justify-between gap-3 text-[22px]/[150%] font-normal wrap-anywhere">
+      <div className="me-1 flex items-center justify-between gap-3 text-[22px]/[150%] font-normal wrap-anywhere">
         {user.nearAccountId}
         <button
           className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"

@@ -1,41 +1,35 @@
 import SyncIcon from '@/assets/sync'
+import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import ExternalLinkIcon from '../assets/external-link'
 import { TAgent } from '../types'
 import Agent from './Agent'
-import { API_URL } from '@/env'
-import { useEffect } from 'react'
 
-const queryFn =
-  (
-    tgDataStr: string,
-    tgDataObj: WebAppInitData,
-    name: string,
-    params?: { [key: string]: string | number }
-  ) =>
-  async () => {
-    if (!tgDataStr) {
-      throw new Error('Telegram is not available')
-    }
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: name,
-        params: params ?? {},
-        id: 1,
-      }),
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const data = await response.json()
-    return data.result
+const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
   }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
 
 const mutationFn = async ({
   methodName,
@@ -50,7 +44,7 @@ const mutationFn = async ({
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -68,13 +62,12 @@ const mutationFn = async ({
 }
 
 const Capabilities = () => {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const tgDataStr = window.Telegram.WebApp.initData
-  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
 
   const { data: capabilities } = useQuery<{ items: TAgent[]; total: number }>({
-    queryKey: ['capabilities', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getCapabilities', {
+    queryKey: ['capabilities'],
+    queryFn: queryFn('getCapabilities', {
       offset: 0,
       limit: 10,
     }),
@@ -106,12 +99,21 @@ const Capabilities = () => {
         </div>
         <button
           role="link"
-          className="me-3 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+          className="me-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
           onClick={openNearAI}
         >
           <ExternalLinkIcon />
         </button>
       </div>
+      <Agent
+        key="news-monitor"
+        capabilitiy={{
+          name: 'News Monitor',
+          domain: 'Core',
+          isEnabled: true,
+          action: () => navigate('/news-monitor'),
+        }}
+      />
       {capabilities?.items.map((capabilitiy) => (
         <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />
       ))}

@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import App from './App.tsx'
 import Memories from './components/Memories.tsx'
 import History from './components/History.tsx'
+import NewsMonitor from './components/NewsMonitor.tsx'
 import './index.css'
 
 const queryClient = new QueryClient()
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: 'history',
     element: <History />,
+  },
+  {
+    path: 'news-monitor',
+    element: <NewsMonitor />,
   },
 ])
 

@@ -31,6 +31,14 @@ export type TAgent = {
   name: string
   domain: string
   isEnabled: boolean
+  action?: () => void
+}
+
+export type TNewsSource = {
+  name: string
+  domain?: string
+  isEnabled?: boolean
+  icon?: string
 }
 
 export type TWarning = {
