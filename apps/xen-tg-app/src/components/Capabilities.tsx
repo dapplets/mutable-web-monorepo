@@ -6,30 +6,29 @@ import Agent from './Agent'
 import { API_URL } from '@/env'
 import { useEffect } from 'react'
 
-const queryFn =
-  (tgDataStr: string, name: string, params?: { [key: string]: string | number }) => async () => {
-    if (!tgDataStr) {
-      throw new Error('Telegram is not available')
-    }
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${tgDataStr}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: name,
-        params: params ?? {},
-        id: 1,
-      }),
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const data = await response.json()
-    return data.result
+const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
   }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
 
 const mutationFn = async ({
   methodName,
@@ -63,11 +62,10 @@ const mutationFn = async ({
 
 const Capabilities = () => {
   const queryClient = useQueryClient()
-  const tgDataStr = window.Telegram.WebApp.initData
 
   const { data: capabilities } = useQuery<{ items: TAgent[]; total: number }>({
-    queryKey: ['capabilities', tgDataStr],
-    queryFn: queryFn(tgDataStr, 'getCapabilities', {
+    queryKey: ['capabilities'],
+    queryFn: queryFn('getCapabilities', {
       offset: 0,
       limit: 10,
     }),
