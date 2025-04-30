@@ -30,6 +30,7 @@
   max-width: 24.0625rem;
   display: flex;
   flex-direction: column;
+  gap: 2rem;
 }
 
 .powerImage {
@@ -38,6 +39,8 @@
 }
 
 .link {
+  border: 1px solid transparent;
+
   &:hover {
     border-radius: 0.625rem;
     border: 1px solid var(--black-48);
@@ -58,7 +61,7 @@
 
 .itemTitle {
   padding: 0 0.625rem;
-  margin-top: 3.4375rem;
+  margin-top: 1.5rem;
   text-decoration: underline;
   font-size: var(--fs-18-24);
   font-weight: 600;
