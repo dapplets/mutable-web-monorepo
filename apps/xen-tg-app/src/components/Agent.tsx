@@ -49,6 +49,15 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
     },
   })
 
+  const handleChangeStatus = () =>
+    handleToggleCapability.mutate({
+      methodName: capabilitiy.isEnabled ? 'disableCapability' : 'enableCapability',
+      params: {
+        domain: capabilitiy.domain,
+        name: capabilitiy.name,
+      },
+    })
+
   // const handleRemoveCapability = useMutation({
   //   mutationFn,
   //   onSuccess: () => {
@@ -66,18 +75,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
         </div>
       </div>
 
-      <Switch
-        onCheckedChange={() =>
-          handleToggleCapability.mutate({
-            methodName: capabilitiy.isEnabled ? 'disableCapability' : 'enableCapability',
-            params: {
-              domain: capabilitiy.domain,
-              name: capabilitiy.name,
-            },
-          })
-        }
-        checked={capabilitiy.isEnabled}
-      />
+      <Switch onCheckedChange={handleChangeStatus} checked={capabilitiy.isEnabled} />
       {/* <button
         className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
         onClick={() =>
