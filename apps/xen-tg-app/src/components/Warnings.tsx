@@ -81,7 +81,7 @@ const Warnings = () => {
       <div className="my-1.5 flex w-full items-center justify-between">
         <h1 className="text-center text-2xl font-bold">{`Warnings (${warnings?.total ?? '-'})`}</h1>
         <button
-          className="flex w-16 cursor-pointer items-center justify-center py-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text)"
+          className={`flex w-16 cursor-pointer items-center justify-center py-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text) ${warnings?.items.length ? 'hover:text-(--color-main-text)' : ''}`}
           onClick={() => handleDeleteAll.mutate({ methodName: 'deleteAllWarnings' })}
           disabled={!warnings?.items.length}
         >
