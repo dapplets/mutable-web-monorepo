@@ -78,7 +78,7 @@ const Memories = () => {
         <div className="my-1.5 flex w-full items-center justify-between">
           <h1 className="text-center text-2xl font-bold">{`Memories (${memories?.total ?? '-'})`}</h1>
           <button
-            className="flex w-16 cursor-pointer items-center justify-center py-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text)"
+            className="flex w-16 cursor-pointer items-center justify-center py-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text) hover:disabled:cursor-default"
             onClick={() => handleDeleteAll.mutate()}
             disabled={!memories || !memories.total}
           >
