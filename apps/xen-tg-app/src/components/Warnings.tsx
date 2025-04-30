@@ -5,36 +5,29 @@ import { TWarning } from '../types'
 import Spinner from './Spinner'
 import { API_URL } from '@/env'
 
-const queryFn =
-  (
-    tgDataStr: string,
-    tgDataObj: WebAppInitData,
-    name: string,
-    params?: { [key: string]: string | number }
-  ) =>
-  async () => {
-    if (!tgDataStr) {
-      throw new Error('Telegram is not available')
-    }
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${JSON.stringify(tgDataObj)}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: name,
-        params: params ?? {},
-        id: 1,
-      }),
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const data = await response.json()
-    return data.result
+const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
   }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
 
 const mutationFn = async ({
   methodName,
@@ -49,7 +42,7 @@ const mutationFn = async ({
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${JSON.stringify(window.Telegram.WebApp.initDataUnsafe)}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -68,12 +61,10 @@ const mutationFn = async ({
 
 const Warnings = () => {
   const queryClient = useQueryClient()
-  const tgDataStr = window.Telegram.WebApp.initData
-  const tgDataObj = window.Telegram.WebApp.initDataUnsafe
 
   const { data: warnings } = useQuery<{ items: TWarning[]; total: number }>({
-    queryKey: ['warnings', tgDataStr, tgDataObj],
-    queryFn: queryFn(tgDataStr, tgDataObj, 'getWarnings', {
+    queryKey: ['warnings'],
+    queryFn: queryFn('getWarnings', {
       offset: 0,
       limit: 10,
     }),
