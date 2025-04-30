@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import App from './App.tsx'
 import Memories from './components/Memories.tsx'
 import './index.css'
+import Settings from './components/Settings.tsx'
 
 const queryClient = new QueryClient()
 
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: 'memories',
     element: <Memories />,
+  },
+  {
+    path: 'settings',
+    element: <Settings />,
   },
 ])
 
