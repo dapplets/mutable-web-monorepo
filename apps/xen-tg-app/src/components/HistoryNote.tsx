@@ -1,5 +1,11 @@
 import { FC } from 'react'
 import { THistoryNote } from '../types'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 
 export const HistoryCard: FC<{ note: THistoryNote }> = ({ note }) => {
   return (
@@ -30,8 +36,24 @@ type THistoryNoteProps = {
 
 const HistoryNote: FC<THistoryNoteProps> = ({ note }) => {
   return (
-    <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) px-2.5 py-1.5">
-      <HistoryCard note={note} />
+    <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) px-2.5 py-1.5 has-[[data-state='open']]:bg-[#ffffff19]">
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="w-full cursor-pointer">
+            <HistoryCard note={note} />
+          </AccordionTrigger>
+          <AccordionContent className="mt-2.5 flex flex-col gap-2.5 border-t-[1px] border-t-[#07070719] pt-2.5 dark:border-t-[#f8f9ff19]">
+            <div>
+              <div className="text-xs text-(--color-gray-text)">Execution input</div>
+              <div>{note.data.input}</div>
+            </div>
+            <div>
+              <div className="text-xs text-(--color-gray-text)">Output</div>
+              <div>{note.data.output}</div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   )
 }
