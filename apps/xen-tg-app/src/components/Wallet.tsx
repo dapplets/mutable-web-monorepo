@@ -5,15 +5,15 @@ import { Balance, TXenUser } from '../types'
 import Spinner from './Spinner'
 import { API_URL } from '@/env'
 
-const queryFn = (tgDataStr: string, name: string, isLoggedIn?: boolean) => async () => {
+const queryFn = (name: string, isLoggedIn?: boolean) => async () => {
   if (isLoggedIn === false) return
-  if (!tgDataStr) {
+  if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${tgDataStr}`,
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -56,17 +56,16 @@ const mutationFn = (name: string) => async () => {
 
 const Wallet = () => {
   const queryClient = useQueryClient()
-  const tgDataStr = window.Telegram.WebApp.initData
   const { isPending: isPendingUser, data: user } = useQuery<TXenUser>({
-    queryKey: ['user', tgDataStr],
-    queryFn: queryFn(tgDataStr, 'getCurrentUser'),
+    queryKey: ['user'],
+    queryFn: queryFn('getCurrentUser'),
   })
 
   const isLoggedIn = !!user?.nearAccountId
 
   const { data: balance } = useQuery<Balance>({
-    queryKey: ['balance', tgDataStr, isLoggedIn],
-    queryFn: queryFn(tgDataStr, 'getBalance', isLoggedIn),
+    queryKey: ['balance', isLoggedIn],
+    queryFn: queryFn('getBalance', isLoggedIn),
   })
 
   const handleLogout = useMutation({

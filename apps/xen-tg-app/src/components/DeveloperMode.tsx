@@ -2,30 +2,29 @@ import { Switch } from '@/components/ui/switch'
 import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-const queryFn =
-  (tgDataStr: string, name: string, params?: { [key: string]: string }) => async () => {
-    if (!tgDataStr) {
-      throw new Error('Telegram is not available')
-    }
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${tgDataStr}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: name,
-        params: params ?? {},
-        id: 1,
-      }),
-    })
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const data = await response.json()
-    return data.result
+const queryFn = (name: string, params?: { [key: string]: string }) => async () => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
   }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
 
 const mutationFn = async (isDevModeTurnedOn: boolean) => {
   if (!window.Telegram.WebApp.initData) {
@@ -53,10 +52,9 @@ const mutationFn = async (isDevModeTurnedOn: boolean) => {
 
 const DeveloperMode = () => {
   const queryClient = useQueryClient()
-  const tgDataStr = window.Telegram.WebApp.initData
   const { data: isDevModeTurnedOn } = useQuery<boolean>({
-    queryKey: ['dev-mode', tgDataStr],
-    queryFn: queryFn(tgDataStr, 'getDevMode'),
+    queryKey: ['dev-mode'],
+    queryFn: queryFn('getDevMode'),
   })
 
   const switchDveloperMode = useMutation({
