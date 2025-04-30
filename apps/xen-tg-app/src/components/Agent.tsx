@@ -2,8 +2,8 @@ import { FC } from 'react'
 // import UnlinkOutlineIcon from '../assets/unlink-outline'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { TAgent } from '../types'
-import Spinner from './Spinner'
 import { API_URL } from '@/env'
+import { Switch } from '@/components/ui/switch'
 
 const mutationFn = async ({
   methodName,
@@ -49,6 +49,15 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
     },
   })
 
+  const handleChangeStatus = () =>
+    handleToggleCapability.mutate({
+      methodName: capabilitiy.isEnabled ? 'disableCapability' : 'enableCapability',
+      params: {
+        domain: capabilitiy.domain,
+        name: capabilitiy.name,
+      },
+    })
+
   // const handleRemoveCapability = useMutation({
   //   mutationFn,
   //   onSuccess: () => {
@@ -65,26 +74,8 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
           {capabilitiy.domain}
         </div>
       </div>
-      <button
-        className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal dark:bg-(--color-light-white-bg) ${capabilitiy.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
-        onClick={() =>
-          handleToggleCapability.mutate({
-            methodName: capabilitiy.isEnabled ? 'disableCapability' : 'enableCapability',
-            params: {
-              domain: capabilitiy.domain,
-              name: capabilitiy.name,
-            },
-          })
-        }
-      >
-        {handleToggleCapability.isPending ? (
-          <Spinner />
-        ) : capabilitiy.isEnabled ? (
-          'active'
-        ) : (
-          'disabled'
-        )}
-      </button>
+
+      <Switch onCheckedChange={handleChangeStatus} checked={capabilitiy.isEnabled} />
       {/* <button
         className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
         onClick={() =>
