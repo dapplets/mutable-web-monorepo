@@ -7456,7 +7456,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: [https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}]\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}"
+          "text": "={{ $('Split Out').item.json.agent_id.split('/')[0] }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}\nRequest: {{ $('Split Out').item.json.query }}"
         },
         "position": [
           4800,
@@ -7481,7 +7481,7 @@
             "message_thread_id": 789
           },
           "chatId": "-1002043984595",
-          "text": "=Cannot reward {{ $('Split Out').item.json.agent_id.split('/')[0] }} for agent usage\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}"
+          "text": "=Cannot reward {{ $('Split Out').item.json.agent_id.split('/')[0] }} for agent usage\nCaller: @{{ $('Postgres').item.json.username.toLowerCase() }}\nRequest: {{ $('Split Out').item.json.query }}"
         },
         "position": [
           4420,
@@ -7859,8 +7859,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-29T13:18:23.000Z",
-    "versionId": "09be8d45-1629-46d5-8062-505cb7e1edd1"
+    "updatedAt": "2025-04-30T10:00:36.000Z",
+    "versionId": "419706fa-f238-4048-8f6c-6b2212226d0d"
   },
   {
     "active": false,
