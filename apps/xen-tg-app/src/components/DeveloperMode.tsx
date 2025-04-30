@@ -1,6 +1,7 @@
 import { Switch } from '@/components/ui/switch'
 import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import ThemeButton from './ThemeButton'
 
 const queryFn = (name: string, params?: { [key: string]: string }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -64,17 +65,25 @@ const DeveloperMode = () => {
     },
   })
   return (
-    <div className="z-1 flex w-full items-center justify-between ps-2.5 pe-5">
-      <span className="text-[18px]/[150%] font-normal text-(--color-main-text)">
-        Developer mode
-      </span>
-      <Switch
-        disabled={isDevModeTurnedOn === undefined}
-        onCheckedChange={() =>
-          isDevModeTurnedOn !== undefined && switchDveloperMode.mutate(isDevModeTurnedOn)
-        }
-        checked={isDevModeTurnedOn}
-      />
+    <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
+      <div className="z-1 flex w-full items-center justify-between ps-2.5 pe-6">
+        <span className="py-2.5 text-[18px]/[150%] font-normal text-(--color-main-text)">
+          Developer mode
+        </span>
+        <Switch
+          disabled={isDevModeTurnedOn === undefined}
+          onCheckedChange={() =>
+            isDevModeTurnedOn !== undefined && switchDveloperMode.mutate(isDevModeTurnedOn)
+          }
+          checked={isDevModeTurnedOn}
+        />
+      </div>
+      <div className="z-1 flex w-full items-center justify-between ps-2.5 pe-7">
+        <span className="py-2.5 text-[18px]/[150%] font-normal text-(--color-main-text)">
+          Color scheme
+        </span>
+        <ThemeButton />
+      </div>
     </div>
   )
 }
