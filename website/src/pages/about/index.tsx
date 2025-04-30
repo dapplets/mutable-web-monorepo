@@ -123,7 +123,7 @@ function About() {
             <p className={styles.titleMessage}>{title.message}</p>
             <div className={styles.titleButtons}>
               <Button
-                link='https://chrome.google.com/webstore/detail/dapplets/pjjnaojpjhgbhpfffnjleidmdbajagdj'
+                link='https://chromewebstore.google.com/detail/mutable-web/cnahdmdbhkphpbpbjjbfdnmbphbenglc'
                 text='Get started'
                 isPrimary
                 icon='icons/button/download.svg'

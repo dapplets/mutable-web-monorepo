@@ -39,7 +39,7 @@ const FeatureLink = () => {
       ref={linkRef}
       prefetch={false}
       target='_blank'
-      href='https://chrome.google.com/webstore/detail/dapplets/pjjnaojpjhgbhpfffnjleidmdbajagdj'
+      href='https://chromewebstore.google.com/detail/mutable-web/cnahdmdbhkphpbpbjjbfdnmbphbenglc'
       className={styles.featureLink}
     >
       <div className={styles.linkContent}>
