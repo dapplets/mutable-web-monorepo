@@ -100,7 +100,7 @@ export function Footer() {
         <Link
           prefetch={false}
           target='_blank'
-          href='mailto:business@dapplets.org'
+          href='mailto:contact@dapplets.org'
         >
           <ThemeImage
             className={styles.img}
