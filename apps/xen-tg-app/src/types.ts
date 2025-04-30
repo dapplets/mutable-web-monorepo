@@ -52,3 +52,18 @@ export type TMemory = {
   data: string
   datetime: string
 }
+
+export type THistoryNote = {
+  id: string
+  agent: Omit<TAgent, 'isEnabled'>
+  datetime: string
+  payment: {
+    amount: number
+    direction: 'income' | 'outcome'
+    isFree: boolean
+  }
+  data: {
+    input: string
+    output: string
+  }
+}
