@@ -102,7 +102,7 @@ const Wallet = () => {
     </div>
   ) : (
     <div
-      className={`z-1 flex w-full items-center ${isPendingUser ? 'justify-center' : 'justify-between'} gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4`}
+      className={`z-1 flex w-full items-center ${isPendingUser ? 'justify-center' : 'justify-between'} gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80`}
     >
       {isPendingUser ? (
         <Spinner />
