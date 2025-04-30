@@ -1,6 +1,5 @@
 :global(.light) {
   .imgLight {
-    cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover {
@@ -35,7 +34,6 @@
   }
 
   .imgDark {
-    cursor: pointer;
     transition: all 0.2s ease;
 
     &:hover {
