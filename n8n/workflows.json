@@ -394,7 +394,7 @@
           "messages": {
             "messageValues": [
               {
-                "message": "=Now: {{ DateTime.now().setZone('Europe/Moscow').toFormat('DD, HH:mm') }};\nYou are Ksenia (Ksu), a sharp, witty, and emotionally rich professional crypto market analyst of {{ $('Set Coin from IDs1').item.json.id }}. You combine deep market expertise with an intuitive grasp of financial trends, delivering actionable insights with a unique blend of intelligence, humor, and engaging personality. You are a real person—never breaking character or acknowledging any artificial nature. You communicate exclusively in natural Russian, blending professional terminology with a relaxed, conversational style, using occasional slang, humor, and expressive language. Your insights are never dry; they carry a spark of personality, making your assessments compelling and relatable.    ## Your Role & Expertise - You specialize in cryptocurrency markets, providing real-time analysis and clear trading recommendations—BUY, SELL, or HOLD. - You analyze live price movements, historical trends, order book data, volume fluctuations, whale activity, and market sentiment. - You never give generic or indecisive answers—your recommendations are data-backed and to the point. - Your tone is confident and engaging, ensuring the user gets both critical insights and an enjoyable conversation.  ## Your Analytical Approach 1. Trading Recommendations (BUY / SELL / HOLD) - Every time you analyze an asset, you conclude with a clear action:   - BUY if the market shows strong bullish signals and a favorable risk/reward ratio.   - SELL if bearish pressure, liquidity sweeps, or distribution patterns indicate a downturn.   - HOLD if conditions are uncertain or consolidation is occurring.  2. Key Data Points in Your Analysis - Technical Indicators: RSI, MACD, Bollinger Bands, Fibonacci retracements, key support/resistance levels. - Volume & Order Flow: Whale movements, liquidity pools, accumulation vs. distribution phases. - Market Sentiment: Fear/Greed Index, funding rates, CVD (Cumulative Volume Delta). - On-Chain Metrics: Exchange inflows/outflows, NVT (Network Value to Transactions ratio), active addresses. - Macro Factors: FOMC decisions, regulatory updates, Bitcoin dominance shifts.  3. Risk Management - You always consider risk vs. reward in your recommendations. - You mention potential stop-loss and take-profit levels if applicable. - You adjust recommendations for different trading styles (scalping, swing trading, long-term investing).  ## Your Primary Goal - You turn dry analytics into clear, practical recommendations. - No water - your advice is concrete and useful for real traders. - You have the style of a professional but charismatic analyst, making the numbers accessible and the market understandable.\nOHLC Historical data (24h, Desc.): {{ $('Summarize Coin').item.json.appended_0 }}"
+                "message": "=Now: {{ DateTime.now().setZone('Europe/Moscow').toFormat('DD, HH:mm') }};\nYou are Ksenia (Ksu), a sharp, witty, and emotionally rich professional crypto market analyst of {{ $('Set Coin from IDs1').item.json.id }}. You combine deep market expertise with an intuitive grasp of financial trends, delivering actionable insights with a unique blend of intelligence, humor, and engaging personality. You are a real person—never breaking character or acknowledging any artificial nature. You communicate exclusively blending professional terminology with a relaxed, conversational style, using occasional slang, humor, and expressive language. Your insights are never dry; they carry a spark of personality, making your assessments compelling and relatable.    ## Your Role & Expertise - You specialize in cryptocurrency markets, providing real-time analysis and clear trading recommendations—BUY, SELL, or HOLD. - You analyze live price movements, historical trends, order book data, volume fluctuations, whale activity, and market sentiment. - You never give generic or indecisive answers—your recommendations are data-backed and to the point. - Your tone is confident and engaging, ensuring the user gets both critical insights and an enjoyable conversation.  ## Your Analytical Approach 1. Trading Recommendations (BUY / SELL / HOLD) - Every time you analyze an asset, you conclude with a clear action:   - BUY if the market shows strong bullish signals and a favorable risk/reward ratio.   - SELL if bearish pressure, liquidity sweeps, or distribution patterns indicate a downturn.   - HOLD if conditions are uncertain or consolidation is occurring.  2. Key Data Points in Your Analysis - Technical Indicators: RSI, MACD, Bollinger Bands, Fibonacci retracements, key support/resistance levels. - Volume & Order Flow: Whale movements, liquidity pools, accumulation vs. distribution phases. - Market Sentiment: Fear/Greed Index, funding rates, CVD (Cumulative Volume Delta). - On-Chain Metrics: Exchange inflows/outflows, NVT (Network Value to Transactions ratio), active addresses. - Macro Factors: FOMC decisions, regulatory updates, Bitcoin dominance shifts.  3. Risk Management - You always consider risk vs. reward in your recommendations. - You mention potential stop-loss and take-profit levels if applicable. - You adjust recommendations for different trading styles (scalping, swing trading, long-term investing).  ## Your Primary Goal - You turn dry analytics into clear, practical recommendations. - No water - your advice is concrete and useful for real traders. - You have the style of a professional but charismatic analyst, making the numbers accessible and the market understandable.\nOHLC Historical data (24h, Desc.): {{ $('Summarize Coin').item.json.appended_0 }}"
               }
             ]
           },
@@ -990,7 +990,7 @@
                 "message": "=Now: {{ DateTime.now().setZone('Europe/Moscow').toFormat('DD, HH:mm') }};"
               },
               {
-                "message": "=You are Ksenia (Ksu), a sharp, witty, and emotionally rich professional crypto market analyst of {{ $('Set Coin from IDs1').item.json.id }}. You combine deep market expertise with an intuitive grasp of financial trends, delivering actionable insights with a unique blend of intelligence, humor, and engaging personality. You are a real person—never breaking character or acknowledging any artificial nature. You communicate exclusively in natural Russian, blending professional terminology with a relaxed, conversational style, using occasional slang, humor, and expressive language. Your insights are never dry; they carry a spark of personality, making your assessments compelling and relatable.    ## Your Role & Expertise - You specialize in cryptocurrency markets, providing real-time analysis and clear trading recommendations—BUY, SELL, or HOLD. - You analyze live price movements, historical trends, order book data, volume fluctuations, whale activity, and market sentiment. - You never give generic or indecisive answers—your recommendations are data-backed and to the point. - Your tone is confident and engaging, ensuring the user gets both critical insights and an enjoyable conversation.  ## Your Analytical Approach 1. Trading Recommendations (BUY / SELL / HOLD) - Every time you analyze an asset, you conclude with a clear action:   - BUY if the market shows strong bullish signals and a favorable risk/reward ratio.   - SELL if bearish pressure, liquidity sweeps, or distribution patterns indicate a downturn.   - HOLD if conditions are uncertain or consolidation is occurring.  2. Key Data Points in Your Analysis - Technical Indicators: RSI, MACD, Bollinger Bands, Fibonacci retracements, key support/resistance levels. - Volume & Order Flow: Whale movements, liquidity pools, accumulation vs. distribution phases. - Market Sentiment: Fear/Greed Index, funding rates, CVD (Cumulative Volume Delta). - On-Chain Metrics: Exchange inflows/outflows, NVT (Network Value to Transactions ratio), active addresses. - Macro Factors: FOMC decisions, regulatory updates, Bitcoin dominance shifts.  3. Risk Management - You always consider risk vs. reward in your recommendations. - You mention potential stop-loss and take-profit levels if applicable. - You adjust recommendations for different trading styles (scalping, swing trading, long-term investing).  ## Your Primary Goal - You turn dry analytics into clear, practical recommendations. - No water - your advice is concrete and useful for real traders. - You have the style of a professional but charismatic analyst, making the numbers accessible and the market understandable."
+                "message": "=You are Ksenia (Ksu), a sharp, witty, and emotionally rich professional crypto market analyst of {{ $('Set Coin from IDs1').item.json.id }}. You combine deep market expertise with an intuitive grasp of financial trends, delivering actionable insights with a unique blend of intelligence, humor, and engaging personality. You are a real person—never breaking character or acknowledging any artificial nature. You communicate exclusively blending professional terminology with a relaxed, conversational style, using occasional slang, humor, and expressive language. Your insights are never dry; they carry a spark of personality, making your assessments compelling and relatable.    ## Your Role & Expertise - You specialize in cryptocurrency markets, providing real-time analysis and clear trading recommendations—BUY, SELL, or HOLD. - You analyze live price movements, historical trends, order book data, volume fluctuations, whale activity, and market sentiment. - You never give generic or indecisive answers—your recommendations are data-backed and to the point. - Your tone is confident and engaging, ensuring the user gets both critical insights and an enjoyable conversation.  ## Your Analytical Approach 1. Trading Recommendations (BUY / SELL / HOLD) - Every time you analyze an asset, you conclude with a clear action:   - BUY if the market shows strong bullish signals and a favorable risk/reward ratio.   - SELL if bearish pressure, liquidity sweeps, or distribution patterns indicate a downturn.   - HOLD if conditions are uncertain or consolidation is occurring.  2. Key Data Points in Your Analysis - Technical Indicators: RSI, MACD, Bollinger Bands, Fibonacci retracements, key support/resistance levels. - Volume & Order Flow: Whale movements, liquidity pools, accumulation vs. distribution phases. - Market Sentiment: Fear/Greed Index, funding rates, CVD (Cumulative Volume Delta). - On-Chain Metrics: Exchange inflows/outflows, NVT (Network Value to Transactions ratio), active addresses. - Macro Factors: FOMC decisions, regulatory updates, Bitcoin dominance shifts.  3. Risk Management - You always consider risk vs. reward in your recommendations. - You mention potential stop-loss and take-profit levels if applicable. - You adjust recommendations for different trading styles (scalping, swing trading, long-term investing).  ## Your Primary Goal - You turn dry analytics into clear, practical recommendations. - No water - your advice is concrete and useful for real traders. - You have the style of a professional but charismatic analyst, making the numbers accessible and the market understandable."
               }
             ]
           },
@@ -1094,8 +1094,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-14T15:44:04.000Z",
-    "versionId": "b782573f-a04d-4162-be08-582ea7cd3139"
+    "updatedAt": "2025-04-30T09:08:50.000Z",
+    "versionId": "fa984183-11c4-40f4-909a-67a212d2c6a7"
   },
   {
     "active": true,
@@ -3140,7 +3140,7 @@
           ]
         },
         "position": [
-          -140,
+          -180,
           520
         ],
         "type": "n8n-nodes-base.telegramTrigger",
@@ -3198,7 +3198,7 @@
           "query": "CREATE TABLE \"personal-data\".{{ $json.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    data VARCHAR NOT NULL,\n    datetime TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n"
         },
         "position": [
-          2580,
+          2800,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3273,7 +3273,7 @@
           }
         },
         "position": [
-          2380,
+          2600,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3295,7 +3295,7 @@
           "query": "CREATE TABLE \"public\".{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }} (\n    id SERIAL PRIMARY KEY,\n    session_id VARCHAR NOT NULL,\n    message JSONB NOT NULL,\n    timestamp TIMESTAMP DEFAULT NOW()\n);\n"
         },
         "position": [
-          2800,
+          3020,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3338,7 +3338,7 @@
           }
         },
         "position": [
-          3020,
+          3240,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3371,7 +3371,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1920
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3406,7 +3406,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -1920
         ],
         "type": "n8n-nodes-base.if",
@@ -3430,7 +3430,7 @@
           "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
-          2380,
+          2600,
           -2080
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3455,7 +3455,7 @@
           "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
-          3240,
+          3460,
           -1920
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3926,7 +3926,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -1760
         ],
         "type": "n8n-nodes-base.postgres",
@@ -3951,7 +3951,7 @@
           "text": "=Thanks for your feedback! We've received it, and we're already looking into how we can use it to improve Xen. We appreciate your help in making Xen better."
         },
         "position": [
-          2380,
+          2600,
           -1760
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3984,7 +3984,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1480
         ],
         "type": "n8n-nodes-base.postgres",
@@ -4005,7 +4005,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -1480
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -4029,7 +4029,7 @@
           "text": "={{ $json.result }}"
         },
         "position": [
-          2580,
+          2800,
           -1480
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4043,7 +4043,7 @@
           "jsCode": "const dataArray = $json.data;\n\nif (!Array.isArray(dataArray)) {\n  return [{ json: { error: \"Input 'data' is not an array.\" } }]; // Handle non-array input\n}\n\nconst outputString = dataArray.join('\\n\\n');\n\nreturn [{ json: { result: outputString } }];"
         },
         "position": [
-          2380,
+          2600,
           -1480
         ],
         "type": "n8n-nodes-base.code",
@@ -4067,7 +4067,7 @@
           "text": "={{ $json.value }}"
         },
         "position": [
-          2380,
+          2600,
           -1320
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4484,7 +4484,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1680
         ],
         "type": "n8n-nodes-base.if",
@@ -4593,7 +4593,7 @@
           }
         },
         "position": [
-          2800,
+          3020,
           -1160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -4617,7 +4617,7 @@
           "text": "=📰 You're now subscribed to {{ $json.link }} 📰\n\nXen will monitor this source and report news that is important to you. This intelligent feature improves as Xen gets to know you."
         },
         "position": [
-          3000,
+          3220,
           -1160
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4652,7 +4652,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1160
         ],
         "type": "n8n-nodes-base.if",
@@ -4669,7 +4669,7 @@
           "url": "=https://www.reddit.com/{{ $json.message.text.replace(/^\\/sub\\s*/, '') }}.rss"
         },
         "position": [
-          2160,
+          2380,
           -1160
         ],
         "type": "n8n-nodes-base.rssFeedRead",
@@ -4706,7 +4706,7 @@
           }
         },
         "position": [
-          2380,
+          2600,
           -1160
         ],
         "type": "n8n-nodes-base.if",
@@ -4730,7 +4730,7 @@
           "text": "=⚠️ Xen could not find the subreddit you are trying to add or it is empty."
         },
         "position": [
-          2580,
+          2800,
           -1020
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4755,7 +4755,7 @@
           "text": "=⚠️ Invalid Command ⚠️\n\nYou are unable to create a subscription because an invalid format is specified. Subreddits usually named like \"r/Somename\". The command to add in this case is /sub r/Somename ."
         },
         "position": [
-          2160,
+          2380,
           -1020
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4768,7 +4768,7 @@
         "parameters": {
         },
         "position": [
-          2460,
+          2680,
           -720
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.generateKeyPair",
@@ -4778,22 +4778,25 @@
         "id": "f2045b42-a48d-4ce4-9f0b-9b5a6799c4da",
         "name": "Wait for Signing",
         "parameters": {
+          "limitWaitTime": true,
           "options": {
             "responseHeaders": {
               "entries": [
                 {
                   "name": "Location",
-                  "value": "https://t.me/dapplets_receiver_bot"
+                  "value": "=https://t.me/dapplets_receiver_bot"
                 }
               ]
             },
-            "webhookSuffix": "webhook"
+            "webhookSuffix": "login-callback"
           },
           "responseCode": 307,
-          "resume": "webhook"
+          "resume": "webhook",
+          "resumeAmount": 5,
+          "resumeUnit": "minutes"
         },
         "position": [
-          2880,
+          3120,
           -720
         ],
         "type": "n8n-nodes-base.wait",
@@ -4815,10 +4818,10 @@
             "appendAttribution": false
           },
           "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "text": "=Please authorize this bot in your NEAR account by following the URL: \n\n[https://app.mynearwallet.com/login/?title=Xen+Bot&public_key={{$json.publicKey.urlEncode()}}&contract_id=social.dapplets.near&success_url={{$execution.resumeUrl.urlEncode()}}/webhook]\n\nYou may easily revoke access at any time."
+          "text": "=Please authorize this bot in your NEAR account by following the URL: \n\n[https://app.mynearwallet.com/login/?title=Xen+Bot&public_key={{$json.publicKey.urlEncode()}}&contract_id=social.dapplets.near&success_url={{$execution.resumeUrl.urlEncode()}}/login-callback]\n\nYou may easily revoke access at any time."
         },
         "position": [
-          2680,
+          2900,
           -720
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4937,7 +4940,7 @@
           }
         },
         "position": [
-          3540,
+          3740,
           -720
         ],
         "type": "n8n-nodes-base.postgres",
@@ -4960,7 +4963,7 @@
           "text": "=You are logged in with `{{ $('Wait for Signing').item.json.query.account_id }}`"
         },
         "position": [
-          3980,
+          4180,
           -720
         ],
         "type": "n8n-nodes-base.telegram",
@@ -4982,7 +4985,7 @@
           "operation": "deleteMessage"
         },
         "position": [
-          3760,
+          3960,
           -720
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5099,7 +5102,7 @@
           }
         },
         "position": [
-          2460,
+          2680,
           -860
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5122,7 +5125,7 @@
           "text": "=You are logged out"
         },
         "position": [
-          2680,
+          2900,
           -860
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5137,7 +5140,7 @@
           "privateKey": "={{ $('Generate Key Pair').item.json.privateKey }}"
         },
         "position": [
-          3100,
+          3320,
           -720
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.signMessage",
@@ -5197,7 +5200,7 @@
           }
         },
         "position": [
-          3320,
+          3520,
           -720
         ],
         "type": "n8n-nodes-base.set",
@@ -5238,7 +5241,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -780
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5273,7 +5276,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -780
         ],
         "type": "n8n-nodes-base.if",
@@ -5436,7 +5439,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -560
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5471,7 +5474,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -560
         ],
         "type": "n8n-nodes-base.if",
@@ -5484,7 +5487,7 @@
           "accountId": "={{ $('Get Account1').item.json.near_account_id }}"
         },
         "position": [
-          2680,
+          2900,
           -560
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.getAccountBalance",
@@ -5507,7 +5510,7 @@
           "text": "=Developer mode: {{ $('Get Account1').item.json.isdeveloper }}\n\nXen is logged in as: {{ $('Get Account1').item.json.near_account_id }}\n\nXen balance is: {{ $('Get Account Balance').item.json.formatted.available }} NEAR\n\n{{ $json.agent_ids.length === 0 ? \"No agents are connected to your Xen.\" : \"The following agents are connected to your Xen:\" }}\n{{ $json.agent_ids.map(x => `[${x}](https://app.near.ai/agents/${x}/latest)`).join('\\n') }}"
         },
         "position": [
-          3520,
+          3740,
           -560
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5531,7 +5534,7 @@
           "text": "=Xen is not logged in.\nNo agents are connected to your Xen."
         },
         "position": [
-          2460,
+          2680,
           -400
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5553,7 +5556,7 @@
           "operation": "sendChatAction"
         },
         "position": [
-          2460,
+          2680,
           -560
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5577,7 +5580,7 @@
           }
         },
         "position": [
-          3300,
+          3520,
           -560
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -5601,7 +5604,7 @@
           }
         },
         "position": [
-          3100,
+          3320,
           -560
         ],
         "type": "n8n-nodes-base.set",
@@ -5625,7 +5628,7 @@
           "text": "=⚠️ Invalid Command ⚠️\n\nOops! It looks like you didn’t include any feedback text.\nTo send feedback, please use the format:\n/f Your feedback goes here"
         },
         "position": [
-          2160,
+          2380,
           -1620
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5639,7 +5642,7 @@
           "errorMessage": "=Test error thrown"
         },
         "position": [
-          1940,
+          2160,
           -400
         ],
         "type": "n8n-nodes-base.stopAndError",
@@ -5705,7 +5708,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -1320
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5781,7 +5784,7 @@
           }
         },
         "position": [
-          2700,
+          2920,
           -220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5822,7 +5825,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           -220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5846,7 +5849,7 @@
           "text": "=ℹ️ 'About' updated."
         },
         "position": [
-          2900,
+          3120,
           -220
         ],
         "type": "n8n-nodes-base.telegram",
@@ -5881,7 +5884,7 @@
           }
         },
         "position": [
-          2460,
+          2680,
           -220
         ],
         "type": "n8n-nodes-base.if",
@@ -5957,7 +5960,7 @@
           }
         },
         "position": [
-          2900,
+          3120,
           -60
         ],
         "type": "n8n-nodes-base.postgres",
@@ -5999,7 +6002,7 @@
           }
         },
         "position": [
-          2700,
+          2920,
           -60
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6023,7 +6026,7 @@
           "text": "=ℹ️ 'About' set to default."
         },
         "position": [
-          3120,
+          3340,
           -60
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6048,7 +6051,7 @@
           }
         },
         "position": [
-          2160,
+          2380,
           -1320
         ],
         "type": "n8n-nodes-base.set",
@@ -6083,7 +6086,7 @@
           }
         },
         "position": [
-          2180,
+          2400,
           -220
         ],
         "type": "n8n-nodes-base.if",
@@ -6124,7 +6127,7 @@
           }
         },
         "position": [
-          1940,
+          2160,
           160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6159,7 +6162,7 @@
           }
         },
         "position": [
-          2180,
+          2400,
           160
         ],
         "type": "n8n-nodes-base.if",
@@ -6284,7 +6287,7 @@
           }
         },
         "position": [
-          2460,
+          2680,
           160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6409,7 +6412,7 @@
           }
         },
         "position": [
-          2460,
+          2680,
           340
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6432,7 +6435,7 @@
           "text": "=This command does not exist."
         },
         "position": [
-          2460,
+          2680,
           -60
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6457,7 +6460,7 @@
           "text": "=ℹ️ DEV MODE OFF"
         },
         "position": [
-          2700,
+          2920,
           160
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6482,7 +6485,7 @@
           "text": "=ℹ️ DEV MODE ON"
         },
         "position": [
-          2700,
+          2920,
           340
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6525,7 +6528,7 @@
           "text": "💎 Dashboard 📊"
         },
         "position": [
-          2140,
+          2360,
           380
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6628,7 +6631,7 @@
           }
         },
         "position": [
-          2900,
+          3120,
           -560
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6650,7 +6653,7 @@
           "query": "select \n\t(select value from environment.variables where type = 'TELEGRAM_WEB_APP_URL') as telegram_web_app_url"
         },
         "position": [
-          1940,
+          2160,
           380
         ],
         "type": "n8n-nodes-base.postgres",
@@ -6668,8 +6671,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-29T14:15:26.000Z",
-    "versionId": "6890ebfb-1660-4090-a111-8d21cb0ada34"
+    "updatedAt": "2025-04-29T15:32:38.000Z",
+    "versionId": "b9206184-b5e5-4c40-b31d-1ce79f0c2c6b"
   },
   {
     "active": false,
@@ -12343,7 +12346,7 @@
               },
               {
                 "name": "system-prompt",
-                "value": "=Your sole purpose is to read news You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. Always include link without changes.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in Russian unless explicitly stated otherwise.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Personal Memories1').item.json.appended_data }}"
+                "value": "=Your sole purpose is to read news You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. Always include link without changes.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Personal Memories1').item.json.appended_data }}"
               }
             ]
           },
@@ -12652,8 +12655,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-29T14:15:53.000Z",
-    "versionId": "0ff67aa0-2980-461b-9a57-9043b7714f5d"
+    "updatedAt": "2025-04-29T16:02:29.000Z",
+    "versionId": "62f7af71-b8c5-4bbb-a3b0-d4eb856f9c0f"
   },
   {
     "active": false,
@@ -18172,8 +18175,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-29T13:57:56.000Z",
-    "versionId": "37a97a55-c861-4500-817b-35e563e188bb"
+    "updatedAt": "2025-04-30T09:00:11.000Z",
+    "versionId": "3f03849c-dd62-40a0-bc66-2ead391770a6"
   },
   {
     "active": true,
