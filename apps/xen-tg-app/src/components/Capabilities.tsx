@@ -1,34 +1,44 @@
 import SyncIcon from '@/assets/sync'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { API_URL } from '@/env'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useRef } from 'react'
 import ExternalLinkIcon from '../assets/external-link'
 import { TAgent } from '../types'
 import Agent from './Agent'
-import { API_URL } from '@/env'
-import { useEffect } from 'react'
+import Spinner from './Spinner'
 
-const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
-  if (!window.Telegram.WebApp.initData) {
-    throw new Error('Telegram is not available')
+const queryFn =
+  (name: string) =>
+  async ({
+    pageParam,
+  }: {
+    pageParam: {
+      offset: number
+      limit: number
+    }
+  }): Promise<TAgent[] | null | undefined> => {
+    if (!window.Telegram.WebApp.initData) {
+      throw new Error('Telegram is not available')
+    }
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: name,
+        params: pageParam ?? {},
+        id: 1,
+      }),
+    })
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+    const data = await response.json()
+    return data.result.items
   }
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      method: name,
-      params: params ?? {},
-      id: 1,
-    }),
-  })
-  if (!response.ok) {
-    throw new Error('Network response was not ok')
-  }
-  const data = await response.json()
-  return data.result
-}
 
 const mutationFn = async ({
   methodName,
@@ -61,15 +71,57 @@ const mutationFn = async ({
 }
 
 const Capabilities = () => {
-  const queryClient = useQueryClient()
-
-  const { data: capabilities } = useQuery<{ items: TAgent[]; total: number }>({
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const {
+    data: capabilities,
+    // error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    // status,
+  } = useInfiniteQuery({
     queryKey: ['capabilities'],
-    queryFn: queryFn('getCapabilities', {
+    queryFn: queryFn('getCapabilities'),
+    initialPageParam: {
       offset: 0,
       limit: 10,
-    }),
+    },
+    getNextPageParam: (lastPage, __, lastPageParam) => {
+      if (!lastPage?.length) {
+        return undefined
+      }
+      return {
+        offset: lastPageParam.offset + 10,
+        limit: lastPageParam.limit + 10,
+      }
+    },
   })
+
+  useEffect(() => {
+    const sentinelEl = sentinelRef.current
+    if (!sentinelEl) return
+    observerRef.current?.disconnect()
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage && hasNextPage) fetchNextPage()
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      }
+    )
+
+    observerRef.current.observe(sentinelEl)
+    return () => {
+      observerRef.current?.disconnect()
+    }
+  }, [isFetchingNextPage, fetchNextPage, hasNextPage])
+
+  const queryClient = useQueryClient()
 
   const handleUpdateCapability = useMutation({
     mutationFn,
@@ -103,9 +155,15 @@ const Capabilities = () => {
           <ExternalLinkIcon />
         </button>
       </div>
-      {capabilities?.items.map((capabilitiy) => (
-        <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />
-      ))}
+      {capabilities?.pages.map((group) =>
+        group?.map((capabilitiy) => <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />)
+      )}
+      <div ref={sentinelRef} />
+      {hasNextPage ? (
+        <div className="flex h-10 w-full justify-center">
+          {isFetching || isFetchingNextPage ? <Spinner /> : null}
+        </div>
+      ) : null}
     </div>
   )
 }
