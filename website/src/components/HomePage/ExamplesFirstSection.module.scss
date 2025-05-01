@@ -139,16 +139,130 @@
 
 
 @media (max-width: 69.6875rem) {
-  .labelImg {
-    display: none;
-  }
 
   .label {
-    display: none;
+    transform: rotate(-90deg);
+
+    &--top-1 {
+      right: auto;
+      left: -2em;
+      top: 17em;
+    }
+
+    &--bottom-1 {
+      right: 2em;
+      top: 10em;
+    }
+
+    &--top-2 {
+      left: auto;
+      right: 2em;
+      bottom: 25em;
+    }
+
+    &--bottom-2 {
+      left: -2em;
+      bottom: 19em;
+    }
+  }
+
+  .labelImg {
+    position: absolute;
+
+    &--bottom-1 {
+      display: none;
+    }
+
+    &--top-1 {
+      display: none;
+    }
+
+    &--bottom-2 {
+      right: -4em;
+      top: 4em;
+      transform: rotate(-90deg) scaleX(-1);
+    }
+
+    &--top-2 {
+      top: 5.5em;
+      right: auto;
+      transform: rotate(-90deg) scaleX(-1);
+      left: -9em;
+    }
+  }
+
+  .examplesContainer {
+    gap: 5rem;
+  }
+
+  .exampleBlock {
+    flex-direction: column-reverse;
+    gap: 1.25rem;
+    margin: 0 auto;
+
+    &.reverse {
+      flex-direction: column-reverse;
+      margin-top: 2.5rem;
+    }
+
+    .content {
+      margin-top: 0;
+    }
+  }
+
+  .content {
+    max-width: 90%;
+    padding: 1.25rem;
+    background: var(--grey-de);
+    width: 100%;
+    border-radius: .625rem;
+  }
+
+  :global(.dark) .content {
+    background: var(--black-1b);
+  }
+
+  .imageContainer {
+    max-width: 90%;
+    width: 100%;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 58.75rem) {
+
+  .content,
+  .imageContainer {
+    max-width: 26.25rem;
+  }
+
+  .label {
+    &--top-1 {
+      left: -1em;
+    }
+
+    &--bottom-1 {
+      right: -1em;
+    }
+
+    &--top-2 {
+      right: -1em;
+    }
+
+    &--bottom-2 {
+      left: -1em;
+    }
+  }
+
+  .labelImg {
+    &--bottom-2 {
+      right: -7em;
+      top: 4em;
+      transform: rotate(-90deg) scaleX(-1);
+    }
+  }
+}
+
+@media (max-width: 45rem) {
   .wrapper {
     margin-top: 4rem;
   }
@@ -157,21 +271,33 @@
     gap: 1.25rem;
   }
 
-  .exampleBlock {
-    flex-direction: column;
-    gap: 1.25rem;
 
-    &.reverse {
-      flex-direction: column;
-      margin-top: 2.5rem;
-    }
+  .label {
+    display: none;
+  }
+
+  .labelImg {
+    display: none;
+  }
+
+  .exampleBlock {
+    margin: 0;
   }
 
   .content {
     max-width: none;
+    background: transparent;
+  }
+
+  :global(.dark) .content {
+    background: transparent;
   }
 
   .imageContainer {
     max-width: none;
+  }
+
+  .exampleDescription {
+    white-space: normal;
   }
 }

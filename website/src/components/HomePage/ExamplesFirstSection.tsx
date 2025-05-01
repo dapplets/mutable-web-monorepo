@@ -65,7 +65,7 @@ export const ExamplesFirstSection = () => {
   return (
     <section className={styles.wrapper}>
       <h2 className={styles.title}>
-      examples
+      for example
       </h2>
 
       <div className={styles.examplesContainer}>

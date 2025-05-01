@@ -22,7 +22,7 @@
 
 .subtitle {
     margin-top: .75rem;
-    font-size: var( --fs-12-14);
+    font-size: var(--fs-12-14);
     line-height: 1.49;
     opacity: 0.7;
 
@@ -53,12 +53,12 @@
     }
 }
 
-:global(.dark){
-    .article{
-         background-color: var(--black-1b);
+:global(.dark) {
+    .article {
+        background-color: var(--black-1b);
     }
 
-    .text--bold{
+    .text--bold {
         opacity: 1 !important;
         color: var(--white);
         opacity: 1;
@@ -71,8 +71,18 @@
         margin: 0 auto;
     }
 
-    .article{
+    .article {
         margin-top: 2.5rem;
         max-width: none;
+    }
+
+    .title {
+        br {
+            display: none;
+        }
+
+        span {
+            margin-left: .5rem;
+        }
     }
 }
