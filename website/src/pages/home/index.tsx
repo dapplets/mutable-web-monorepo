@@ -16,10 +16,10 @@ const Home = () => {
     >
       <div className={styles.wrapper}>
         <HeroSection />
-        <RevolutionarySection/>
-        <ExamplesFirstSection/>
-        <ExamplesSection />
+        <RevolutionarySection />
+        <ExamplesFirstSection />
         <HowItWorksSection />
+        <ExamplesSection />
         <FeaturesSection />
         <GetStartedSection />
       </div>

@@ -13,9 +13,9 @@ export const ExamplesFirstSection = () => {
 
   const addToExampleBlocksRef = (el: HTMLDivElement | null, index: number) => {
     if (el) {
-      gsap.set(el.querySelector(`.${styles.imageContainer}`), { 
-        opacity: 0, 
-        y: 50 
+      gsap.set(el.querySelector(`.${styles.imageContainer}`), {
+        opacity: 0,
+        y: 50
       });
       exampleBlocksRef.current[index] = el;
     }
@@ -48,8 +48,8 @@ export const ExamplesFirstSection = () => {
           });
         },
         {
-          threshold: 0.4, 
-          rootMargin: '0px 0px -150px 0px' 
+          threshold: 0.4,
+          rootMargin: '0px 0px -150px 0px'
         }
       );
 
@@ -65,7 +65,7 @@ export const ExamplesFirstSection = () => {
   return (
     <section className={styles.wrapper}>
       <h2 className={styles.title}>
-      for example
+        for example
       </h2>
 
       <div className={styles.examplesContainer}>
@@ -90,26 +90,40 @@ export const ExamplesFirstSection = () => {
               <h3 className={styles.exampleTitle}>{example.title}</h3>
               <p className={styles.exampleDescription}>{example.description}</p>
             </div>
-            <div className={cn(styles.label,styles['label--top'], index % 2 == 0 && styles['label--top-2'], index % 2 !== 0 && styles['label--top-1'])}>
-              <Label title={example.labelTop.label} subtitle={example.labelTop.subLabel}/>
-              </div>
-             <ThemeImage
-                width={500}
-                height={61}
-                alt={example.title}
-                src={`icons/home/arrow-example-${index + 1}.svg`}
-                className={cn(styles.labelImg,index % 2 !== 0 && styles['labelImg--top-1'],index % 2 == 0 && styles['labelImg--top-2'])}
-              />
-               <ThemeImage
-                width={500}
-                height={61}
-                alt={example.title}
-                src={`icons/home/arrow-example-${index + 1}-bottom.svg`}
-                className={cn(styles.labelImg,index % 2 !== 0 && styles['labelImg--bottom-1'],index % 2 == 0 && styles['labelImg--bottom-2'])}
-              />
-            <div className={cn(styles.label,styles['label--bottom'], index % 2 == 0 && styles['label--bottom-2'],index % 2 !== 0 && styles['label--bottom-1'])}>
-              <Label title={example.labelBottom.label} subtitle={example.labelBottom.subLabel}/>
-              </div>
+            <div className={cn(styles.label, styles['label--top'], index % 2 == 0 && styles['label--top-2'], index % 2 !== 0 && styles['label--top-1'])}>
+              <Label title={example.labelTop.label} subtitle={example.labelTop.subLabel} />
+            </div>
+            <ThemeImage
+              width={500}
+              height={61}
+              alt={example.title}
+              src={`icons/home/arrow-example-${index + 1}.svg`}
+              className={cn(styles.labelImg, index % 2 !== 0 && styles['labelImg--top-1'], index % 2 == 0 && styles['labelImg--top-2'])}
+            />
+            <ThemeImage
+              width={500}
+              height={61}
+              alt={example.title}
+              src={`icons/home/arrow-example-${index + 1}-bottom.svg`}
+              className={cn(styles.labelImg, index % 2 !== 0 && styles['labelImg--bottom-1'], index % 2 == 0 && styles['labelImg--bottom-2'])}
+            />
+            {index % 2 !== 0 && <ThemeImage
+              width={500}
+              height={61}
+              alt={example.title}
+              src={`icons/home/arrow-tablet-right.svg`}
+              className={cn(styles.labelImg, styles['labelImg--top-1'], styles['labelImg--top-1-tablet'])}
+            />}
+            {index % 2 !== 0 && <ThemeImage
+              width={500}
+              height={61}
+              alt={example.title}
+              src={`icons/home/arrow-tablet-left.svg`}
+              className={cn(styles.labelImg, styles['labelImg--bottom-1'], styles['labelImg--bottom-1-tablet'])}
+            />}
+            <div className={cn(styles.label, styles['label--bottom'], index % 2 == 0 && styles['label--bottom-2'], index % 2 !== 0 && styles['label--bottom-1'])}>
+              <Label title={example.labelBottom.label} subtitle={example.labelBottom.subLabel} />
+            </div>
           </div>
         ))}
       </div>
