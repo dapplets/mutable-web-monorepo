@@ -50,6 +50,11 @@
 .labelImg {
   position: absolute;
 
+  &--bottom-1-tablet,
+  &--top-1-tablet {
+    display: none;
+  }
+
   &--bottom-1 {
     left: 10em;
     bottom: -1.5em;
@@ -157,7 +162,7 @@
     &--top-2 {
       left: auto;
       right: 2em;
-      bottom: 25em;
+      bottom: 23em;
     }
 
     &--bottom-2 {
@@ -175,6 +180,25 @@
 
     &--top-1 {
       display: none;
+    }
+
+    &--bottom-1-tablet,
+    &--top-1-tablet {
+      display: block;
+
+    }
+
+    &--bottom-1-tablet {
+      width: 9.375rem;
+      left: 5em;
+      bottom: 7em;
+    }
+
+    &--top-1-tablet {
+      width: 15rem;
+      left: auto;
+      right: 8em;
+      bottom: 12em;
     }
 
     &--bottom-2 {
@@ -202,7 +226,7 @@
 
     &.reverse {
       flex-direction: column-reverse;
-      margin-top: 2.5rem;
+      margin-top: 0;
     }
 
     .content {
@@ -230,6 +254,17 @@
 
 @media (max-width: 58.75rem) {
 
+  .labelImg {
+    &--bottom-1-tablet {
+      bottom: 5em;
+    }
+
+    &--top-1-tablet {
+      right: 5em;
+      bottom: 10em;
+    }
+  }
+
   .content,
   .imageContainer {
     max-width: 26.25rem;
@@ -246,6 +281,7 @@
 
     &--top-2 {
       right: -1em;
+      bottom: 20em;
     }
 
     &--bottom-2 {
