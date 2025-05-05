@@ -8,6 +8,8 @@ import { TAgent } from '../types'
 import Agent from './Agent'
 import Spinner from './Spinner'
 
+const PAGE_LIMIT = 10
+
 const queryFn =
   (name: string) =>
   async ({
@@ -17,7 +19,7 @@ const queryFn =
       offset: number
       limit: number
     }
-  }): Promise<TAgent[] | null | undefined> => {
+  }): Promise<{ total: number; items: TAgent[] | null | undefined }> => {
     if (!window.Telegram.WebApp.initData) {
       throw new Error('Telegram is not available')
     }
@@ -38,7 +40,7 @@ const queryFn =
       throw new Error('Network response was not ok')
     }
     const data = await response.json()
-    return data.result.items
+    return data.result
   }
 
 const mutationFn = async ({
@@ -88,15 +90,13 @@ const Capabilities = () => {
     queryFn: queryFn('getCapabilities'),
     initialPageParam: {
       offset: 0,
-      limit: 10,
+      limit: PAGE_LIMIT,
     },
     getNextPageParam: (lastPage, __, lastPageParam) => {
-      if (!lastPage?.length) {
-        return undefined
-      }
+      if (lastPage.total <= lastPageParam.offset + lastPageParam.limit) return
       return {
-        offset: lastPageParam.offset + 10,
-        limit: lastPageParam.limit + 10,
+        offset: lastPageParam.offset + PAGE_LIMIT,
+        limit: PAGE_LIMIT,
       }
     },
   })
@@ -167,7 +167,9 @@ const Capabilities = () => {
         }}
       />
       {capabilities?.pages.map((group) =>
-        group?.map((capabilitiy) => <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />)
+        group?.items?.map((capabilitiy) => (
+          <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />
+        ))
       )}
       <div ref={sentinelRef} />
       {hasNextPage ? (
