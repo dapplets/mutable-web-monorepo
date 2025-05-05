@@ -213,7 +213,12 @@ CREATE TABLE "default".transfer (
     amount character varying NOT NULL,
     tx_hash character varying NOT NULL,
     notes character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    capability_domain character varying,
+    capability_name character varying,
+    caller_username character varying,
+    execution_input character varying,
+    execution_output character varying
 );
 
 CREATE SEQUENCE "default".transfer_id_seq
