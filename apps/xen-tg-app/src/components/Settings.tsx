@@ -5,6 +5,7 @@ import { TMemory } from '../types'
 import DeveloperMode from './DeveloperMode'
 import Header from './Header'
 import Layout from './Layout'
+import ThemeButton from './ThemeButton'
 import Warnings from './Warnings'
 
 const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
@@ -43,6 +44,7 @@ const Settings = () => {
   return (
     <Layout>
       <Header />
+      <ThemeButton />
       <DeveloperMode />
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-2 backdrop-blur-3xl backdrop-opacity-80">
         <div className="z-1 flex w-full items-center justify-between">

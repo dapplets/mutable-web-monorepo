@@ -1,7 +1,6 @@
 import { Switch } from '@/components/ui/switch'
 import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import ThemeButton from './ThemeButton'
 
 const queryFn = (name: string, params?: { [key: string]: string }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -77,12 +76,6 @@ const DeveloperMode = () => {
           }
           checked={isDevModeTurnedOn}
         />
-      </div>
-      <div className="z-1 flex w-full items-center justify-between ps-2.5 pe-7">
-        <span className="py-2.5 text-[18px]/[150%] font-normal text-(--color-main-text)">
-          Color scheme
-        </span>
-        <ThemeButton />
       </div>
     </div>
   )
