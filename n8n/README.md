@@ -65,7 +65,24 @@
 
 11. Return to the **"Workflows"** tab and confirm that all errors are gone.
 
-12. **Start chatting** with your Telegram bot—everything should be ready!
+12. Set environment variables in SQL table `aigency.environment.variables` with your data. Example:
+
+|type|value|
+|----|-----|
+|BUG_REWARD_AMOUNT|1000000000000000000000|
+|TELEGRAM_MAIN_BOT_USERNAME|username_bot|
+|TELEGRAM_MONITORING_CHAT_ID|-100123456789|
+|TELEGRAM_MONITORING_TOPIC_ID|123|
+|USAGE_REWARD_AMOUNT|1000000000000000000000|
+|REWARD_ACCOUNT_PRIVATE_KEY|ed25519:deadbeef|
+|REWARD_ACCOUNT_ID|example.near|
+|MAX_USAGE_REWARD_AMOUNT|10000000000000000000000|
+|TELEGRAM_MAIN_BOT_ID|123456789|
+|TELEGRAM_DEBUG_BOT_ID|123456789|
+|TELEGRAM_WEB_APP_URL|https://tgapp.aigency.example.com/|
+
+
+13. **Start chatting** with your Telegram bot—everything should be ready!
 
 ### Uninstallation
 
