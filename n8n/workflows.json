@@ -1448,6 +1448,17 @@
           ]
         ]
       },
+      "Get Account4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Is Dev?2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Get Enabled Capabilities": {
         "main": [
           [
@@ -1643,6 +1654,19 @@
           ]
         ]
       },
+      "Is Dev?2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram23",
+              "type": "main"
+            }
+          ],
+          [
+          ]
+        ]
+      },
       "Is Logged In?": {
         "main": [
           [
@@ -1739,6 +1763,11 @@
             {
               "index": 0,
               "node": "Message",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Get Account4",
               "type": "main"
             }
           ]
@@ -6580,6 +6609,107 @@
         ],
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "9387db99-3f00-49af-98ff-5c80bd7057a4",
+        "name": "Get Account4",
+        "parameters": {
+          "limit": 1,
+          "operation": "select",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "users",
+            "mode": "list",
+            "value": "users"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2940,
+          1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "fccd2f39-dd7f-4554-a405-852a4a3eeeec",
+        "name": "Is Dev?2",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "ebfb0c67-cd4d-4e73-b6a4-e1f8b1f64883",
+                "leftValue": "={{ $json.isdeveloper }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3160,
+          1160
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "a74aa444-f36d-492b-ab31-cc53faf5fdf8",
+        "name": "Telegram23",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=ℹ️ Transcription:\n{{ $('OpenAI1').item.json.text }}"
+        },
+        "position": [
+          3380,
+          1160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
       }
     ],
     "pinData": {
@@ -6593,8 +6723,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-30T11:44:49.000Z",
-    "versionId": "e4b4aac4-7987-4d46-a2a9-8fe8e8fc7473"
+    "updatedAt": "2025-05-06T07:05:20.000Z",
+    "versionId": "0809d965-0257-4db2-924f-88b1a6f74a79"
   },
   {
     "active": false,
@@ -9240,6 +9370,24 @@
           [
             {
               "index": 0,
+              "node": "Code",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "index": 0,
               "node": "Split Out1",
               "type": "main"
             }
@@ -9964,6 +10112,7 @@
         "id": "f62813e3-148c-4b4f-acca-5075a71a12cd",
         "maxTries": 5,
         "name": "Basic LLM Chain2",
+        "onError": "continueErrorOutput",
         "parameters": {
           "hasOutputParser": true,
           "messages": {
@@ -9980,7 +10129,7 @@
           -60,
           -740
         ],
-        "retryOnFail": true,
+        "retryOnFail": false,
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.5,
         "waitBetweenTries": 5000
@@ -9989,12 +10138,12 @@
         "id": "76948b2c-1b42-4ee2-b355-1a4cfdce4c3b",
         "name": "Split Out1",
         "parameters": {
-          "fieldToSplitOut": "output",
+          "fieldToSplitOut": "escapedText",
           "options": {
           }
         },
         "position": [
-          380,
+          540,
           -740
         ],
         "type": "n8n-nodes-base.splitOut",
@@ -10453,13 +10602,13 @@
                 "display": true,
                 "displayName": "datetime",
                 "id": "datetime",
-                "required": true,
+                "required": false,
                 "type": "dateTime"
               }
             ],
             "value": {
-              "data": "={{ $json.data }}",
-              "datetime": "={{ $json.time }}"
+              "data": "={{ $json.escapedText }}",
+              "datetime": "={{ $('Basic LLM Chain2').item.json.output[0].time }}"
             }
           },
           "options": {
@@ -10477,7 +10626,7 @@
           }
         },
         "position": [
-          580,
+          740,
           -740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -10695,6 +10844,19 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "34676926-dfe2-4935-afe4-d93db61b6fe4"
+      },
+      {
+        "id": "47029fc2-6ea8-4b33-821f-2b6a7a447aca",
+        "name": "Code",
+        "parameters": {
+          "jsCode": "function escapeMarkdownV2(text) {\n  if (!text) {\n    return \"\";\n  }\n\n  let escapedText = text;\n\n  // Escape characters outside pre and code entities\n  escapedText = escapedText.replace(/[_*[\\]()~`>#+\\=\\|{}]/g, '\\\\$&');\n\n  return escapedText;\n}\n\n\nconst inputText = $input.first().json.output[0].data;\n\nconst escapedText = escapeMarkdownV2(inputText);\n\nreturn {\n  json: {\n    escapedText: escapedText\n  }\n};"
+        },
+        "position": [
+          320,
+          -740
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
       }
     ],
     "pinData": {
@@ -10714,8 +10876,8 @@
     "tags": [
     ],
     "triggerCount": 3,
-    "updatedAt": "2025-04-25T18:27:33.000Z",
-    "versionId": "9bab2ddd-6c52-47c4-9471-8fa5a3e119f4"
+    "updatedAt": "2025-05-06T08:06:44.000Z",
+    "versionId": "8c0a41d3-8ae7-4d27-8353-68c828ea80f1"
   },
   {
     "active": true,
@@ -13720,7 +13882,7 @@
           [
             {
               "index": 0,
-              "node": "NotifyMonitoring",
+              "node": "If",
               "type": "main"
             }
           ]
@@ -13770,6 +13932,24 @@
             {
               "index": 0,
               "node": "UserErrorId",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "NotifyMonitoring",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "NotifyMonitoring1",
               "type": "main"
             }
           ]
@@ -14634,8 +14814,67 @@
           "text": "=Error #{{ $('HashError').item.json.data.substring(0, 6) }}\n{{ $('Error Trigger').item.json.execution.error.message }}\n\nNode: {{ $('Error Trigger').item.json.execution.lastNodeExecuted }}\n\n```\n{{ $('Error Trigger').item.json.execution.error.stack }}\n```\n\nWorkflow: [{{ $('Error Trigger').item.json.workflow.name }}]({{ $('Error Trigger').item.json.execution.url }})"
         },
         "position": [
-          -280,
+          20,
+          160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "id": "151e5a22-75f4-46fe-889e-634ebb3584a7",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "3465aecb-60c6-43ff-8ba8-0d7ad5454ab1",
+                "leftValue": "={{ $('HashError').item.json.execution.error.message }}",
+                "operator": {
+                  "operation": "notEquals",
+                  "type": "string"
+                },
+                "rightValue": "Host not found"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -220,
           260
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "2b7d9ace-393f-4271-8508-526914c89c2e",
+        "name": "NotifyMonitoring1",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": "={{ $('GetEnvVariables').item.json.telegram_monitoring_topic_id }}"
+          },
+          "chatId": "={{ $('GetEnvVariables').item.json.telegram_monitoring_chat_id }}",
+          "text": "=🌐 Network Error: {{ $('Error Trigger').item.json.execution.error.message }}.\n#{{ $('HashError').item.json.data.substring(0, 6) }}\n\nWorkflow: [{{ $('Error Trigger').item.json.workflow.name }}]({{ $('Error Trigger').item.json.execution.url }})"
+        },
+        "position": [
+          20,
+          340
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
@@ -14651,8 +14890,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-30T12:00:33.000Z",
-    "versionId": "39b9ffc3-4f58-4079-a1ce-c42ede8e6d03"
+    "updatedAt": "2025-05-06T08:24:59.000Z",
+    "versionId": "bc3eb47e-8431-492c-8be3-8fcd739d35b0"
   },
   {
     "active": false,
@@ -15246,7 +15485,7 @@
           "resource": "file"
         },
         "position": [
-          1100,
+          1080,
           540
         ],
         "type": "n8n-nodes-base.github",
@@ -15306,8 +15545,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-23T09:00:12.000Z",
-    "versionId": "5568761c-4a6d-46fa-8daa-0537d12f6b12"
+    "updatedAt": "2025-05-06T07:59:47.000Z",
+    "versionId": "1572982c-7f06-4eb3-89b0-cd388530aa58"
   },
   {
     "active": true,
