@@ -19369,7 +19369,7 @@
         "id": "b62538f9-943a-479a-a8b7-d2ea532ced57",
         "name": "Edit Fields8",
         "parameters": {
-          "jsonOutput": "={{({\n  \"id\": $json.id,\n  \"capabilityDomain\": $json.capability_domain,\n  \"capabilityName\": $json.capability_name,\n  \"amount\": $json.amount,\n  \"executionInput\": $json.execution_input,\n  \"executionOutput\": $json.execution_output,\n  \"createdAt\": $json.created_at,\n  \"operationType\": $json.recipient_account_id === $('Postgres11').item.json.near_account_id ? \"income\" : \"outcome\"\n})}}",
+          "jsonOutput": "={{$json.id ? ({\n  \"id\": $json.id,\n  \"capabilityDomain\": $json.capability_domain,\n  \"capabilityName\": $json.capability_name,\n  \"amount\": $json.amount,\n  \"executionInput\": $json.execution_input,\n  \"executionOutput\": $json.execution_output,\n  \"createdAt\": $json.created_at,\n  \"operationType\": $json.recipient_account_id === $('Postgres11').item.json.near_account_id ? \"income\" : \"outcome\"\n}) : ({})}}",
           "mode": "raw",
           "options": {
           }
@@ -19984,8 +19984,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T13:19:48.000Z",
-    "versionId": "7586080f-394f-46be-8913-852321879484"
+    "updatedAt": "2025-05-06T13:22:43.000Z",
+    "versionId": "08a7727b-c172-40f5-acb2-b40a8e321431"
   },
   {
     "active": true,
