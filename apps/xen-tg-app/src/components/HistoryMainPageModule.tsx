@@ -1,9 +1,9 @@
 import { API_URL } from '@/env'
+import { THistoryNote } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { THistoryNote } from '../types'
-import Header from './Header'
-import HistoryNote from './HistoryNote'
-import Layout from './Layout'
+import { Link } from 'react-router'
+import ArrayRightIcon from '../assets/array-right'
+import { HistoryCard } from './HistoryNote'
 
 const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -29,26 +29,26 @@ const queryFn = (name: string, params?: { [key: string]: string | number }) => a
   return data.result
 }
 
-const History = () => {
+const HistoryMainPageModule = () => {
   const { data: history } = useQuery<{ items: THistoryNote[]; total: number }>({
     queryKey: ['history'],
     queryFn: queryFn('getUsageHistory', {
       offset: 0,
-      limit: 10,
+      limit: 1,
     }),
   })
 
-  return (
-    <Layout>
-      <Header />
-      <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
-        <div className="my-1.5 flex w-full items-center justify-between">
-          <h1 className="text-center text-2xl font-bold">Payment & Usage</h1>
-        </div>
-        {history?.items.map((note) => <HistoryNote key={note.id} note={note} />)}
+  return history?.total ? (
+    <Link
+      to="/history"
+      className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 text-(--color-main-text) backdrop-blur-3xl backdrop-opacity-80"
+    >
+      <HistoryCard note={history?.items[0]} />
+      <div className="mr-6 flex cursor-pointer items-center justify-center py-1.5">
+        <ArrayRightIcon />
       </div>
-    </Layout>
-  )
+    </Link>
+  ) : null
 }
 
-export default History
+export default HistoryMainPageModule
