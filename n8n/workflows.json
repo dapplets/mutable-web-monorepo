@@ -16225,6 +16225,17 @@
           ]
         ]
       },
+      "Postgres27": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Postgres3": {
         "main": [
           [
@@ -16497,6 +16508,13 @@
             {
               "index": 0,
               "node": "Postgres26",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres27",
               "type": "main"
             }
           ]
@@ -17140,6 +17158,31 @@
                   }
                 },
                 "outputKey": "addSubscription",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "a0f5c6ec-a8f9-4a3b-8a5c-94227405d268",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "removeSubscription"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "removeSubscription",
                 "renameOutput": true
               }
             ]
@@ -19973,6 +20016,52 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5b5a76cf-e616-428a-991f-a43f710b408a",
+        "name": "Postgres27",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $('Webhook').item.json.body.params.id }}"
+              },
+              {
+                "column": "username",
+                "value": "={{ $json.authToken.user.username.toLowerCase() }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2300,
+          4540
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -19984,8 +20073,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T13:22:43.000Z",
-    "versionId": "08a7727b-c172-40f5-acb2-b40a8e321431"
+    "updatedAt": "2025-05-06T13:40:55.000Z",
+    "versionId": "44cfc835-9c95-4019-af70-049b825a3c6c"
   },
   {
     "active": true,
