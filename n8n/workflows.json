@@ -15683,6 +15683,17 @@
           ]
         ]
       },
+      "Edit Fields13": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Edit Fields2": {
         "main": [
           [
@@ -16517,6 +16528,13 @@
               "node": "Postgres27",
               "type": "main"
             }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "n8n",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -16570,6 +16588,17 @@
             {
               "index": 0,
               "node": "GetEnvVariables",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "n8n": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields13",
               "type": "main"
             }
           ]
@@ -17183,6 +17212,31 @@
                   }
                 },
                 "outputKey": "removeSubscription",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "47c34a91-0b8a-4905-988c-ee4a46a6f7e5",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getLastScanOfSubscriptions"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getLastScanOfSubscriptions",
                 "renameOutput": true
               }
             ]
@@ -20062,6 +20116,62 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "n8nApi": {
+            "id": "29pMkB66wmwgdc6w",
+            "name": "n8n account"
+          }
+        },
+        "id": "653774f7-c4a8-4094-ba2a-7f5c253b17b1",
+        "name": "n8n",
+        "parameters": {
+          "filters": {
+            "workflowId": {
+              "__rl": true,
+              "cachedResultName": "forecast-reddits (#hUnkG6eBZZZGN97V)",
+              "mode": "list",
+              "value": "hUnkG6eBZZZGN97V"
+            }
+          },
+          "limit": 1,
+          "options": {
+          },
+          "requestOptions": {
+          },
+          "resource": "execution"
+        },
+        "position": [
+          2300,
+          4720
+        ],
+        "type": "n8n-nodes-base.n8n",
+        "typeVersion": 1
+      },
+      {
+        "id": "bf0503f4-eee5-4d5c-b40b-b06584d92692",
+        "name": "Edit Fields13",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6d78cfe8-dbb5-4258-9539-dc98f8a7d691",
+                "name": "result.lastSyncAt",
+                "type": "string",
+                "value": "={{ $json.startedAt }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2520,
+          4720
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
       }
     ],
     "pinData": {
@@ -20073,8 +20183,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T13:40:55.000Z",
-    "versionId": "44cfc835-9c95-4019-af70-049b825a3c6c"
+    "updatedAt": "2025-05-06T14:37:21.000Z",
+    "versionId": "c5206e9b-864e-45b5-a593-f12a4d578b46"
   },
   {
     "active": true,
