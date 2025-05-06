@@ -15595,6 +15595,17 @@
           ]
         ]
       },
+      "Aggregate4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge4",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Construct Response": {
         "main": [
           [
@@ -15634,6 +15645,17 @@
             {
               "index": 0,
               "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields10": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate4",
               "type": "main"
             }
           ]
@@ -15711,6 +15733,17 @@
             {
               "index": 0,
               "node": "Aggregate3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields9": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
               "type": "main"
             }
           ]
@@ -15910,6 +15943,17 @@
           ]
         ]
       },
+      "Merge4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields9",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Not Empty?": {
         "main": [
           [
@@ -16099,6 +16143,28 @@
             {
               "index": 0,
               "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres22": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields10",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres23": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge4",
               "type": "main"
             }
           ]
@@ -16343,6 +16409,18 @@
             {
               "index": 0,
               "node": "Postgres11",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres22",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Postgres23",
               "type": "main"
             }
           ]
@@ -16886,6 +16964,31 @@
                   }
                 },
                 "outputKey": "getUsageHistory",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "01faa7d5-f93b-4964-97d9-5b31b9426574",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getSubscriptions"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getSubscriptions",
                 "renameOutput": true
               }
             ]
@@ -19226,6 +19329,134 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": false,
+        "id": "a87ad9cf-80a8-4231-9fc3-2b1c1d5ccb6a",
+        "name": "Postgres22",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }},{{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
+          },
+          "query": "select * \nfrom jobs.subscriptions\nwhere username = $1\norder by id desc\nlimit $2\noffset $3"
+        },
+        "position": [
+          2300,
+          3600
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "ef24fd22-f07d-4016-887c-fe1ef43fe571",
+        "name": "Aggregate4",
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "items",
+          "options": {
+          }
+        },
+        "position": [
+          2740,
+          3600
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "35c68509-f2f3-4744-bf43-89ad4e772dd5",
+        "name": "Edit Fields9",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a9167abe-5e1d-4b2c-82ea-686ada653d03",
+                "name": "result.items",
+                "type": "array",
+                "value": "={{ $json.items.filter(x => Object.keys(x).length) ?? [] }}"
+              },
+              {
+                "id": "78fadd62-c7cc-43b2-a569-4ffde09ea903",
+                "name": "result.total",
+                "type": "number",
+                "value": "={{ $json.count }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3200,
+          3680
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "f80974f8-aaed-4bd8-9101-59d7b9a0eddb",
+        "name": "Postgres23",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
+          },
+          "query": "select count(*) as count\nfrom \"jobs\".\"subscriptions\"\nwhere username = $1"
+        },
+        "position": [
+          2300,
+          3780
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "35e0eb54-7a97-4875-b8eb-fbd23520719f",
+        "name": "Merge4",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2980,
+          3680
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "8d1f41dc-e396-42e5-ac67-82d109ed02c0",
+        "name": "Edit Fields10",
+        "parameters": {
+          "jsonOutput": "={{({\n  \"id\": $json.id,\n  \"source\": $json.source,\n  \"link\": $json.link,\n  \"isEnabled\": $json[\"is-active\"]\n})}}",
+          "mode": "raw",
+          "options": {
+          }
+        },
+        "position": [
+          2520,
+          3600
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
       }
     ],
     "pinData": {
@@ -19237,8 +19468,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-05T15:35:00.000Z",
-    "versionId": "921498d5-a6e3-41a0-bf93-3dd0e85dc079"
+    "updatedAt": "2025-05-06T13:03:32.000Z",
+    "versionId": "21ec8a45-1456-47fc-acd5-f4444ab0843d"
   },
   {
     "active": true,
