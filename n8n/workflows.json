@@ -12359,7 +12359,7 @@
     "versionId": "a7b0fdba-5069-430a-83c1-6d79443e6ddf"
   },
   {
-    "active": false,
+    "active": true,
     "connections": {
       "AI Agent1": {
         "main": [
@@ -12560,6 +12560,17 @@
             {
               "index": 0,
               "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres1",
               "type": "main"
             }
           ]
@@ -13273,6 +13284,24 @@
         ],
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3
+      },
+      {
+        "id": "abb0baf6-7ff3-48bb-bf0f-0293d0027e37",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "scan-subscriptions",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -3260,
+          320
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
       }
     ],
     "pinData": {
@@ -13282,12 +13311,17 @@
       "errorWorkflow": "ATeafIxZxFrZ0jIR",
       "executionOrder": "v1"
     },
-    "staticData": null,
+    "staticData": {
+      "node:Reddits 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
     "tags": [
     ],
-    "triggerCount": 0,
-    "updatedAt": "2025-04-29T16:02:29.000Z",
-    "versionId": "62f7af71-b8c5-4bbb-a3b0-d4eb856f9c0f"
+    "triggerCount": 2,
+    "updatedAt": "2025-05-06T14:53:25.000Z",
+    "versionId": "2dde192f-2810-4cb6-bda2-6694b179fdba"
   },
   {
     "active": false,
@@ -15606,6 +15640,17 @@
           ]
         ]
       },
+      "CallWebhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Construct Response": {
         "main": [
           [
@@ -16535,6 +16580,13 @@
               "node": "n8n",
               "type": "main"
             }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "CallWebhook",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -17237,6 +17289,31 @@
                   }
                 },
                 "outputKey": "getLastScanOfSubscriptions",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "52b0bec6-74e2-47da-a5e1-e754adb8d4b2",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "scanSubscriptions"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "scanSubscriptions",
                 "renameOutput": true
               }
             ]
@@ -20157,7 +20234,7 @@
             "assignments": [
               {
                 "id": "6d78cfe8-dbb5-4258-9539-dc98f8a7d691",
-                "name": "result.lastSyncAt",
+                "name": "result.lastScanAt",
                 "type": "string",
                 "value": "={{ $json.startedAt }}"
               }
@@ -20172,6 +20249,31 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "id": "6b735279-04b2-4a8e-80e5-4f1368a3a904",
+        "name": "CallWebhook",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "user-agent",
+                "value": "application/json"
+              }
+            ]
+          },
+          "method": "POST",
+          "options": {
+          },
+          "sendHeaders": true,
+          "url": "={{process.env.WEBHOOK_URL.replace(/\\/$/, '')}}/webhook/scan-subscriptions"
+        },
+        "position": [
+          2300,
+          4920
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
       }
     ],
     "pinData": {
@@ -20183,8 +20285,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T14:37:21.000Z",
-    "versionId": "c5206e9b-864e-45b5-a593-f12a4d578b46"
+    "updatedAt": "2025-05-06T14:52:37.000Z",
+    "versionId": "3f032c90-f483-46b7-ae94-dccde50113ba"
   },
   {
     "active": true,
