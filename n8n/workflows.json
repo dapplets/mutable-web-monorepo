@@ -16170,6 +16170,17 @@
           ]
         ]
       },
+      "Postgres24": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Postgres3": {
         "main": [
           [
@@ -16421,6 +16432,13 @@
             {
               "index": 0,
               "node": "Postgres23",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres24",
               "type": "main"
             }
           ]
@@ -16989,6 +17007,31 @@
                   }
                 },
                 "outputKey": "getSubscriptions",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "80516e60-a018-47af-b3dd-2a2cda10840c",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "disableSubscription"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "disableSubscription",
                 "renameOutput": true
               }
             ]
@@ -19457,6 +19500,114 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5d06b6dd-d126-40a2-9935-b3a467f89da4",
+        "name": "Postgres24",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "username"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "source",
+                "id": "source",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "link",
+                "id": "link",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is-active",
+                "id": "is-active",
+                "required": false,
+                "type": "boolean"
+              }
+            ],
+            "value": {
+              "id": "={{ $('Webhook').item.json.body.params.id }}",
+              "is-active": false,
+              "username": "={{ $json.authToken.user.username.toLowerCase() }}"
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          }
+        },
+        "position": [
+          2300,
+          3980
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -19468,8 +19619,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T13:03:32.000Z",
-    "versionId": "21ec8a45-1456-47fc-acd5-f4444ab0843d"
+    "updatedAt": "2025-05-06T13:12:33.000Z",
+    "versionId": "f6743258-f457-4fa3-a263-a35a20038e69"
   },
   {
     "active": true,
