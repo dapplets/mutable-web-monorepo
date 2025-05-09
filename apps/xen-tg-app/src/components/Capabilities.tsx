@@ -2,7 +2,6 @@ import SyncIcon from '@/assets/sync'
 import { API_URL } from '@/env'
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router'
 import ExternalLinkIcon from '../assets/external-link'
 import { TAgent } from '../types'
 import Agent from './Agent'
@@ -74,7 +73,6 @@ const mutationFn = async ({
 }
 
 const Capabilities = () => {
-  const navigate = useNavigate()
   const sentinelRef = useRef<HTMLDivElement | null>(null)
   const observerRef = useRef<IntersectionObserver | null>(null)
   const {
@@ -157,15 +155,6 @@ const Capabilities = () => {
           <ExternalLinkIcon />
         </button>
       </div>
-      <Agent
-        key="news-monitor"
-        capabilitiy={{
-          name: 'News Monitor',
-          domain: 'Core',
-          isEnabled: true,
-          action: () => navigate('/news-monitor'),
-        }}
-      />
       {capabilities?.pages.map((group) =>
         group?.items?.map((capabilitiy) => (
           <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />

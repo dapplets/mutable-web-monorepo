@@ -30,15 +30,16 @@ export type Balance = {
 export type TAgent = {
   name: string
   domain: string
+  title: string | null
+  description: string | null
   isEnabled: boolean
-  action?: () => void
 }
 
-export type TNewsSource = {
-  name: string
-  domain?: string
-  isEnabled?: boolean
-  icon?: string
+export type TSubscription = {
+  id: number
+  link: string
+  source: string
+  isEnabled: boolean
 }
 
 export type TWarning = {
