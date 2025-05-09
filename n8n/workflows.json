@@ -1448,6 +1448,17 @@
           ]
         ]
       },
+      "Get Account4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Is Dev?2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Get Enabled Capabilities": {
         "main": [
           [
@@ -1643,6 +1654,19 @@
           ]
         ]
       },
+      "Is Dev?2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram23",
+              "type": "main"
+            }
+          ],
+          [
+          ]
+        ]
+      },
       "Is Logged In?": {
         "main": [
           [
@@ -1739,6 +1763,11 @@
             {
               "index": 0,
               "node": "Message",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Get Account4",
               "type": "main"
             }
           ]
@@ -6580,6 +6609,107 @@
         ],
         "type": "n8n-nodes-base.respondToWebhook",
         "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "9387db99-3f00-49af-98ff-5c80bd7057a4",
+        "name": "Get Account4",
+        "parameters": {
+          "limit": 1,
+          "operation": "select",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "users",
+            "mode": "list",
+            "value": "users"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2940,
+          1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "fccd2f39-dd7f-4554-a405-852a4a3eeeec",
+        "name": "Is Dev?2",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "ebfb0c67-cd4d-4e73-b6a4-e1f8b1f64883",
+                "leftValue": "={{ $json.isdeveloper }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3160,
+          1160
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "a74aa444-f36d-492b-ab31-cc53faf5fdf8",
+        "name": "Telegram23",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "text": "=ℹ️ Transcription:\n{{ $('OpenAI1').item.json.text }}"
+        },
+        "position": [
+          3380,
+          1160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
       }
     ],
     "pinData": {
@@ -6593,8 +6723,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-04-30T11:44:49.000Z",
-    "versionId": "e4b4aac4-7987-4d46-a2a9-8fe8e8fc7473"
+    "updatedAt": "2025-05-06T07:05:20.000Z",
+    "versionId": "0809d965-0257-4db2-924f-88b1a6f74a79"
   },
   {
     "active": false,
@@ -9240,6 +9370,24 @@
           [
             {
               "index": 0,
+              "node": "Code",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "index": 0,
               "node": "Split Out1",
               "type": "main"
             }
@@ -9964,6 +10112,7 @@
         "id": "f62813e3-148c-4b4f-acca-5075a71a12cd",
         "maxTries": 5,
         "name": "Basic LLM Chain2",
+        "onError": "continueErrorOutput",
         "parameters": {
           "hasOutputParser": true,
           "messages": {
@@ -9980,7 +10129,7 @@
           -60,
           -740
         ],
-        "retryOnFail": true,
+        "retryOnFail": false,
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.5,
         "waitBetweenTries": 5000
@@ -9989,12 +10138,12 @@
         "id": "76948b2c-1b42-4ee2-b355-1a4cfdce4c3b",
         "name": "Split Out1",
         "parameters": {
-          "fieldToSplitOut": "output",
+          "fieldToSplitOut": "escapedText",
           "options": {
           }
         },
         "position": [
-          380,
+          540,
           -740
         ],
         "type": "n8n-nodes-base.splitOut",
@@ -10453,13 +10602,13 @@
                 "display": true,
                 "displayName": "datetime",
                 "id": "datetime",
-                "required": true,
+                "required": false,
                 "type": "dateTime"
               }
             ],
             "value": {
-              "data": "={{ $json.data }}",
-              "datetime": "={{ $json.time }}"
+              "data": "={{ $json.escapedText }}",
+              "datetime": "={{ $('Basic LLM Chain2').item.json.output[0].time }}"
             }
           },
           "options": {
@@ -10477,7 +10626,7 @@
           }
         },
         "position": [
-          580,
+          740,
           -740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -10695,6 +10844,19 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "34676926-dfe2-4935-afe4-d93db61b6fe4"
+      },
+      {
+        "id": "47029fc2-6ea8-4b33-821f-2b6a7a447aca",
+        "name": "Code",
+        "parameters": {
+          "jsCode": "function escapeMarkdownV2(text) {\n  if (!text) {\n    return \"\";\n  }\n\n  let escapedText = text;\n\n  // Escape characters outside pre and code entities\n  escapedText = escapedText.replace(/[_*[\\]()~`>#+\\=\\|{}]/g, '\\\\$&');\n\n  return escapedText;\n}\n\n\nconst inputText = $input.first().json.output[0].data;\n\nconst escapedText = escapeMarkdownV2(inputText);\n\nreturn {\n  json: {\n    escapedText: escapedText\n  }\n};"
+        },
+        "position": [
+          320,
+          -740
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
       }
     ],
     "pinData": {
@@ -10714,8 +10876,8 @@
     "tags": [
     ],
     "triggerCount": 3,
-    "updatedAt": "2025-04-25T18:27:33.000Z",
-    "versionId": "9bab2ddd-6c52-47c4-9471-8fa5a3e119f4"
+    "updatedAt": "2025-05-06T08:06:44.000Z",
+    "versionId": "8c0a41d3-8ae7-4d27-8353-68c828ea80f1"
   },
   {
     "active": true,
@@ -12197,7 +12359,7 @@
     "versionId": "a7b0fdba-5069-430a-83c1-6d79443e6ddf"
   },
   {
-    "active": false,
+    "active": true,
     "connections": {
       "AI Agent1": {
         "main": [
@@ -12398,6 +12560,17 @@
             {
               "index": 0,
               "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres1",
               "type": "main"
             }
           ]
@@ -13111,6 +13284,24 @@
         ],
         "type": "n8n-nodes-base.splitInBatches",
         "typeVersion": 3
+      },
+      {
+        "id": "abb0baf6-7ff3-48bb-bf0f-0293d0027e37",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "scan-subscriptions",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -3260,
+          320
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
       }
     ],
     "pinData": {
@@ -13120,12 +13311,17 @@
       "errorWorkflow": "ATeafIxZxFrZ0jIR",
       "executionOrder": "v1"
     },
-    "staticData": null,
+    "staticData": {
+      "node:Reddits 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
     "tags": [
     ],
-    "triggerCount": 0,
-    "updatedAt": "2025-04-29T16:02:29.000Z",
-    "versionId": "62f7af71-b8c5-4bbb-a3b0-d4eb856f9c0f"
+    "triggerCount": 2,
+    "updatedAt": "2025-05-06T14:53:25.000Z",
+    "versionId": "2dde192f-2810-4cb6-bda2-6694b179fdba"
   },
   {
     "active": false,
@@ -13720,7 +13916,7 @@
           [
             {
               "index": 0,
-              "node": "NotifyMonitoring",
+              "node": "If",
               "type": "main"
             }
           ]
@@ -13770,6 +13966,24 @@
             {
               "index": 0,
               "node": "UserErrorId",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "NotifyMonitoring",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "NotifyMonitoring1",
               "type": "main"
             }
           ]
@@ -14634,8 +14848,67 @@
           "text": "=Error #{{ $('HashError').item.json.data.substring(0, 6) }}\n{{ $('Error Trigger').item.json.execution.error.message }}\n\nNode: {{ $('Error Trigger').item.json.execution.lastNodeExecuted }}\n\n```\n{{ $('Error Trigger').item.json.execution.error.stack }}\n```\n\nWorkflow: [{{ $('Error Trigger').item.json.workflow.name }}]({{ $('Error Trigger').item.json.execution.url }})"
         },
         "position": [
-          -280,
+          20,
+          160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "89fd1d09-32c8-4842-b446-934516612ab9"
+      },
+      {
+        "id": "151e5a22-75f4-46fe-889e-634ebb3584a7",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "3465aecb-60c6-43ff-8ba8-0d7ad5454ab1",
+                "leftValue": "={{ $('HashError').item.json.execution.error.message }}",
+                "operator": {
+                  "operation": "notEquals",
+                  "type": "string"
+                },
+                "rightValue": "Host not found"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -220,
           260
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "2b7d9ace-393f-4271-8508-526914c89c2e",
+        "name": "NotifyMonitoring1",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false,
+            "message_thread_id": "={{ $('GetEnvVariables').item.json.telegram_monitoring_topic_id }}"
+          },
+          "chatId": "={{ $('GetEnvVariables').item.json.telegram_monitoring_chat_id }}",
+          "text": "=🌐 Network Error: {{ $('Error Trigger').item.json.execution.error.message }}.\n#{{ $('HashError').item.json.data.substring(0, 6) }}\n\nWorkflow: [{{ $('Error Trigger').item.json.workflow.name }}]({{ $('Error Trigger').item.json.execution.url }})"
+        },
+        "position": [
+          20,
+          340
         ],
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
@@ -14651,8 +14924,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-30T12:00:33.000Z",
-    "versionId": "39b9ffc3-4f58-4079-a1ce-c42ede8e6d03"
+    "updatedAt": "2025-05-06T08:24:59.000Z",
+    "versionId": "bc3eb47e-8431-492c-8be3-8fcd739d35b0"
   },
   {
     "active": false,
@@ -15246,7 +15519,7 @@
           "resource": "file"
         },
         "position": [
-          1100,
+          1080,
           540
         ],
         "type": "n8n-nodes-base.github",
@@ -15306,8 +15579,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-23T09:00:12.000Z",
-    "versionId": "5568761c-4a6d-46fa-8daa-0537d12f6b12"
+    "updatedAt": "2025-05-06T07:59:47.000Z",
+    "versionId": "1572982c-7f06-4eb3-89b0-cd388530aa58"
   },
   {
     "active": true,
@@ -15356,6 +15629,39 @@
           ]
         ]
       },
+      "Aggregate4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge4",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "CallWebhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Construct Response": {
         "main": [
           [
@@ -15390,6 +15696,39 @@
         ]
       },
       "Edit Fields1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields10": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate4",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields11": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields12",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields12": {
         "main": [
           [
             {
@@ -15472,6 +15811,17 @@
             {
               "index": 0,
               "node": "Aggregate3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields9": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
               "type": "main"
             }
           ]
@@ -15671,6 +16021,17 @@
           ]
         ]
       },
+      "Merge4": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields9",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Not Empty?": {
         "main": [
           [
@@ -15855,6 +16216,72 @@
         ]
       },
       "Postgres21": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres22": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields10",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres23": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge4",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres24": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres25": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres26": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields11",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres27": {
         "main": [
           [
             {
@@ -16104,6 +16531,60 @@
             {
               "index": 0,
               "node": "Postgres11",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres22",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Postgres23",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres24",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres25",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres26",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Postgres27",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Code",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "CallWebhook",
               "type": "main"
             }
           ]
@@ -16647,6 +17128,181 @@
                   }
                 },
                 "outputKey": "getUsageHistory",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "01faa7d5-f93b-4964-97d9-5b31b9426574",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getSubscriptions"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getSubscriptions",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "80516e60-a018-47af-b3dd-2a2cda10840c",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "disableSubscription"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "disableSubscription",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "cfced321-fed2-4830-bf1c-2e587a83a9dc",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "enableSubscription"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "enableSubscription",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "9f5f5a9d-a47e-45d0-9ab6-692d3c930b75",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "addSubscription"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "addSubscription",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "a0f5c6ec-a8f9-4a3b-8a5c-94227405d268",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "removeSubscription"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "removeSubscription",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "47c34a91-0b8a-4905-988c-ee4a46a6f7e5",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "getNextScanOfSubscriptions"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "getNextScanOfSubscriptions",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "52b0bec6-74e2-47da-a5e1-e754adb8d4b2",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "scanSubscriptions"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "scanSubscriptions",
                 "renameOutput": true
               }
             ]
@@ -18876,7 +19532,7 @@
         "id": "b62538f9-943a-479a-a8b7-d2ea532ced57",
         "name": "Edit Fields8",
         "parameters": {
-          "jsonOutput": "={{({\n  \"id\": $json.id,\n  \"capabilityDomain\": $json.capability_domain,\n  \"capabilityName\": $json.capability_name,\n  \"amount\": $json.amount,\n  \"executionInput\": $json.execution_input,\n  \"executionOutput\": $json.execution_output,\n  \"createdAt\": $json.created_at,\n  \"operationType\": $json.recipient_account_id === $('Postgres11').item.json.near_account_id ? \"income\" : \"outcome\"\n})}}",
+          "jsonOutput": "={{$json.id ? ({\n  \"id\": $json.id,\n  \"capabilityDomain\": $json.capability_domain,\n  \"capabilityName\": $json.capability_name,\n  \"amount\": $json.amount,\n  \"executionInput\": $json.execution_input,\n  \"executionOutput\": $json.execution_output,\n  \"createdAt\": $json.created_at,\n  \"operationType\": $json.recipient_account_id === $('Postgres11').item.json.near_account_id ? \"income\" : \"outcome\"\n}) : ({})}}",
           "mode": "raw",
           "options": {
           }
@@ -18987,6 +19643,584 @@
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": false,
+        "id": "a87ad9cf-80a8-4231-9fc3-2b1c1d5ccb6a",
+        "name": "Postgres22",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }},{{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
+          },
+          "query": "select * \nfrom jobs.subscriptions\nwhere username = $1\norder by id desc\nlimit $2\noffset $3"
+        },
+        "position": [
+          2300,
+          3600
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "ef24fd22-f07d-4016-887c-fe1ef43fe571",
+        "name": "Aggregate4",
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "items",
+          "options": {
+          }
+        },
+        "position": [
+          2740,
+          3600
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "35c68509-f2f3-4744-bf43-89ad4e772dd5",
+        "name": "Edit Fields9",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a9167abe-5e1d-4b2c-82ea-686ada653d03",
+                "name": "result.items",
+                "type": "array",
+                "value": "={{ $json.items.filter(x => Object.keys(x).length) ?? [] }}"
+              },
+              {
+                "id": "78fadd62-c7cc-43b2-a569-4ffde09ea903",
+                "name": "result.total",
+                "type": "number",
+                "value": "={{ $json.count }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3200,
+          3680
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "f80974f8-aaed-4bd8-9101-59d7b9a0eddb",
+        "name": "Postgres23",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
+          },
+          "query": "select count(*) as count\nfrom \"jobs\".\"subscriptions\"\nwhere username = $1"
+        },
+        "position": [
+          2300,
+          3780
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": false,
+        "id": "35e0eb54-7a97-4875-b8eb-fbd23520719f",
+        "name": "Merge4",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2980,
+          3680
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "8d1f41dc-e396-42e5-ac67-82d109ed02c0",
+        "name": "Edit Fields10",
+        "parameters": {
+          "jsonOutput": "={{({\n  \"id\": $json.id,\n  \"source\": $json.source,\n  \"link\": $json.link,\n  \"isEnabled\": $json[\"is-active\"]\n})}}",
+          "mode": "raw",
+          "options": {
+          }
+        },
+        "position": [
+          2520,
+          3600
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5d06b6dd-d126-40a2-9935-b3a467f89da4",
+        "name": "Postgres24",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "username"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "source",
+                "id": "source",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "link",
+                "id": "link",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is-active",
+                "id": "is-active",
+                "required": false,
+                "type": "boolean"
+              }
+            ],
+            "value": {
+              "id": "={{ $('Webhook').item.json.body.params.id }}",
+              "is-active": false,
+              "username": "={{ $json.authToken.user.username.toLowerCase() }}"
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          }
+        },
+        "position": [
+          2300,
+          3980
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "1b412add-e28e-48ea-b6e2-bf796f325f88",
+        "name": "Postgres25",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "username"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "source",
+                "id": "source",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "link",
+                "id": "link",
+                "removed": true,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is-active",
+                "id": "is-active",
+                "required": false,
+                "type": "boolean"
+              }
+            ],
+            "value": {
+              "id": "={{ $('Webhook').item.json.body.params.id }}",
+              "is-active": true,
+              "username": "={{ $json.authToken.user.username.toLowerCase() }}"
+            }
+          },
+          "operation": "update",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          }
+        },
+        "position": [
+          2300,
+          4160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "6d1f42ad-2ab2-4c9d-a663-90f5f3c219b4",
+        "name": "Postgres26",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "username"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "source",
+                "id": "source",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "link",
+                "id": "link",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is-active",
+                "id": "is-active",
+                "required": false,
+                "type": "boolean"
+              }
+            ],
+            "value": {
+              "is-active": true,
+              "link": "={{ $('Webhook').item.json.body.params.link }}",
+              "source": "={{ $('Webhook').item.json.body.params.source }}",
+              "userid": "={{ $json.authToken.user.id }}",
+              "username": "={{ $json.authToken.user.username.toLowerCase() }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          }
+        },
+        "position": [
+          2300,
+          4340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "c70706f5-e560-463c-8e96-8d4a90ce953c",
+        "name": "Edit Fields11",
+        "parameters": {
+          "jsonOutput": "={{({\n  \"id\": $json.id,\n  \"source\": $json.source,\n  \"link\": $json.link,\n  \"isEnabled\": $json[\"is-active\"]\n})}}",
+          "mode": "raw",
+          "options": {
+          }
+        },
+        "position": [
+          2500,
+          4340
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "578e3ca3-ab2e-426e-812f-c0245ea66f72",
+        "name": "Edit Fields12",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "c0ccbc81-83e8-4aa3-b373-0820a3887207",
+                "name": "result",
+                "type": "object",
+                "value": "={{ $json }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2720,
+          4340
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5b5a76cf-e616-428a-991f-a43f710b408a",
+        "name": "Postgres27",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $('Webhook').item.json.body.params.id }}"
+              },
+              {
+                "column": "username",
+                "value": "={{ $json.authToken.user.username.toLowerCase() }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2300,
+          4540
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "6b735279-04b2-4a8e-80e5-4f1368a3a904",
+        "name": "CallWebhook",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "user-agent",
+                "value": "application/json"
+              }
+            ]
+          },
+          "method": "POST",
+          "options": {
+          },
+          "sendHeaders": true,
+          "url": "={{process.env.WEBHOOK_URL.replace(/\\/$/, '')}}/webhook/scan-subscriptions"
+        },
+        "position": [
+          2300,
+          4920
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "620374fa-5220-4593-a781-1a113d4e6db3",
+        "name": "Code",
+        "parameters": {
+          "jsCode": "const date = new Date();\n\n// every 1h at 2nd minute\nconst EVERY_HOURS = 1;\nconst AT_PAST_MINUTES = 2;\n\ndate.setSeconds(0, 0);\n\nif (date.getMinutes() >= AT_PAST_MINUTES) {\n  date.setHours(date.getHours() + EVERY_HOURS);\n}\n\ndate.setMinutes(AT_PAST_MINUTES);\n\n$input.item.json = {\n  result: {\n    nextScanAt: date.toISOString()\n  }\n};\n\nreturn $input.item;",
+          "mode": "runOnceForEachItem"
+        },
+        "position": [
+          2300,
+          4720
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
       }
     ],
     "pinData": {
@@ -18998,8 +20232,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-05T15:35:00.000Z",
-    "versionId": "921498d5-a6e3-41a0-bf93-3dd0e85dc079"
+    "updatedAt": "2025-05-06T15:17:22.000Z",
+    "versionId": "38b33a3c-6ca2-45f1-9c91-0d5463e80dd9"
   },
   {
     "active": true,
