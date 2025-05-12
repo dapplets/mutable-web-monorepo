@@ -91,10 +91,6 @@ const NewsMonitor = () => {
     },
   })
 
-  const onUpdate = () => handleUpdateSubscription.mutate({ methodName: 'scanSubscriptions' })
-
-  useEffect(onUpdate, [])
-
   return (
     <Layout>
       <Header />
@@ -106,7 +102,7 @@ const NewsMonitor = () => {
               Next scan:{' '}
               <button
                 className="flex items-center justify-center font-semibold text-(--my-primary)"
-                onClick={onUpdate}
+                onClick={() => handleUpdateSubscription.mutate({ methodName: 'scanSubscriptions' })}
                 disabled={isPendingNextScanOfSubscriptions || handleUpdateSubscription.isPending}
               >
                 {nextScanOfSubscriptions?.nextScanAt
