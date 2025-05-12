@@ -285,3 +285,13 @@ ALTER TABLE ONLY "default".transfer
     ADD CONSTRAINT reward_transaction_pk PRIMARY KEY (id);
 
 CREATE UNIQUE INDEX capability_domain_idx ON "default".capability USING btree (domain, name);
+
+CREATE TABLE "default".context_node (
+    namespace character varying NOT NULL,
+    type character varying NOT NULL,
+    id character varying NOT NULL,
+    content json
+);
+
+ALTER TABLE ONLY "default".context_node
+    ADD CONSTRAINT context_node_unique UNIQUE (namespace, type, id);
