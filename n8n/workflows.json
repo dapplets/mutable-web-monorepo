@@ -13333,6 +13333,7 @@
           "options": {
           },
           "path": "scan-subscriptions",
+          "responseData": "noData",
           "responseMode": "lastNode"
         },
         "position": [
@@ -13382,8 +13383,8 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-05-07T13:41:27.000Z",
-    "versionId": "f8a32bf7-56d9-40b9-bfb6-44dd8bf55781"
+    "updatedAt": "2025-05-12T10:04:53.000Z",
+    "versionId": "4fba50fa-c3e1-42bc-acb4-e22318aad1f5"
   },
   {
     "active": false,
@@ -15229,7 +15230,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "You are a software engineer tasked with generating concise and informative Git commit messages based on git diff outputs. Your goal is to write a commit message that adheres to the Conventional Commits specification. Comparing files are workflow backups from n8n.\n\nBehavior:\n1. Analyze the diff: Carefully compare the before and after code to determine the purpose of the change.\n2. Classify the commit using one of the allowed types (see below).\n3. Write a commit message summarizing the change in plain, concise language.\n4. Try to understand and explain what really was changed.\n\nOutput Data:\n1. Commit Type\n2. Commit Message\n\nRestrictions:\n1. Maximum commit message length: 72 characters\n2. Message starts with a lowercase letter\n3. No period at the end\n4. Be descriptive but brief\n5. Do not include commit type name into message\n6. Do not include node name into message\n7. Do not write just \"added node\" or \"removed node\"\n\nAllowed commit types:\n\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\n\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nbuild: Changes that affect the build system or external dependencies\n\nci: Changes to our CI configuration files and scripts \n\ndocs: Documentation only changes\n\nperf: A code change that improves performance\n\nrefactor: A code change that neither fixes a bug nor adds a feature\n\nstyle: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)\n\ntest: Adding missing tests or correcting existing tests\n\n"
+            "systemMessage": "You are a software engineer tasked with generating concise and informative Git commit messages based on git diff outputs. Your goal is to write a commit message that adheres to the Conventional Commits specification. Comparing files are workflow backups from n8n.\n\nBehavior:\n1. Analyze the diff: Carefully compare the before and after code to determine the purpose of the change.\n2. Classify the commit using one of the allowed types (see below).\n3. Write a commit message summarizing the change in plain, concise language.\n4. Try to understand and explain what really was changed.\n\nOutput Data:\n1. Commit Type\n2. Commit Message\n\nRestrictions:\n1. Maximum commit message length: 72 characters\n2. Message starts with a lowercase letter\n3. No period at the end\n4. Be descriptive but brief\n5. Do not include commit type name into message\n6. Do not include node name into message\n7. Do not write just \"added node\" or \"removed node\"\n8. Do not mention n8n node names, e.g. \"Postgres22\"\n\nAllowed commit types:\n\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\n\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nbuild: Changes that affect the build system or external dependencies\n\nci: Changes to our CI configuration files and scripts \n\ndocs: Documentation only changes\n\nperf: A code change that improves performance\n\nrefactor: A code change that neither fixes a bug nor adds a feature\n\nstyle: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)\n\ntest: Adding missing tests or correcting existing tests\n\n"
           },
           "promptType": "define",
           "text": "={{ $json.stdout }}"
@@ -15267,9 +15268,9 @@
         "parameters": {
           "model": {
             "__rl": true,
-            "cachedResultName": "gpt-4o-mini",
+            "cachedResultName": "o3-mini",
             "mode": "list",
-            "value": "gpt-4o-mini"
+            "value": "o3-mini"
           },
           "options": {
           }
@@ -15641,8 +15642,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-05-06T07:59:47.000Z",
-    "versionId": "1572982c-7f06-4eb3-89b0-cd388530aa58"
+    "updatedAt": "2025-05-12T09:56:34.000Z",
+    "versionId": "1d849d18-c0f6-4012-a474-c7031b2d8b7f"
   },
   {
     "active": true,
@@ -20249,18 +20250,15 @@
         "id": "6b735279-04b2-4a8e-80e5-4f1368a3a904",
         "name": "CallWebhook",
         "parameters": {
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "user-agent",
-                "value": "application/json"
-              }
-            ]
-          },
           "method": "POST",
           "options": {
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "responseFormat": "text"
+              }
+            }
           },
-          "sendHeaders": true,
           "url": "={{process.env.WEBHOOK_URL.replace(/\\/$/, '')}}/webhook/scan-subscriptions"
         },
         "position": [
@@ -20294,8 +20292,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T15:17:22.000Z",
-    "versionId": "38b33a3c-6ca2-45f1-9c91-0d5463e80dd9"
+    "updatedAt": "2025-05-12T10:04:16.000Z",
+    "versionId": "e3df62e6-be55-4c5e-883a-46bd433508f9"
   },
   {
     "active": true,
