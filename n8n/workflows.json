@@ -1816,7 +1816,7 @@
           [
             {
               "index": 0,
-              "node": "Telegram9",
+              "node": "Postgres22",
               "type": "main"
             }
           ]
@@ -1949,6 +1949,17 @@
             {
               "index": 0,
               "node": "Telegram21",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres22": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram9",
               "type": "main"
             }
           ]
@@ -3473,7 +3484,7 @@
           "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
-          3460,
+          3680,
           -1920
         ],
         "type": "n8n-nodes-base.telegram",
@@ -6710,6 +6721,106 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "23926721-00f5-43a2-bfd5-82504b4ed862"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "4f90065c-ef44-4825-b735-938983791fc1",
+        "name": "Postgres22",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "username",
+              "capability_domain",
+              "capability_name"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "username",
+                "id": "username",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_enabled",
+                "id": "is_enabled",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "is_deleted",
+                "id": "is_deleted",
+                "required": false,
+                "type": "boolean"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_domain",
+                "id": "capability_domain",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_name",
+                "id": "capability_name",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "capability_domain": "news-monitor",
+              "capability_name": "core",
+              "is_deleted": false,
+              "is_enabled": true,
+              "username": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }} "
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "user_capability",
+            "mode": "list",
+            "value": "user_capability"
+          }
+        },
+        "position": [
+          3460,
+          -1920
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -6723,8 +6834,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-06T07:05:20.000Z",
-    "versionId": "0809d965-0257-4db2-924f-88b1a6f74a79"
+    "updatedAt": "2025-05-07T13:34:59.000Z",
+    "versionId": "d536a6ed-1ada-416c-ad04-d48c02b5d6f1"
   },
   {
     "active": false,
@@ -7595,7 +7706,7 @@
           "options": {
             "queryReplacement": "={{ $json.username.toLowerCase() }}"
           },
-          "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\n  and is_enabled = true\norder by uc.capability_domain asc, uc.capability_name asc"
+          "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\n  and is_enabled = true\n  and uc.capability_domain = 'Near AI'\norder by uc.capability_domain asc, uc.capability_name asc"
         },
         "position": [
           1420,
@@ -8458,8 +8569,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-05-05T15:06:37.000Z",
-    "versionId": "7791602c-046f-4b66-ac0b-2cf8b627dd29"
+    "updatedAt": "2025-05-07T12:46:19.000Z",
+    "versionId": "be26d749-ffe2-4027-b6fa-58870f83694e"
   },
   {
     "active": false,
@@ -9370,27 +9481,11 @@
           [
             {
               "index": 0,
-              "node": "Code",
+              "node": "Split Out1",
               "type": "main"
             }
           ],
           [
-            {
-              "index": 0,
-              "node": "Basic LLM Chain2",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "Code": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Split Out1",
-              "type": "main"
-            }
           ]
         ]
       },
@@ -10112,7 +10207,6 @@
         "id": "f62813e3-148c-4b4f-acca-5075a71a12cd",
         "maxTries": 5,
         "name": "Basic LLM Chain2",
-        "onError": "continueErrorOutput",
         "parameters": {
           "hasOutputParser": true,
           "messages": {
@@ -10129,7 +10223,7 @@
           -60,
           -740
         ],
-        "retryOnFail": false,
+        "retryOnFail": true,
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.5,
         "waitBetweenTries": 5000
@@ -10143,7 +10237,7 @@
           }
         },
         "position": [
-          540,
+          320,
           -740
         ],
         "type": "n8n-nodes-base.splitOut",
@@ -10626,7 +10720,7 @@
           }
         },
         "position": [
-          740,
+          520,
           -740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -10844,19 +10938,6 @@
         "type": "n8n-nodes-base.telegram",
         "typeVersion": 1.2,
         "webhookId": "34676926-dfe2-4935-afe4-d93db61b6fe4"
-      },
-      {
-        "id": "47029fc2-6ea8-4b33-821f-2b6a7a447aca",
-        "name": "Code",
-        "parameters": {
-          "jsCode": "function escapeMarkdownV2(text) {\n  if (!text) {\n    return \"\";\n  }\n\n  let escapedText = text;\n\n  // Escape characters outside pre and code entities\n  escapedText = escapedText.replace(/[_*[\\]()~`>#+\\=\\|{}]/g, '\\\\$&');\n\n  return escapedText;\n}\n\n\nconst inputText = $input.first().json.output[0].data;\n\nconst escapedText = escapeMarkdownV2(inputText);\n\nreturn {\n  json: {\n    escapedText: escapedText\n  }\n};"
-        },
-        "position": [
-          320,
-          -740
-        ],
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2
       }
     ],
     "pinData": {
@@ -10876,8 +10957,8 @@
     "tags": [
     ],
     "triggerCount": 3,
-    "updatedAt": "2025-05-06T08:06:44.000Z",
-    "versionId": "8c0a41d3-8ae7-4d27-8353-68c828ea80f1"
+    "updatedAt": "2025-05-07T08:16:30.000Z",
+    "versionId": "4919829c-f5a9-481a-b9ee-7c90984d171a"
   },
   {
     "active": true,
@@ -12448,6 +12529,17 @@
           ]
         ]
       },
+      "GetUsersWithEnabledNewsMonitor": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Switch",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Loop Over Items": {
         "main": [
           [
@@ -12510,17 +12602,6 @@
           ]
         ]
       },
-      "Postgres1": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Switch",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Postgres5": {
         "main": [
           [
@@ -12537,7 +12618,7 @@
           [
             {
               "index": 0,
-              "node": "Postgres1",
+              "node": "GetUsersWithEnabledNewsMonitor",
               "type": "main"
             }
           ]
@@ -12570,7 +12651,7 @@
           [
             {
               "index": 0,
-              "node": "Postgres1",
+              "node": "GetUsersWithEnabledNewsMonitor",
               "type": "main"
             }
           ]
@@ -13176,7 +13257,7 @@
               },
               {
                 "column": "userid",
-                "value": "={{ $('Postgres1').item.json.id.toString() }}"
+                "value": "={{ $('GetUsersWithEnabledNewsMonitor').item.json.id.toString() }}"
               }
             ]
           }
@@ -13231,47 +13312,6 @@
         "typeVersion": 1.1
       },
       {
-        "credentials": {
-          "postgres": {
-            "id": "8ZOLCkWqvhw8gGkU",
-            "name": "Postgres account"
-          }
-        },
-        "id": "c796b2b2-07d9-49d2-995e-076ee6cb1739",
-        "name": "Postgres1",
-        "parameters": {
-          "operation": "select",
-          "options": {
-          },
-          "returnAll": true,
-          "schema": {
-            "__rl": true,
-            "mode": "list",
-            "value": "public"
-          },
-          "table": {
-            "__rl": true,
-            "cachedResultName": "users",
-            "mode": "list",
-            "value": "users"
-          },
-          "where": {
-            "values": [
-              {
-                "column": "status",
-                "value": "true"
-              }
-            ]
-          }
-        },
-        "position": [
-          -3060,
-          140
-        ],
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.6
-      },
-      {
         "id": "901ff661-cce2-4b42-9b0c-b81d7ba72b6b",
         "name": "Loop Over Items",
         "parameters": {
@@ -13302,6 +13342,28 @@
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
         "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "c796b2b2-07d9-49d2-995e-076ee6cb1739",
+        "name": "GetUsersWithEnabledNewsMonitor",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc on uc.username = u.username\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and uc.capability_domain = 'core'\n  and uc.capability_name = 'news-monitor'"
+        },
+        "position": [
+          -3060,
+          140
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -13320,8 +13382,8 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-05-06T14:53:25.000Z",
-    "versionId": "2dde192f-2810-4cb6-bda2-6694b179fdba"
+    "updatedAt": "2025-05-07T13:41:27.000Z",
+    "versionId": "f8a32bf7-56d9-40b9-bfb6-44dd8bf55781"
   },
   {
     "active": false,
