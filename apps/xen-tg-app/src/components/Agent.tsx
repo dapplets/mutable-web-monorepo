@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC, useEffect, useMemo } from 'react'
 // import UnlinkOutlineIcon from '../assets/unlink-outline'
 import ArrowForwardIcon from '@/assets/arrow-forward'
 import { Switch } from '@/components/ui/switch'
@@ -65,6 +65,8 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
       },
     })
 
+  useEffect(() => handleToggleCapability.reset(), [capabilitiy])
+
   // const handleRemoveCapability = useMutation({
   //   mutationFn,
   //   onSuccess: () => {
@@ -90,7 +92,11 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
         </div>
       </button>
 
-      <Switch onCheckedChange={handleChangeStatus} checked={capabilitiy.isEnabled} />
+      <Switch
+        onCheckedChange={handleChangeStatus}
+        checked={capabilitiy.isEnabled}
+        disabled={handleToggleCapability.isPending || handleToggleCapability.isSuccess}
+      />
       {/* <button
         className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
         onClick={() =>
