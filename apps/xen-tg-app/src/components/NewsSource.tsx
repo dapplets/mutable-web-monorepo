@@ -43,7 +43,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
   const [newLink, setNewLink] = useState('')
   const [showWrongSubscriptionNameMessage, setShowWrongSubscriptionNameMessage] = useState(false)
   const queryClient = useQueryClient()
-  const handleAddSubscription = useMutation({
+  const addSubscription = useMutation({
     mutationFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] }).then(onClose)
@@ -59,7 +59,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
     if (!isValidated) {
       setShowWrongSubscriptionNameMessage(true)
     } else {
-      handleAddSubscription.mutate({
+      addSubscription.mutate({
         methodName: 'addSubscription',
         params: {
           source: 'reddit', // ToDo: hardcoded
@@ -92,11 +92,11 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
           className={`flex h-8 w-15 shrink-0 cursor-pointer items-center justify-center gap-1 rounded-[10px] bg-(--color-green) text-xs/[100%] font-normal text-(--color-opposite-text) capitalize dark:bg-(--color-main-text) dark:text-(--color-opposite-text)`}
           disabled={
             showWrongSubscriptionNameMessage ||
-            handleAddSubscription.isPending ||
-            handleAddSubscription.isSuccess
+            addSubscription.isPending ||
+            addSubscription.isSuccess
           }
         >
-          {handleAddSubscription.isPending || handleAddSubscription.isSuccess ? (
+          {addSubscription.isPending || addSubscription.isSuccess ? (
             <Spinner />
           ) : (
             <>
@@ -109,8 +109,8 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
           className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text)"
           disabled={
             showWrongSubscriptionNameMessage ||
-            handleAddSubscription.isPending ||
-            handleAddSubscription.isSuccess
+            addSubscription.isPending ||
+            addSubscription.isSuccess
           }
           onClick={() => {
             setNewLink('')
