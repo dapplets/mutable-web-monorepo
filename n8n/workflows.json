@@ -15642,8 +15642,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-05-12T09:56:34.000Z",
-    "versionId": "1d849d18-c0f6-4012-a474-c7031b2d8b7f"
+    "updatedAt": "2025-05-12T15:15:29.000Z",
+    "versionId": "036a8eb1-7c59-44b9-af6b-a6341de40bf2"
   },
   {
     "active": true,
@@ -16035,6 +16035,24 @@
             {
               "index": 0,
               "node": "IsDebugBot",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "IsPublicMethod": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Switch1",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "GetEnvVariables",
               "type": "main"
             }
           ]
@@ -16454,6 +16472,17 @@
           ]
         ]
       },
+      "SaveContext": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Switch": {
         "main": [
           [
@@ -16653,6 +16682,17 @@
           ]
         ]
       },
+      "Switch1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "SaveContext",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "User is not logged in": {
         "main": [
           [
@@ -16702,7 +16742,7 @@
           [
             {
               "index": 0,
-              "node": "GetEnvVariables",
+              "node": "IsPublicMethod",
               "type": "main"
             }
           ]
@@ -16729,7 +16769,7 @@
         },
         "position": [
           200,
-          760
+          740
         ],
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
@@ -17372,7 +17412,7 @@
           }
         },
         "position": [
-          1540,
+          1760,
           0
         ],
         "type": "n8n-nodes-base.switch",
@@ -17388,7 +17428,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": $json.result,\n  \"error\": $json.error ? { \"message\": $json.error } : undefined,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          4300,
+          4520,
           320
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -17429,7 +17469,7 @@
           }
         },
         "position": [
-          2500,
+          2720,
           -220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17471,7 +17511,7 @@
           }
         },
         "position": [
-          2720,
+          2940,
           -220
         ],
         "type": "n8n-nodes-base.set",
@@ -17587,7 +17627,7 @@
           }
         },
         "position": [
-          2500,
+          2720,
           -380
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17600,7 +17640,7 @@
           "accountId": "={{ $json.near_account_id }}"
         },
         "position": [
-          2740,
+          2960,
           -40
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.getAccountBalance",
@@ -17641,7 +17681,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           20
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17676,7 +17716,7 @@
           }
         },
         "position": [
-          2480,
+          2700,
           20
         ],
         "type": "n8n-nodes-base.if",
@@ -17700,7 +17740,7 @@
           }
         },
         "position": [
-          2740,
+          2960,
           100
         ],
         "type": "n8n-nodes-base.set",
@@ -17730,7 +17770,7 @@
           }
         },
         "position": [
-          2900,
+          3120,
           -40
         ],
         "type": "n8n-nodes-base.set",
@@ -17771,7 +17811,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           1040
         ],
         "type": "n8n-nodes-base.postgres",
@@ -17795,7 +17835,7 @@
           }
         },
         "position": [
-          2500,
+          2720,
           1040
         ],
         "type": "n8n-nodes-base.set",
@@ -17920,7 +17960,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           1200
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18045,7 +18085,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           1360
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18070,7 +18110,7 @@
           "query": "select * \nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}\norder by id desc\nlimit $1\noffset $2"
         },
         "position": [
-          2320,
+          2540,
           2060
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18087,7 +18127,7 @@
           }
         },
         "position": [
-          2540,
+          2760,
           2060
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -18117,7 +18157,7 @@
           }
         },
         "position": [
-          3000,
+          3220,
           2140
         ],
         "type": "n8n-nodes-base.set",
@@ -18140,7 +18180,7 @@
           "query": "select count(*) as count\nfrom \"personal-data\".{{ $json.authToken.user.username.toLowerCase().replace(/[^a-z0-9_]/g, \"\") }}"
         },
         "position": [
-          2320,
+          2540,
           2240
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18157,7 +18197,7 @@
           }
         },
         "position": [
-          2780,
+          3000,
           2140
         ],
         "type": "n8n-nodes-base.merge",
@@ -18189,7 +18229,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           2420
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18230,7 +18270,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           2580
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18255,7 +18295,7 @@
           "query": "select *\nfrom \"default\".user_capability as uc\njoin \"default\".capability as c on c.domain = uc.capability_domain and c.name = uc.capability_name\nwhere uc.username = $1\n  and is_deleted = false\norder by uc.capability_domain asc, uc.capability_name asc\nlimit $2\noffset $3"
         },
         "position": [
-          2320,
+          2540,
           260
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18272,7 +18312,7 @@
           }
         },
         "position": [
-          2740,
+          2960,
           260
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -18302,7 +18342,7 @@
           }
         },
         "position": [
-          3220,
+          3440,
           340
         ],
         "type": "n8n-nodes-base.set",
@@ -18325,7 +18365,7 @@
           "query": "select count(*) as count\nfrom \"default\".user_capability\nwhere username = $1 and is_deleted = false"
         },
         "position": [
-          2320,
+          2540,
           420
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18342,7 +18382,7 @@
           }
         },
         "position": [
-          3000,
+          3220,
           340
         ],
         "type": "n8n-nodes-base.merge",
@@ -18358,7 +18398,7 @@
           }
         },
         "position": [
-          2540,
+          2760,
           260
         ],
         "type": "n8n-nodes-base.set",
@@ -18458,7 +18498,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           580
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18559,7 +18599,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18660,7 +18700,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           900
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18685,7 +18725,7 @@
           "query": "select * \nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false\norder by created_at desc\nlimit $2\noffset $3"
         },
         "position": [
-          2320,
+          2540,
           1520
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18702,7 +18742,7 @@
           }
         },
         "position": [
-          2760,
+          2980,
           1520
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -18732,7 +18772,7 @@
           }
         },
         "position": [
-          3220,
+          3440,
           1600
         ],
         "type": "n8n-nodes-base.set",
@@ -18755,7 +18795,7 @@
           "query": "select count(*) as count\nfrom \"default\".\"warning\"\nwhere username = $1 and is_deleted = false"
         },
         "position": [
-          2320,
+          2540,
           1700
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18772,7 +18812,7 @@
           }
         },
         "position": [
-          3000,
+          3220,
           1600
         ],
         "type": "n8n-nodes-base.merge",
@@ -18788,7 +18828,7 @@
           }
         },
         "position": [
-          2540,
+          2760,
           1520
         ],
         "type": "n8n-nodes-base.set",
@@ -18894,7 +18934,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           1880
         ],
         "type": "n8n-nodes-base.postgres",
@@ -18906,7 +18946,7 @@
         "parameters": {
         },
         "position": [
-          2500,
+          2720,
           -540
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.generateKeyPair",
@@ -18923,7 +18963,7 @@
           "resume": "webhook"
         },
         "position": [
-          2900,
+          3120,
           -540
         ],
         "type": "n8n-nodes-base.wait",
@@ -19041,7 +19081,7 @@
           }
         },
         "position": [
-          3100,
+          3320,
           -540
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19057,7 +19097,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"result\": {\n    \"url\": \"https://app.mynearwallet.com/login/?title=Xen+Bot&public_key=\" + $json.publicKey.urlEncode() + \"&contract_id=social.dapplets.near&success_url=\" + ($execution.resumeUrl + \"/login-callback\").urlEncode()\n  },\n  \"error\": $json.error ? { \"message\": $json.error } : undefined,\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          2700,
+          2920,
           -540
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -19117,7 +19157,7 @@
           "url": "https://api.near.ai/v1/registry/list_entries"
         },
         "position": [
-          2740,
+          2960,
           2680
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -19152,7 +19192,7 @@
           }
         },
         "position": [
-          2920,
+          3140,
           2680
         ],
         "type": "n8n-nodes-base.if",
@@ -19252,7 +19292,7 @@
           }
         },
         "position": [
-          3160,
+          3380,
           2680
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19293,7 +19333,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           2740
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19328,7 +19368,7 @@
           }
         },
         "position": [
-          2520,
+          2740,
           2740
         ],
         "type": "n8n-nodes-base.if",
@@ -19352,7 +19392,7 @@
           }
         },
         "position": [
-          2740,
+          2960,
           2840
         ],
         "type": "n8n-nodes-base.set",
@@ -19366,7 +19406,7 @@
           "mode": "runOnceForEachItem"
         },
         "position": [
-          1220,
+          1440,
           520
         ],
         "type": "n8n-nodes-base.code",
@@ -19383,7 +19423,7 @@
           "responseBody": "={{({\n  \"jsonrpc\": \"2.0\", \n  \"error\": {\n    \"message\": \"Unauthorized\"\n  },\n  \"id\": $('Webhook').item.json.body.id\n})}}"
         },
         "position": [
-          1120,
+          1340,
           1060
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -19398,7 +19438,7 @@
           "initData": "={{ $('Webhook').item.json.headers.authorization.substring(7) }}"
         },
         "position": [
-          680,
+          900,
           760
         ],
         "type": "@dapplets/n8n-nodes-telegram-utils.validateThirdParty",
@@ -19413,7 +19453,7 @@
           "initData": "={{ $('Webhook').item.json.headers.authorization.substring(7) }}"
         },
         "position": [
-          900,
+          1120,
           920
         ],
         "type": "@dapplets/n8n-nodes-telegram-utils.validateThirdParty",
@@ -19435,7 +19475,7 @@
           "query": "select \n\t(select value from environment.variables where type = 'TELEGRAM_MAIN_BOT_ID') as telegram_main_bot_id,\n\t(select value from environment.variables where type = 'TELEGRAM_DEBUG_BOT_ID') as telegram_debug_bot_id"
         },
         "position": [
-          420,
+          640,
           760
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19451,7 +19491,7 @@
           "respondWith": "redirect"
         },
         "position": [
-          3520,
+          3740,
           -540
         ],
         "type": "n8n-nodes-base.respondToWebhook",
@@ -19473,7 +19513,7 @@
           "query": "select \n\t(select value from environment.variables where type = 'TELEGRAM_MAIN_BOT_USERNAME') as telegram_main_bot_username"
         },
         "position": [
-          3320,
+          3540,
           -540
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19498,7 +19538,7 @@
           "query": "select * \nfrom \"default\".\"transfer\"\nwhere caller_username = $1\norder by created_at desc\nlimit $2\noffset $3"
         },
         "position": [
-          2740,
+          2960,
           3040
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19515,7 +19555,7 @@
           }
         },
         "position": [
-          3180,
+          3400,
           3040
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -19545,7 +19585,7 @@
           }
         },
         "position": [
-          3640,
+          3860,
           3120
         ],
         "type": "n8n-nodes-base.set",
@@ -19568,7 +19608,7 @@
           "query": "select count(*) as count\nfrom \"default\".\"transfer\"\nwhere caller_username = $1"
         },
         "position": [
-          2740,
+          2960,
           3220
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19585,7 +19625,7 @@
           }
         },
         "position": [
-          3420,
+          3640,
           3120
         ],
         "type": "n8n-nodes-base.merge",
@@ -19601,7 +19641,7 @@
           }
         },
         "position": [
-          2960,
+          3180,
           3040
         ],
         "type": "n8n-nodes-base.set",
@@ -19642,7 +19682,7 @@
           }
         },
         "position": [
-          2320,
+          2540,
           3120
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19677,7 +19717,7 @@
           }
         },
         "position": [
-          2480,
+          2700,
           3120
         ],
         "type": "n8n-nodes-base.if",
@@ -19701,7 +19741,7 @@
           }
         },
         "position": [
-          2740,
+          2960,
           3420
         ],
         "type": "n8n-nodes-base.set",
@@ -19726,7 +19766,7 @@
           "query": "select * \nfrom jobs.subscriptions\nwhere username = $1\norder by id desc\nlimit $2\noffset $3"
         },
         "position": [
-          2300,
+          2520,
           3600
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19743,7 +19783,7 @@
           }
         },
         "position": [
-          2740,
+          2960,
           3600
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -19773,7 +19813,7 @@
           }
         },
         "position": [
-          3200,
+          3420,
           3680
         ],
         "type": "n8n-nodes-base.set",
@@ -19796,7 +19836,7 @@
           "query": "select count(*) as count\nfrom \"jobs\".\"subscriptions\"\nwhere username = $1"
         },
         "position": [
-          2300,
+          2520,
           3780
         ],
         "type": "n8n-nodes-base.postgres",
@@ -19813,7 +19853,7 @@
           }
         },
         "position": [
-          2980,
+          3200,
           3680
         ],
         "type": "n8n-nodes-base.merge",
@@ -19829,7 +19869,7 @@
           }
         },
         "position": [
-          2520,
+          2740,
           3600
         ],
         "type": "n8n-nodes-base.set",
@@ -19937,7 +19977,7 @@
           }
         },
         "position": [
-          2300,
+          2520,
           3980
         ],
         "type": "n8n-nodes-base.postgres",
@@ -20045,7 +20085,7 @@
           }
         },
         "position": [
-          2300,
+          2520,
           4160
         ],
         "type": "n8n-nodes-base.postgres",
@@ -20154,7 +20194,7 @@
           }
         },
         "position": [
-          2300,
+          2520,
           4340
         ],
         "type": "n8n-nodes-base.postgres",
@@ -20170,7 +20210,7 @@
           }
         },
         "position": [
-          2500,
+          2720,
           4340
         ],
         "type": "n8n-nodes-base.set",
@@ -20194,7 +20234,7 @@
           }
         },
         "position": [
-          2720,
+          2940,
           4340
         ],
         "type": "n8n-nodes-base.set",
@@ -20240,7 +20280,7 @@
           }
         },
         "position": [
-          2300,
+          2520,
           4540
         ],
         "type": "n8n-nodes-base.postgres",
@@ -20262,7 +20302,7 @@
           "url": "={{process.env.WEBHOOK_URL.replace(/\\/$/, '')}}/webhook/scan-subscriptions"
         },
         "position": [
-          2300,
+          2520,
           4920
         ],
         "type": "n8n-nodes-base.httpRequest",
@@ -20276,11 +20316,179 @@
           "mode": "runOnceForEachItem"
         },
         "position": [
-          2300,
+          2520,
           4720
         ],
         "type": "n8n-nodes-base.code",
         "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "e0a0e191-e961-4ec1-9d8a-ad6f1ccf844f",
+        "name": "SaveContext",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "namespace",
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "namespace",
+                "id": "namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "content",
+                "id": "content",
+                "required": false,
+                "type": "object"
+              }
+            ],
+            "value": {
+              "content": "={{ $('Webhook').item.json.body.params.context.parsed.toJsonString() }}",
+              "id": "={{ $('Webhook').item.json.body.params.context.id }}",
+              "namespace": "={{ $('Webhook').item.json.body.params.context.namespace }}",
+              "type": "={{ $('Webhook').item.json.body.params.context.type }}"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_node",
+            "mode": "list",
+            "value": "context_node"
+          }
+        },
+        "position": [
+          2280,
+          -920
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "7a339a56-8079-4641-a277-e97badbf4603",
+        "name": "IsPublicMethod",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "caff19eb-94f0-4d75-9a68-d054f675dba8",
+                "leftValue": "={{ $json.body.method }}",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "addContext"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          420,
+          740
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "3d584bee-a1ae-4655-9a5c-36c910751c72",
+        "name": "Switch1",
+        "parameters": {
+          "options": {
+          },
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "4a1ea871-3070-4ac1-91e6-d7f45b84d546",
+                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "addContext"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "addContext",
+                "renameOutput": true
+              }
+            ]
+          }
+        },
+        "position": [
+          1760,
+          -920
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2
       }
     ],
     "pinData": {
@@ -20292,8 +20500,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-12T10:04:16.000Z",
-    "versionId": "e3df62e6-be55-4c5e-883a-46bd433508f9"
+    "updatedAt": "2025-05-12T15:01:18.000Z",
+    "versionId": "218afb96-0c0b-4a73-aaa3-fa66bade700b"
   },
   {
     "active": true,
