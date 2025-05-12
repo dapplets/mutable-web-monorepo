@@ -33,10 +33,6 @@ const router = createBrowserRouter([
     path: 'settings',
     element: <Settings />,
   },
-  {
-    path: 'history',
-    element: <History />,
-  },
 ])
 
 createRoot(document.getElementById('root')!).render(
