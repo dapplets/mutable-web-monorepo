@@ -44,3 +44,15 @@ export type TMemory = {
   data: string
   datetime: string
 }
+
+export type THistoryNote = {
+  id: number
+  capabilityDomain: string
+  capabilityName: string
+  amount: string
+  operationType: 'income' | 'outcome'
+  executionInput: string
+  executionOutput: string
+  createdAt: string
+  isFree?: boolean
+}

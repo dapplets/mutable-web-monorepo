@@ -1,0 +1,54 @@
+import { API_URL } from '@/env'
+import { useQuery } from '@tanstack/react-query'
+import { THistoryNote } from '../types'
+import Header from './Header'
+import HistoryNote from './HistoryNote'
+import Layout from './Layout'
+
+const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
+  }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
+
+const History = () => {
+  const { data: history } = useQuery<{ items: THistoryNote[]; total: number }>({
+    queryKey: ['history'],
+    queryFn: queryFn('getUsageHistory', {
+      offset: 0,
+      limit: 10,
+    }),
+  })
+
+  return (
+    <Layout>
+      <Header />
+      <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
+        <div className="my-1.5 flex w-full items-center justify-between">
+          <h1 className="text-center text-2xl font-bold">Payment & Usage</h1>
+        </div>
+        {history?.items.map((note) => <HistoryNote key={note.id} note={note} />)}
+      </div>
+    </Layout>
+  )
+}
+
+export default History
