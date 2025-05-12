@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import App from './App.tsx'
 import History from './components/History.tsx'
 import Memories from './components/Memories.tsx'
+import NewsMonitor from './components/NewsMonitor.tsx'
 import Settings from './components/Settings.tsx'
 import './index.css'
 
@@ -21,12 +22,16 @@ const router = createBrowserRouter([
     element: <Memories />,
   },
   {
-    path: 'settings',
-    element: <Settings />,
-  },
-  {
     path: 'history',
     element: <History />,
+  },
+  {
+    path: 'news-monitor',
+    element: <NewsMonitor />,
+  },
+  {
+    path: 'settings',
+    element: <Settings />,
   },
 ])
 

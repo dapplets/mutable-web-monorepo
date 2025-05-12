@@ -1,9 +1,11 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 // import UnlinkOutlineIcon from '../assets/unlink-outline'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { TAgent } from '../types'
-import { API_URL } from '@/env'
+import ArrowForwardIcon from '@/assets/arrow-forward'
 import { Switch } from '@/components/ui/switch'
+import { API_URL } from '@/env'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from 'react-router'
+import { TAgent } from '../types'
 
 const mutationFn = async ({
   methodName,
@@ -40,6 +42,7 @@ type TAgentProps = {
 }
 
 const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   const handleToggleCapability = useMutation({
@@ -48,6 +51,10 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
       queryClient.invalidateQueries({ queryKey: ['capabilities'] })
     },
   })
+
+  const action = useMemo(() => {
+    if (capabilitiy.name === 'news-monitor') return () => navigate('/news-monitor')
+  }, [capabilitiy, navigate])
 
   const handleChangeStatus = () =>
     handleToggleCapability.mutate({
@@ -66,14 +73,15 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
   // })
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) p-2.5">
-      <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
-        <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
-          {capabilitiy.name}
+      <button className="flex flex-1 flex-col gap-0.5 overflow-hidden" onClick={action}>
+        <div className="flex items-center gap-2 py-0.25 text-left text-[14px]/[100%] font-semibold wrap-anywhere">
+          {capabilitiy.title ?? capabilitiy.name}
+          {action ? <ArrowForwardIcon /> : null}
         </div>
         <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-gray-text)">
           {capabilitiy.domain}
         </div>
-      </div>
+      </button>
 
       <Switch onCheckedChange={handleChangeStatus} checked={capabilitiy.isEnabled} />
       {/* <button

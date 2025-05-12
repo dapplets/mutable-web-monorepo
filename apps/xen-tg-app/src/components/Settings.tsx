@@ -37,7 +37,7 @@ const Settings = () => {
     queryKey: ['memories'],
     queryFn: queryFn('getMemories', {
       offset: 0,
-      limit: 1,
+      limit: 0,
     }),
   })
 
