@@ -148,7 +148,7 @@ CREATE SEQUENCE "near-ai".available_stars_seq
 ALTER SEQUENCE "near-ai".available_stars_seq OWNED BY "near-ai".available.stars;
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     username character varying(32) NOT NULL,
     status boolean DEFAULT true NOT NULL,
     near_account_id character varying,
