@@ -1,9 +1,9 @@
 import { API_URL } from '@/env'
+import { useGoBack } from '@/hooks/useGoBack'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
 import { TMemory } from '../types'
 import DeveloperMode from './DeveloperMode'
-import Header from './Header'
 import Layout from './Layout'
 import ThemeButton from './ThemeButton'
 import Warnings from './Warnings'
@@ -41,9 +41,10 @@ const Settings = () => {
     }),
   })
 
+  useGoBack()
+
   return (
     <Layout>
-      <Header />
       <ThemeButton />
       <DeveloperMode />
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-2 backdrop-blur-3xl backdrop-opacity-80">

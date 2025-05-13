@@ -107,12 +107,9 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
 
         <button
           className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text)"
-          disabled={
-            showWrongSubscriptionNameMessage ||
-            addSubscription.isPending ||
-            addSubscription.isSuccess
-          }
+          disabled={addSubscription.isPending || addSubscription.isSuccess}
           onClick={() => {
+            setShowWrongSubscriptionNameMessage(false)
             setNewLink('')
             onClose()
           }}

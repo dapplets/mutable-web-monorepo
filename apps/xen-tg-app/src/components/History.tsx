@@ -1,7 +1,8 @@
 import { API_URL } from '@/env'
 import { useQuery } from '@tanstack/react-query'
 import { THistoryNote } from '../types'
-import Header from './Header'
+// import Header from './Header'
+import { useGoBack } from '@/hooks/useGoBack'
 import HistoryNote from './HistoryNote'
 import Layout from './Layout'
 
@@ -38,9 +39,10 @@ const History = () => {
     }),
   })
 
+  useGoBack()
+
   return (
     <Layout>
-      <Header />
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
         <div className="my-1.5 flex w-full items-center justify-between">
           <h1 className="text-center text-2xl font-bold">Payment & Usage</h1>

@@ -1,11 +1,11 @@
 import PlusIcon from '@/assets/plus'
 import SyncIcon from '@/assets/sync'
 import { API_URL } from '@/env'
+import { useGoBack } from '@/hooks/useGoBack'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatDistance } from 'date-fns'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { TSubscription } from '../types'
-import Header from './Header'
 import Layout from './Layout'
 import { NewSubscription, Subscription } from './NewsSource'
 import Spinner from './Spinner'
@@ -91,13 +91,10 @@ const NewsMonitor = () => {
     },
   })
 
-  const onUpdate = () => handleUpdateSubscription.mutate({ methodName: 'scanSubscriptions' })
-
-  useEffect(onUpdate, [])
+  useGoBack()
 
   return (
     <Layout>
-      <Header />
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
         <div className="my-1.5 flex w-full items-center justify-between">
           <div className="flex flex-col items-start justify-start">
@@ -106,7 +103,7 @@ const NewsMonitor = () => {
               Next scan:{' '}
               <button
                 className="flex items-center justify-center font-semibold text-(--my-primary)"
-                onClick={onUpdate}
+                onClick={() => handleUpdateSubscription.mutate({ methodName: 'scanSubscriptions' })}
                 disabled={isPendingNextScanOfSubscriptions || handleUpdateSubscription.isPending}
               >
                 {nextScanOfSubscriptions?.nextScanAt
