@@ -1,10 +1,10 @@
+import { API_URL } from '@/env'
+import { useGoBack } from '@/hooks/useGoBack'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { TMemory } from '../types'
-import Header from './Header'
 import Layout from './Layout'
 import Memory from './Memory'
 import Spinner from './Spinner'
-import { API_URL } from '@/env'
 
 const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -71,9 +71,10 @@ const Memories = () => {
     },
   })
 
+  useGoBack()
+
   return (
     <Layout>
-      <Header />
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
         <div className="my-1.5 flex w-full items-center justify-between">
           <h1 className="text-center text-2xl font-bold">{`Memories (${memories?.total ?? '-'})`}</h1>
