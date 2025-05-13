@@ -1269,6 +1269,13 @@
               "node": "GetEnvVariables",
               "type": "main"
             }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Telegram24",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -3855,6 +3862,31 @@
                   }
                 },
                 "outputKey": "dashboard",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "bf6f224f-0099-4887-b99e-3ae40c8488af",
+                      "leftValue": "={{ $('Telegram Trigger').item.json.message.text }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "/reset-ui"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "reset-ui",
                 "renameOutput": true
               }
             ]
@@ -6821,6 +6853,33 @@
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "0fab9024-356a-4743-a76f-cf58ade95ee1",
+        "name": "Telegram24",
+        "parameters": {
+          "additionalFields": {
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "replyKeyboardRemove": {
+            "remove_keyboard": true
+          },
+          "replyMarkup": "replyKeyboardRemove",
+          "text": "UI was reset"
+        },
+        "position": [
+          1080,
+          -160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "51e6ab8f-6897-4386-8954-79b7cf9c4e9d"
       }
     ],
     "pinData": {
@@ -6834,8 +6893,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-07T13:34:59.000Z",
-    "versionId": "d536a6ed-1ada-416c-ad04-d48c02b5d6f1"
+    "updatedAt": "2025-05-13T10:36:20.000Z",
+    "versionId": "eb6ac3d1-bcc0-4366-8828-8b4b99b67790"
   },
   {
     "active": false,
