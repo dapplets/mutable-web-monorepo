@@ -74,12 +74,12 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
   //   },
   // })
   return (
-    <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) p-2.5">
+    <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) px-2.5 py-1.5">
       <button
         className={`flex flex-1 ${action ? 'cursor-pointer' : 'cursor-default'} flex-col gap-0.5 overflow-hidden`}
         onClick={action}
       >
-        <div className="group flex items-center gap-2 py-0.25 text-left text-[14px]/[100%] font-semibold wrap-anywhere">
+        <div className="group flex items-center gap-2 pt-1 pb-0.25 text-left text-[14px]/[125%] font-semibold wrap-anywhere">
           {capabilitiy.title ?? capabilitiy.name}
           {action ? (
             <div className="text-[#7A818B] transition group-hover:text-(--color-main-text)">
@@ -87,7 +87,12 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
             </div>
           ) : null}
         </div>
-        <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-gray-text)">
+        {capabilitiy.title ? (
+          <div className="flex p-0 text-left text-[12px]/[100%] font-normal wrap-anywhere text-(--color-gray-text)">
+            {capabilitiy.name}
+          </div>
+        ) : null}
+        <div className="flex pt-1.25 pb-0 text-[12px]/[100%] font-normal text-(--color-gray-text)">
           {capabilitiy.domain}
         </div>
       </button>
