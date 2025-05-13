@@ -186,7 +186,8 @@ CREATE TABLE "default".capability (
     domain character varying NOT NULL,
     name character varying NOT NULL,
     title character varying,
-    description character varying
+    description character varying,
+    stars integer DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE "default".user_capability (
