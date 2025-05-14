@@ -1140,6 +1140,28 @@
           ]
         ]
       },
+      "AddNewsMonitorCapability": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "AddTop10Capabilities",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "AddTop10Capabilities": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram9",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Aggregate": {
         "main": [
           [
@@ -1823,7 +1845,7 @@
           [
             {
               "index": 0,
-              "node": "Postgres22",
+              "node": "AddNewsMonitorCapability",
               "type": "main"
             }
           ]
@@ -1956,17 +1978,6 @@
             {
               "index": 0,
               "node": "Telegram21",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "Postgres22": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Telegram9",
               "type": "main"
             }
           ]
@@ -3491,7 +3502,7 @@
           "text": "=*Hi @{{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*\n\nYou can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.\n\nYou’re one of the *first users* of XEN (wohoo!) and this is a *beta version*, so if you spot anything strange, please help us improve!\nUse /f to send feedback. The best format is:\n*What you were doing → What you expected → What actually happened*\nThat way, we can find and fix bugs quickly.\n\n⸻\n\n*What you can do with me right away:*\n• *Set reminders*: “Remind me to pick up my kid at 3pm”\n• *Ask questions*: “Translate ‘good morning’ into Japanese” or “What’s the weather in Paris?”\n• *Track thoughts*: “/memo” shows what I’ve remembered for you\n\n⸻\n\n*And if you connect your NEAR wallet (with /login):*\n• *Track your wallet*: I’ll notify you about transactions or balance changes\n• *Use dApps more easily*: I’ll guide you through actions like minting NFTs or joining token sales\n• *Stay informed*: I’ll remind you about DAO votes or ecosystem events\n• *Get smart prompts*: I’ll help you make the most of your assets without needing to understand every technical detail\n\nWhy NEAR?\nWe’re currently integrated with NEAR because it’s fast, cheap, and friendly for developers. It helps us prototype quickly and offer useful features to early users like you. But *XEN* is *chain-agnostic* by design - we’ll expand to other networks over time.\n\n⸻\n\n*You don’t need a wallet to enjoy using me - but connecting one unlocks new features.*\nEither way, I’m here to make your day easier and more productive.\n\nLet’s get started!"
         },
         "position": [
-          3680,
+          3900,
           -1920
         ],
         "type": "n8n-nodes-base.telegram",
@@ -3876,7 +3887,7 @@
                         "operation": "equals",
                         "type": "string"
                       },
-                      "rightValue": "/reset-ui"
+                      "rightValue": "/resetui"
                     }
                   ],
                   "options": {
@@ -3886,7 +3897,7 @@
                     "version": 2
                   }
                 },
-                "outputKey": "reset-ui",
+                "outputKey": "resetui",
                 "renameOutput": true
               }
             ]
@@ -6756,13 +6767,40 @@
       },
       {
         "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "0fab9024-356a-4743-a76f-cf58ade95ee1",
+        "name": "Telegram24",
+        "parameters": {
+          "additionalFields": {
+          },
+          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+          "replyKeyboardRemove": {
+            "remove_keyboard": true
+          },
+          "replyMarkup": "replyKeyboardRemove",
+          "text": "UI was reset"
+        },
+        "position": [
+          1080,
+          -160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "51e6ab8f-6897-4386-8954-79b7cf9c4e9d"
+      },
+      {
+        "credentials": {
           "postgres": {
             "id": "8ZOLCkWqvhw8gGkU",
             "name": "Postgres account"
           }
         },
         "id": "4f90065c-ef44-4825-b735-938983791fc1",
-        "name": "Postgres22",
+        "name": "AddNewsMonitorCapability",
         "parameters": {
           "columns": {
             "attemptToConvertTypes": false,
@@ -6856,30 +6894,26 @@
       },
       {
         "credentials": {
-          "telegramApi": {
-            "id": "0Z6YSeWPzl1d2jdc",
-            "name": "@yourxenbot"
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
           }
         },
-        "id": "0fab9024-356a-4743-a76f-cf58ade95ee1",
-        "name": "Telegram24",
+        "id": "641278fd-8e09-4866-a9c7-8e85b84565c2",
+        "name": "AddTop10Capabilities",
         "parameters": {
-          "additionalFields": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }} "
           },
-          "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
-          "replyKeyboardRemove": {
-            "remove_keyboard": true
-          },
-          "replyMarkup": "replyKeyboardRemove",
-          "text": "UI was reset"
+          "query": "insert into \"default\".user_capability (username, capability_domain, capability_name)\nselect $1 as username, c.domain, c.name\nfrom \"default\".capability c\nwhere c.domain = 'Near AI'\norder by c.stars desc, c.domain asc, c.name asc\nlimit 10"
         },
         "position": [
-          1080,
-          -160
+          3680,
+          -1920
         ],
-        "type": "n8n-nodes-base.telegram",
-        "typeVersion": 1.2,
-        "webhookId": "51e6ab8f-6897-4386-8954-79b7cf9c4e9d"
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
       }
     ],
     "pinData": {
@@ -6893,8 +6927,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-13T10:36:20.000Z",
-    "versionId": "eb6ac3d1-bcc0-4366-8828-8b4b99b67790"
+    "updatedAt": "2025-05-13T16:20:10.000Z",
+    "versionId": "908935c8-54dc-40ea-a9f6-67989fb37150"
   },
   {
     "active": false,
@@ -21025,12 +21059,23 @@
                 "id": "description",
                 "required": false,
                 "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "stars",
+                "id": "stars",
+                "removed": false,
+                "required": false,
+                "type": "number"
               }
             ],
             "value": {
               "description": "={{ $json.description }}\n{{ $json.details.agent.welcome.description }}",
               "domain": "Near AI",
               "name": "={{ $json.namespace }}/{{ $json.name }}",
+              "stars": "={{ $json.num_stars }}",
               "title": "={{ $json.details.agent.welcome.title }}"
             }
           },
@@ -21160,8 +21205,8 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-04-25T18:27:57.000Z",
-    "versionId": "d923bbab-5f51-405d-aefc-4176c9a38a49"
+    "updatedAt": "2025-05-13T15:56:40.000Z",
+    "versionId": "7bce7371-f851-4fc6-8c2a-ef3116ab36de"
   },
   {
     "active": false,
@@ -21467,7 +21512,7 @@
               },
               {
                 "column": "stars",
-                "condition": ">",
+                "condition": ">=",
                 "value": "5"
               }
             ]
@@ -21887,7 +21932,7 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-05-13T10:40:25.278Z",
-    "versionId": "4e6b8c89-caf4-4990-a038-f1a6410fe48d"
+    "updatedAt": "2025-05-13T11:54:13.000Z",
+    "versionId": "0c7405ae-f62c-4e25-92a9-ce52f91b391b"
   }
 ]
