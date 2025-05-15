@@ -1,9 +1,9 @@
+import { Accordion } from '@/components/ui/accordion'
 import { API_URL } from '@/env'
 import { THistoryNote } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
-import ArrayRightIcon from '../assets/array-right'
-import { HistoryCard } from './HistoryNote'
+import HistoryNote from './HistoryNote'
 
 const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -34,20 +34,24 @@ const HistoryMainPageModule = () => {
     queryKey: ['history'],
     queryFn: queryFn('getUsageHistory', {
       offset: 0,
-      limit: 1,
+      limit: 3,
     }),
   })
 
   return history?.total ? (
-    <Link
-      to="/history"
-      className="z-1 flex w-full items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 text-(--color-main-text) backdrop-blur-3xl backdrop-opacity-80"
-    >
-      <HistoryCard note={history?.items[0]} />
-      <div className="mr-6 flex cursor-pointer items-center justify-center py-1.5">
-        <ArrayRightIcon />
-      </div>
-    </Link>
+    <div className="flex w-full flex-col items-center gap-2.5 border-t-[1px] border-t-(--color-opposite-text)/40 pt-2.5 dark:border-t-(--color-main-text)/10">
+      <Accordion type="single" collapsible className="flex w-full flex-col gap-2.5">
+        {history.items.map((note) => (
+          <HistoryNote key={note.id} note={note} />
+        ))}
+      </Accordion>
+      <Link
+        to="/history"
+        className="flex w-full cursor-pointer items-center justify-center rounded-[10px] bg-(--color-opposite-text)/30 py-1.5 transition hover:bg-(--color-opposite-text)/50 dark:bg-(--color-main-text)/5 dark:hover:bg-(--color-main-text)/15"
+      >
+        View history
+      </Link>
+    </div>
   ) : null
 }
 

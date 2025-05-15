@@ -95,11 +95,11 @@ const NewsMonitor = () => {
 
   return (
     <Layout>
-      <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
+      <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-(--color-opposite-text) p-2.5 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
         <div className="my-1.5 flex w-full items-center justify-between">
           <div className="flex flex-col items-start justify-start">
             <h1 className="text-center text-2xl font-bold">News Monitor</h1>
-            <div className="flex items-center justify-center gap-1 text-[12px]/[150%] text-[#7A818B]">
+            <div className="flex items-center justify-center gap-1 text-[12px]/[150%] text-(--color-gray-text)">
               Next scan:{' '}
               <button
                 className="flex items-center justify-center font-semibold text-(--my-primary)"
@@ -120,7 +120,7 @@ const NewsMonitor = () => {
             </div>
           </div>
           <button
-            className="mr-3.5 flex cursor-pointer items-center justify-center p-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text)"
+            className="mr-3.5 flex cursor-pointer items-center justify-center p-1.5 text-(--color-gray-text) transition hover:not-disabled:text-(--color-main-text)"
             onClick={() => setShowNewSubscriptionForm(true)}
             disabled={showNewSubscriptionForm}
           >

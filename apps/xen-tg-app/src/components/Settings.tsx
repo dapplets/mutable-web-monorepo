@@ -47,7 +47,7 @@ const Settings = () => {
     <Layout>
       <ThemeButton />
       <DeveloperMode />
-      <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] px-2.5 py-2 backdrop-blur-3xl backdrop-opacity-80">
+      <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-(--color-opposite-text) px-2.5 py-2 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
         <div className="z-1 flex w-full items-center justify-between">
           <span className="p-2.5 text-[18px]/[150%] font-normal text-(--color-main-text)">
             Memories ({memories?.total ?? '-'})

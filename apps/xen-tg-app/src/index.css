@@ -1,12 +1,14 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  font-family: Roboto, system-ui, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family:
+    Roboto, system-ui, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 #root {
@@ -61,6 +63,8 @@ html, body {
   --color-my-secondary: var(--my-secondary);
   --color-my-primary-01: var(--my-primary-01);
   --color-green: var(--green);
+  --color-current-mix-50: color-mix(in srgb, currentColor, transparent 50%);
+  --color-current-mix-20: color-mix(in srgb, currentColor, transparent 20%);
 
   /* animated background */
   --color-bg1: var(--bg1);

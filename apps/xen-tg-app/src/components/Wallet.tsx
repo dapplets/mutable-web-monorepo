@@ -1,9 +1,10 @@
+import { API_URL } from '@/env'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import LogOutIcon from '../assets/log-out'
 import NEAR_ICON from '../assets/near-gray.svg'
 import { Balance, TXenUser } from '../types'
+import HistoryMainPageModule from './HistoryMainPageModule'
 import Spinner from './Spinner'
-import { API_URL } from '@/env'
 
 const queryFn = (name: string, isLoggedIn?: boolean) => async () => {
   if (isLoggedIn === false) return
@@ -85,29 +86,35 @@ const Wallet = () => {
   })
 
   return user && isLoggedIn ? (
-    <div className="z-1 flex w-full flex-wrap items-center justify-between gap-2.5 overflow-hidden rounded-xl border border-[#f8f9ff66] px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80">
+    <div className="z-1 flex w-full flex-wrap items-center justify-between gap-2.5 overflow-hidden rounded-xl border border-(--color-opposite-text) p-2.5 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
       <div className="flex shrink-0 justify-between gap-3 text-[22px]/[150%] font-semibold">
         <img src={NEAR_ICON} alt="near" />
         {balance?.formatted.available ?? '-'}
       </div>
       <div className="me-1 flex items-center justify-between gap-3 text-[22px]/[150%] font-normal wrap-anywhere">
-        {user.nearAccountId}
+        <a
+          href="https://app.mynearwallet.com/"
+          target="_blank"
+          rel="noreferrer"
+          className="cursor-pointer underline decoration-(--color-current-mix-50) underline-offset-[3px] transition hover:decoration-(--color-current-mix-20) focus:decoration-(--color-current-mix-20)"
+        >
+          {user.nearAccountId}
+        </a>
         <button
-          className="flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+          className="flex cursor-pointer p-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
           onClick={() => handleLogout.mutate()}
         >
           <LogOutIcon />
         </button>
       </div>
+      <HistoryMainPageModule />
     </div>
   ) : (
-    <div
-      className={`z-1 flex w-full items-center ${isPendingUser ? 'justify-center' : 'justify-between'} gap-2.5 rounded-xl bg-(--color-my-primary-01) px-2.5 py-4 backdrop-blur-3xl backdrop-opacity-80`}
-    >
+    <div className="z-1 flex w-full flex-col items-center gap-2.5 rounded-xl bg-(--color-my-primary-01) p-2.5 backdrop-blur-3xl backdrop-opacity-80">
       {isPendingUser ? (
         <Spinner />
       ) : (
-        <>
+        <div className="flex w-full items-center justify-between">
           <div className="text-[18px]/[150%] font-semibold">No wallet connected</div>
           <button
             className="flex w-[118px] cursor-pointer flex-nowrap items-center justify-center rounded-xl bg-(--color-my-primary) py-2 text-(--color-opposite-text) dark:bg-[#f8f9ff] dark:text-(--color-opposite-text)"
@@ -115,8 +122,9 @@ const Wallet = () => {
           >
             {handleLogin.isPending || handleLogin.isSuccess ? <Spinner /> : 'Connect'}
           </button>
-        </>
+        </div>
       )}
+      <HistoryMainPageModule />
     </div>
   )
 }

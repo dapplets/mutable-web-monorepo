@@ -7,7 +7,7 @@ type Props = {
 
 const FooterMenu: FC<Props> = ({ memoriesNumber }) => {
   return (
-    <div className="flex w-max rounded-[20px] border border-[#f8f9ff66] p-3 backdrop-blur-xs">
+    <div className="flex w-max rounded-[20px] border border-(--color-opposite-text) p-3 backdrop-blur-xs dark:border-(--color-main-text)/30">
       <Link to="/memories">
         <div className="flex items-center justify-center p-2.5 select-none">
           <h2 className="text-[18px]/[150%] font-semibold text-(--color-my-primary) dark:text-(--color-main-text)">
