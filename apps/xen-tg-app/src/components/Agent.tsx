@@ -82,7 +82,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
         <div className="group flex items-center gap-2 pt-1 pb-0.25 text-left text-[14px]/[125%] font-semibold wrap-anywhere">
           {capabilitiy.title ?? capabilitiy.name}
           {action ? (
-            <div className="text-[#7A818B] transition group-hover:text-(--color-main-text)">
+            <div className="text-(--color-gray-text) transition group-hover:text-(--color-main-text)">
               <ArrowForwardIcon />
             </div>
           ) : null}
@@ -103,7 +103,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
         disabled={handleToggleCapability.isPending || handleToggleCapability.isSuccess}
       />
       {/* <button
-        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+        className="mr-1 flex cursor-pointer p-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
         onClick={() =>
             handleRemoveCapability.mutate({
               methodName: 'removeCapability',

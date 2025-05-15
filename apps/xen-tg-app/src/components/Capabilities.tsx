@@ -135,13 +135,13 @@ const Capabilities = () => {
   const openNearAI = () => window.Telegram.WebApp.openLink('https://app.near.ai/agents')
 
   return (
-    <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-[#f8f9ff66] p-2.5 backdrop-blur-3xl backdrop-opacity-80">
+    <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-(--color-opposite-text) p-2.5 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
       <div className="my-1.5 flex w-full items-center justify-between">
         <div className="flex items-center justify-between gap-1">
           <h1 className="text-center text-2xl font-bold">Capabilities</h1>
           <button
             disabled={handleUpdateCapability.isPending}
-            className={`${handleUpdateCapability.isPending ? 'animate-spin-back' : ''} flex cursor-pointer items-center justify-between p-1.5 text-[#7A818B] transition ${handleUpdateCapability.isPending ? '' : 'hover:text-(--color-main-text)'}`}
+            className={`${handleUpdateCapability.isPending ? 'animate-spin-back' : ''} flex cursor-pointer items-center justify-between p-1.5 text-(--color-gray-text) transition ${handleUpdateCapability.isPending ? '' : 'hover:text-(--color-main-text)'}`}
             onClick={() => handleUpdateCapability.mutate({ methodName: 'syncCapabilities' })}
           >
             <SyncIcon />
@@ -149,7 +149,7 @@ const Capabilities = () => {
         </div>
         <button
           role="link"
-          className="me-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+          className="me-1 flex cursor-pointer p-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
           onClick={openNearAI}
         >
           <ExternalLinkIcon />

@@ -106,7 +106,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
         </button>
 
         <button
-          className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:not-disabled:text-(--color-main-text)"
+          className="mr-1 flex cursor-pointer p-1.5 text-(--color-gray-text) transition hover:not-disabled:text-(--color-main-text)"
           disabled={addSubscription.isPending || addSubscription.isSuccess}
           onClick={() => {
             setShowWrongSubscriptionNameMessage(false)
@@ -195,7 +195,7 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
       </button>
 
       <button
-        className="mr-1 flex w-8 cursor-pointer items-center justify-center py-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+        className="mr-1 flex w-8 cursor-pointer items-center justify-center py-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
         onClick={onRemove}
       >
         {handleRemoveSubscription.isPending || handleRemoveSubscription.isSuccess ? (
