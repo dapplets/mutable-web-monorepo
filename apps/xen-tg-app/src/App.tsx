@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import SettingsIcon from './assets/settings'
 import XEN_IMAGE from './assets/xen-anime-style-portrait.png'
 import Capabilities from './components/Capabilities'
-import HistoryMainPageModule from './components/HistoryMainPageModule'
 import Layout from './components/Layout'
 import Wallet from './components/Wallet'
 
@@ -14,7 +13,7 @@ const App = () => {
     <Layout>
       <Link
         to="/settings"
-        className="absolute top-5 right-4 rounded-full border border-[#f8f9ff19] bg-(--color-light-white-bg) p-2 backdrop-blur-3xl backdrop-opacity-80"
+        className="absolute top-5 right-4 rounded-full border border-(--color-opposite-text) bg-(--color-light-white-bg) p-2 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30"
       >
         <SettingsIcon />
       </Link>
@@ -22,7 +21,6 @@ const App = () => {
         <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
       </div>
       <Wallet />
-      <HistoryMainPageModule />
       <Capabilities />
     </Layout>
   )

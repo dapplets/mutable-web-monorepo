@@ -55,7 +55,7 @@ const Memory: FC<TMemoryProps> = ({ memory }) => {
         <div className="flex py-0.25 text-[14px]/[150%] font-semibold">{memory.data}</div>
       </div>
       <button
-        className="mr-1 flex cursor-pointer p-1.5 text-[#7A818B] transition hover:text-(--color-main-text)"
+        className="mr-1 flex cursor-pointer p-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
         onClick={() => handleDelete.mutate()}
       >
         {handleDelete.isPending || handleDelete.isSuccess ? <Spinner /> : <Trash />}
