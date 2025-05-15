@@ -310,3 +310,16 @@ CREATE TABLE "default".usage_history (
 
 ALTER TABLE ONLY "default".usage_history
     ADD CONSTRAINT usage_pk PRIMARY KEY (id);
+
+CREATE TABLE "default".reward_history (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    recipient_account_id character varying NOT NULL,
+    amount character varying NOT NULL,
+    tx_hash character varying,
+    related_item_type character varying NOT NULL,
+    related_item_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE ONLY "default".reward_history
+    ADD CONSTRAINT reward_history_pk PRIMARY KEY (id);
