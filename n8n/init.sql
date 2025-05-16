@@ -148,7 +148,7 @@ CREATE SEQUENCE "near-ai".available_stars_seq
 ALTER SEQUENCE "near-ai".available_stars_seq OWNED BY "near-ai".available.stars;
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
+    id bigint NOT NULL,
     username character varying(32) NOT NULL,
     status boolean DEFAULT true NOT NULL,
     near_account_id character varying,
@@ -186,7 +186,8 @@ CREATE TABLE "default".capability (
     domain character varying NOT NULL,
     name character varying NOT NULL,
     title character varying,
-    description character varying
+    description character varying,
+    stars integer DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE "default".user_capability (
@@ -295,3 +296,30 @@ CREATE TABLE "default".context_node (
 
 ALTER TABLE ONLY "default".context_node
     ADD CONSTRAINT context_node_unique UNIQUE (namespace, type, id);
+
+
+CREATE TABLE "default".usage_history (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    caller_username character varying NOT NULL,
+    capability_domain character varying NOT NULL,
+    capability_name character varying NOT NULL,
+    execution_input character varying,
+    execution_output character varying,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE ONLY "default".usage_history
+    ADD CONSTRAINT usage_pk PRIMARY KEY (id);
+
+CREATE TABLE "default".reward_history (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    recipient_account_id character varying NOT NULL,
+    amount character varying NOT NULL,
+    tx_hash character varying,
+    related_item_type character varying NOT NULL,
+    related_item_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE ONLY "default".reward_history
+    ADD CONSTRAINT reward_history_pk PRIMARY KEY (id);
