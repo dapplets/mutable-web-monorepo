@@ -313,7 +313,7 @@ ALTER TABLE ONLY "default".usage_history
 
 CREATE TABLE "default".reward_history (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    recipient_account_id character varying NOT NULL,
+    recipient_account_id character varying,
     amount character varying NOT NULL,
     tx_hash character varying,
     related_item_type character varying NOT NULL,
