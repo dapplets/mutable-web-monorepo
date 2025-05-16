@@ -15242,6 +15242,17 @@
           ]
         ]
       },
+      "Respond to Webhook2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres11",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Save Account ID and Private Key": {
         "main": [
           [
@@ -15508,13 +15519,6 @@
             {
               "index": 0,
               "node": "Postgres28",
-              "type": "main"
-            }
-          ],
-          [
-            {
-              "index": 0,
-              "node": "Postgres11",
               "type": "main"
             }
           ]
@@ -16298,31 +16302,6 @@
                   }
                 },
                 "outputKey": "getRewardAmount",
-                "renameOutput": true
-              },
-              {
-                "conditions": {
-                  "combinator": "and",
-                  "conditions": [
-                    {
-                      "id": "05512e6a-84db-432b-a3d9-1fef6bbf6c04",
-                      "leftValue": "={{ $('Webhook').item.json.body.method }}",
-                      "operator": {
-                        "name": "filter.operator.equals",
-                        "operation": "equals",
-                        "type": "string"
-                      },
-                      "rightValue": "claimRewards"
-                    }
-                  ],
-                  "options": {
-                    "caseSensitive": true,
-                    "leftValue": "",
-                    "typeValidation": "strict",
-                    "version": 2
-                  }
-                },
-                "outputKey": "claimRewards",
                 "renameOutput": true
               }
             ]
@@ -19404,14 +19383,14 @@
             "values": [
               {
                 "column": "id",
-                "value": "={{ $json.authToken.user.id }}"
+                "value": "={{ $('Parse Auth Token').item.json.authToken.user.id }}"
               }
             ]
           }
         },
         "position": [
-          2520,
-          5600
+          3960,
+          -540
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -19445,8 +19424,8 @@
           }
         },
         "position": [
-          2720,
-          5600
+          4160,
+          -540
         ],
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2
@@ -19469,8 +19448,8 @@
           }
         },
         "position": [
-          2940,
-          5680
+          4380,
+          -460
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
@@ -19493,8 +19472,8 @@
           "query": "select \n\tstring_agg(amount, ',') as amounts\nfrom (\n\tselect rh.id, rh.amount\n\tfrom \"default\".reward_history rh \n\tjoin \"default\".usage_history uh on uh.id = rh.related_item_id and rh.related_item_type = 'usage-caller'\n\twhere uh.caller_username = $1\n\t\tand rh.tx_hash is null\n\t\tand rh.amount != '0'\n\t\t\n\tunion all\n\t\n\tselect rh.id, rh.amount\n\tfrom \"default\".reward_history rh \n\tjoin \"default\".warning w on w.id = rh.related_item_id and rh.related_item_type = 'bug'\n\twhere w.username = $1\n\t\tand rh.tx_hash is null\n\t\tand rh.amount != '0'\n)"
         },
         "position": [
-          3140,
-          5520
+          4580,
+          -620
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -19515,8 +19494,8 @@
           "query": "select \n\t(select value from environment.variables where type = 'BUG_REWARD_AMOUNT') as bug_reward_amount,\n\t(select value from environment.variables where type = 'USAGE_REWARD_AMOUNT') as usage_reward_amount,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_ID') as reward_account_id,\n\t(select value from environment.variables where type = 'REWARD_ACCOUNT_PRIVATE_KEY') as reward_account_private_key,\n\t(select value from environment.variables where type = 'MAX_USAGE_REWARD_AMOUNT') as max_usage_reward_amount,\n    (select value from environment.variables where type = 'TELEGRAM_MONITORING_CHAT_ID') as telegram_monitoring_chat_id,\n\t(select value from environment.variables where type = 'TELEGRAM_MONITORING_TOPIC_ID') as telegram_monitoring_topic_id"
         },
         "position": [
-          2940,
-          5520
+          4380,
+          -620
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -19532,8 +19511,8 @@
           "senderId": "={{ $('GetVariables').item.json.reward_account_id }}"
         },
         "position": [
-          3800,
-          5520
+          5240,
+          -620
         ],
         "type": "@dapplets/n8n-nodes-near-protocol.transfer",
         "typeVersion": 1
@@ -19546,8 +19525,8 @@
           "mode": "runOnceForEachItem"
         },
         "position": [
-          3360,
-          5520
+          4800,
+          -620
         ],
         "type": "n8n-nodes-base.code",
         "typeVersion": 2
@@ -19570,8 +19549,8 @@
           }
         },
         "position": [
-          4040,
-          5680
+          5480,
+          -460
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
@@ -19593,8 +19572,8 @@
           "query": "update \"default\".reward_history\nset tx_hash = $2, recipient_account_id = $3\nwhere id in (\n\tselect rh.id\n\tfrom \"default\".reward_history rh \n\tjoin \"default\".usage_history uh on uh.id = rh.related_item_id and rh.related_item_type = 'usage-caller'\n\twhere uh.caller_username = $1\n\t\tand rh.tx_hash is null\n\t\tand rh.amount != '0'\n\t\t\n\tunion all\n\t\n\tselect rh.id\n\tfrom \"default\".reward_history rh \n\tjoin \"default\".warning w on w.id = rh.related_item_id and rh.related_item_type = 'bug'\n\twhere w.username = $1\n\t\tand rh.tx_hash is null\n\t\tand rh.amount != '0'\n)"
         },
         "position": [
-          4040,
-          5520
+          5480,
+          -620
         ],
         "type": "n8n-nodes-base.postgres",
         "typeVersion": 2.6
@@ -19627,8 +19606,8 @@
           }
         },
         "position": [
-          3580,
-          5520
+          5020,
+          -620
         ],
         "type": "n8n-nodes-base.if",
         "typeVersion": 2.2
@@ -19651,8 +19630,8 @@
           }
         },
         "position": [
-          3800,
-          5720
+          5240,
+          -420
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
@@ -19709,6 +19688,21 @@
         ],
         "type": "n8n-nodes-base.merge",
         "typeVersion": 3.1
+      },
+      {
+        "id": "b9bbf6fd-e5bb-4d1c-b44b-564d2522814b",
+        "name": "Sticky Note",
+        "parameters": {
+          "content": "Claim Rewards",
+          "height": 480,
+          "width": 1730
+        },
+        "position": [
+          3940,
+          -660
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
       }
     ],
     "pinData": {
@@ -19720,8 +19714,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-15T16:19:08.000Z",
-    "versionId": "8382ffdc-a1b5-46d9-a642-ea8e0246be06"
+    "updatedAt": "2025-05-16T11:40:04.000Z",
+    "versionId": "d83b53bb-6b8d-4a7e-ab9a-cc2c880a9555"
   },
   {
     "active": true,
