@@ -129,7 +129,7 @@ const Wallet = () => {
           <img src={NEAR_ICON} alt="near" />
           {balance?.formatted.available ?? '-'}
         </div>
-        <div className="flex shrink-0 flex-col text-xs/tight font-semibold text-(--color-gray-text)">
+        <div className="flex shrink-0 flex-col items-end text-xs/tight font-semibold text-(--color-gray-text)">
           <div className="flex gap-1">
             Total revenue:{' '}
             <span className="text-(--color-my-primary)">
