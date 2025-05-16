@@ -1298,6 +1298,13 @@
               "node": "Telegram24",
               "type": "main"
             }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "text",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -1516,24 +1523,6 @@
             {
               "index": 0,
               "node": "Active?",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "If1": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Commands",
-              "type": "main"
-            }
-          ],
-          [
-            {
-              "index": 0,
-              "node": "text",
               "type": "main"
             }
           ]
@@ -2182,7 +2171,7 @@
           [
             {
               "index": 0,
-              "node": "If1",
+              "node": "Commands",
               "type": "main"
             }
           ]
@@ -3195,41 +3184,6 @@
         "webhookId": "3db2293e-d6d8-44f1-921f-31f4d08ba617"
       },
       {
-        "id": "d0043053-3ae5-4abd-adb8-75cb4e753036",
-        "name": "If1",
-        "parameters": {
-          "conditions": {
-            "combinator": "and",
-            "conditions": [
-              {
-                "id": "2132e55d-7e42-4127-8f4e-e4f002c1ae11",
-                "leftValue": "={{ $json.message.entities[0].type }}",
-                "operator": {
-                  "operation": "exists",
-                  "singleValue": true,
-                  "type": "string"
-                },
-                "rightValue": ""
-              }
-            ],
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 2
-            }
-          },
-          "options": {
-          }
-        },
-        "position": [
-          100,
-          520
-        ],
-        "type": "n8n-nodes-base.if",
-        "typeVersion": 2.2
-      },
-      {
         "credentials": {
           "postgres": {
             "id": "8ZOLCkWqvhw8gGkU",
@@ -3602,6 +3556,7 @@
         "name": "Commands",
         "parameters": {
           "options": {
+            "fallbackOutput": "extra"
           },
           "rules": {
             "values": [
@@ -6927,8 +6882,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-14T13:14:14.000Z",
-    "versionId": "4bada0a4-de25-4667-86b4-9deb05c571e3"
+    "updatedAt": "2025-05-16T14:19:36.000Z",
+    "versionId": "b7583b16-1daf-401e-bc2e-e2820c634a40"
   },
   {
     "active": false,
@@ -23435,7 +23390,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-15T16:23:59.000Z",
-    "versionId": "b644c5bd-c36b-4190-b41b-7cc3b752a460"
+    "updatedAt": "2025-05-16T14:14:28.000Z",
+    "versionId": "4996473b-b7be-4e1e-adbe-c9914448b986"
   }
 ]
