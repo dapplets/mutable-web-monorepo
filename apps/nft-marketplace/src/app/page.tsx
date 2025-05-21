@@ -1,6 +1,6 @@
 'use client'
+
 import { useCallback, useEffect, useState } from 'react'
-import type { NextPage } from 'next'
 import Head from 'next/head'
 import {
   AppBar,
@@ -22,33 +22,37 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import GavelIcon from '@mui/icons-material/Gavel'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
-import { connect, Contract, keyStores, WalletConnection, utils } from 'near-api-js'
+import {
+  connect,
+  Contract,
+  keyStores,
+  WalletConnection,
+  utils,
+  transactions,
+  Connection,
+} from 'near-api-js'
+import type { NextPage } from 'next'
+import { PublicKey, serialize } from 'near-api-js/lib/utils'
+import { createTransaction } from 'near-api-js/lib/transaction'
 
-/* =========================================================================
- * Config
- * ========================================================================= */
+/* ----------------------------------- Config ---------------------------------- */
 
 const NETWORK_ID = process.env.NEXT_PUBLIC_NETWORK_ID || 'mainnet'
 const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL || 'https://rpc.mainnet.near.org'
 const WALLET_URL = process.env.NEXT_PUBLIC_WALLET_URL || 'https://app.mynearwallet.com'
 const HELPER_URL = process.env.NEXT_PUBLIC_HELPER_URL || 'https://helper.mainnet.near.org'
 const CONTRACT_NAME = process.env.NEXT_PUBLIC_CONTRACT_NAME || 'market.aigency.near'
-
-/** Collection to explore */
 const NFT_CONTRACT_ID = 'my-new-nft-contract.near'
 
-/** Deposit needed for storage on the marketplace (from contract constant) */
-
-const GAS_BN = BigInt('150000000000000') // 150 Tgas
-const STORAGE_FOR_SALE = BigInt('8590000000000000000000') // 0.00859 Ⓝ
-const PAD = BigInt('100000000000000000000') // 0.0001 Ⓝ safety
+// 150 Tgas
+const GAS_BN = BigInt('150000000000000')
+// 0.00859 Ⓝ – pulled from contract but cached here for performers
+const STORAGE_FOR_SALE = BigInt('8590000000000000000000')
 
 const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmount(y.toString(), 2)
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
 
-/* =========================================================================
- * Types
- * ========================================================================= */
+/* ------------------------------------ Types ----------------------------------- */
 
 interface Bid {
   bidder_id: string
@@ -93,9 +97,12 @@ interface MarketContract extends Contract {
   ) => Promise<void>
 }
 
-/* =========================================================================
- * NEAR hook
- * ========================================================================= */
+interface TokenWithListing {
+  token: any
+  listing: MarketDataJson | null
+}
+
+/* ----------------------------------- Hook ------------------------------------ */
 
 const useNear = () => {
   const [wallet, setWallet] = useState<WalletConnection | null>(null)
@@ -114,16 +121,13 @@ const useNear = () => {
         deps: { keyStore },
       })
       const walletConn = new WalletConnection(near, CONTRACT_NAME)
-
-      // wait for complete wallet connection
-      await walletConn.isSignedInAsync();
-
+      await walletConn.isSignedInAsync()
       setWallet(walletConn)
       if (walletConn.getAccountId()) setAccount(walletConn.getAccountId())
 
       const ctr = new Contract(walletConn.account(), CONTRACT_NAME, {
-        viewMethods: ['get_market_data'],
-        changeMethods: ['buy', 'add_bid'],
+        viewMethods: ['get_market_data', 'storage_balance_of', 'get_supply_by_owner_id'],
+        changeMethods: ['buy', 'add_bid', 'storage_deposit'],
         useLocalViewExecution: true,
       }) as unknown as MarketContract
       setContract(ctr)
@@ -142,9 +146,79 @@ const useNear = () => {
   return { accountId: account, wallet, contract, signIn, signOut }
 }
 
-/* =========================================================================
- * UI helpers
- * ========================================================================= */
+/* ------------------------------ Storage helper ------------------------------- */
+
+/**
+ * Builds a batch (array) of NEAR transactions that will:
+ *   1. deposit missing storage on the marketplace (if any)
+ *   2. call `nft_approve` on the NFT contract to create / update the listing
+ *
+ * The wallet shows *one* confirmation for the whole array.
+ */
+const buildListingTransactions = async (
+  wallet: WalletConnection,
+  tokenId: string,
+  priceYocto: string
+) => {
+  // 1. How much storage the user already owns on the marketplace
+  const storagePaid: string = (await wallet.account().viewFunction({
+    contractId: CONTRACT_NAME,
+    methodName: 'storage_balance_of',
+    args: { account_id: wallet.getAccountId() },
+  })) as string
+
+  // 2. Active listings count – each requires STORAGE_FOR_SALE
+  const currentListings: string = (await wallet.account().viewFunction({
+    contractId: CONTRACT_NAME,
+    methodName: 'get_supply_by_owner_id',
+    args: { account_id: wallet.getAccountId() },
+  })) as string
+
+  const required = (BigInt(currentListings) + 1n) * STORAGE_FOR_SALE
+  const paid = BigInt(storagePaid)
+  const shortfall = required > paid ? required - paid : 0n
+
+  /* -------------------- build actions ------------------------------------ */
+
+  const actionsMarketplace: transactions.Action[] = shortfall
+    ? [
+        transactions.functionCall(
+          'storage_deposit',
+          {},
+          GAS_BN, // Gas
+          shortfall // Deposit Ⓝ
+        ),
+      ]
+    : []
+
+  const actionsApprove: transactions.Action[] = [
+    transactions.functionCall(
+      'nft_approve',
+      {
+        token_id: tokenId,
+        account_id: CONTRACT_NAME,
+        msg: JSON.stringify({
+          market_type: 'sale',
+          price: priceYocto,
+          ft_token_id: 'near',
+        }),
+      },
+      GAS_BN,
+      // Approval itself just needs 1 yocto
+      BigInt('1')
+    ),
+  ]
+
+  const txs: Array<{ receiverId: string; actions: transactions.Action[] }> = []
+
+  if (actionsMarketplace.length)
+    txs.push({ receiverId: CONTRACT_NAME, actions: actionsMarketplace })
+  txs.push({ receiverId: NFT_CONTRACT_ID, actions: actionsApprove })
+
+  return txs
+}
+
+/* ------------------------------ UI Components ------------------------------- */
 
 const ConnectWalletButton = ({
   accountId,
@@ -164,15 +238,6 @@ const ConnectWalletButton = ({
   </Button>
 )
 
-interface TokenWithListing {
-  token: any // includes metadata
-  listing: MarketDataJson | null
-}
-
-/* =========================================================================
- * Listing Row (table version)
- * ========================================================================= */
-
 const ListingRow = ({
   token,
   listing,
@@ -191,40 +256,30 @@ const ListingRow = ({
   const meta = token.metadata || {}
   const imgSrc = meta.media ?? meta.reference ?? 'https://placehold.co/80x80?text=No+Image'
 
-  /* ---------------------------------- NOT LISTED ---------------------------------- */
+  /* ---------------------------- Not yet listed --------------------------- */
   if (!listing) {
     const isOwner = accountId === token.owner_id
 
     const handleList = async () => {
       if (!wallet) return
+
       const priceNear = prompt('Sale price (NEAR):')
       if (!priceNear) return
 
       const priceYocto = nearToYocto(priceNear)
 
-      /** Fixed-price sale payload (no auction fields) */
-      const msg = {
-        market_type: 'sale',
-        price: priceYocto,
-        ft_token_id: 'near',
-      }
-
       try {
-        await wallet.account().functionCall({
-          contractId: NFT_CONTRACT_ID,
-          methodName: 'nft_approve',
-          args: {
-            token_id: token.token_id,
-            account_id: CONTRACT_NAME,
-            msg: JSON.stringify(msg),
-          },
-          gas: GAS_BN,
-          attachedDeposit: STORAGE_FOR_SALE + PAD,
-        })
-        alert('Listing submitted — awaiting wallet finalization.')
+        // Build transactions and send in a single wallet prompt
+        const txs = await buildListingTransactions(wallet, token.token_id, priceYocto)
+
+        for (const tx of txs) {
+          await wallet.account().signAndSendTransaction(tx)
+        }
+
+        alert('Listing submitted – complete the wallet approval.')
         refresh()
-      } catch (e) {
-        console.error(e)
+      } catch (err) {
+        console.error(err)
         alert('Listing failed or was rejected.')
       }
     }
@@ -258,7 +313,8 @@ const ListingRow = ({
     )
   }
 
-  /* ---------------------------------- LISTED ---------------------------------- */
+  /* ------------------------------ Already listed ------------------------------ */
+
   const isOwner = accountId === listing.owner_id
   const isAuction = !!listing.is_auction
   const latestBid = listing.bids && listing.bids[listing.bids.length - 1]
@@ -303,7 +359,7 @@ const ListingRow = ({
           component="img"
           image={imgSrc}
           alt={meta.title || listing.token_id}
-          sx={{ width: 80, height: 80, borderRadius: 1 }}
+          sx={{ width: 40, height: 40, borderRadius: 1 }}
         />
       </TableCell>
       <TableCell>{meta.title ?? listing.token_id}</TableCell>
@@ -330,9 +386,7 @@ const ListingRow = ({
   )
 }
 
-/* =========================================================================
- * Page
- * ========================================================================= */
+/* ---------------------------------- Page ---------------------------------- */
 
 const Home: NextPage = () => {
   const { accountId, wallet, contract, signIn, signOut } = useNear()
@@ -373,7 +427,6 @@ const Home: NextPage = () => {
     }
   }
 
-  /* Auto-fetch once ready */
   useEffect(() => {
     if (wallet && contract && !initialized) {
       fetchAllNFTs()
@@ -381,13 +434,11 @@ const Home: NextPage = () => {
     }
   }, [wallet, contract, initialized])
 
-  /* ------------------------------------------------------------------- */
-
   return (
     <>
       <Head>
         <title>NEAR Marketplace — NFT Explorer</title>
-        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
       <Box suppressHydrationWarning sx={{ display: 'contents' }}>
