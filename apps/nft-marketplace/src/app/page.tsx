@@ -114,6 +114,10 @@ const useNear = () => {
         deps: { keyStore },
       })
       const walletConn = new WalletConnection(near, CONTRACT_NAME)
+
+      // wait for complete wallet connection
+      await walletConn.isSignedInAsync();
+
       setWallet(walletConn)
       if (walletConn.getAccountId()) setAccount(walletConn.getAccountId())
 
@@ -228,14 +232,24 @@ const ListingRow = ({
     return (
       <TableRow hover>
         <TableCell>
-          <CardMedia component="img" image={imgSrc} alt={meta.title || token.token_id} sx={{ width: 40, height: 40, borderRadius: 1 }} />
+          <CardMedia
+            component="img"
+            image={imgSrc}
+            alt={meta.title || token.token_id}
+            sx={{ width: 40, height: 40, borderRadius: 1 }}
+          />
         </TableCell>
         <TableCell>{meta.title ?? token.token_id}</TableCell>
         <TableCell>{token.owner_id}</TableCell>
         <TableCell align="right">—</TableCell>
         <TableCell align="right">
           {isOwner && (
-            <Button size="small" variant="contained" startIcon={<AddShoppingCartIcon />} onClick={handleList}>
+            <Button
+              size="small"
+              variant="contained"
+              startIcon={<AddShoppingCartIcon />}
+              onClick={handleList}
+            >
               List for sale
             </Button>
           )}
@@ -285,7 +299,12 @@ const ListingRow = ({
   return (
     <TableRow hover selected={isOwner}>
       <TableCell>
-        <CardMedia component="img" image={imgSrc} alt={meta.title || listing.token_id} sx={{ width: 80, height: 80, borderRadius: 1 }} />
+        <CardMedia
+          component="img"
+          image={imgSrc}
+          alt={meta.title || listing.token_id}
+          sx={{ width: 80, height: 80, borderRadius: 1 }}
+        />
       </TableCell>
       <TableCell>{meta.title ?? listing.token_id}</TableCell>
       <TableCell>{listing.owner_id}</TableCell>
