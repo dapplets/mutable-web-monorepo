@@ -65,8 +65,3 @@ export type THistoryNote = {
   createdAt: string
   isFree?: boolean
 }
-
-export type RewardAmount = {
-  total: string
-  availableToClaim: string
-}
