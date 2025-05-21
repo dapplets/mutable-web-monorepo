@@ -6,14 +6,15 @@ import {
   AppBar,
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
   CardMedia,
   CircularProgress,
   Container,
   CssBaseline,
-  Grid,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Toolbar,
   Typography,
 } from '@mui/material'
@@ -164,7 +165,11 @@ interface TokenWithListing {
   listing: MarketDataJson | null
 }
 
-const ListingCard = ({
+/* =========================================================================
+ * Listing Row (table version)
+ * ========================================================================= */
+
+const ListingRow = ({
   token,
   listing,
   accountId,
@@ -180,7 +185,7 @@ const ListingCard = ({
   refresh: () => void
 }) => {
   const meta = token.metadata || {}
-  const imgSrc = meta.media ?? meta.reference ?? 'https://placehold.co/400x400?text=No+Image'
+  const imgSrc = meta.media ?? meta.reference ?? 'https://placehold.co/80x80?text=No+Image'
 
   /* ---------------------------------- NOT LISTED ---------------------------------- */
   if (!listing) {
@@ -221,37 +226,21 @@ const ListingCard = ({
     }
 
     return (
-      <Card
-        variant="outlined"
-        sx={{ borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column' }}
-      >
-        <CardMedia component="img" height="180" image={imgSrc} alt={meta.title || token.token_id} />
-        <CardContent sx={{ flexGrow: 1 }}>
-          <Typography variant="subtitle1" fontWeight={600}>
-            {meta.title ?? token.token_id}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Owner: {token.owner_id}
-          </Typography>
-          {meta.description && (
-            <Typography variant="body2" color="text.secondary" noWrap>
-              {meta.description}
-            </Typography>
-          )}
-        </CardContent>
-        {isOwner && (
-          <CardActions>
-            <Button
-              size="small"
-              variant="contained"
-              startIcon={<AddShoppingCartIcon />}
-              onClick={handleList}
-            >
-              List&nbsp;for&nbsp;sale
+      <TableRow hover>
+        <TableCell>
+          <CardMedia component="img" image={imgSrc} alt={meta.title || token.token_id} sx={{ width: 40, height: 40, borderRadius: 1 }} />
+        </TableCell>
+        <TableCell>{meta.title ?? token.token_id}</TableCell>
+        <TableCell>{token.owner_id}</TableCell>
+        <TableCell align="right">—</TableCell>
+        <TableCell align="right">
+          {isOwner && (
+            <Button size="small" variant="contained" startIcon={<AddShoppingCartIcon />} onClick={handleList}>
+              List for sale
             </Button>
-          </CardActions>
-        )}
-      </Card>
+          )}
+        </TableCell>
+      </TableRow>
     )
   }
 
@@ -288,49 +277,20 @@ const ListingCard = ({
     refresh()
   }
 
+  const priceDisplay = isAuction
+    ? `${yoctoToNear(listing.price)} NEAR` +
+      (latestBid ? ` / ${yoctoToNear(latestBid.price)} NEAR (highest bid)` : '')
+    : `${yoctoToNear(listing.price)} NEAR`
+
   return (
-    <Card
-      variant="outlined"
-      sx={{ borderRadius: 3, height: '100%', display: 'flex', flexDirection: 'column' }}
-    >
-      <CardMedia component="img" height="180" image={imgSrc} alt={meta.title || listing.token_id} />
-
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="subtitle1" fontWeight={600}>
-          {meta.title ?? listing.token_id}
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-          Seller: {listing.owner_id}
-        </Typography>
-        {meta.description && (
-          <Typography variant="body2" color="text.secondary" noWrap sx={{ mb: 1 }}>
-            {meta.description}
-          </Typography>
-        )}
-
-        {isAuction ? (
-          <>
-            <Typography variant="body2">
-              Starting&nbsp;price: {yoctoToNear(listing.price)} NEAR
-            </Typography>
-            <Typography variant="body2">
-              Highest bid:{' '}
-              {latestBid ? `${yoctoToNear(latestBid.price)} NEAR by ${latestBid.bidder_id}` : '—'}
-            </Typography>
-            {listing.ended_at && (
-              <Typography variant="body2">
-                Ends: {new Date(Number(listing.ended_at) / 1e6).toLocaleString()}
-              </Typography>
-            )}
-          </>
-        ) : (
-          <Typography variant="h6" sx={{ mt: 0.5 }}>
-            {yoctoToNear(listing.price)} NEAR
-          </Typography>
-        )}
-      </CardContent>
-
-      <CardActions>
+    <TableRow hover selected={isOwner}>
+      <TableCell>
+        <CardMedia component="img" image={imgSrc} alt={meta.title || listing.token_id} sx={{ width: 80, height: 80, borderRadius: 1 }} />
+      </TableCell>
+      <TableCell>{meta.title ?? listing.token_id}</TableCell>
+      <TableCell>{listing.owner_id}</TableCell>
+      <TableCell align="right">{priceDisplay}</TableCell>
+      <TableCell align="right">
         {isAuction ? (
           <Button size="small" startIcon={<GavelIcon />} disabled={!accountId} onClick={handleBid}>
             Bid
@@ -346,8 +306,8 @@ const ListingCard = ({
             Buy
           </Button>
         )}
-      </CardActions>
-    </Card>
+      </TableCell>
+    </TableRow>
   )
 }
 
@@ -432,22 +392,32 @@ const Home: NextPage = () => {
             <Typography variant="body2" color="text.secondary" sx={{ mt: 4 }}>
               No NFTs found on <strong>{NFT_CONTRACT_ID}</strong>.
             </Typography>
-          ) : null}
-
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            {tokens.map(({ token, listing }) => (
-              <Grid key={token.token_id} size={{ xs: 12, sm: 6, md: 4 }}>
-                <ListingCard
-                  token={token}
-                  listing={listing}
-                  accountId={accountId}
-                  wallet={wallet}
-                  contract={contract}
-                  refresh={fetchAllNFTs}
-                />
-              </Grid>
-            ))}
-          </Grid>
+          ) : (
+            <Table sx={{ mt: 2, minWidth: 650 }} size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell width={40}>Preview</TableCell>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Seller / Owner</TableCell>
+                  <TableCell align="right">Price</TableCell>
+                  <TableCell align="right">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {tokens.map(({ token, listing }) => (
+                  <ListingRow
+                    key={token.token_id}
+                    token={token}
+                    listing={listing}
+                    accountId={accountId}
+                    wallet={wallet}
+                    contract={contract}
+                    refresh={fetchAllNFTs}
+                  />
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </Container>
       </Box>
     </>
