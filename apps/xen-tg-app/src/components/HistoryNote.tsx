@@ -1,31 +1,28 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { formatNearAmount } from '@/lib/utils'
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 import { THistoryNote } from '../types'
 
 export const HistoryCard: FC<{ note: THistoryNote }> = ({ note }) => {
-  const amountInNearRounded = useMemo(() => {
-    const amountInNear = formatNearAmount(note.amount)
-    return amountInNear.slice(0, amountInNear.indexOf('.') + 4)
-  }, [note.amount])
-
+  const amountInNear = formatNearAmount(note.amount)
+  const amountInNearRounded = amountInNear.slice(0, amountInNear.indexOf('.') + 4)
   return (
     <div className="flex items-center justify-between gap-2.5">
       <div className="flex w-max min-w-12 shrink-0 flex-col items-start gap-0.5">
         {note.isFree ? (
-          <div className="flex py-0.25 text-xs/[100%] font-normal text-(--color-my-primary)">
+          <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-my-primary)">
             FREE
           </div>
         ) : null}
-        <div className="flex w-max shrink-0 py-0.25 text-[14px] font-semibold">
+        <div className="flex w-max shrink-0 py-0.25 text-[14px]/[150%] font-semibold">
           {(note.operationType === 'income' ? '+ ' : '- ') + amountInNearRounded}
         </div>
       </div>
       <div className="flex flex-col gap-0.5">
-        <div className="flex py-0.25 text-xs/[100%] font-normal text-(--color-gray-text)">
+        <div className="flex py-0.25 text-[12px]/[100%] font-normal text-(--color-gray-text)">
           {new Date(note.createdAt).toLocaleString()}
         </div>
-        <div className="flex py-0.25 text-[14px]/4 font-semibold break-all">
+        <div className="flex py-0.25 text-[14px]/[150%] font-semibold wrap-anywhere">
           {note.capabilityName}
         </div>
       </div>
