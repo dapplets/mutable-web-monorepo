@@ -324,3 +324,28 @@ CREATE TABLE "default".reward_history (
 
 ALTER TABLE ONLY "default".reward_history
     ADD CONSTRAINT reward_history_pk PRIMARY KEY (id);
+
+CREATE TABLE delivered.telegram (
+    id integer NOT NULL,
+    userid character varying,
+    pubdate character varying,
+    delivered character varying,
+    identifier character varying
+);
+
+CREATE SEQUENCE delivered.telegram_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE delivered.telegram_id_seq OWNED BY delivered.telegram.id;
+
+ALTER TABLE ONLY delivered.telegram ALTER COLUMN id SET DEFAULT nextval('delivered.telegram_id_seq'::regclass);
+
+SELECT pg_catalog.setval('delivered.telegram_id_seq', 1, false);
+
+ALTER TABLE ONLY delivered.telegram
+    ADD CONSTRAINT telegram_pk PRIMARY KEY (id);
