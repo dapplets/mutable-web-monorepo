@@ -18,6 +18,7 @@
     "build:crawler-backend": "turbo run build --filter=@mweb/crawler-backend",
     "build:crawler-dashboard": "turbo run build --filter=@mweb/crawler-dashboard",
     "build:xen": "turbo run build --filter=@mweb/xen-tg-app",
+    "build:market": "turbo run build --filter=@mweb/nft-marketplace",
     "dev": "turbo run dev --concurrency 15",
     "dev:mweb": "turbo run dev --concurrency 10 --filter=!@mweb/crawler-* --filter=!@mweb/xen-tg-app",
     "dev:crawler": "turbo run dev --filter=@mweb/crawler-*",
