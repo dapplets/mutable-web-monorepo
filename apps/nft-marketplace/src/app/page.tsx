@@ -194,8 +194,8 @@ const buildListingTransactions = async (
         }),
       },
       GAS_BN,
-      // Approval itself just needs 1 yocto
-      BigInt('1')
+      // Approval itself just needs NEARs
+      BigInt('310000000000000000000')
     ),
   ]
 
