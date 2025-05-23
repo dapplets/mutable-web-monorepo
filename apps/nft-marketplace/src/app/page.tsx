@@ -1,7 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import Head from 'next/head'
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
+import GavelIcon from '@mui/icons-material/Gavel'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import {
   AppBar,
   Box,
@@ -18,22 +20,10 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import GavelIcon from '@mui/icons-material/Gavel'
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
-import {
-  connect,
-  Contract,
-  keyStores,
-  WalletConnection,
-  utils,
-  transactions,
-  Connection,
-} from 'near-api-js'
+import { connect, Contract, keyStores, transactions, utils, WalletConnection } from 'near-api-js'
 import type { NextPage } from 'next'
-import { PublicKey, serialize } from 'near-api-js/lib/utils'
-import { createTransaction } from 'near-api-js/lib/transaction'
+import Head from 'next/head'
+import { useCallback, useEffect, useState } from 'react'
 
 /* ----------------------------------- Config ---------------------------------- */
 
@@ -42,7 +32,7 @@ const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL || 'https://rpc.mainnet.near.o
 const WALLET_URL = process.env.NEXT_PUBLIC_WALLET_URL || 'https://app.mynearwallet.com'
 const HELPER_URL = process.env.NEXT_PUBLIC_HELPER_URL || 'https://helper.mainnet.near.org'
 const CONTRACT_NAME = process.env.NEXT_PUBLIC_CONTRACT_NAME || 'market.aigency.near'
-const NFT_CONTRACT_ID = 'my-new-nft-contract.near'
+const NFT_CONTRACT_ID = process.env.NEXT_PUBLIC_NFT_CONTRACT_NAME || 'my-new-nft-contract.near'
 
 // 150 Tgas
 const GAS_BN = BigInt('150000000000000')
