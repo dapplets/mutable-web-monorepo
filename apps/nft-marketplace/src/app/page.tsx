@@ -272,6 +272,7 @@ const ListingRow = ({
         // Build transactions and send in a single wallet prompt
         const txs = await buildListingTransactions(wallet, token.token_id, priceYocto)
 
+        // ToDo: workaround!
         for (const tx of txs) {
           await wallet.account().signAndSendTransaction(tx)
         }
