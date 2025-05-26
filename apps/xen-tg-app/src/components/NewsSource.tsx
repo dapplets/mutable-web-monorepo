@@ -1,6 +1,7 @@
 import FilePlusIcon from '@/assets/file-plus'
 import PlusIcon from '@/assets/plus'
 import RedditIcon from '@/assets/reddit.svg'
+import TelegramIcon from '@/assets/telegram.svg'
 import TrashIcon from '@/assets/trash'
 import { API_URL } from '@/env'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -168,7 +169,10 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
 
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) px-2.5 py-1.5">
-      <img src={RedditIcon} alt="Reddit icon" />
+      <img
+        src={subscription.source === 'telegram' ? TelegramIcon : RedditIcon}
+        alt={subscription.source === 'telegram' ? 'Telegram icon' : 'Reddit icon'}
+      />
 
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
         <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
@@ -182,7 +186,7 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
       </div>
 
       <button
-        className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal dark:bg-(--color-light-white-bg) ${subscription.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
+        className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal select-none dark:bg-(--color-light-white-bg) ${subscription.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
         onClick={subscription.isEnabled ? onDisable : onEnable}
       >
         {handleToggleSubscription.isPending ? (
@@ -195,6 +199,9 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
       </button>
 
       <button
+        style={{
+          visibility: subscription.source === 'telegram' ? 'hidden' : 'visible',
+        }}
         className="mr-1 flex w-8 cursor-pointer items-center justify-center py-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
         onClick={onRemove}
       >
