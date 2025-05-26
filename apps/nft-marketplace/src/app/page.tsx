@@ -1,5 +1,8 @@
 'use client'
 
+/* ──────────────────────────────────────────────────────────
+   Imports
+─────────────────────────────────────────────────────────── */
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import GavelIcon from '@mui/icons-material/Gavel'
@@ -25,8 +28,9 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useCallback, useEffect, useState } from 'react'
 
-/* ----------------------------------- Config ---------------------------------- */
-
+/* ──────────────────────────────────────────────────────────
+   Config
+─────────────────────────────────────────────────────────── */
 const NETWORK_ID = process.env.NEXT_PUBLIC_NETWORK_ID || 'mainnet'
 const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL || 'https://rpc.mainnet.near.org'
 const WALLET_URL = process.env.NEXT_PUBLIC_WALLET_URL || 'https://app.mynearwallet.com'
@@ -34,16 +38,18 @@ const HELPER_URL = process.env.NEXT_PUBLIC_HELPER_URL || 'https://helper.mainnet
 const CONTRACT_NAME = process.env.NEXT_PUBLIC_CONTRACT_NAME || 'market.aigency.near'
 const NFT_CONTRACT_ID = process.env.NEXT_PUBLIC_NFT_CONTRACT_NAME || 'my-new-nft-contract.near'
 
-// 150 Tgas
+// 150 Tgas
 const GAS_BN = BigInt('150000000000000')
-// 0.00859 Ⓝ – pulled from contract but cached here for performers
+// 0.00859 Ⓝ
 const STORAGE_FOR_SALE = BigInt('8590000000000000000000')
 
 const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmount(y.toString(), 2)
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
+const nowNs = () => BigInt(Date.now()) * 1000000n // ms ⇒ ns
 
-/* ------------------------------------ Types ----------------------------------- */
-
+/* ──────────────────────────────────────────────────────────
+   Types
+─────────────────────────────────────────────────────────── */
 interface Bid {
   bidder_id: string
   price: string
@@ -70,6 +76,7 @@ interface MarketContract extends Contract {
     gas?: BigInt,
     amount?: BigInt
   ) => Promise<MarketDataJson>
+
   buy: (
     p: {
       nft_contract_id: string
@@ -80,8 +87,21 @@ interface MarketContract extends Contract {
     gas?: BigInt,
     amount?: BigInt
   ) => Promise<void>
+
   add_bid: (
     p: { nft_contract_id: string; ft_token_id: string; token_id: string; amount: string },
+    gas?: BigInt,
+    amount?: BigInt
+  ) => Promise<void>
+
+  accept_bid: (
+    p: { nft_contract_id: string; token_id: string },
+    gas?: BigInt,
+    amount?: BigInt
+  ) => Promise<void>
+
+  end_auction: (
+    p: { nft_contract_id: string; token_id: string },
     gas?: BigInt,
     amount?: BigInt
   ) => Promise<void>
@@ -92,8 +112,9 @@ interface TokenWithListing {
   listing: MarketDataJson | null
 }
 
-/* ----------------------------------- Hook ------------------------------------ */
-
+/* ──────────────────────────────────────────────────────────
+   Near hook
+─────────────────────────────────────────────────────────── */
 const useNear = () => {
   const [wallet, setWallet] = useState<WalletConnection | null>(null)
   const [account, setAccount] = useState<string | null>(null)
@@ -117,7 +138,7 @@ const useNear = () => {
 
       const ctr = new Contract(walletConn.account(), CONTRACT_NAME, {
         viewMethods: ['get_market_data', 'storage_balance_of', 'get_supply_by_owner_id'],
-        changeMethods: ['buy', 'add_bid', 'storage_deposit'],
+        changeMethods: ['buy', 'add_bid', 'accept_bid', 'end_auction', 'storage_deposit'],
         useLocalViewExecution: true,
       }) as unknown as MarketContract
       setContract(ctr)
@@ -136,28 +157,23 @@ const useNear = () => {
   return { accountId: account, wallet, contract, signIn, signOut }
 }
 
-/* ------------------------------ Storage helper ------------------------------- */
-
-/**
- * Builds a batch (array) of NEAR transactions that will:
- *   1. deposit missing storage on the marketplace (if any)
- *   2. call `nft_approve` on the NFT contract to create / update the listing
- *
- * The wallet shows *one* confirmation for the whole array.
- */
+/* ──────────────────────────────────────────────────────────
+   Tx builders
+─────────────────────────────────────────────────────────── */
 const buildListingTransactions = async (
   wallet: WalletConnection,
   tokenId: string,
-  priceYocto: string
+  priceYocto: string,
+  msgExtra: Record<string, unknown> = {}
 ) => {
-  // 1. How much storage the user already owns on the marketplace
+  // 1. storage already paid?
   const storagePaid: string = (await wallet.account().viewFunction({
     contractId: CONTRACT_NAME,
     methodName: 'storage_balance_of',
     args: { account_id: wallet.getAccountId() },
   })) as string
 
-  // 2. Active listings count – each requires STORAGE_FOR_SALE
+  // 2. current listings
   const currentListings: string = (await wallet.account().viewFunction({
     contractId: CONTRACT_NAME,
     methodName: 'get_supply_by_owner_id',
@@ -165,20 +181,12 @@ const buildListingTransactions = async (
   })) as string
 
   const required = (BigInt(currentListings) + 1n) * STORAGE_FOR_SALE
-  const paid = BigInt(storagePaid)
+  const paid = BigInt(storagePaid || 0)
   const shortfall = required > paid ? required - paid : 0n
 
-  /* -------------------- build actions ------------------------------------ */
-
+  /* ─ actions ─ */
   const actionsMarketplace: transactions.Action[] = shortfall
-    ? [
-        transactions.functionCall(
-          'storage_deposit',
-          {},
-          GAS_BN, // Gas
-          shortfall // Deposit Ⓝ
-        ),
-      ]
+    ? [transactions.functionCall('storage_deposit', {}, GAS_BN, shortfall)]
     : []
 
   const actionsApprove: transactions.Action[] = [
@@ -191,10 +199,10 @@ const buildListingTransactions = async (
           market_type: 'sale',
           price: priceYocto,
           ft_token_id: 'near',
+          ...msgExtra,
         }),
       },
       GAS_BN,
-      // Approval itself just needs NEARs
       BigInt('310000000000000000000')
     ),
   ]
@@ -208,8 +216,9 @@ const buildListingTransactions = async (
   return txs
 }
 
-/* ------------------------------ UI Components ------------------------------- */
-
+/* ──────────────────────────────────────────────────────────
+   UI Components
+─────────────────────────────────────────────────────────── */
 const ConnectWalletButton = ({
   accountId,
   onSignIn,
@@ -228,6 +237,9 @@ const ConnectWalletButton = ({
   </Button>
 )
 
+/* ──────────────────────────────────────────────────────────
+    Listing row
+──────────────────────────────────────────────────────────*/
 const ListingRow = ({
   token,
   listing,
@@ -246,27 +258,30 @@ const ListingRow = ({
   const meta = token.metadata || {}
   const imgSrc = meta.media ?? meta.reference ?? 'https://placehold.co/80x80?text=No+Image'
 
-  /* ---------------------------- Not yet listed --------------------------- */
+  /* ──────── Not (yet) listed ──────── */
   if (!listing) {
     const isOwner = accountId === token.owner_id
 
-    const handleList = async () => {
+    const handleListSale = async (isAuction: boolean) => {
       if (!wallet) return
 
-      const priceNear = prompt('Sale price (NEAR):')
+      const priceNear = prompt(isAuction ? 'Starting price (NEAR):' : 'Sale price (NEAR):')
       if (!priceNear) return
-
       const priceYocto = nearToYocto(priceNear)
 
-      try {
-        // Build transactions and send in a single wallet prompt
-        const txs = await buildListingTransactions(wallet, token.token_id, priceYocto)
-
-        // ToDo: workaround!
-        for (const tx of txs) {
-          await wallet.account().signAndSendTransaction(tx)
+      let msgExtra: Record<string, unknown> = {}
+      if (isAuction) {
+        const hoursStr = prompt('Auction duration in hours (default 24):') || '24'
+        const hours = Math.max(1, parseInt(hoursStr, 10))
+        msgExtra = {
+          is_auction: true,
+          ended_at: (nowNs() + BigInt(hours) * 3600n * 1000000000n).toString(),
         }
+      }
 
+      try {
+        const txs = await buildListingTransactions(wallet, token.token_id, priceYocto, msgExtra)
+        for (const tx of txs) await wallet.account().signAndSendTransaction(tx)
         alert('Listing submitted – complete the wallet approval.')
         refresh()
       } catch (err) {
@@ -290,25 +305,30 @@ const ListingRow = ({
         <TableCell align="right">—</TableCell>
         <TableCell align="right">
           {isOwner && (
-            <Button
-              size="small"
-              variant="contained"
-              startIcon={<AddShoppingCartIcon />}
-              onClick={handleList}
-            >
-              List for sale
-            </Button>
+            <>
+              <Button
+                size="small"
+                variant="contained"
+                startIcon={<AddShoppingCartIcon />}
+                onClick={() => handleListSale(false)}
+              >
+                List for sale
+              </Button>{' '}
+              <Button size="small" startIcon={<GavelIcon />} onClick={() => handleListSale(true)}>
+                List auction
+              </Button>
+            </>
           )}
         </TableCell>
       </TableRow>
     )
   }
 
-  /* ------------------------------ Already listed ------------------------------ */
-
+  /* ──────── Already listed ──────── */
   const isOwner = accountId === listing.owner_id
   const isAuction = !!listing.is_auction
   const latestBid = listing.bids && listing.bids[listing.bids.length - 1]
+  const ended = isAuction && listing.ended_at && BigInt(listing.ended_at) < nowNs()
 
   const handleBuy = async () => {
     if (!contract) return
@@ -338,13 +358,33 @@ const ListingRow = ({
     refresh()
   }
 
+  const handleAcceptBid = async () => {
+    if (!contract) return
+    await contract.accept_bid(
+      { nft_contract_id: listing.nft_contract_id, token_id: listing.token_id },
+      GAS_BN,
+      1n
+    )
+    refresh()
+  }
+
+  const handleEndAuction = async () => {
+    if (!contract) return
+    await contract.end_auction(
+      { nft_contract_id: listing.nft_contract_id, token_id: listing.token_id },
+      GAS_BN,
+      1n
+    )
+    refresh()
+  }
+
   const priceDisplay = isAuction
     ? `${yoctoToNear(listing.price)} NEAR` +
       (latestBid ? ` / ${yoctoToNear(latestBid.price)} NEAR (highest bid)` : '')
     : `${yoctoToNear(listing.price)} NEAR`
 
   return (
-    <TableRow hover selected={isOwner}>
+    <TableRow hover selected={isOwner} style={ended ? { opacity: 0.5 } : {}}>
       <TableCell>
         <CardMedia
           component="img"
@@ -353,14 +393,46 @@ const ListingRow = ({
           sx={{ width: 40, height: 40, borderRadius: 1 }}
         />
       </TableCell>
-      <TableCell>{meta.title ?? listing.token_id}</TableCell>
+      <TableCell>
+        {meta.title ?? listing.token_id}
+        {isAuction && listing.started_at && (
+          <>
+            <br />
+            <small>
+              ⏳ {new Date(Number(listing.started_at) / 1e6).toLocaleString()} –{' '}
+              {new Date(Number(listing.ended_at) / 1e6).toLocaleString()}
+            </small>
+          </>
+        )}
+      </TableCell>
       <TableCell>{listing.owner_id}</TableCell>
       <TableCell align="right">{priceDisplay}</TableCell>
       <TableCell align="right">
         {isAuction ? (
-          <Button size="small" startIcon={<GavelIcon />} disabled={!accountId} onClick={handleBid}>
-            Bid
-          </Button>
+          isOwner ? (
+            <>
+              <Button
+                size="small"
+                startIcon={<GavelIcon />}
+                onClick={handleAcceptBid}
+                disabled={!latestBid}
+              >
+                Accept bid
+              </Button>{' '}
+              <Button size="small" onClick={handleEndAuction}>
+                End auction
+              </Button>
+            </>
+          ) : (
+            <Button
+              size="small"
+              startIcon={<GavelIcon />}
+              disabled={!accountId || !!ended}
+              onClick={handleBid}
+            >
+              Bid
+            </Button>
+          )
         ) : (
           <Button
             size="small"
@@ -377,8 +449,9 @@ const ListingRow = ({
   )
 }
 
-/* ---------------------------------- Page ---------------------------------- */
-
+/* ──────────────────────────────────────────────────────────
+   Page component
+─────────────────────────────────────────────────────────── */
 const Home: NextPage = () => {
   const { accountId, wallet, contract, signIn, signOut } = useNear()
   const [tokens, setTokens] = useState<TokenWithListing[]>([])
