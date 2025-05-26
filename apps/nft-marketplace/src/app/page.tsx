@@ -5,14 +5,18 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import GavelIcon from '@mui/icons-material/Gavel'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import {
   AppBar,
   Box,
   Button,
   CardMedia,
   CircularProgress,
+  Collapse,
   Container,
   CssBaseline,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -35,25 +39,21 @@ const HELPER_URL = process.env.NEXT_PUBLIC_HELPER_URL || 'https://helper.mainnet
 const CONTRACT_NAME = process.env.NEXT_PUBLIC_CONTRACT_NAME || 'market.aigency.near'
 const NFT_CONTRACT_ID = process.env.NEXT_PUBLIC_NFT_CONTRACT_NAME || 'my-new-nft-contract.near'
 
-// 150 Tgas
-const GAS_BN = BigInt('150000000000000')
-// 0.00859 Ⓝ
-const STORAGE_FOR_SALE = BigInt('8590000000000000000000')
+const GAS_BN = 150_000_000_000_000n // 150 Tgas
+const STORAGE_FOR_SALE = 8_590_000_000_000_000_000_000n // 0.00859 Ⓝ
 
 const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmount(y.toString(), 2)
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
-const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms → ns
+const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms→ns
 
 const formatLeft = (endNs: bigint): string => {
-  const msLeft = Number(endNs - BigInt(Date.now()) * 1_000_000n) / 1e6
+  const msLeft = Number(endNs - nowNs()) / 1e6
   if (msLeft <= 0) return 'Ended'
-
   const sec = Math.floor(msLeft / 1_000)
-  const d   = Math.floor(sec / 86_400)
-  const h   = Math.floor((sec % 86_400) / 3_600)
-  const m   = Math.floor((sec % 3_600) / 60)
-  const s   =  sec % 60
-
+  const d = Math.floor(sec / 86_400)
+  const h = Math.floor((sec % 86_400) / 3_600)
+  const m = Math.floor((sec % 3_600) / 60)
+  const s = sec % 60
   if (d) return `${d}d ${h}h`
   if (h) return `${h}h ${m}m`
   if (m) return `${m}m ${s}s`
@@ -82,40 +82,31 @@ interface MarketDataJson {
 }
 
 interface MarketContract extends Contract {
-  get_market_data: (
-    p: { nft_contract_id: string; token_id: string },
-    gas?: BigInt,
-    amount?: BigInt
-  ) => Promise<MarketDataJson>
+  get_market_data: (p: { nft_contract_id: string; token_id: string }) => Promise<MarketDataJson>
   buy: (
-    p: {
-      nft_contract_id: string
-      token_id: string
-      ft_token_id?: string | null
-      price?: string | null
-    },
-    gas?: BigInt,
-    amount?: BigInt
+    p: { nft_contract_id: string; token_id: string },
+    gas?: bigint,
+    amount?: bigint
   ) => Promise<void>
   add_bid: (
     p: { nft_contract_id: string; ft_token_id: string; token_id: string; amount: string },
-    gas?: BigInt,
-    amount?: BigInt
+    gas?: bigint,
+    amount?: bigint
   ) => Promise<void>
   cancel_bid: (
     p: { nft_contract_id: string; token_id: string; account_id: string },
-    gas?: BigInt,
-    amount?: BigInt
+    gas?: bigint,
+    amount?: bigint
   ) => Promise<void>
   accept_bid: (
     p: { nft_contract_id: string; token_id: string },
-    gas?: BigInt,
-    amount?: BigInt
+    gas?: bigint,
+    amount?: bigint
   ) => Promise<void>
   end_auction: (
     p: { nft_contract_id: string; token_id: string },
-    gas?: BigInt,
-    amount?: BigInt
+    gas?: bigint,
+    amount?: bigint
   ) => Promise<void>
 }
 
@@ -174,35 +165,33 @@ const useNear = () => {
   return { accountId: account, wallet, contract, signIn, signOut }
 }
 
-/* ─────────────────── tx-builder ─────────────────── */
+/* ─────────────────── tx-builder (for listing) ─────────────────── */
 const buildListingTransactions = async (
   wallet: WalletConnection,
   tokenId: string,
   priceYocto: string,
   msgExtra: Record<string, unknown> = {}
 ) => {
-  /* storage check */
   const storagePaid: string = (await wallet.account().viewFunction({
     contractId: CONTRACT_NAME,
     methodName: 'storage_balance_of',
     args: { account_id: wallet.getAccountId() },
   })) as string
 
-  const currentListings: string = (await wallet.account().viewFunction({
+  const supply: string = (await wallet.account().viewFunction({
     contractId: CONTRACT_NAME,
     methodName: 'get_supply_by_owner_id',
     args: { account_id: wallet.getAccountId() },
   })) as string
 
-  const required = (BigInt(currentListings) + 1n) * STORAGE_FOR_SALE
-  const paid = BigInt(storagePaid || 0)
-  const shortfall = required > paid ? required - paid : 0n
+  const required = (BigInt(supply) + 1n) * STORAGE_FOR_SALE
+  const shortfall = required > BigInt(storagePaid || 0) ? required - BigInt(storagePaid || 0) : 0n
 
-  const actionsMarketplace = shortfall
+  const marketplaceActions = shortfall
     ? [transactions.functionCall('storage_deposit', {}, GAS_BN, shortfall)]
     : []
 
-  const actionsApprove = [
+  const approveActions = [
     transactions.functionCall(
       'nft_approve',
       {
@@ -216,14 +205,14 @@ const buildListingTransactions = async (
         }),
       },
       GAS_BN,
-      BigInt('310000000000000000000')
+      310_000_000_000_000_000_000n
     ),
   ]
 
-  const txs: Array<{ receiverId: string; actions: transactions.Action[] }> = []
-  if (actionsMarketplace.length)
-    txs.push({ receiverId: CONTRACT_NAME, actions: actionsMarketplace })
-  txs.push({ receiverId: NFT_CONTRACT_ID, actions: actionsApprove })
+  const txs: any[] = []
+  if (marketplaceActions.length)
+    txs.push({ receiverId: CONTRACT_NAME, actions: marketplaceActions })
+  txs.push({ receiverId: NFT_CONTRACT_ID, actions: approveActions })
   return txs
 }
 
@@ -236,13 +225,11 @@ const tooltip = (title: string, children: React.ReactElement) => (
 
 const Countdown: React.FC<{ endedAtNs: string | null }> = ({ endedAtNs }) => {
   const [text, setText] = useState(() => (endedAtNs ? formatLeft(BigInt(endedAtNs)) : '—'))
-
   useEffect(() => {
     if (!endedAtNs) return
     const id = setInterval(() => setText(formatLeft(BigInt(endedAtNs))), 1_000)
     return () => clearInterval(id)
   }, [endedAtNs])
-
   return <>{text}</>
 }
 
@@ -284,8 +271,9 @@ const ListingRow = ({
 }) => {
   const meta = token.metadata || {}
   const imgSrc = meta.media ?? meta.reference ?? 'https://placehold.co/80x80?text=No+Image'
+  const [open, setOpen] = useState(false)
 
-  /* ───── not listed ───── */
+  /* ─────────────────── UNLISTED ─────────────────── */
   if (!listing) {
     const isOwner = accountId === token.owner_id
 
@@ -317,15 +305,26 @@ const ListingRow = ({
 
     return (
       <TableRow hover>
-        <TableCell>
-          <CardMedia
-            component="img"
-            image={imgSrc}
-            alt={meta.title || token.token_id}
-            sx={{ width: 40, height: 40, borderRadius: 1 }}
-          />
+        {/* arrow column (disabled) */}
+        <TableCell sx={{ width: 24 }}>
+          <IconButton size="small" disabled>
+            <KeyboardArrowDownIcon />
+          </IconButton>
         </TableCell>
-        <TableCell>{meta.title ?? token.token_id}</TableCell>
+
+        {/* title */}
+        <TableCell>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CardMedia
+              component="img"
+              image={imgSrc}
+              alt={meta.title || token.token_id}
+              sx={{ width: 40, height: 40, borderRadius: 1 }}
+            />
+            {meta.title ?? token.token_id}
+          </Box>
+        </TableCell>
+
         <TableCell>{token.owner_id}</TableCell>
         <TableCell align="right">—</TableCell>
         <TableCell align="right">
@@ -355,12 +354,15 @@ const ListingRow = ({
     )
   }
 
-  /* ───── listed ───── */
-  const isOwner = accountId === listing.owner_id
+  /* ─────────────────── LISTED ─────────────────── */
   const isAuction = !!listing.is_auction
+  const isOwner = accountId === listing.owner_id
   const latestBid = listing.bids?.[listing.bids.length - 1]
   const ended = isAuction && listing.ended_at && BigInt(listing.ended_at) <= nowNs()
   const userBid = listing.bids?.find((b) => b.bidder_id === accountId)
+  const bidsSorted = listing.bids
+    ? [...listing.bids].sort((a, b) => (BigInt(a.price) - BigInt(b.price) > 0 ? 1 : -1))
+    : []
 
   /* actions */
   const handleBuy = async () => {
@@ -372,7 +374,6 @@ const ListingRow = ({
     )
     refresh()
   }
-
   const handleBid = async () => {
     if (!contract) return
     const near = prompt('Your bid in NEAR:')
@@ -390,7 +391,6 @@ const ListingRow = ({
     )
     refresh()
   }
-
   const handleCancelBid = async () => {
     if (!contract || !accountId) return
     await contract.cancel_bid(
@@ -404,7 +404,6 @@ const ListingRow = ({
     )
     refresh()
   }
-
   const handleAcceptBid = async () => {
     if (!contract) return
     await contract.accept_bid(
@@ -414,7 +413,6 @@ const ListingRow = ({
     )
     refresh()
   }
-
   const handleEndAuction = async () => {
     if (!contract) return
     await contract.end_auction(
@@ -425,103 +423,156 @@ const ListingRow = ({
     refresh()
   }
 
+  /* unified price line */
   const priceDisplay = isAuction
-    ? `${yoctoToNear(listing.price)} Ⓝ` +
-      (latestBid ? ` / ${yoctoToNear(latestBid.price)} Ⓝ (highest bid)` : '')
+    ? `${yoctoToNear(listing.price)} Ⓝ · ${latestBid ? yoctoToNear(latestBid.price) : '0'} Ⓝ`
     : `${yoctoToNear(listing.price)} Ⓝ`
 
   return (
-    <TableRow hover selected={isOwner}>
-      <TableCell>
-        <CardMedia
-          component="img"
-          image={imgSrc}
-          alt={meta.title || listing.token_id}
-          sx={{ width: 40, height: 40, borderRadius: 1 }}
-        />
-      </TableCell>
-      <TableCell>
-        {meta.title ?? listing.token_id}
-        {isAuction && listing.started_at && (
-          <>
-            <br />
-            <small>
-              ⏳ <Countdown endedAtNs={listing.ended_at} />
-            </small>
-          </>
-        )}
-      </TableCell>
-      <TableCell>{listing.owner_id}</TableCell>
-      <TableCell align="right">{priceDisplay}</TableCell>
-      <TableCell align="right">
-        {isAuction ? (
-          <>
-            {/* bidder controls */}
-            {!isOwner &&
-              userBid &&
-              tooltip(
-                'Withdraw your bid and get NEAR back',
-                <Button size="small" onClick={handleCancelBid}>
-                  Cancel bid
-                </Button>
-              )}
+    <>
+      {/* main row */}
+      <TableRow hover selected={isOwner}>
+        {/* arrow column */}
+        <TableCell sx={{ width: 24 }}>
+          <IconButton
+            size="small"
+            disabled={!isAuction || !listing.bids?.length}
+            onClick={() => setOpen(!open)}
+          >
+            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          </IconButton>
+        </TableCell>
 
-            {/* place bid */}
-            {!isOwner &&
-              tooltip(
-                'Place a bid (+5 % minimum increment)',
-                <Button
-                  size="small"
-                  startIcon={<GavelIcon />}
-                  disabled={!accountId || !!ended}
-                  onClick={handleBid}
-                >
-                  Bid
-                </Button>
+        {/* title */}
+        <TableCell>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <CardMedia
+              component="img"
+              image={imgSrc}
+              alt={meta.title || listing.token_id}
+              sx={{ width: 40, height: 40, borderRadius: 1 }}
+            />
+            <Box>
+              {meta.title ?? listing.token_id}
+              {isAuction && listing.started_at && (
+                <>
+                  <br />
+                  <small>
+                    ⏳ <Countdown endedAtNs={listing.ended_at} />
+                  </small>
+                </>
               )}
+            </Box>
+          </Box>
+        </TableCell>
 
-            {/* seller controls (only after auction end) */}
-            {isOwner && (
-              <>
-                {tooltip(
-                  'Transfer NFT to highest bidder and receive funds',
+        {/* owner */}
+        <TableCell>{listing.owner_id}</TableCell>
+
+        {/* price */}
+        <TableCell align="right">{priceDisplay}</TableCell>
+
+        {/* action buttons */}
+        <TableCell align="right">
+          {isAuction ? (
+            <>
+              {!isOwner &&
+                userBid &&
+                tooltip(
+                  'Withdraw your bid and get NEAR back',
+                  <Button size="small" onClick={handleCancelBid}>
+                    Cancel bid
+                  </Button>
+                )}
+
+              {!isOwner &&
+                tooltip(
+                  'Place a bid (+5 % minimum increment)',
                   <Button
                     size="small"
                     startIcon={<GavelIcon />}
-                    disabled={!latestBid}
-                    onClick={handleAcceptBid}
+                    disabled={!accountId || !!ended}
+                    onClick={handleBid}
                   >
-                    Accept bid
-                  </Button>
-                )}{' '}
-                {tooltip(
-                  latestBid
-                    ? 'Settle auction (same as Accept bid); if no bids, just cancel'
-                    : 'Auction had no bids – remove listing',
-                  <Button size="small" onClick={handleEndAuction}>
-                    End auction
+                    Bid
                   </Button>
                 )}
-              </>
-            )}
-          </>
-        ) : (
-          /* fixed-price sale */
-          tooltip(
-            isOwner ? 'You are the seller' : 'Instantly purchase for the listed price',
-            <Button
-              size="small"
-              variant="contained"
-              startIcon={<ShoppingCartIcon />}
-              disabled={!accountId || isOwner}
-              onClick={handleBuy}
-            >
-              Buy
-            </Button>
-          )
-        )}
-      </TableCell>
-    </TableRow>
+
+              {isOwner && (
+                <>
+                  {tooltip(
+                    'Transfer NFT to highest bidder and receive funds',
+                    <Button
+                      size="small"
+                      startIcon={<GavelIcon />}
+                      disabled={!latestBid}
+                      onClick={handleAcceptBid}
+                    >
+                      Accept bid
+                    </Button>
+                  )}{' '}
+                  {tooltip(
+                    latestBid
+                      ? 'Settle auction (same as Accept bid)'
+                      : 'Auction had no bids – remove listing',
+                    <Button size="small" onClick={handleEndAuction}>
+                      End auction
+                    </Button>
+                  )}
+                </>
+              )}
+            </>
+          ) : (
+            tooltip(
+              isOwner ? 'You are the seller' : 'Instantly purchase for the listed price',
+              <Button
+                size="small"
+                variant="contained"
+                startIcon={<ShoppingCartIcon />}
+                disabled={!accountId || isOwner}
+                onClick={handleBuy}
+              >
+                Buy
+              </Button>
+            )
+          )}
+        </TableCell>
+      </TableRow>
+
+      {/* collapsible bids row */}
+      {isAuction && listing.bids?.length && (
+        <TableRow>
+          <TableCell sx={{ p: 0 }} colSpan={6}>
+            <Collapse in={open} timeout="auto" unmountOnExit>
+              <Box sx={{ m: 1 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell width="70%">Bidder</TableCell>
+                      <TableCell align="right">Bid (Ⓝ)</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {bidsSorted.map((bid, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>
+                          {bid.bidder_id === accountId ? (
+                            <strong>{bid.bidder_id}</strong>
+                          ) : (
+                            bid.bidder_id
+                          )}
+                        </TableCell>
+                        <TableCell align="right">{yoctoToNear(bid.price)} Ⓝ</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Collapse>
+          </TableCell>
+        </TableRow>
+      )}
+    </>
   )
 }
 
@@ -530,20 +581,19 @@ const Home: NextPage = () => {
   const { accountId, wallet, contract, signIn, signOut } = useNear()
   const [tokens, setTokens] = useState<TokenWithListing[]>([])
   const [loading, setLoading] = useState(false)
-  const [initialized, setInitialized] = useState(false)
+  const [initialized, setInit] = useState(false)
 
   const fetchAllNFTs = async () => {
     if (!wallet || !contract) return
     setLoading(true)
     try {
-      const fetchedTokens = (await wallet.account().viewFunction({
+      const fetched: any[] = await wallet.account().viewFunction({
         contractId: NFT_CONTRACT_ID,
         methodName: 'nft_tokens',
         args: { from_index: '0', limit: 100 },
-      })) as any[]
-
+      })
       const mapped = await Promise.all(
-        fetchedTokens.map(async (t) => {
+        fetched.map(async (t) => {
           try {
             const listing = await contract.get_market_data({
               nft_contract_id: NFT_CONTRACT_ID,
@@ -568,7 +618,7 @@ const Home: NextPage = () => {
   useEffect(() => {
     if (wallet && contract && !initialized) {
       fetchAllNFTs()
-      setInitialized(true)
+      setInit(true)
     }
   }, [wallet, contract, initialized])
 
@@ -581,7 +631,6 @@ const Home: NextPage = () => {
 
       <Box suppressHydrationWarning sx={{ display: 'contents' }}>
         <CssBaseline />
-
         <AppBar position="static">
           <Toolbar>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
@@ -604,7 +653,7 @@ const Home: NextPage = () => {
             <Table sx={{ mt: 2, minWidth: 650 }} size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell width={40}>Preview</TableCell>
+                  <TableCell width={24} /> {/* arrow column */}
                   <TableCell>Title</TableCell>
                   <TableCell>Seller / Owner</TableCell>
                   <TableCell align="right">Price</TableCell>
