@@ -187,7 +187,8 @@ CREATE TABLE "default".capability (
     name character varying NOT NULL,
     title character varying,
     description character varying,
-    stars integer DEFAULT 0 NOT NULL
+    stars integer DEFAULT 0 NOT NULL,
+    token_id character varying
 );
 
 CREATE TABLE "default".user_capability (
