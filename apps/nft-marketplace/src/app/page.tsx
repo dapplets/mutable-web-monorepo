@@ -44,6 +44,22 @@ const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmou
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
 const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms → ns
 
+const formatLeft = (endNs: bigint): string => {
+  const msLeft = Number(endNs - BigInt(Date.now()) * 1_000_000n) / 1e6
+  if (msLeft <= 0) return 'Ended'
+
+  const sec = Math.floor(msLeft / 1_000)
+  const d   = Math.floor(sec / 86_400)
+  const h   = Math.floor((sec % 86_400) / 3_600)
+  const m   = Math.floor((sec % 3_600) / 60)
+  const s   =  sec % 60
+
+  if (d) return `${d}d ${h}h`
+  if (h) return `${h}h ${m}m`
+  if (m) return `${m}m ${s}s`
+  return `${s}s`
+}
+
 /* ─────────────────── types ─────────────────── */
 interface Bid {
   bidder_id: string
@@ -217,6 +233,18 @@ const tooltip = (title: string, children: React.ReactElement) => (
     {children}
   </Tooltip>
 )
+
+const Countdown: React.FC<{ endedAtNs: string | null }> = ({ endedAtNs }) => {
+  const [text, setText] = useState(() => (endedAtNs ? formatLeft(BigInt(endedAtNs)) : '—'))
+
+  useEffect(() => {
+    if (!endedAtNs) return
+    const id = setInterval(() => setText(formatLeft(BigInt(endedAtNs))), 1_000)
+    return () => clearInterval(id)
+  }, [endedAtNs])
+
+  return <>{text}</>
+}
 
 const ConnectWalletButton = ({
   accountId,
@@ -418,8 +446,7 @@ const ListingRow = ({
           <>
             <br />
             <small>
-              ⏳ {new Date(Number(listing.started_at) / 1e6).toLocaleString()} –{' '}
-              {new Date(Number(listing.ended_at) / 1e6).toLocaleString()}
+              ⏳ <Countdown endedAtNs={listing.ended_at} />
             </small>
           </>
         )}
