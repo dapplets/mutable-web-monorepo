@@ -292,7 +292,8 @@ CREATE TABLE "default".context_node (
     namespace character varying NOT NULL,
     type character varying NOT NULL,
     id character varying NOT NULL,
-    content json
+    content json,
+    "timestamp" timestamp with time zone DEFAULT now() NOT NULL
 );
 
 ALTER TABLE ONLY "default".context_node
