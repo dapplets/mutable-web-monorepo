@@ -324,3 +324,16 @@ CREATE TABLE "default".reward_history (
 
 ALTER TABLE ONLY "default".reward_history
     ADD CONSTRAINT reward_history_pk PRIMARY KEY (id);
+
+
+CREATE TABLE "default".context_edge (
+    from_context_namespace character varying NOT NULL,
+    from_context_type character varying NOT NULL,
+    from_context_id character varying NOT NULL,
+    to_context_namespace character varying NOT NULL,
+    to_context_type character varying NOT NULL,
+    to_context_id character varying NOT NULL
+);
+
+ALTER TABLE ONLY "default".context_edge
+    ADD CONSTRAINT context_edge_unique UNIQUE (from_context_namespace, from_context_type, from_context_id, to_context_namespace, to_context_type, to_context_id);
