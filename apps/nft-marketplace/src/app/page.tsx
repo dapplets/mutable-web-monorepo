@@ -3,6 +3,7 @@
 /* ─────────────────── imports ─────────────────── */
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
+import EditIcon from '@mui/icons-material/Edit'
 import GavelIcon from '@mui/icons-material/Gavel'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -41,6 +42,7 @@ const NFT_CONTRACT_ID = process.env.NEXT_PUBLIC_NFT_CONTRACT_NAME || 'my-new-nft
 
 const GAS_BN = 150_000_000_000_000n // 150 Tgas
 const STORAGE_FOR_SALE = 8_590_000_000_000_000_000_000n // 0.00859 Ⓝ
+const STORAGE_PRICE_PER_BYTE = 10_000_000_000_000_000_000n // 10¹⁹ yocto = 0.00001 Ⓝ per byte
 
 const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmount(y.toString(), 2)
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
@@ -119,7 +121,7 @@ interface TokenWithListing {
 const useNear = () => {
   const [wallet, setWallet] = useState<WalletConnection | null>(null)
   const [account, setAccount] = useState<string | null>(null)
-  const [contract, setContract] = useState<MarketContract | null>(null)
+  const [marketCtr, setMarketCtr] = useState<MarketContract | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -149,7 +151,7 @@ const useNear = () => {
         ],
         useLocalViewExecution: true,
       }) as unknown as MarketContract
-      setContract(ctr)
+      setMarketCtr(ctr)
     })()
   }, [])
 
@@ -162,7 +164,7 @@ const useNear = () => {
     setAccount(null)
   }, [wallet])
 
-  return { accountId: account, wallet, contract, signIn, signOut }
+  return { accountId: account, wallet, marketCtr, signIn, signOut }
 }
 
 /* ─────────────────── tx-builder (for listing) ─────────────────── */
@@ -259,14 +261,14 @@ const ListingRow = ({
   listing,
   accountId,
   wallet,
-  contract,
+  marketCtr,
   refresh,
 }: {
   token: any
   listing: MarketDataJson | null
   accountId: string | null
   wallet: WalletConnection | null
-  contract: MarketContract | null
+  marketCtr: MarketContract | null
   refresh: () => void
 }) => {
   const meta = token.metadata || {}
@@ -284,6 +286,58 @@ const ListingRow = ({
   const beneficiary = extra?.beneficiary_account_id
   const agentId = extra?.agent_id
   const hasExtra = !!beneficiary || !!agentId
+
+  /* ──────── update extra handler (owner-only) ──────── */
+  const canEditExtra =
+    accountId && (token.owner_id === accountId || listing?.owner_id === accountId)
+
+  const handleUpdateExtra = async () => {
+    if (!wallet || !canEditExtra) return
+    let newBeneficiary = prompt(
+      'Beneficiary account ID (leave blank to remove):',
+      beneficiary || ''
+    )
+    if (newBeneficiary === null) return
+    newBeneficiary = newBeneficiary.trim()
+
+    let newAgentId = prompt('Agent ID (leave blank to remove):', agentId || '')
+    if (newAgentId === null) return
+    newAgentId = newAgentId.trim()
+
+    /* build new extra object */
+    const newExtraObj: Record<string, any> = { ...(extra || {}) }
+    if (newBeneficiary) newExtraObj.beneficiary_account_id = newBeneficiary
+    else delete newExtraObj.beneficiary_account_id
+    if (newAgentId) newExtraObj.agent_id = newAgentId
+    else delete newExtraObj.agent_id
+
+    const newExtraStr = Object.keys(newExtraObj).length > 0 ? JSON.stringify(newExtraObj) : null
+
+    /* ---------- automatic deposit calculation ---------- */
+    const oldLen = meta.extra ? String(meta.extra).length : 0
+    const newLen = newExtraStr ? newExtraStr.length : 0
+    const diffBytes = Math.max(newLen - oldLen, 0)
+    // minimum 1 yocto; add just enough for any storage increase
+    const depositYocto = diffBytes > 0 ? BigInt(diffBytes) * STORAGE_PRICE_PER_BYTE + 1n : 1n
+
+    try {
+      await wallet.account().functionCall({
+        contractId: NFT_CONTRACT_ID,
+        methodName: 'nft_update_extra',
+        args: {
+          token_id: token.token_id,
+          extra: newExtraStr,
+        },
+        gas: GAS_BN,
+        attachedDeposit: depositYocto,
+      })
+      alert('Metadata update submitted – please approve it in your wallet.')
+      refresh()
+    } catch (err) {
+      console.error(err)
+      alert('Update failed or was rejected.')
+    }
+  }
 
   /* ─────────────────── UNLISTED ─────────────────── */
   if (!listing) {
@@ -338,8 +392,13 @@ const ListingRow = ({
             </Box>
           </TableCell>
 
+          {/* owner */}
           <TableCell>{token.owner_id}</TableCell>
+
+          {/* price */}
           <TableCell align="right">—</TableCell>
+
+          {/* actions */}
           <TableCell align="right">
             {isOwner && (
               <>
@@ -362,6 +421,12 @@ const ListingRow = ({
                     onClick={() => handleListSale(true)}
                   >
                     List auction
+                  </Button>
+                )}{' '}
+                {tooltip(
+                  'Edit beneficiary / agent',
+                  <Button size="small" startIcon={<EditIcon />} onClick={handleUpdateExtra}>
+                    Edit meta
                   </Button>
                 )}
               </>
@@ -414,10 +479,10 @@ const ListingRow = ({
   const hasBids = isAuction && !!listing.bids?.length
   const canExpand = hasExtra || hasBids
 
-  /* actions */
+  /* marketplace actions */
   const handleBuy = async () => {
-    if (!contract) return
-    await contract.buy(
+    if (!marketCtr) return
+    await marketCtr.buy(
       { nft_contract_id: listing.nft_contract_id, token_id: listing.token_id },
       GAS_BN,
       BigInt(listing.price)
@@ -425,11 +490,11 @@ const ListingRow = ({
     refresh()
   }
   const handleBid = async () => {
-    if (!contract) return
+    if (!marketCtr) return
     const near = prompt('Your bid in NEAR:')
     if (!near) return
     const yocto = nearToYocto(near)
-    await contract.add_bid(
+    await marketCtr.add_bid(
       {
         nft_contract_id: listing.nft_contract_id,
         ft_token_id: 'near',
@@ -442,8 +507,8 @@ const ListingRow = ({
     refresh()
   }
   const handleCancelBid = async () => {
-    if (!contract || !accountId) return
-    await contract.cancel_bid(
+    if (!marketCtr || !accountId) return
+    await marketCtr.cancel_bid(
       {
         nft_contract_id: listing.nft_contract_id,
         token_id: listing.token_id,
@@ -455,8 +520,8 @@ const ListingRow = ({
     refresh()
   }
   const handleAcceptBid = async () => {
-    if (!contract) return
-    await contract.accept_bid(
+    if (!marketCtr) return
+    await marketCtr.accept_bid(
       { nft_contract_id: listing.nft_contract_id, token_id: listing.token_id },
       GAS_BN,
       1n
@@ -464,8 +529,8 @@ const ListingRow = ({
     refresh()
   }
   const handleEndAuction = async () => {
-    if (!contract) return
-    await contract.end_auction(
+    if (!marketCtr) return
+    await marketCtr.end_auction(
       { nft_contract_id: listing.nft_contract_id, token_id: listing.token_id },
       GAS_BN,
       1n
@@ -582,6 +647,13 @@ const ListingRow = ({
               </Button>
             )
           )}
+          {isOwner &&
+            tooltip(
+              'Edit beneficiary / agent',
+              <Button size="small" startIcon={<EditIcon />} onClick={handleUpdateExtra}>
+                Edit meta
+              </Button>
+            )}
         </TableCell>
       </TableRow>
 
@@ -653,13 +725,13 @@ const ListingRow = ({
 
 /* ─────────────────── page ─────────────────── */
 const Home: NextPage = () => {
-  const { accountId, wallet, contract, signIn, signOut } = useNear()
+  const { accountId, wallet, marketCtr, signIn, signOut } = useNear()
   const [tokens, setTokens] = useState<TokenWithListing[]>([])
   const [loading, setLoading] = useState(false)
   const [initialized, setInit] = useState(false)
 
   const fetchAllNFTs = async () => {
-    if (!wallet || !contract) return
+    if (!wallet || !marketCtr) return
     setLoading(true)
     try {
       const fetched: any[] = await wallet.account().viewFunction({
@@ -670,7 +742,7 @@ const Home: NextPage = () => {
       const mapped = await Promise.all(
         fetched.map(async (t) => {
           try {
-            const listing = await contract.get_market_data({
+            const listing = await marketCtr.get_market_data({
               nft_contract_id: NFT_CONTRACT_ID,
               token_id: t.token_id,
             })
@@ -691,11 +763,11 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    if (wallet && contract && !initialized) {
+    if (wallet && marketCtr && !initialized) {
       fetchAllNFTs()
       setInit(true)
     }
-  }, [wallet, contract, initialized])
+  }, [wallet, marketCtr, initialized])
 
   return (
     <>
@@ -743,7 +815,7 @@ const Home: NextPage = () => {
                     listing={listing}
                     accountId={accountId}
                     wallet={wallet}
-                    contract={contract}
+                    marketCtr={marketCtr}
                     refresh={fetchAllNFTs}
                   />
                 ))}
