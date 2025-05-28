@@ -42,11 +42,12 @@ const NFT_CONTRACT_ID = process.env.NEXT_PUBLIC_NFT_CONTRACT_NAME || 'my-new-nft
 
 const GAS_BN = 150_000_000_000_000n // 150 Tgas
 const STORAGE_FOR_SALE = 8_590_000_000_000_000_000_000n // 0.00859 Ⓝ
-const STORAGE_PRICE_PER_BYTE = 10_000_000_000_000_000_000n // 10¹⁹ yocto = 0.00001 Ⓝ per byte
+const STORAGE_PRICE_PER_BYTE = 10_000_000_000_000_000_000n // 0.00001 Ⓝ per byte
 
+/* ─────────────────── utils ─────────────────── */
 const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmount(y.toString(), 2)
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
-const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms → ns
+const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms→ns
 
 const formatLeft = (endNs: bigint): string => {
   const msLeft = Number(endNs - nowNs()) / 1e6
@@ -304,7 +305,6 @@ const ListingRow = ({
     if (newAgentId === null) return
     newAgentId = newAgentId.trim()
 
-    /* build new extra object */
     const newExtraObj: Record<string, any> = { ...(extra || {}) }
     if (newBeneficiary) newExtraObj.beneficiary_account_id = newBeneficiary
     else delete newExtraObj.beneficiary_account_id
@@ -313,11 +313,10 @@ const ListingRow = ({
 
     const newExtraStr = Object.keys(newExtraObj).length > 0 ? JSON.stringify(newExtraObj) : null
 
-    /* ---------- automatic deposit calculation ---------- */
+    /* calculate minimal deposit */
     const oldLen = meta.extra ? String(meta.extra).length : 0
     const newLen = newExtraStr ? newExtraStr.length : 0
     const diffBytes = Math.max(newLen - oldLen, 0)
-    // minimum 1 yocto; add just enough for any storage increase
     const depositYocto = diffBytes > 0 ? BigInt(diffBytes) * STORAGE_PRICE_PER_BYTE + 1n : 1n
 
     try {
@@ -331,7 +330,7 @@ const ListingRow = ({
         gas: GAS_BN,
         attachedDeposit: depositYocto,
       })
-      alert('Metadata update submitted – please approve it in your wallet.')
+      alert('Metadata update submitted – approve it in your wallet.')
       refresh()
     } catch (err) {
       console.error(err)
@@ -339,7 +338,10 @@ const ListingRow = ({
     }
   }
 
-  /* ─────────────────── UNLISTED ─────────────────── */
+  /* ─────────────────── helpers for row state ─────────────────── */
+  const arrowEnabled = hasExtra || canEditExtra || (listing?.is_auction && listing.bids?.length)
+
+  /* ─────────────────── UNLISTED ROW ─────────────────── */
   if (!listing) {
     const isOwner = accountId === token.owner_id
 
@@ -374,7 +376,7 @@ const ListingRow = ({
         <TableRow hover>
           {/* arrow column */}
           <TableCell sx={{ width: 24 }}>
-            <IconButton size="small" disabled={!hasExtra} onClick={() => setOpen(!open)}>
+            <IconButton size="small" disabled={!arrowEnabled} onClick={() => setOpen(!open)}>
               {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
             </IconButton>
           </TableCell>
@@ -392,13 +394,8 @@ const ListingRow = ({
             </Box>
           </TableCell>
 
-          {/* owner */}
           <TableCell>{token.owner_id}</TableCell>
-
-          {/* price */}
           <TableCell align="right">—</TableCell>
-
-          {/* actions */}
           <TableCell align="right">
             {isOwner && (
               <>
@@ -422,41 +419,54 @@ const ListingRow = ({
                   >
                     List auction
                   </Button>
-                )}{' '}
-                {tooltip(
-                  'Edit beneficiary / agent',
-                  <Button size="small" startIcon={<EditIcon />} onClick={handleUpdateExtra}>
-                    Edit meta
-                  </Button>
                 )}
               </>
             )}
           </TableCell>
         </TableRow>
 
-        {/* collapsible metadata row */}
-        {hasExtra && (
+        {/* collapsible row */}
+        {(arrowEnabled || open) && (
           <TableRow>
             <TableCell sx={{ p: 0 }} colSpan={6}>
               <Collapse in={open} timeout="auto" unmountOnExit>
                 <Box sx={{ m: 1 }}>
-                  <Typography variant="subtitle2">NFT Metadata</Typography>
-                  <Table size="small">
-                    <TableBody>
-                      {beneficiary && (
-                        <TableRow>
-                          <TableCell>Beneficiary</TableCell>
-                          <TableCell>{beneficiary}</TableCell>
-                        </TableRow>
-                      )}
-                      {agentId && (
-                        <TableRow>
-                          <TableCell>Agent&nbsp;ID</TableCell>
-                          <TableCell>{agentId}</TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
+                  {hasExtra && (
+                    <>
+                      <Typography variant="subtitle2">NFT Metadata</Typography>
+                      <Table size="small">
+                        <TableBody>
+                          {beneficiary && (
+                            <TableRow>
+                              <TableCell>Beneficiary</TableCell>
+                              <TableCell>{beneficiary}</TableCell>
+                            </TableRow>
+                          )}
+                          {agentId && (
+                            <TableRow>
+                              <TableCell>Agent&nbsp;ID</TableCell>
+                              <TableCell>{agentId}</TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </>
+                  )}
+
+                  {canEditExtra &&
+                    tooltip(
+                      'Edit beneficiary / agent',
+                      <Box sx={{ mt: 2 }}>
+                        <Button
+                          size="small"
+                          startIcon={<EditIcon />}
+                          variant="outlined"
+                          onClick={handleUpdateExtra}
+                        >
+                          Edit meta
+                        </Button>
+                      </Box>
+                    )}
                 </Box>
               </Collapse>
             </TableCell>
@@ -466,7 +476,7 @@ const ListingRow = ({
     )
   }
 
-  /* ─────────────────── LISTED ─────────────────── */
+  /* ─────────────────── LISTED ROW ─────────────────── */
   const isAuction = !!listing.is_auction
   const isOwner = accountId === listing.owner_id
   const latestBid = listing.bids?.[listing.bids.length - 1]
@@ -477,7 +487,9 @@ const ListingRow = ({
     : []
 
   const hasBids = isAuction && !!listing.bids?.length
-  const canExpand = hasExtra || hasBids
+  const priceDisplay = isAuction
+    ? `${yoctoToNear(listing.price)} Ⓝ · ${latestBid ? yoctoToNear(latestBid.price) : '0'} Ⓝ`
+    : `${yoctoToNear(listing.price)} Ⓝ`
 
   /* marketplace actions */
   const handleBuy = async () => {
@@ -538,23 +550,15 @@ const ListingRow = ({
     refresh()
   }
 
-  /* unified price line */
-  const priceDisplay = isAuction
-    ? `${yoctoToNear(listing.price)} Ⓝ · ${latestBid ? yoctoToNear(latestBid.price) : '0'} Ⓝ`
-    : `${yoctoToNear(listing.price)} Ⓝ`
-
   return (
     <>
-      {/* main row */}
       <TableRow hover selected={isOwner}>
-        {/* arrow column */}
         <TableCell sx={{ width: 24 }}>
-          <IconButton size="small" disabled={!canExpand} onClick={() => setOpen(!open)}>
+          <IconButton size="small" disabled={!arrowEnabled} onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
 
-        {/* title */}
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <CardMedia
@@ -577,13 +581,9 @@ const ListingRow = ({
           </Box>
         </TableCell>
 
-        {/* owner */}
         <TableCell>{listing.owner_id}</TableCell>
-
-        {/* price */}
         <TableCell align="right">{priceDisplay}</TableCell>
 
-        {/* action buttons */}
         <TableCell align="right">
           {isAuction ? (
             <>
@@ -612,7 +612,7 @@ const ListingRow = ({
               {isOwner && (
                 <>
                   {tooltip(
-                    'Transfer NFT to highest bidder and receive funds',
+                    'Transfer NFT to highest bidder',
                     <Button
                       size="small"
                       startIcon={<GavelIcon />}
@@ -623,9 +623,7 @@ const ListingRow = ({
                     </Button>
                   )}{' '}
                   {tooltip(
-                    latestBid
-                      ? 'Settle auction (same as Accept bid)'
-                      : 'Auction had no bids – remove listing',
+                    latestBid ? 'Settle auction' : 'Auction had no bids – remove listing',
                     <Button size="small" onClick={handleEndAuction}>
                       End auction
                     </Button>
@@ -635,7 +633,7 @@ const ListingRow = ({
             </>
           ) : (
             tooltip(
-              isOwner ? 'You are the seller' : 'Instantly purchase for the listed price',
+              isOwner ? 'You are the seller' : 'Instant purchase',
               <Button
                 size="small"
                 variant="contained"
@@ -647,18 +645,11 @@ const ListingRow = ({
               </Button>
             )
           )}
-          {isOwner &&
-            tooltip(
-              'Edit beneficiary / agent',
-              <Button size="small" startIcon={<EditIcon />} onClick={handleUpdateExtra}>
-                Edit meta
-              </Button>
-            )}
         </TableCell>
       </TableRow>
 
-      {/* collapsible metadata + bids row */}
-      {canExpand && (
+      {/* collapsible bids + metadata */}
+      {(arrowEnabled || open) && (
         <TableRow>
           <TableCell sx={{ p: 0 }} colSpan={6}>
             <Collapse in={open} timeout="auto" unmountOnExit>
@@ -698,22 +689,37 @@ const ListingRow = ({
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {bidsSorted.map((bid, idx) => (
-                          <TableRow key={idx}>
+                        {bidsSorted.map((b, i) => (
+                          <TableRow key={i}>
                             <TableCell>
-                              {bid.bidder_id === accountId ? (
-                                <strong>{bid.bidder_id}</strong>
+                              {b.bidder_id === accountId ? (
+                                <strong>{b.bidder_id}</strong>
                               ) : (
-                                bid.bidder_id
+                                b.bidder_id
                               )}
                             </TableCell>
-                            <TableCell align="right">{yoctoToNear(bid.price)} Ⓝ</TableCell>
+                            <TableCell align="right">{yoctoToNear(b.price)} Ⓝ</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
                     </Table>
                   </>
                 )}
+
+                {canEditExtra &&
+                  tooltip(
+                    'Edit beneficiary / agent',
+                    <Box sx={{ mt: 2 }}>
+                      <Button
+                        size="small"
+                        startIcon={<EditIcon />}
+                        variant="outlined"
+                        onClick={handleUpdateExtra}
+                      >
+                        Edit meta
+                      </Button>
+                    </Box>
+                  )}
               </Box>
             </Collapse>
           </TableCell>
@@ -800,7 +806,7 @@ const Home: NextPage = () => {
             <Table sx={{ mt: 2, minWidth: 650 }} size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell width={24} /> {/* arrow column */}
+                  <TableCell width={24} />
                   <TableCell>Title</TableCell>
                   <TableCell>Seller / Owner</TableCell>
                   <TableCell align="right">Price</TableCell>
