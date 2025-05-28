@@ -44,7 +44,7 @@ const STORAGE_FOR_SALE = 8_590_000_000_000_000_000_000n // 0.00859 Ⓝ
 
 const yoctoToNear = (y: string | number | bigint) => utils.format.formatNearAmount(y.toString(), 2)
 const nearToYocto = (n: string) => utils.format.parseNearAmount(n) || '0'
-const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms→ns
+const nowNs = () => BigInt(Date.now()) * 1_000_000n // ms → ns
 
 const formatLeft = (endNs: bigint): string => {
   const msLeft = Number(endNs - nowNs()) / 1e6
@@ -273,6 +273,18 @@ const ListingRow = ({
   const imgSrc = meta.media ?? meta.reference ?? 'https://placehold.co/80x80?text=No+Image'
   const [open, setOpen] = useState(false)
 
+  /* ──────── extra-metadata parsing ──────── */
+  let extra: Record<string, any> | null = null
+  try {
+    if (typeof meta.extra === 'string') extra = JSON.parse(meta.extra)
+    else if (meta.extra) extra = meta.extra
+  } catch {
+    extra = null
+  }
+  const beneficiary = extra?.beneficiary_account_id
+  const agentId = extra?.agent_id
+  const hasExtra = !!beneficiary || !!agentId
+
   /* ─────────────────── UNLISTED ─────────────────── */
   if (!listing) {
     const isOwner = accountId === token.owner_id
@@ -304,53 +316,88 @@ const ListingRow = ({
     }
 
     return (
-      <TableRow hover>
-        {/* arrow column (disabled) */}
-        <TableCell sx={{ width: 24 }}>
-          <IconButton size="small" disabled>
-            <KeyboardArrowDownIcon />
-          </IconButton>
-        </TableCell>
+      <>
+        <TableRow hover>
+          {/* arrow column */}
+          <TableCell sx={{ width: 24 }}>
+            <IconButton size="small" disabled={!hasExtra} onClick={() => setOpen(!open)}>
+              {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+            </IconButton>
+          </TableCell>
 
-        {/* title */}
-        <TableCell>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <CardMedia
-              component="img"
-              image={imgSrc}
-              alt={meta.title || token.token_id}
-              sx={{ width: 40, height: 40, borderRadius: 1 }}
-            />
-            {meta.title ?? token.token_id}
-          </Box>
-        </TableCell>
+          {/* title */}
+          <TableCell>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <CardMedia
+                component="img"
+                image={imgSrc}
+                alt={meta.title || token.token_id}
+                sx={{ width: 40, height: 40, borderRadius: 1 }}
+              />
+              {meta.title ?? token.token_id}
+            </Box>
+          </TableCell>
 
-        <TableCell>{token.owner_id}</TableCell>
-        <TableCell align="right">—</TableCell>
-        <TableCell align="right">
-          {isOwner && (
-            <>
-              {tooltip(
-                'Create fixed-price sale',
-                <Button
-                  size="small"
-                  variant="contained"
-                  startIcon={<AddShoppingCartIcon />}
-                  onClick={() => handleListSale(false)}
-                >
-                  List for sale
-                </Button>
-              )}{' '}
-              {tooltip(
-                'Create timed auction',
-                <Button size="small" startIcon={<GavelIcon />} onClick={() => handleListSale(true)}>
-                  List auction
-                </Button>
-              )}
-            </>
-          )}
-        </TableCell>
-      </TableRow>
+          <TableCell>{token.owner_id}</TableCell>
+          <TableCell align="right">—</TableCell>
+          <TableCell align="right">
+            {isOwner && (
+              <>
+                {tooltip(
+                  'Create fixed-price sale',
+                  <Button
+                    size="small"
+                    variant="contained"
+                    startIcon={<AddShoppingCartIcon />}
+                    onClick={() => handleListSale(false)}
+                  >
+                    List for sale
+                  </Button>
+                )}{' '}
+                {tooltip(
+                  'Create timed auction',
+                  <Button
+                    size="small"
+                    startIcon={<GavelIcon />}
+                    onClick={() => handleListSale(true)}
+                  >
+                    List auction
+                  </Button>
+                )}
+              </>
+            )}
+          </TableCell>
+        </TableRow>
+
+        {/* collapsible metadata row */}
+        {hasExtra && (
+          <TableRow>
+            <TableCell sx={{ p: 0 }} colSpan={6}>
+              <Collapse in={open} timeout="auto" unmountOnExit>
+                <Box sx={{ m: 1 }}>
+                  <Typography variant="subtitle2">NFT Metadata</Typography>
+                  <Table size="small">
+                    <TableBody>
+                      {beneficiary && (
+                        <TableRow>
+                          <TableCell>Beneficiary</TableCell>
+                          <TableCell>{beneficiary}</TableCell>
+                        </TableRow>
+                      )}
+                      {agentId && (
+                        <TableRow>
+                          <TableCell>Agent&nbsp;ID</TableCell>
+                          <TableCell>{agentId}</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </Box>
+              </Collapse>
+            </TableCell>
+          </TableRow>
+        )}
+      </>
     )
   }
 
@@ -363,6 +410,9 @@ const ListingRow = ({
   const bidsSorted = listing.bids
     ? [...listing.bids].sort((a, b) => (BigInt(a.price) - BigInt(b.price) > 0 ? 1 : -1))
     : []
+
+  const hasBids = isAuction && !!listing.bids?.length
+  const canExpand = hasExtra || hasBids
 
   /* actions */
   const handleBuy = async () => {
@@ -434,11 +484,7 @@ const ListingRow = ({
       <TableRow hover selected={isOwner}>
         {/* arrow column */}
         <TableCell sx={{ width: 24 }}>
-          <IconButton
-            size="small"
-            disabled={!isAuction || !listing.bids?.length}
-            onClick={() => setOpen(!open)}
-          >
+          <IconButton size="small" disabled={!canExpand} onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
@@ -539,34 +585,63 @@ const ListingRow = ({
         </TableCell>
       </TableRow>
 
-      {/* collapsible bids row */}
-      {isAuction && listing.bids?.length && (
+      {/* collapsible metadata + bids row */}
+      {canExpand && (
         <TableRow>
           <TableCell sx={{ p: 0 }} colSpan={6}>
             <Collapse in={open} timeout="auto" unmountOnExit>
               <Box sx={{ m: 1 }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell width="70%">Bidder</TableCell>
-                      <TableCell align="right">Bid (Ⓝ)</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {bidsSorted.map((bid, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell>
-                          {bid.bidder_id === accountId ? (
-                            <strong>{bid.bidder_id}</strong>
-                          ) : (
-                            bid.bidder_id
-                          )}
-                        </TableCell>
-                        <TableCell align="right">{yoctoToNear(bid.price)} Ⓝ</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                {hasExtra && (
+                  <>
+                    <Typography variant="subtitle2">NFT Metadata</Typography>
+                    <Table size="small">
+                      <TableBody>
+                        {beneficiary && (
+                          <TableRow>
+                            <TableCell>Beneficiary</TableCell>
+                            <TableCell>{beneficiary}</TableCell>
+                          </TableRow>
+                        )}
+                        {agentId && (
+                          <TableRow>
+                            <TableCell>Agent&nbsp;ID</TableCell>
+                            <TableCell>{agentId}</TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </>
+                )}
+
+                {hasExtra && hasBids && <Box sx={{ height: 16 }} />}
+
+                {hasBids && (
+                  <>
+                    <Typography variant="subtitle2">Bids</Typography>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell width="70%">Bidder</TableCell>
+                          <TableCell align="right">Bid&nbsp;(Ⓝ)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {bidsSorted.map((bid, idx) => (
+                          <TableRow key={idx}>
+                            <TableCell>
+                              {bid.bidder_id === accountId ? (
+                                <strong>{bid.bidder_id}</strong>
+                              ) : (
+                                bid.bidder_id
+                              )}
+                            </TableCell>
+                            <TableCell align="right">{yoctoToNear(bid.price)} Ⓝ</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </>
+                )}
               </Box>
             </Collapse>
           </TableCell>
