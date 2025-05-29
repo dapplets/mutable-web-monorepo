@@ -188,15 +188,15 @@ CREATE TABLE "default".capability (
     title character varying,
     description character varying,
     stars integer DEFAULT 0 NOT NULL,
-    token_id character varying
+    token_id character varying,
+    id uuid DEFAULT gen_random_uuid() NOT NULL
 );
 
 CREATE TABLE "default".user_capability (
     username character varying NOT NULL,
     is_enabled boolean DEFAULT true NOT NULL,
     is_deleted boolean DEFAULT false NOT NULL,
-    capability_domain character varying NOT NULL,
-    capability_name character varying NOT NULL
+    capability_id uuid NOT NULL
 );
 
 CREATE TABLE "default".warning (
@@ -274,19 +274,17 @@ ALTER TABLE ONLY "near-ai".available
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY "default".capability
-    ADD CONSTRAINT capability_unique UNIQUE (domain, name);
+ALTER TABLE ONLY "default".capability 
+    ADD CONSTRAINT capability_pk PRIMARY KEY (id);
 
 ALTER TABLE ONLY "default".user_capability
-    ADD CONSTRAINT user_capability_unique UNIQUE (username, capability_domain, capability_name);
+    ADD CONSTRAINT user_capability_unique UNIQUE (username, capability_id);
 
 ALTER TABLE ONLY "default".warning
     ADD CONSTRAINT warning_pk PRIMARY KEY (id);
 
 ALTER TABLE ONLY "default".transfer
     ADD CONSTRAINT reward_transaction_pk PRIMARY KEY (id);
-
-CREATE UNIQUE INDEX capability_domain_idx ON "default".capability USING btree (domain, name);
 
 CREATE TABLE "default".context_node (
     namespace character varying NOT NULL,
