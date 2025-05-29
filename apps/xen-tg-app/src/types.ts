@@ -28,6 +28,7 @@ export type Balance = {
 }
 
 export type TAgent = {
+  id: string
   name: string
   domain: string
   title: string | null

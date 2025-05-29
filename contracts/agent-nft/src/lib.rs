@@ -23,8 +23,9 @@ use near_contract_standards::non_fungible_token::enumeration::NonFungibleTokenEn
 use near_contract_standards::non_fungible_token::metadata::{
     NFTContractMetadata, NonFungibleTokenMetadataProvider, TokenMetadata, NFT_METADATA_SPEC,
 };
-use near_contract_standards::non_fungible_token::NonFungibleToken;
-use near_contract_standards::non_fungible_token::{Token, TokenId};
+use near_contract_standards::non_fungible_token::{
+    refund_deposit, NonFungibleToken, Token, TokenId,
+};
 use near_sdk::collections::LazyOption;
 use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
@@ -116,6 +117,44 @@ impl Contract {
         );
         self.tokens
             .internal_mint(token_id, token_owner_id, Some(token_metadata))
+    }
+
+    /// Update the `extra` field of a token's metadata. Only the current owner can call this.
+    ///
+    /// Storage cost rules:
+    /// * If the new `extra` value takes more storage than the old one, the caller must attach
+    ///   enough deposit to cover the difference. Any excess deposit is refunded.
+    /// * If the new value releases storage (e.g., by shortening `extra` or setting it to `None`),
+    ///   the caller receives a refund that includes both the released storage cost and whatever
+    ///   yoctoⓃ they attached.
+    #[payable]
+    pub fn nft_update_extra(&mut self, token_id: TokenId, extra: Option<String>) {
+        let caller = env::predecessor_account_id();
+        let owner_id = self
+            .tokens
+            .owner_by_id
+            .get(&token_id)
+            .expect("Token not found");
+        require!(
+            caller == owner_id,
+            "Only the token owner can update metadata"
+        );
+
+        let metadata_store = self
+            .tokens
+            .token_metadata_by_id
+            .as_mut()
+            .expect("Metadata extension not enabled");
+
+        let initial_storage = env::storage_usage();
+
+        let mut metadata = metadata_store
+            .get(&token_id)
+            .expect("Metadata record missing");
+        metadata.extra = extra;
+        metadata_store.insert(&token_id, &metadata);
+
+        refund_deposit(env::storage_usage() - initial_storage);
     }
 
     // WARNING! We are not using royalties, but want to be compatible with existing marketplaces
@@ -303,6 +342,7 @@ mod tests {
     const ONE_YOCTONEAR: NearToken = NearToken::from_yoctonear(1);
     const MINT_STORAGE_COST: NearToken = NearToken::from_yoctonear(5870000000000000000000);
     const APPROVE_STORAGE_COST: NearToken = NearToken::from_yoctonear(150000000000000000000);
+    const UPDATE_STORAGE_COST: NearToken = NearToken::from_yoctonear(200000000000000000000);
 
     fn get_context(predecessor_account_id: AccountId) -> VMContextBuilder {
         let mut builder = VMContextBuilder::new();
@@ -509,5 +549,43 @@ mod tests {
             .attached_deposit(ZERO_NEAR)
             .build());
         assert!(!contract.nft_is_approved(token_id.clone(), accounts(1), Some(1)));
+    }
+
+    #[test]
+    fn test_update_extra() {
+        let mut context = get_context(accounts(0));
+        testing_env!(context.build());
+        let mut contract = Contract::new_default_meta(accounts(0).into());
+
+        // mint token
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(MINT_STORAGE_COST)
+            .predecessor_account_id(accounts(0))
+            .build());
+        let token_id = "0".to_string();
+        contract.nft_mint(token_id.clone(), accounts(0), sample_token_metadata());
+
+        // update extra
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .attached_deposit(UPDATE_STORAGE_COST)
+            .predecessor_account_id(accounts(0))
+            .build());
+        let new_extra = Some("New extra data".into());
+        contract.nft_update_extra(token_id.clone(), new_extra.clone());
+
+        // view to verify
+        testing_env!(context
+            .storage_usage(env::storage_usage())
+            .account_balance(env::account_balance())
+            .is_view(true)
+            .attached_deposit(ZERO_NEAR)
+            .build());
+        if let Some(token) = contract.nft_token(token_id.clone()) {
+            assert_eq!(token.metadata.unwrap().extra, new_extra);
+        } else {
+            panic!("token not found after metadata update");
+        }
     }
 }

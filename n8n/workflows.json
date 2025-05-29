@@ -24236,5 +24236,6172 @@
     "triggerCount": 1,
     "updatedAt": "2025-05-22T14:06:43.000Z",
     "versionId": "3b105931-ad0b-47bb-9805-83ea7a046cd7"
+  },
+  {
+    "active": false,
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Add memories to user": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aggregate Personal Memories": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Add memories to user",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create and add links": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Postgres: Save messages metadata",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create message": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send message to Telegram",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Delete technical messages": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "Filter relevant": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge 2: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create message",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter relevant",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get all the subscriptions to check for all users": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get last messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get technical ones",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get memories about the user": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate Personal Memories",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get messages from Telegram channel/group": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get technical ones": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Delete technical messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get users with enabled News Monitor": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get all the subscriptions to check for all users",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get messages from Telegram channel/group",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Get memories about the user",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Items1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Split out messages",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge 2: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model2": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Postgres Chat Memory1": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_memory"
+            }
+          ]
+        ]
+      },
+      "Send message to Telegram": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get last messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Show activity in the chat": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "Speaker": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split out messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create and add links",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser1": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Telegam 1h": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-05-23T06:30:11.527Z",
+    "id": "y5tlTO46DcSontPy",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "telegram-monitor",
+    "nodes": [
+      {
+        "id": "d8ca1555-cdb9-4b99-b074-bdb86458ab03",
+        "name": "Merge3",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          -1120,
+          1200
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "f5873f91-4e32-4d9e-adb7-116e662747bd",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "3f3dc994-51fc-4c27-94cb-c36ac651152c",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -3800,
+          1400
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "3f3dc994-51fc-4c27-94cb-c36ac651152c"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "8d22d7e8-cd3b-4b03-8209-997e3842bd85",
+        "name": "Postgres Chat Memory1",
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Loop Over Items1').item.json.userid }}",
+          "tableName": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+        },
+        "position": [
+          -60,
+          1500
+        ],
+        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "8faf9e01-ec4b-4aff-89a4-365ffda5431f",
+        "name": "Speaker",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. **Be very brief. Always include links without changes.**\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\n{{ $json.text }}\nid: {{ $json.id }}"
+        },
+        "position": [
+          -120,
+          1300
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "6a0e2f33-3f68-4026-b938-35aa83286893",
+        "name": "OpenAI Chat Model1",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -220,
+          1500
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "9914a63c-59e8-4e3a-b970-add369a01e28",
+        "name": "Telegam 1h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 2
+              }
+            ]
+          }
+        },
+        "position": [
+          -3800,
+          1180
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "fb16929a-ee95-4a74-bcba-964cdfd45a9a",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          -3800,
+          960
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "a77a9f61-0510-49ea-b860-a69d1500e87f",
+        "maxTries": 5,
+        "name": "AI Agent",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You're always getting news with id. Your only task is to understand whether this news will be useful and interesting for the user or should be ignored. You must answer true or false and pass id without changes.\n\nYou make your decision only based on user knowledge and common sense - the user doesn't want to receive too many meaningless notifications.\n\n## Your knowledge of the user:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=id: {{ $json.id }}\n{{ $json.text }}"
+        },
+        "position": [
+          -1540,
+          1220
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "waitBetweenTries": 3000
+      },
+      {
+        "id": "9200a6bc-1fed-4fc5-9bee-9668046500f8",
+        "name": "Structured Output Parser1",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"number\",\n      \"description\": \"unchanged id\"\n    },\n    \"relevant\": {\n      \"type\": \"boolean\",\n      \"description\": \"is new relevant?\"\n    }\n  },\n  \"required\": [\n    \"id\",\n    \"relevant\"\n  ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          -1380,
+          1640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "5b7c50e3-5b15-4bc3-ae39-763a251a3275",
+        "name": "OpenAI Chat Model2",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1640,
+          1540
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "73f00791-1736-4cbf-8746-443adb40f589",
+        "name": "Postgres: Save messages metadata",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pubdate",
+                "id": "pubdate",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "delivered",
+                "id": "delivered",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "identifier",
+                "id": "identifier",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "delivered": "={{ $now.toISO() }}",
+              "identifier": "={{ $json.id }}",
+              "pubdate": "={{ $json.date }}",
+              "userid": "={{ $('Get all the subscriptions to check for all users').item.json.username }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "delivered",
+            "mode": "list",
+            "value": "delivered"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "telegram",
+            "mode": "list",
+            "value": "telegram"
+          }
+        },
+        "position": [
+          -1480,
+          1040
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "ed5d725f-8455-4ee8-a1dd-84b99601143f",
+        "name": "Filter relevant",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "b3b4aa19-77ab-4ab4-a996-c2c599bc1d87",
+                "leftValue": "={{ $json.relevant }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": "true"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -740,
+          1200
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "bdb9d501-2136-4b4d-9865-1d03d9d60fb7",
+        "name": "Fix merge: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6b089568-62eb-45ac-9f54-4a14998f55a6",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "93bce667-352c-488c-b117-602767f6abeb",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "673aac4a-bfa2-4cbd-b652-ff388427ca88",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "7ec30b28-c3cb-4ea0-9670-b2d64b463379",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "46704d02-c1ed-447d-be65-640bd52adf9a",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "844ffdf6-a122-443f-9cf0-47aa3fa26536",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.output.relevant }}"
+              },
+              {
+                "id": "5eb3a087-e569-4bbb-bf8f-d4f5a56406bb",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "679e4c0f-70a7-4f48-aaf9-05350b0e5fa8",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "0d4d15e2-96fc-43e4-847a-80e8173c67ff",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -920,
+          1200
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "c82b09c2-36d1-4687-b47d-0d26fd004099",
+        "name": "Get users with enabled News Monitor",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc on uc.username = u.username\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and uc.capability_domain = 'core'\n  and uc.capability_name = 'news-monitor'"
+        },
+        "position": [
+          -3580,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": true,
+        "id": "dd89f88d-b161-42f8-a206-03de29c58a9a",
+        "name": "Get memories about the user",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "select",
+          "options": {
+            "queryBatching": "independently"
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "personal-data",
+            "mode": "list",
+            "value": "personal-data"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $json.username }}"
+          }
+        },
+        "position": [
+          -2940,
+          1300
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "392da1b3-d744-404a-990f-1db625968681",
+        "name": "Aggregate Personal Memories",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "append",
+                "field": "data"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -2680,
+          1300
+        ],
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "76ee513a-9886-43c9-8ee0-7423433445b9",
+        "name": "Create and add links",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "e2f0f695-2a7d-4416-851e-7a9fa30cee32",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.sourceType === 'group' ? '' : `https://t.me/${$json.privateChannel === true ? $json.sourceId.slice(4) : $json.sourceName}/${$json.id}` }}"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "options": {
+          }
+        },
+        "position": [
+          -1760,
+          1120
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "3f136466-9b90-491c-a9b4-2eb8a9021f15",
+        "name": "Merge",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          280,
+          1180
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "0c233c5a-4720-42d2-91b3-468f2e170f0e",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"id\": {\n\t\t\t\"type\": \"number\",\n            \"description\": \"unchanged id\"\n\t\t},\n\t\t\"output\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          140,
+          1500
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "3aa56aaa-b40a-488a-b972-0faef2cf08c5",
+        "name": "Fix merge 2: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cb597d08-c8de-49c0-862b-9ad39d59aa92",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "34648597-c003-4805-8c9f-18ae6ca02427",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "992c0f0d-585f-4bb7-b948-281fe9e91f09",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "fca0388c-6cce-4a97-9a72-b270e612f837",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "e6e0dc1c-ad2a-4a52-99a1-4b374f43fc70",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "702353e7-60f5-4efa-974a-e80753f26096",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.relevant }}"
+              },
+              {
+                "id": "b91ca77c-da0f-456c-b052-32d6eef3227e",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "79a7a5e0-2472-4d60-8c37-0bf2f50c52cc",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "965a57d3-be10-407d-a259-7a64cd1278f4",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              },
+              {
+                "id": "44c82ac7-e349-4f9a-a799-b609fce0310f",
+                "name": "speakerText",
+                "type": "string",
+                "value": "={{ $json.output.output }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          480,
+          1180
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "e4831d43-a9f1-4abb-b46e-1aea36715d56",
+        "name": "Create message",
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.message = item.json.speakerText + '\\n\\nSource: ' + `[${item.json.source}](${item.json.link})`\n}\n\nreturn $input.all();"
+        },
+        "position": [
+          680,
+          1180
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "26da8e20-2e19-4de4-aee5-f49ab20684f0",
+        "name": "Send message to Telegram",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Loop Over Items1').item.json.userid }}",
+          "text": "={{ $json.message }}"
+        },
+        "position": [
+          880,
+          1180
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "f74e3c9b-f71d-41cc-be12-b3ed6148a730"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "e804e507-a1b9-40a0-882d-c5860690bb73",
+        "name": "Get last messages",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          1080,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "82421724-e708-4309-9bbd-994457231638",
+        "name": "Get technical ones",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f406eacc-38ac-491a-905a-21896fcb7911",
+                "leftValue": "={{ $json.message.content }}",
+                "operator": {
+                  "operation": "startsWith",
+                  "type": "string"
+                },
+                "rightValue": "This message is not from user"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1260,
+          1180
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "929a6ce4-f6ad-4510-ab2c-ff0bb5817ceb",
+        "name": "Delete technical messages",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          1460,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "acd0e32b-076f-4738-951e-aef1f063560b",
+        "name": "Show activity in the chat",
+        "parameters": {
+          "chatId": "={{ $('Loop Over Items1').item.json.userid }}",
+          "operation": "sendChatAction"
+        },
+        "position": [
+          -40,
+          1040
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "9f5572e9-e709-4dec-94bc-c2d934e935ea"
+      },
+      {
+        "credentials": {
+          "telegramUserCredentialsApi": {
+            "id": "bcU1EzHyC8bnTWO7",
+            "name": "Telegram User Credentials account"
+          }
+        },
+        "executeOnce": false,
+        "id": "44410597-3d95-4b6c-9dae-4dd7f6d69ab4",
+        "name": "Get messages from Telegram channel/group",
+        "parameters": {
+          "channelName": "={{ $json.link }}"
+        },
+        "position": [
+          -2620,
+          1040
+        ],
+        "type": "@dapplets/n8n-nodes-telegram-user.telegramUser",
+        "typeVersion": 4
+      },
+      {
+        "id": "8d09de61-ac66-4155-a2e2-8086c2c9da00",
+        "name": "Loop Over Items",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          -3160,
+          1180
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "id": "f8e83d03-deaa-4c2d-a2c5-cb18dd60a8f1",
+        "name": "Add memories to user",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a513ad31-7040-4f69-a820-76bbd3ef8c93",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $('Loop Over Items').item.json.id }}"
+              },
+              {
+                "id": "96e8242f-1f48-4f03-9a74-093a4cdd4356",
+                "name": "username",
+                "type": "string",
+                "value": "={{ $('Loop Over Items').item.json.username }}"
+              },
+              {
+                "id": "48a4b4d3-5d0c-4637-8b7b-ce2ff43f8990",
+                "name": "userid",
+                "type": "string",
+                "value": "={{ $('Loop Over Items').item.json.userid }}"
+              },
+              {
+                "id": "e2f397e6-3f71-4e3c-bf25-7df0e71cc682",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $('Loop Over Items').item.json.source }}"
+              },
+              {
+                "id": "b7113ada-f111-4549-954b-5c0cc512759b",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $('Loop Over Items').item.json.link }}"
+              },
+              {
+                "id": "5283ef92-36ad-451d-9385-c73930e71d2e",
+                "name": "memories",
+                "type": "array",
+                "value": "={{ $json.appended_data }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -2440,
+          1300
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "de6d8780-1acb-41d0-836c-d401a71f4239",
+        "name": "Split out messages",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "options": {
+          }
+        },
+        "position": [
+          -1980,
+          1120
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "38b40eb3-d26a-4144-b95c-1a8f2ea69ce1",
+        "name": "Get all the subscriptions to check for all users",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "is-active",
+                "value": "true"
+              },
+              {
+                "column": "source",
+                "value": "telegram"
+              },
+              {
+                "column": "userid",
+                "value": "={{ $('Get users with enabled News Monitor').item.json.id.toString() }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          -3380,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "f6a301f1-9e00-4434-ad1c-76d8b6cb4f93",
+        "name": "Loop Over Items1",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          -2160,
+          920
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "id": "98cf9a04-6d92-485d-a5a5-9b750867730b",
+        "name": "Edit Fields",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          -1760,
+          900
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "ec50b6b1-3882-4817-822f-389d0a9e0d4d",
+        "name": "Merge1",
+        "parameters": {
+        },
+        "position": [
+          -540,
+          1140
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "callerPolicy": "workflowsFromSameOwner",
+      "errorWorkflow": "ATeafIxZxFrZ0jIR",
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:Reddits 1h": {
+        "recurrenceRules": [
+        ]
+      },
+      "node:Telegam 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 2,
+    "updatedAt": "2025-05-27T06:27:08.000Z",
+    "versionId": "52dd457f-5d62-4376-8444-b4b9e7bc1c8f"
+  },
+  {
+    "active": true,
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aggregate Personal Memories": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get messages from the Telegram channel/group",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create and add links": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres: Save messages metadata",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge3",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create message": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send message to Telegram",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Delete technical messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter relevant": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge 2: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create message",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter relevant",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get all the subscriptions to check for  all users": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get last messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get technical ones",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get memories about the user": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate Personal Memories",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get messages from the Telegram channel/group": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split out messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get technical ones": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Delete technical messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get users with enabled News Monitor": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get all the subscriptions to check for  all users",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Show activity in the chat",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Wait",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create and add links",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Wait",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Items1": {
+        "main": [
+          [
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Get memories about the user",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge 2: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model2": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Postgres Chat Memory1": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_memory"
+            }
+          ]
+        ]
+      },
+      "Send message to Telegram": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get last messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Show activity in the chat": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "Speaker": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split out messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser1": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Telegam 1h": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-05-26T16:50:18.988Z",
+    "id": "GrGun78iK6yhbLee",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "telegram-monitor 2",
+    "nodes": [
+      {
+        "id": "fe79d24d-cbce-4bb5-903d-0866aa531a44",
+        "name": "Merge3",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          -1260,
+          1180
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "672050e0-8dc4-452f-8c73-9d31f9e669f2",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "05c432c9-9074-47e6-9af7-69275fe236bc",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -3800,
+          1400
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "05c432c9-9074-47e6-9af7-69275fe236bc"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "570379ff-53ad-4493-9798-f371f49a8c6e",
+        "name": "Postgres Chat Memory1",
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Loop Over Items1').item.json.userid }}",
+          "tableName": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+        },
+        "position": [
+          -260,
+          1480
+        ],
+        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "80802c90-be37-448f-8d75-2ddef12f265f",
+        "name": "Speaker",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. **Be very brief. Always include links without changes.**\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\nmessage: {{ $json.text }}\nid: {{ $json.id }}"
+        },
+        "position": [
+          -340,
+          1280
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "52e33c82-3640-4e8f-9113-ae79f6b1d97a",
+        "name": "OpenAI Chat Model1",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -380,
+          1480
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "634ef313-9171-4c94-8c12-7077d5271f1c",
+        "name": "Telegam 1h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 2
+              }
+            ]
+          }
+        },
+        "position": [
+          -3800,
+          1180
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "6d0becd7-4142-4bb6-8a1b-b7f7703eb841",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          -3800,
+          960
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "21038c68-7282-4510-9d07-5336ac99d197",
+        "maxTries": 5,
+        "name": "AI Agent",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You're always getting news with id. Your only task is to understand whether this news will be useful and interesting for the user or should be ignored. You must answer true or false and pass id without changes.\n\nYou make your decision only based on user knowledge and common sense - the user doesn't want to receive too many meaningless notifications.\n\n## Your knowledge of the user:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=id: {{ $json.id }}\n{{ $json.text }}"
+        },
+        "position": [
+          -1640,
+          1280
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "waitBetweenTries": 3000
+      },
+      {
+        "id": "d2ebab33-54f8-456a-a56d-9fd5d197f3c5",
+        "name": "Structured Output Parser1",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"number\",\n      \"description\": \"unchanged id\"\n    },\n    \"relevant\": {\n      \"type\": \"boolean\",\n      \"description\": \"is new relevant?\"\n    }\n  },\n  \"required\": [\n    \"id\",\n    \"relevant\"\n  ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          -1460,
+          1460
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "4f3f01dd-89f2-436b-81f1-758f3ccdde30",
+        "name": "OpenAI Chat Model2",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1640,
+          1460
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "41d8e969-6730-4de3-b51e-433b9e9974ee",
+        "name": "Postgres: Save messages metadata",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pubdate",
+                "id": "pubdate",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "delivered",
+                "id": "delivered",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "identifier",
+                "id": "identifier",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "delivered": "={{ $now.toISO() }}",
+              "identifier": "={{ $json.id }}",
+              "pubdate": "={{ $json.date }}",
+              "userid": "={{ $('Get all the subscriptions to check for  all users').item.json.username }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "delivered",
+            "mode": "list",
+            "value": "delivered"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "telegram",
+            "mode": "list",
+            "value": "telegram"
+          }
+        },
+        "position": [
+          -1580,
+          1040
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "80075b46-0a72-4ba0-b94a-39007fec1fdc",
+        "name": "Filter relevant",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "b3b4aa19-77ab-4ab4-a996-c2c599bc1d87",
+                "leftValue": "={{ $json.relevant }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": "true"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -820,
+          1180
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "ba799d8f-d357-4386-a545-c196b3bae0e4",
+        "name": "Fix merge: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6b089568-62eb-45ac-9f54-4a14998f55a6",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "93bce667-352c-488c-b117-602767f6abeb",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "673aac4a-bfa2-4cbd-b652-ff388427ca88",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "7ec30b28-c3cb-4ea0-9670-b2d64b463379",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "46704d02-c1ed-447d-be65-640bd52adf9a",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "844ffdf6-a122-443f-9cf0-47aa3fa26536",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.output.relevant }}"
+              },
+              {
+                "id": "5eb3a087-e569-4bbb-bf8f-d4f5a56406bb",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "679e4c0f-70a7-4f48-aaf9-05350b0e5fa8",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "0d4d15e2-96fc-43e4-847a-80e8173c67ff",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1040,
+          1180
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "9932347d-1133-419d-8549-352fca76e4fd",
+        "name": "Get users with enabled News Monitor",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc on uc.username = u.username\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and uc.capability_domain = 'core'\n  and uc.capability_name = 'news-monitor'"
+        },
+        "position": [
+          -3580,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "740a9694-c4d8-4108-9545-6966bd975ee6",
+        "name": "Get all the subscriptions to check for  all users",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "is-active",
+                "value": "true"
+              },
+              {
+                "column": "source",
+                "value": "telegram"
+              },
+              {
+                "column": "userid",
+                "value": "={{ $('Get users with enabled News Monitor').item.json.id.toString() }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          -3380,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": true,
+        "id": "5a812692-acdc-4085-96e4-e5ddfce3a521",
+        "name": "Get memories about the user",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "personal-data",
+            "mode": "list",
+            "value": "personal-data"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $json.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          -2900,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "110fb40e-e22a-4ca2-8eab-81281212efe0",
+        "name": "Aggregate Personal Memories",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "append",
+                "field": "data"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -2680,
+          1180
+        ],
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "telegramUserCredentialsApi": {
+            "id": "bcU1EzHyC8bnTWO7",
+            "name": "Telegram User Credentials account"
+          }
+        },
+        "executeOnce": false,
+        "id": "01f7b4d7-cfb5-4b2a-b05e-ef459b67b42c",
+        "name": "Get messages from the Telegram channel/group",
+        "parameters": {
+          "channelName": "={{ $('Loop Over Items1').item.json.link }}"
+        },
+        "position": [
+          -2480,
+          1180
+        ],
+        "retryOnFail": true,
+        "type": "@dapplets/n8n-nodes-telegram-user.telegramUser",
+        "typeVersion": 4,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "01500a10-d4c4-4225-9ea4-fc4727199082",
+        "name": "Create and add links",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "30325f34-3441-47a5-8059-0b5ffac405fd",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "54f08113-7e42-4519-9f5f-bdd820af5a00",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "292af94e-636c-4234-af3d-d9d7866d550e",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "3488cf0a-9fed-4e50-9be2-cfb7c6ae5fac",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "7e4ff0d5-119d-45b4-91c6-5f22912e452c",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              },
+              {
+                "id": "8a5f1371-a7c7-464d-a7ce-818c4a7de4e2",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "73ea1308-728d-48ef-9e8a-35b9b31e0f2c",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "0bc11052-e198-4ff5-bfcc-184d1747a3dd",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.sourceType === 'group' ? '' : `https://t.me/${$json.privateChannel === true ? $json.sourceId.slice(4) : $json.sourceName}/${$json.id}` }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1860,
+          1180
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "29975780-8fab-439c-bf0d-44f16ae5138e",
+        "name": "Merge",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          80,
+          1180
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "e6d92229-ce8e-4557-a81c-2258042abad5",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n    \"title\": \"Message with ID\",\n    \"description\": \"Structured output (message) with flat stucture with only two properties\",\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"id\": {\n\t\t\t\"type\": \"number\",\n            \"description\": \"unchanged id\"\n\t\t},\n\t\t\"message\": {\n\t\t\t\"type\": \"string\",\n            \"description\": \"result message for the user\"\n\t\t}\n\t},\n    \"required\": [\n      \"id\",\n      \"message\"\n    ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          -120,
+          1480
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "711e07ba-70a3-4735-a115-e8116086ec92",
+        "name": "Fix merge 2: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cb597d08-c8de-49c0-862b-9ad39d59aa92",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "34648597-c003-4805-8c9f-18ae6ca02427",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "992c0f0d-585f-4bb7-b948-281fe9e91f09",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "fca0388c-6cce-4a97-9a72-b270e612f837",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "e6e0dc1c-ad2a-4a52-99a1-4b374f43fc70",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "702353e7-60f5-4efa-974a-e80753f26096",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.relevant }}"
+              },
+              {
+                "id": "b91ca77c-da0f-456c-b052-32d6eef3227e",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "79a7a5e0-2472-4d60-8c37-0bf2f50c52cc",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "965a57d3-be10-407d-a259-7a64cd1278f4",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              },
+              {
+                "id": "44c82ac7-e349-4f9a-a799-b609fce0310f",
+                "name": "speakerText",
+                "type": "string",
+                "value": "={{ $json.output.message }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          300,
+          1180
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "9c2e5a42-0aff-4c32-9c98-72ac9d41ae74",
+        "name": "Create message",
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.message = item.json.speakerText + '\\n\\nSource: ' + `[${item.json.source}](${item.json.link})`\n}\n\nreturn $input.all();"
+        },
+        "position": [
+          520,
+          1180
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "b42194b0-c020-4a00-bc0d-46278b8ff428",
+        "name": "Send message to Telegram",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Loop Over Items1').item.json.userid }}",
+          "text": "={{ $json.message }}"
+        },
+        "position": [
+          740,
+          1180
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "2736d274-cd51-426b-9b0d-65c26ef75124"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "0d00b122-0f10-4d9e-9880-74f7257b90c5",
+        "name": "Get last messages",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          960,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "1ce2d1e5-7633-43dd-b177-84241e3d761e",
+        "name": "Get technical ones",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f406eacc-38ac-491a-905a-21896fcb7911",
+                "leftValue": "={{ $json.message.content }}",
+                "operator": {
+                  "operation": "startsWith",
+                  "type": "string"
+                },
+                "rightValue": "This message is not from user"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1180,
+          1180
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5ec0a25a-7ddd-4488-be3e-066d9df69b85",
+        "name": "Delete technical messages",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          1400,
+          1180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "cce482f8-991b-4328-8011-798c3efa6f0a",
+        "name": "Show activity in the chat",
+        "parameters": {
+          "chatId": "={{ $('Loop Over Items1').item.json.userid }}",
+          "operation": "sendChatAction"
+        },
+        "position": [
+          -260,
+          1040
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "84a1e031-4e4c-4120-b4a8-86899b7f558a"
+      },
+      {
+        "id": "f3d59935-08a3-4df2-a8be-4b51ec9df86d",
+        "name": "Loop Over Items1",
+        "parameters": {
+          "options": {
+            "reset": false
+          }
+        },
+        "position": [
+          -3140,
+          1180
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "12f73262-9635-456e-bf46-fd1c6dc46989",
+        "name": "Split out messages",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "options": {
+          }
+        },
+        "position": [
+          -2280,
+          1180
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "2d3f56b5-5b31-4811-a9a7-cf306e16d1c7",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "4fade0fb-3091-4c65-a63e-5ebed9ee8fdc",
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "number"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -600,
+          1180
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "26908d0e-c160-46f0-91a7-de9b19f7eca8",
+        "name": "If1",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "4fade0fb-3091-4c65-a63e-5ebed9ee8fdc",
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "number"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -2080,
+          1180
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "0d2c99b4-b927-45cd-abd8-9db121fca3fe",
+        "name": "Wait",
+        "parameters": {
+          "amount": "={{ Math.round(Math.random()*500)/100 }}"
+        },
+        "position": [
+          -3120,
+          1420
+        ],
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "webhookId": "b8d233d7-7cff-4657-a502-fd7802bcb490"
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "callerPolicy": "workflowsFromSameOwner",
+      "errorWorkflow": "ATeafIxZxFrZ0jIR",
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:Reddits 1h": {
+        "recurrenceRules": [
+        ]
+      },
+      "node:Telegam 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 2,
+    "updatedAt": "2025-05-27T13:16:36.000Z",
+    "versionId": "be5d9ca2-a031-45bc-a58e-9db1a9c52fdc"
+  },
+  {
+    "active": true,
+    "connections": {
+      "GetActiveSubscriptions": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Remove Duplicates",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GetPostsFromRSS": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "ParseXML",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "HtmlToText": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "SavePost",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "SaveContextEdge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "ParseXML": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "SaveSubreddit",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Reddits 1h": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetActiveSubscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetPostsFromRSS",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "SavePost": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "HtmlToText",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetActiveSubscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-05-27T13:01:33.997Z",
+    "id": "IazAN2fgMilcZfYS",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "reddit-grabber",
+    "nodes": [
+      {
+        "id": "0d5d99ad-51f6-4646-91a3-c744852873e1",
+        "name": "Reddits 1h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 2
+              }
+            ]
+          }
+        },
+        "position": [
+          -1640,
+          80
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "cb1aaf72-974e-4164-bc0c-e13a5ae646d6",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "scan-subscriptions/reddit",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -1640,
+          280
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
+      },
+      {
+        "id": "fa6e9ecc-7f8e-4f45-887a-6072ab2b3cc5",
+        "name": "HtmlToText",
+        "parameters": {
+          "jsCode": "/**\n * Decodes basic HTML entities in a string.\n * Converts numeric entities (e.g. &#32;) and a few named entities.\n *\n * @param {string} text - The string containing HTML entities.\n * @return {string} - The decoded string.\n */\nfunction decodeHTMLEntities(text) {\n  // Replace numeric entities\n  text = text.replace(/&#(\\d+);/g, (match, dec) => {\n    return String.fromCharCode(dec);\n  });\n  // Replace some common named entities\n  const entities = {\n    'amp': '&',\n    'lt': '<',\n    'gt': '>',\n    'quot': '\"',\n    'apos': \"'\",\n    'nbsp': ' '\n  };\n  return text.replace(/&([a-zA-Z]+);/g, (match, entity) => {\n    return entities[entity] || match;\n  });\n}\n\n/**\n * Cleans an HTML string by removing image tags and all HTML tags,\n * then decodes HTML entities to produce plain text.\n *\n * @param {string} html - The input HTML string.\n * @return {string} - The cleaned plain text.\n */\nfunction cleanHTML(html) {\n  // Remove <img> tags (ignoring case)\n  let withoutImages = html.replace(/<img[^>]*>/gi, '');\n  \n  // Remove all remaining HTML tags\n  let textOnly = withoutImages.replace(/<\\/?[^>]+(>|$)/g, '');\n  \n  // Decode HTML entities\n  textOnly = decodeHTMLEntities(textOnly);\n  \n  // Normalize whitespace and trim the text\n  return textOnly.replace(/\\s+/g, ' ').trim();\n}\n\n// Process each input item\nconst newItems = items.map(item => {\n  const inputHTML = item.json[\"feed.entry\"][\"content\"][\"_\"] || \"\";\n  const cleanedText = cleanHTML(inputHTML);\n  return { json: { ...item.json, cleanedText } };\n});\n\nreturn newItems;"
+        },
+        "position": [
+          -360,
+          60
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "d567a898-9f7c-4116-b19a-bfd7a65ba933",
+        "name": "GetActiveSubscriptions",
+        "parameters": {
+          "operation": "select",
+          "options": {
+            "outputColumns": [
+              "link"
+            ]
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "is-active",
+                "value": "true"
+              },
+              {
+                "column": "source",
+                "value": "reddit"
+              }
+            ]
+          }
+        },
+        "position": [
+          -1420,
+          180
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "b113d418-c725-4534-8812-c139b5407741",
+        "name": "GetPostsFromRSS",
+        "parameters": {
+          "options": {
+          },
+          "url": "=https://www.reddit.com/{{ $json.link }}.rss"
+        },
+        "position": [
+          -1020,
+          180
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "ecf5ed2a-d507-4af2-9a43-edd6f58976a2",
+        "name": "ParseXML",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          -820,
+          180
+        ],
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1
+      },
+      {
+        "id": "740c7150-8100-4fca-afb0-f3915135b5c9",
+        "name": "Split Out",
+        "parameters": {
+          "fieldToSplitOut": "feed.entry",
+          "fieldsToInclude": "feed.id, feed.title, feed.subtitle",
+          "include": "selectedOtherFields",
+          "options": {
+          }
+        },
+        "position": [
+          -580,
+          60
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5b9bd20c-c002-4d14-836f-5b0d559a96e7",
+        "name": "SaveContextEdge",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "from_context_namespace",
+              "from_context_type",
+              "from_context_id",
+              "to_context_namespace",
+              "to_context_type",
+              "to_context_id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "from_context_namespace",
+                "id": "from_context_namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "from_context_type",
+                "id": "from_context_type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "from_context_id",
+                "id": "from_context_id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "to_context_namespace",
+                "id": "to_context_namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "to_context_type",
+                "id": "to_context_type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "to_context_id",
+                "id": "to_context_id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "from_context_id": "={{ $json['feed.id'].replaceAll('/r/', '').replaceAll('.rss', '') }}",
+              "from_context_namespace": "reddit",
+              "from_context_type": "profile",
+              "to_context_id": "={{ $json['feed.entry'].id }}",
+              "to_context_namespace": "reddit",
+              "to_context_type": "post"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_edge",
+            "mode": "list",
+            "value": "context_edge"
+          }
+        },
+        "position": [
+          -140,
+          160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "f5c4240f-0215-45e0-b85c-ed44ceee0045",
+        "name": "SaveSubreddit",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "namespace",
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "namespace",
+                "id": "namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "content",
+                "id": "content",
+                "required": false,
+                "type": "object"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "timestamp",
+                "id": "timestamp",
+                "removed": true,
+                "required": false,
+                "type": "dateTime"
+              }
+            ],
+            "value": {
+              "content": "={{ \nJSON.stringify({\n  id: $json.feed.id.replaceAll('/r/', '').replaceAll('.rss', ''),\n  title: $json.feed.title,\n  subtitle: $json.feed.subtitle,\n  url: `https://www.reddit.com/r/${$json.feed.id.replaceAll('/r/', '').replaceAll('.rss', '')}`\n}) \n}}",
+              "id": "={{ $json.feed.id.replaceAll('/r/', '').replaceAll('.rss', '') }}",
+              "namespace": "reddit",
+              "type": "profile"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_node",
+            "mode": "list",
+            "value": "context_node"
+          }
+        },
+        "position": [
+          -580,
+          260
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "2ab5fbf2-fe97-4c05-9bae-2621f6919259",
+        "name": "SavePost",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "namespace",
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "namespace",
+                "id": "namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "content",
+                "id": "content",
+                "required": false,
+                "type": "object"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "timestamp",
+                "id": "timestamp",
+                "removed": true,
+                "required": false,
+                "type": "dateTime"
+              }
+            ],
+            "value": {
+              "content": "={{ \nJSON.stringify({\n  id: $json['feed.entry'].id,\n  title: $json['feed.entry'].title,\n  text: $json.cleanedText,\n  authorUsername: $json['feed.entry'].author.name.replaceAll('/u/', ''),\n  createdAt: $json['feed.entry'].published,\n  url: $json.link\n}) \n}}",
+              "id": "={{ $json['feed.entry'].id }}",
+              "namespace": "reddit",
+              "type": "post"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_node",
+            "mode": "list",
+            "value": "context_node"
+          }
+        },
+        "position": [
+          -140,
+          -40
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "710fc5c8-aad9-4c57-9f36-c4524252043f",
+        "name": "Remove Duplicates",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          -1220,
+          180
+        ],
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:Reddits 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 2,
+    "updatedAt": "2025-05-29T09:33:16.000Z",
+    "versionId": "e5f99e5a-0268-4daf-8352-5aba026d27ea"
+  },
+  {
+    "active": false,
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aggregate Personal Memories": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get messages from the Telegram channel/group",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create and add links": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Postgres: Save messages metadata",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge3",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create message": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send message to Telegram",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Delete technical messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Every 1h": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter relevant": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge 2: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create message",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter relevant",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get all the subscriptions to check for  all users": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get last messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get technical ones",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get memories about the user": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate Personal Memories",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get messages from the Telegram channel/group": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split out messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get technical ones": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Delete technical messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get users with enabled News Monitor": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get all the subscriptions to check for  all users",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GetPosts": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get memories about the user",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Show activity in the chat",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Wait",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create and add links",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Wait",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Items1": {
+        "main": [
+          [
+          ],
+          [
+            {
+              "index": 0,
+              "node": "GetPosts",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge 2: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge3": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model2": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Postgres Chat Memory1": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_memory"
+            }
+          ]
+        ]
+      },
+      "Send message to Telegram": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get last messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Speaker": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split out messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser1": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Items1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-05-27T14:40:58.574Z",
+    "id": "FcECYLjsmFdUSZNN",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "news-monitor",
+    "nodes": [
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "6c0fe492-fdd7-4dd9-81f6-9131aad8f0fa",
+        "name": "GetPosts",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ [ $json.source, $json.link ] }}"
+          },
+          "query": "select cn.*\nfrom \"default\".context_edge ce\njoin \"default\".context_node cn \n\ton cn.namespace = ce.to_context_namespace\n\tand cn.type = ce.to_context_type \n\tand cn.id = ce.to_context_id \nwhere\n\tce.from_context_namespace = $1\n\tand ce.from_context_type = 'profile'\n\tand ce.from_context_id = $2"
+        },
+        "position": [
+          -1900,
+          -1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "294cf464-ba4e-40c4-bd60-9f6f2033deeb",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "scan-subscriptions-2",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -2940,
+          -960
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
+      },
+      {
+        "id": "6d4bb40a-2996-412f-957b-dbf43e35ace4",
+        "name": "Every 1h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 2
+              }
+            ]
+          }
+        },
+        "position": [
+          -2940,
+          -1160
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "de256d66-22bc-40c7-9af1-09079f9f916e",
+        "name": "Merge3",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          20,
+          -1160
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "4f98d83b-e4d3-49af-a7a8-8b841be0cae9",
+        "name": "Postgres Chat Memory1",
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Loop Over Items1').item.json.userid }}",
+          "tableName": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+        },
+        "position": [
+          1020,
+          -860
+        ],
+        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "2bcbc965-8766-4c04-be27-5f7f9ac71014",
+        "name": "Speaker",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. **Be very brief. Always include links without changes.**\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\nmessage: {{ $json.text }}\nid: {{ $json.id }}"
+        },
+        "position": [
+          940,
+          -1060
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "8b0bb6be-7d20-4829-afaf-9541e11d24f4",
+        "name": "OpenAI Chat Model1",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          900,
+          -860
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "863f2422-72fa-46aa-ae63-3dd8e657f35f",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          -2940,
+          -1360
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "3130cc90-71bd-4e48-b6a1-3e78c5830c72",
+        "maxTries": 5,
+        "name": "AI Agent",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You're always getting news with id. Your only task is to understand whether this news will be useful and interesting for the user or should be ignored. You must answer true or false and pass id without changes.\n\nYou make your decision only based on user knowledge and common sense - the user doesn't want to receive too many meaningless notifications.\n\n## Your knowledge of the user:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=id: {{ $json.id }}\n{{ $json.text }}"
+        },
+        "position": [
+          -360,
+          -1060
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "waitBetweenTries": 3000
+      },
+      {
+        "id": "6ac9d159-4893-4ca7-954c-75cc6e577d01",
+        "name": "Structured Output Parser1",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"number\",\n      \"description\": \"unchanged id\"\n    },\n    \"relevant\": {\n      \"type\": \"boolean\",\n      \"description\": \"is new relevant?\"\n    }\n  },\n  \"required\": [\n    \"id\",\n    \"relevant\"\n  ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          -180,
+          -880
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "33c7bac4-63d8-42b6-8547-4188a3134279",
+        "name": "OpenAI Chat Model2",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -360,
+          -880
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "6c199df1-7019-4b9a-bcf2-11e35beb4d91",
+        "name": "Postgres: Save messages metadata",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pubdate",
+                "id": "pubdate",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "delivered",
+                "id": "delivered",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "identifier",
+                "id": "identifier",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "delivered": "={{ $now.toISO() }}",
+              "identifier": "={{ $json.id }}",
+              "pubdate": "={{ $json.date }}",
+              "userid": "={{ $('Get all the subscriptions to check for  all users').item.json.username }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "delivered",
+            "mode": "list",
+            "value": "delivered"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "telegram",
+            "mode": "list",
+            "value": "telegram"
+          }
+        },
+        "position": [
+          -300,
+          -1300
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "e92c1eb0-908a-405f-b554-7fd49422212b",
+        "name": "Filter relevant",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "b3b4aa19-77ab-4ab4-a996-c2c599bc1d87",
+                "leftValue": "={{ $json.relevant }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": "true"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          460,
+          -1160
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "4a0a1ade-13b7-4b1a-bb56-3ce2ba71e844",
+        "name": "Fix merge: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6b089568-62eb-45ac-9f54-4a14998f55a6",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "93bce667-352c-488c-b117-602767f6abeb",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "673aac4a-bfa2-4cbd-b652-ff388427ca88",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "7ec30b28-c3cb-4ea0-9670-b2d64b463379",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "46704d02-c1ed-447d-be65-640bd52adf9a",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "844ffdf6-a122-443f-9cf0-47aa3fa26536",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.output.relevant }}"
+              },
+              {
+                "id": "5eb3a087-e569-4bbb-bf8f-d4f5a56406bb",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "679e4c0f-70a7-4f48-aaf9-05350b0e5fa8",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "0d4d15e2-96fc-43e4-847a-80e8173c67ff",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          240,
+          -1160
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "7e4ebb08-1c6c-4942-ba45-2509b4fe2a46",
+        "name": "Get users with enabled News Monitor",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc on uc.username = u.username\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and uc.capability_domain = 'core'\n  and uc.capability_name = 'news-monitor'"
+        },
+        "position": [
+          -2720,
+          -1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "0c71a851-0b01-465a-8c3a-46327eeb732f",
+        "name": "Get all the subscriptions to check for  all users",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "is-active",
+                "value": "true"
+              },
+              {
+                "column": "userid",
+                "value": "={{ $('Get users with enabled News Monitor').item.json.id.toString() }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          -2480,
+          -1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": true,
+        "id": "565563ca-4620-4dc7-9163-bb1545958e3f",
+        "name": "Get memories about the user",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "personal-data",
+            "mode": "list",
+            "value": "personal-data"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username }}"
+          }
+        },
+        "position": [
+          -1640,
+          -1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "b2c6b971-95ad-434b-b828-969e20d91db6",
+        "name": "Aggregate Personal Memories",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "append",
+                "field": "data"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1400,
+          -1160
+        ],
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1
+      },
+      {
+        "credentials": {
+          "telegramUserCredentialsApi": {
+            "id": "bcU1EzHyC8bnTWO7",
+            "name": "Telegram User Credentials account"
+          }
+        },
+        "executeOnce": false,
+        "id": "58a66e1c-5b45-4dd4-8667-1d429abbab0e",
+        "name": "Get messages from the Telegram channel/group",
+        "parameters": {
+          "channelName": "={{ $('Loop Over Items1').item.json.link }}"
+        },
+        "position": [
+          -1200,
+          -1160
+        ],
+        "retryOnFail": true,
+        "type": "@dapplets/n8n-nodes-telegram-user.telegramUser",
+        "typeVersion": 4,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "8f463c59-b47f-4457-83e6-476246d972ab",
+        "name": "Create and add links",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "30325f34-3441-47a5-8059-0b5ffac405fd",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "54f08113-7e42-4519-9f5f-bdd820af5a00",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "292af94e-636c-4234-af3d-d9d7866d550e",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "3488cf0a-9fed-4e50-9be2-cfb7c6ae5fac",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "7e4ff0d5-119d-45b4-91c6-5f22912e452c",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              },
+              {
+                "id": "8a5f1371-a7c7-464d-a7ce-818c4a7de4e2",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "73ea1308-728d-48ef-9e8a-35b9b31e0f2c",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "0bc11052-e198-4ff5-bfcc-184d1747a3dd",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.sourceType === 'group' ? '' : `https://t.me/${$json.privateChannel === true ? $json.sourceId.slice(4) : $json.sourceName}/${$json.id}` }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -580,
+          -1160
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "104dd201-e413-4792-8ccd-1444772b5087",
+        "name": "Merge",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          1360,
+          -1160
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "f0a843ae-3d5d-4988-a011-f8ae628a4608",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n    \"title\": \"Message with ID\",\n    \"description\": \"Structured output (message) with flat stucture with only two properties\",\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"id\": {\n\t\t\t\"type\": \"number\",\n            \"description\": \"unchanged id\"\n\t\t},\n\t\t\"message\": {\n\t\t\t\"type\": \"string\",\n            \"description\": \"result message for the user\"\n\t\t}\n\t},\n    \"required\": [\n      \"id\",\n      \"message\"\n    ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          1160,
+          -860
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "59a7f980-6de2-4b40-8cb7-e679f025a998",
+        "name": "Fix merge 2: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cb597d08-c8de-49c0-862b-9ad39d59aa92",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "34648597-c003-4805-8c9f-18ae6ca02427",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "992c0f0d-585f-4bb7-b948-281fe9e91f09",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "fca0388c-6cce-4a97-9a72-b270e612f837",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "e6e0dc1c-ad2a-4a52-99a1-4b374f43fc70",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "702353e7-60f5-4efa-974a-e80753f26096",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.relevant }}"
+              },
+              {
+                "id": "b91ca77c-da0f-456c-b052-32d6eef3227e",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "79a7a5e0-2472-4d60-8c37-0bf2f50c52cc",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "965a57d3-be10-407d-a259-7a64cd1278f4",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              },
+              {
+                "id": "44c82ac7-e349-4f9a-a799-b609fce0310f",
+                "name": "speakerText",
+                "type": "string",
+                "value": "={{ $json.output.message }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1580,
+          -1160
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "ace642be-78f0-4e7c-b87c-cbfcc6f89edc",
+        "name": "Create message",
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.message = item.json.speakerText + '\\n\\nSource: ' + `[${item.json.source}](${item.json.link})`\n}\n\nreturn $input.all();"
+        },
+        "position": [
+          1800,
+          -1160
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "d832ccd7-140f-418e-a6bc-460c90cf1635",
+        "name": "Send message to Telegram",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "={{ $('Loop Over Items1').item.json.userid }}",
+          "text": "={{ $json.message }}"
+        },
+        "position": [
+          2020,
+          -1160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "2736d274-cd51-426b-9b0d-65c26ef75124"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "8e2a802a-e12e-4c05-ab43-2684ed1ee572",
+        "name": "Get last messages",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          2240,
+          -1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "2ea86673-f997-48e9-95f5-720cb61cbce9",
+        "name": "Get technical ones",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f406eacc-38ac-491a-905a-21896fcb7911",
+                "leftValue": "={{ $json.message.content }}",
+                "operator": {
+                  "operation": "startsWith",
+                  "type": "string"
+                },
+                "rightValue": "This message is not from user"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2460,
+          -1160
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "6360a376-373e-4faa-ad63-c3ea7e53e52b",
+        "name": "Delete technical messages",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          2680,
+          -1160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "bd53722d-afc8-4e63-9409-acf23840b7d3",
+        "name": "Show activity in the chat",
+        "parameters": {
+          "chatId": "={{ $('Loop Over Items1').item.json.userid }}",
+          "operation": "sendChatAction"
+        },
+        "position": [
+          1020,
+          -1300
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "84a1e031-4e4c-4120-b4a8-86899b7f558a"
+      },
+      {
+        "id": "e9d6749a-abcd-450f-bd8f-dd5eaac2680b",
+        "name": "Loop Over Items1",
+        "parameters": {
+          "options": {
+            "reset": false
+          }
+        },
+        "position": [
+          -2180,
+          -1160
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "9ca3be4d-1f5f-4ca6-9fab-39027a8f7211",
+        "name": "Split out messages",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "options": {
+          }
+        },
+        "position": [
+          -1000,
+          -1160
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "c63a972f-49a1-436d-a408-4edc6ee642ba",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "4fade0fb-3091-4c65-a63e-5ebed9ee8fdc",
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "number"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          680,
+          -1160
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "286490ae-e7d8-41b8-9235-707266145f17",
+        "name": "If1",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "4fade0fb-3091-4c65-a63e-5ebed9ee8fdc",
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "number"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -800,
+          -1160
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "25cb482a-c907-49bd-8ae8-ed5a0a49ef76",
+        "name": "Wait",
+        "parameters": {
+          "amount": "={{ Math.round(Math.random()*500)/100 }}"
+        },
+        "position": [
+          -2160,
+          -920
+        ],
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "webhookId": "b8d233d7-7cff-4657-a502-fd7802bcb490"
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-05-29T09:46:48.000Z",
+    "versionId": "e4b91d9e-2505-451e-9037-7922ff1b8715"
+  },
+  {
+    "active": true,
+    "connections": {
+      "Get Active Subscriptions": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Remove Duplicates",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Remove Duplicates": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram User",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Save Post",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Save Context Edge",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Save Profile",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Telegram 1h": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get Active Subscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Telegram User": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get Active Subscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-05-28T09:26:53.813Z",
+    "id": "QPGoAmLTOFtdg6B8",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "telegram-grabber",
+    "nodes": [
+      {
+        "id": "a9aa4817-7848-4ed5-9a76-c62ec8141d24",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "scan-subscriptions/telegram",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -1720,
+          260
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
+      },
+      {
+        "id": "d7107bd6-9762-4af6-bf45-aeb030ffd280",
+        "name": "Split Out",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "fieldsToInclude": "feed.id, feed.title, feed.subtitle",
+          "include": "selectedOtherFields",
+          "options": {
+          }
+        },
+        "position": [
+          -880,
+          160
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "3c6e7905-fe9f-49ae-a2c9-526b18da9d95",
+        "name": "Telegram 1h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 2
+              }
+            ]
+          }
+        },
+        "position": [
+          -1720,
+          80
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "dabbc161-47ec-4f59-a536-e2051d2e4e03",
+        "name": "Remove Duplicates",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          -1320,
+          160
+        ],
+        "type": "n8n-nodes-base.removeDuplicates",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "telegramUserCredentialsApi": {
+            "id": "bcU1EzHyC8bnTWO7",
+            "name": "Telegram User Credentials account"
+          }
+        },
+        "id": "6547aafc-3549-44a5-bd12-317aec143dfb",
+        "name": "Telegram User",
+        "parameters": {
+          "channelName": "={{ $json.link }}"
+        },
+        "position": [
+          -1100,
+          160
+        ],
+        "type": "@dapplets/n8n-nodes-telegram-user.telegramUser",
+        "typeVersion": 4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "9dbfb66c-2da0-4aef-ad04-df335876612c",
+        "name": "Save Profile",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "namespace",
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "namespace",
+                "id": "namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "content",
+                "id": "content",
+                "required": false,
+                "type": "object"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "timestamp",
+                "id": "timestamp",
+                "removed": true,
+                "required": false,
+                "type": "dateTime"
+              }
+            ],
+            "value": {
+              "content": "={{ \nJSON.stringify({\n  id: $json.result.source,\n  title: $json.result.source,\n  sourceId: $json.result.sourceId,\n  sourceName: $json.result.sourceName,\n  sourceType: $json.result.sourceType,\n  privateChannel: $json.result.privateChannel,\n  url: $json.result.sourceType === 'group' ? '' : `https://t.me/${$json.result.privateChannel === true ? $json.result.sourceId.slice(4) : $json.result.sourceName}`\n}) \n}}",
+              "id": "={{ $json.result.source }}",
+              "namespace": "telegram",
+              "type": "profile"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_node",
+            "mode": "list",
+            "value": "context_node"
+          }
+        },
+        "position": [
+          -580,
+          -40
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "0d52a39a-983d-4d37-b1bd-29505eb0b770",
+        "name": "Save Post",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id",
+              "namespace",
+              "type"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "namespace",
+                "id": "namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "type",
+                "id": "type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "content",
+                "id": "content",
+                "required": false,
+                "type": "object"
+              },
+              {
+                "canBeUsedToMatch": false,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "timestamp",
+                "id": "timestamp",
+                "removed": true,
+                "required": false,
+                "type": "dateTime"
+              }
+            ],
+            "value": {
+              "content": "={{ \nJSON.stringify({\n  id: $json.result.id,\n  text: $json.result.text,\n  source: $json.result.source,\n  sourceName: $json.result.sourceName,\n  createdAt: $json.result.date,\n  url: $json.result.sourceType === 'group' ? '' : `https://t.me/${$json.result.privateChannel === true ? $json.result.sourceId.slice(4) : $json.result.sourceName}/$json.result.id`\n}) \n}}",
+              "id": "={{ $json.result.id }}",
+              "namespace": "telegram",
+              "type": "post"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_node",
+            "mode": "list",
+            "value": "context_node"
+          }
+        },
+        "position": [
+          -580,
+          160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "9d5fa54d-c484-4476-8184-9da880806cf2",
+        "name": "Get Active Subscriptions",
+        "parameters": {
+          "operation": "select",
+          "options": {
+            "outputColumns": [
+              "link"
+            ]
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "is-active",
+                "value": "true"
+              },
+              {
+                "column": "source",
+                "value": "telegram"
+              }
+            ]
+          }
+        },
+        "position": [
+          -1540,
+          160
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "671cb7fb-54de-4862-9a84-a1ca4d9fe8fb",
+        "name": "Save Context Edge",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "from_context_namespace",
+              "from_context_type",
+              "from_context_id",
+              "to_context_namespace",
+              "to_context_type",
+              "to_context_id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "from_context_namespace",
+                "id": "from_context_namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "from_context_type",
+                "id": "from_context_type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "from_context_id",
+                "id": "from_context_id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "to_context_namespace",
+                "id": "to_context_namespace",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "to_context_type",
+                "id": "to_context_type",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "to_context_id",
+                "id": "to_context_id",
+                "removed": false,
+                "required": true,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "from_context_id": "={{ $json.result.source }}",
+              "from_context_namespace": "telegram",
+              "from_context_type": "profile",
+              "to_context_id": "={{ $json.result.id }}",
+              "to_context_namespace": "telegram",
+              "to_context_type": "post"
+            }
+          },
+          "operation": "upsert",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_edge",
+            "mode": "list",
+            "value": "context_edge"
+          }
+        },
+        "position": [
+          -580,
+          360
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:Telegram 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 2,
+    "updatedAt": "2025-05-29T09:25:45.000Z",
+    "versionId": "5c776ec0-76cd-4b1e-a03a-fd56ad2e6ddf"
+  },
+  {
+    "active": false,
+    "connections": {
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Telegram1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Google Gemini Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain1",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain1",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain1",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser1": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser2": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "get-tweets",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "get-tweets": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields1",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-05-29T08:34:04.732Z",
+    "id": "KTTqcLHaWBHwqEjj",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "tweets-marker",
+    "nodes": [
+      {
+        "id": "da3ede8c-03a3-41cb-8577-f284b3a1921e",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          -340,
+          120
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "00042dec-ef7d-42f8-9333-5e29dc22b2b3",
+        "name": "Edit Fields1",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a0b1b30f-4348-4644-8c4d-f18cf62b5c66",
+                "name": "createdAt",
+                "type": "string",
+                "value": "={{ $json.content.createdAt }}"
+              },
+              {
+                "id": "0921f2b0-f7ce-49db-aac3-a99f07d8643e",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.content.text }}"
+              },
+              {
+                "id": "202aea5f-f449-40d6-a6f5-7ab7cd4515a8",
+                "name": "id",
+                "type": "string",
+                "value": "={{ $json.content.id }}"
+              },
+              {
+                "id": "6bfa3191-c559-4484-9764-a19ff6787559",
+                "name": "authorUsername",
+                "type": "string",
+                "value": "={{ $json.content.authorUsername }}"
+              },
+              {
+                "id": "cf85b612-0c25-4a1a-bb9b-c9c3dc05b076",
+                "name": "url",
+                "type": "string",
+                "value": "={{ $json.content.url }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          60,
+          120
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "googlePalmApi": {
+            "id": "p4zymgdrfCv2VdG1",
+            "name": "Direct Gemini"
+          }
+        },
+        "id": "a7777411-2ac1-4249-941b-5b8071d908b8",
+        "name": "Google Gemini Chat Model",
+        "parameters": {
+          "modelName": "models/gemini-2.0-flash-exp",
+          "options": {
+          }
+        },
+        "position": [
+          240,
+          320
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+        "typeVersion": 1
+      },
+      {
+        "id": "024c8bab-876c-47c8-8418-0fc362d8b0ad",
+        "name": "Structured Output Parser1",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"originalData\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"text\": {\n            \"type\": \"string\",\n            \"description\": \"Text of the tweet\"\n          },\n          \"id\": {\n            \"type\": \"string\",\n            \"description\": \"Unique identifier of the tweet\"\n          },\n          \"authorUsername\": {\n            \"type\": \"string\",\n            \"description\": \"The username of the author of the tweet\"\n          },\n          \"createdAt\": {\n            \"type\": \"string\",\n            \"format\": \"date-time\",\n            \"description\": \"Date and time of tweet creation in ISO 8601 format\"\n          },\n          \"url\": {\n            \"type\": \"string\",\n            \"format\": \"url\",\n            \"description\": \"Tweet URL\"\n          }\n        },\n        \"required\": [\n          \"text\",\n          \"id\",\n          \"authorUsername\",\n          \"createdAt\",\n          \"url\"\n        ],\n        \"description\": \"The raw data of the tweet\"\n      },\n      \"requiresVerification\": {\n        \"type\": \"boolean\",\n        \"description\": \"Whether fact checking is required for a tweet (true/false)\"\n      }\n    },\n    \"required\": [\n      \"originalData\",\n      \"requiresVerification\"\n    ]\n  }\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          400,
+          320
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "4353a2d1-6f3d-46cc-b3a4-25c69c96f207",
+        "maxTries": 5,
+        "name": "Basic LLM Chain",
+        "parameters": {
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You are a tweet analysis agent. Your task is to analyze each tweet and determine whether it contains information that requires fact-checking.\n\nYou will receive an array of tweets as input. For each tweet, you must output a JSON object indicating whether the tweet requires verification.\n\nYou MUST NOT generate or return a new schema. The schema is provided for your reference only. Your task is to populate the `requiresVerification` field with the correct boolean value for each tweet.\n"
+              }
+            ]
+          },
+          "promptType": "define",
+          "text": "=text: {{ $json.text }};\nid: {{ $json.id }};\nauthorUsername: {{ $json.authorUsername }};\ncreatedAt: {{ $json.createdAt }};\nurl:{{ $json.url }};"
+        },
+        "position": [
+          260,
+          120
+        ],
+        "retryOnFail": false,
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6
+      },
+      {
+        "id": "cb47ebe3-32ad-4e3f-afeb-2a34eef0577b",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "c86ed01a-e33f-4ae0-82eb-e879dce53a46",
+                "leftValue": "={{ $json.output[0].requiresVerification }}",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "true"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            }
+          },
+          "looseTypeValidation": true,
+          "options": {
+          }
+        },
+        "position": [
+          620,
+          120
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "9723d4b6-ea7d-45cd-b100-df692e83adb0",
+        "name": "OpenAI Chat Model",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "openai/chatgpt-4o-latest",
+            "mode": "list",
+            "value": "openai/chatgpt-4o-latest"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          960,
+          300
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "8b0e89b6-e636-4ddf-80c8-00607ff4c669",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\": \"Extracted content (tweet text)\"\n    },\n    \"status\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"verified\",\n        \"unverified\",\n        \"needs_clarification\"\n      ],\n      \"description\": \"Content status: verified, unverified, needs_clarification (needs clarification)\"\n    },\n    \"labels\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"inference\",\n          \"false\",\n          \"speculation\",\n          \"unverified_claim\",\n          \"llm_behavior_claim\"\n        ]\n      },\n      \"description\": \"List of tags applied to content\"\n    },\n    \"reason\": {\n      \"type\": \"string\",\n      \"description\": \"An explanation of why content was labeled as unverified or needs_clarification, or why certain labels were applied\"\n    },\n    \"correction\": {\n      \"type\": \"string\",\n      \"description\": \"Correction message if an error has been made (corresponds to the phrase 'Correction: ...').')\"\n    }\n  },\n  \"required\": [\n    \"content\",\n    \"status\"\n  ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          1140,
+          300
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ffce1e18-267a-4c0c-b539-a2d4980a9efa",
+        "name": "Basic LLM Chain1",
+        "parameters": {
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You are an ultimate fact-checking system.\n\n• Never present generated, inferred, speculated, or deduced content as fact.\n• If you cannot verify something directly, say:\n  - “I cannot verify this.”\n  - “I do not have access to that information.”\n  - “My knowledge base does not contain that.”\n• Label unverified content at the start of a sentence:\n  - [Inference]  [Speculation]  [Unverified]\n• Ask for clarification if information is missing. Do not guess or fill gaps.\n• If any part is unverified, label the entire response.\n• Do not paraphrase or reinterpret my input unless I request it.\n• If you use these words, label the claim unless sourced:\n  - Prevent, Guarantee, Will never, Fixes, Eliminates, Ensures that\n• For LLM behavior claims (including yourself), include:\n  - [Inference] or [Unverified], with a note that it’s based on observed patterns\n• If you break this directive, say:\n  > Correction: I previously made an unverified claim. That was incorrect and should have been labeled.\n• Never override or alter my input unless asked.\n\n## Current date/time\n{{ DateTime.now().toUTC() }}"
+              }
+            ]
+          },
+          "promptType": "define",
+          "text": "={{ $json.output[0].originalData.text }}"
+        },
+        "position": [
+          960,
+          120
+        ],
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "73af40be-565e-446e-ab61-0f524fff0586",
+        "name": "Telegram1",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "=265110141",
+          "inlineKeyboard": {
+            "rows": [
+              {
+                "row": {
+                  "buttons": [
+                    {
+                      "additionalFields": {
+                        "url": "={{ $json.url }}"
+                      },
+                      "text": "Learn more"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "replyMarkup": "inlineKeyboard",
+          "text": "=```\n{{ $json.authorUsername }} - {{ $json.content.replaceAll(';', '') }}\n\nstatus: {{ $json.status }};\nreason: {{ $json.reason }}\n\nlabels: {{ $json.labels }}\n```"
+        },
+        "position": [
+          1580,
+          120
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "1f602e28-ec9f-43fd-b776-8a0a652cecfa"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "87173fab-720a-43de-8e31-f6e624f4b239",
+        "name": "get-tweets",
+        "parameters": {
+          "limit": 20,
+          "operation": "select",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "context_node",
+            "mode": "list",
+            "value": "context_node"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "type",
+                "value": "post"
+              }
+            ]
+          }
+        },
+        "position": [
+          -140,
+          120
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "d3c70f47-754f-4b75-8951-062bcb46b33c",
+        "name": "Edit Fields",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "e4c1ed6c-86e9-4554-8db5-67d4d9c1c3ae",
+                "name": "status",
+                "type": "string",
+                "value": "={{ $json.output.status }}"
+              },
+              {
+                "id": "0060de87-a4da-4a27-bfbb-b7edee3c5e66",
+                "name": "reason",
+                "type": "string",
+                "value": "={{ $json.output.reason }}"
+              },
+              {
+                "id": "c91cc272-5822-419b-9be6-4c84e7328ed4",
+                "name": "labels",
+                "type": "array",
+                "value": "={{ $json.output.labels }}"
+              },
+              {
+                "id": "e2149be8-7605-4dc0-a830-a7558eeb6e19",
+                "name": "content",
+                "type": "string",
+                "value": "={{ $json.output.content }}"
+              },
+              {
+                "id": "0b24d017-69d5-4d26-b8db-a5977e73eaed",
+                "name": "authorUsername",
+                "type": "string",
+                "value": "={{ $('If').item.json.output[0].originalData.authorUsername }}"
+              },
+              {
+                "id": "02f4e986-8a2e-49ff-ab16-04164beda679",
+                "name": "correction",
+                "type": "string",
+                "value": "={{ $json.output.correction }}"
+              },
+              {
+                "id": "ddb7b1f3-80e8-4052-b49b-798f8f768c7e",
+                "name": "createdAt",
+                "type": "string",
+                "value": "={{ $('If').item.json.output[0].originalData.createdAt }}"
+              },
+              {
+                "id": "f7e122de-e591-4ae1-b012-e20fd9258aed",
+                "name": "url",
+                "type": "string",
+                "value": "={{ $('If').item.json.output[0].originalData.url }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1340,
+          120
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "02dbafe3-acfb-46c7-babb-a833db94e497",
+        "name": "Respond to Webhook",
+        "parameters": {
+          "options": {
+          }
+        },
+        "position": [
+          1580,
+          -80
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "8ecce38f-d239-40af-8774-e2d8920b1ef2",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "tweets-marker",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -340,
+          -80
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "86194237-a3b4-45f5-96d9-ea0a3414b93b"
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "b619f3e4-f870-40a6-8bff-a2169389748c",
+        "name": "OpenAI Chat Model1",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "openai/chatgpt-4o-latest",
+            "mode": "list",
+            "value": "openai/chatgpt-4o-latest"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          960,
+          660
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "d3e959b2-5b30-4147-85e1-4aa03963585b",
+        "name": "Structured Output Parser2",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"content\": {\n      \"type\": \"string\",\n      \"description\": \"Extracted content (tweet text)\"\n    },\n    \"status\": {\n      \"type\": \"string\",\n      \"enum\": [\n        \"verified\",\n        \"needs_clarification\"\n      ],\n      \"description\": \"Content status: verified, needs_clarification (needs clarification)\"\n    },\n    \"labels\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"string\",\n        \"enum\": [\n          \"inference\",\n          \"speculation\",\n          \"unverified_claim\",\n          \"llm_behavior_claim\"\n        ]\n      },\n      \"description\": \"List of tags applied to content\"\n    },\n    \"reason\": {\n      \"type\": \"string\",\n      \"description\": \"An explanation of why content was labeled as unverified or needs_clarification, or why certain labels were applied\"\n    },\n    \"correction\": {\n      \"type\": \"string\",\n      \"description\": \"Correction message if an error has been made (corresponds to the phrase 'Correction: ...').')\"\n    }\n  },\n  \"required\": [\n    \"content\",\n    \"status\"\n  ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          1140,
+          660
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "3c17f8a1-0796-4217-a105-7f3fa5e6fcdd",
+        "name": "Basic LLM Chain2",
+        "parameters": {
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You are an ultimate fact-checking system.\n\n• Never present generated, inferred, speculated, or deduced content as fact.\n• If you cannot verify something directly, say:\n  - “I cannot verify this.”\n  - “I do not have access to that information.”\n  - “My knowledge base does not contain that.”\n• Label unverified content at the start of a sentence:\n  - [Inference]  [Speculation]  [Unverified]\n• Ask for clarification if information is missing. Do not guess or fill gaps.\n• If any part is unverified, label the entire response.\n• Do not paraphrase or reinterpret my input unless I request it.\n• If you use these words, label the claim unless sourced:\n  - Prevent, Guarantee, Will never, Fixes, Eliminates, Ensures that\n• For LLM behavior claims (including yourself), include:\n  - [Inference] or [Unverified], with a note that it’s based on observed patterns\n• If you break this directive, say:\n  > Correction: I previously made an unverified claim. That was incorrect and should have been labeled.\n• Never override or alter my input unless asked.\n\n## Current date/time\n{{ DateTime.now().toUTC() }}"
+              }
+            ]
+          },
+          "promptType": "define",
+          "text": "={{ $json.output[0].originalData.text }}"
+        },
+        "position": [
+          960,
+          480
+        ],
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.6
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-05-29T09:42:41.000Z",
+    "versionId": "95c30a8c-3962-4cc8-a9bf-c5751ad60fce"
   }
 ]

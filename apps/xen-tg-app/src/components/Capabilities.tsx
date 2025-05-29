@@ -157,7 +157,7 @@ const Capabilities = () => {
       </div>
       {capabilities?.pages.map((group) =>
         group?.items?.map((capabilitiy) => (
-          <Agent key={capabilitiy.name} capabilitiy={capabilitiy} />
+          <Agent key={capabilitiy.id} capabilitiy={capabilitiy} />
         ))
       )}
       <div ref={sentinelRef} />

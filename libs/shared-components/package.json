@@ -35,8 +35,8 @@
     "@mweb/engine": "workspace:*",
     "@mweb/react": "workspace:*",
     "@mweb/react-engine": "workspace:*",
-    "@uiw/codemirror-extensions-langs": "^4.23.3",
-    "@uiw/react-codemirror": "^4.23.3",
+    "@uiw/codemirror-extensions-langs": "^4.23.12",
+    "@uiw/react-codemirror": "^4.23.12",
     "antd": "^5.18.3",
     "bs58": "^6.0.0",
     "classnames": "^2.5.1",
@@ -44,7 +44,7 @@
     "copy-to-clipboard": "^3.3.3",
     "ethereum-blockies-base64": "^1.0.2",
     "json-stringify-deterministic": "^1.0.12",
-    "react-codemirror-merge": "^4.23.3",
+    "react-codemirror-merge": "^4.23.12",
     "react-diff-viewer": "^3.1.1",
     "react-router": "^7.0.2"
   }

@@ -53,6 +53,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
   })
 
   const action = useMemo(() => {
+    // ToDo: better to use capabilitiy.id?
     if (capabilitiy.name === 'news-monitor') return () => navigate('/news-monitor')
   }, [capabilitiy, navigate])
 
@@ -60,8 +61,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
     handleToggleCapability.mutate({
       methodName: capabilitiy.isEnabled ? 'disableCapability' : 'enableCapability',
       params: {
-        domain: capabilitiy.domain,
-        name: capabilitiy.name,
+        id: capabilitiy.id,
       },
     })
 
@@ -108,8 +108,7 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
             handleRemoveCapability.mutate({
               methodName: 'removeCapability',
               params: {
-                domain: capabilitiy.domain,
-                name: capabilitiy.name,
+                id: capabilitiy.id,
               },
             })}
       >
