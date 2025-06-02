@@ -13671,7 +13671,7 @@
           "operation": "executeQuery",
           "options": {
           },
-          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc on uc.username = u.username\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and uc.capability_domain = 'core'\n  and uc.capability_name = 'news-monitor'"
+          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc on uc.username = u.username\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and uc.capability_id = (\n    select id\n    from \"default\".capability c\n    where c.domain = 'core' -- hardcoded\n      and c.name = 'news-monitor' -- hardcoded\n  )"
         },
         "position": [
           -3060,
@@ -14010,8 +14010,8 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-05-29T14:26:04.000Z",
-    "versionId": "6b31f8ab-7895-4211-a2d9-572486d0190e"
+    "updatedAt": "2025-06-02T13:24:29.000Z",
+    "versionId": "401d1113-a622-4b81-b532-b86f6e54c341"
   },
   {
     "active": false,
