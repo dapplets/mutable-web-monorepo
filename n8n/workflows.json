@@ -19799,7 +19799,7 @@
           "options": {
             "queryReplacement": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }},{{ $('Webhook').item.json.body.params.limit }},{{ $('Webhook').item.json.body.params.offset }}"
           },
-          "query": "select \n\trh.id, \n\tuh.capability_domain,\n\tuh.capability_name,\n\trh.amount,\n\tuh.execution_input,\n\tuh.execution_output,\n\trh.created_at,\n\trh.recipient_account_id,\n\tcase when rh.related_item_type = 'usage-caller' then 'income' else 'outcome' end as operation_type\nfrom \"default\".reward_history rh \njoin \"default\".usage_history uh on uh.id = rh.related_item_id \nwhere uh.caller_username = $1\norder by rh.created_at desc\nlimit $2\noffset $3"
+          "query": "select \n\trh.id, \n\tc.domain as capability_domain,\n\tc.name as capability_name,\n\trh.amount,\n\tuh.execution_input,\n\tuh.execution_output,\n\trh.created_at,\n\trh.recipient_account_id,\n\tcase when rh.related_item_type = 'usage-caller' then 'income' else 'outcome' end as operation_type\nfrom \"default\".reward_history rh \njoin \"default\".usage_history uh on uh.id = rh.related_item_id \njoin \"default\".capability c on c.id = uh.capability_id \nwhere uh.caller_username = $1\norder by rh.created_at desc\nlimit $2\noffset $3"
         },
         "position": [
           2540,
@@ -19869,7 +19869,7 @@
           "options": {
             "queryReplacement": "={{ $('Parse Auth Token').item.json.authToken.user.username.toLowerCase() }}"
           },
-          "query": "select count(*) as count\nfrom (\n  select \n  \trh.id, \n  \tuh.capability_domain,\n  \tuh.capability_name,\n  \trh.amount,\n  \tuh.execution_input,\n  \tuh.execution_output,\n  \trh.created_at,\n  \trh.recipient_account_id,\n  \tcase when rh.related_item_type = 'usage-caller' then 'income' else 'outcome' end as operation_type\n  from \"default\".reward_history rh \n  join \"default\".usage_history uh on uh.id = rh.related_item_id \n  where uh.caller_username = $1\n)"
+          "query": "select count(*) as count\nfrom (\n  select *\n  from \"default\".reward_history rh \n  join \"default\".usage_history uh on uh.id = rh.related_item_id\n  where uh.caller_username = $1\n)"
         },
         "position": [
           2540,
@@ -21379,8 +21379,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-30T13:51:10.000Z",
-    "versionId": "9a539d29-2809-4982-ae36-e1937d3c1e70"
+    "updatedAt": "2025-06-02T16:22:12.000Z",
+    "versionId": "a1a341f8-3500-47db-91d6-91980dde3eb4"
   },
   {
     "active": false,
