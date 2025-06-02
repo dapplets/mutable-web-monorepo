@@ -209,30 +209,6 @@ CREATE TABLE "default".warning (
     hash character varying NOT NULL
 );
 
-CREATE TABLE "default".transfer (
-    id integer NOT NULL,
-    recipient_account_id character varying NOT NULL,
-    amount character varying NOT NULL,
-    tx_hash character varying NOT NULL,
-    notes character varying,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    capability_domain character varying,
-    capability_name character varying,
-    caller_username character varying,
-    execution_input character varying,
-    execution_output character varying
-);
-
-CREATE SEQUENCE "default".transfer_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE "default".transfer_id_seq OWNED BY "default".transfer.id;
-
 ALTER TABLE ONLY delivered.reddits ALTER COLUMN id SET DEFAULT nextval('delivered.reddits_id_seq'::regclass);
 ALTER TABLE ONLY feedback.feedback ALTER COLUMN id SET DEFAULT nextval('feedback.feedback_id_seq'::regclass);
 ALTER TABLE ONLY jobs.reminders ALTER COLUMN id SET DEFAULT nextval('jobs.reminders_id_seq'::regclass);
@@ -240,7 +216,6 @@ ALTER TABLE ONLY jobs.subscriptions ALTER COLUMN id SET DEFAULT nextval('jobs.su
 ALTER TABLE ONLY jobs.tasks ALTER COLUMN id SET DEFAULT nextval('jobs.tasks_id_seq'::regclass);
 ALTER TABLE ONLY "near-ai".available ALTER COLUMN id SET DEFAULT nextval('"near-ai".available_id_seq'::regclass);
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
-ALTER TABLE ONLY "default".transfer ALTER COLUMN id SET DEFAULT nextval('"default".transfer_id_seq'::regclass);
 
 SELECT pg_catalog.setval('delivered.reddits_id_seq', 4, true);
 SELECT pg_catalog.setval('feedback.feedback_id_seq', 7, true);
@@ -251,7 +226,6 @@ SELECT pg_catalog.setval('"near-ai".available_forks_seq', 1, false);
 SELECT pg_catalog.setval('"near-ai".available_id_seq', 1, false);
 SELECT pg_catalog.setval('"near-ai".available_stars_seq', 1, false);
 SELECT pg_catalog.setval('public.users_id_seq', 1, false);
-SELECT pg_catalog.setval('"default".transfer_id_seq', 1, false);
 
 ALTER TABLE ONLY delivered.reddits
     ADD CONSTRAINT reddits_pk PRIMARY KEY (id);
@@ -283,9 +257,6 @@ ALTER TABLE ONLY "default".user_capability
 ALTER TABLE ONLY "default".warning
     ADD CONSTRAINT warning_pk PRIMARY KEY (id);
 
-ALTER TABLE ONLY "default".transfer
-    ADD CONSTRAINT reward_transaction_pk PRIMARY KEY (id);
-
 CREATE TABLE "default".context_node (
     namespace character varying NOT NULL,
     type character varying NOT NULL,
@@ -301,8 +272,7 @@ ALTER TABLE ONLY "default".context_node
 CREATE TABLE "default".usage_history (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     caller_username character varying NOT NULL,
-    capability_domain character varying NOT NULL,
-    capability_name character varying NOT NULL,
+    capability_id uuid NOT NULL,
     execution_input character varying,
     execution_output character varying,
     created_at timestamp with time zone DEFAULT now() NOT NULL
