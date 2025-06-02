@@ -22609,12 +22609,12 @@
           [
             {
               "index": 0,
-              "node": "GetUnpaidUsages1",
+              "node": "GetUnpaidUsages",
               "type": "main"
             },
             {
               "index": 0,
-              "node": "GetUnpaidUsages",
+              "node": "GetUnpaidUsages1",
               "type": "main"
             },
             {
@@ -24828,12 +24828,8 @@
           "where": {
             "values": [
               {
-                "column": "domain",
-                "value": "Near AI"
-              },
-              {
-                "column": "name",
-                "value": "={{ $json.capability_name }}"
+                "column": "id",
+                "value": "={{ $('Loop Over Items').item.json.capability_id }}"
               }
             ]
           }
@@ -24909,8 +24905,7 @@
             "convertFieldsToString": false,
             "mappingMode": "defineBelow",
             "matchingColumns": [
-              "domain",
-              "name"
+              "id"
             ],
             "schema": [
               {
@@ -24919,7 +24914,7 @@
                 "display": true,
                 "displayName": "domain",
                 "id": "domain",
-                "removed": false,
+                "removed": true,
                 "required": true,
                 "type": "string"
               },
@@ -24929,7 +24924,7 @@
                 "display": true,
                 "displayName": "name",
                 "id": "name",
-                "removed": false,
+                "removed": true,
                 "required": true,
                 "type": "string"
               },
@@ -24971,11 +24966,20 @@
                 "id": "token_id",
                 "required": false,
                 "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": false,
+                "required": false,
+                "type": "string"
               }
             ],
             "value": {
-              "domain": "Near AI",
-              "name": "={{ $('GetCapability').item.json.name }}",
+              "id": "={{ $('Loop Over Items').item.json.capability_id }}",
               "token_id": "={{ $('SetTokenId').item.json.token_id }}"
             }
           },
@@ -25256,8 +25260,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-06-02T16:30:07.000Z",
-    "versionId": "1f273260-ae24-4a5f-974d-6caaeee2e9bd"
+    "updatedAt": "2025-06-02T16:39:01.000Z",
+    "versionId": "de216523-c5aa-4633-9abb-1103c27520e7"
   },
   {
     "active": false,
