@@ -6526,7 +6526,7 @@
                 "id": "efd25a3c-b2b2-403a-bd3d-98267d8a72ce",
                 "name": "agent_id",
                 "type": "string",
-                "value": "={{ $json.capability_name ? $json.capability_name : null }}"
+                "value": "={{ $json.name ? $json.name : null }}"
               }
             ]
           },
@@ -7527,38 +7527,11 @@
         "id": "4caf126c-da94-4d46-b044-80eb5e53689f",
         "name": "Get Enabled Capabilities",
         "parameters": {
-          "operation": "select",
+          "operation": "executeQuery",
           "options": {
+            "queryReplacement": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
           },
-          "returnAll": true,
-          "schema": {
-            "__rl": true,
-            "cachedResultName": "default",
-            "mode": "list",
-            "value": "default"
-          },
-          "table": {
-            "__rl": true,
-            "cachedResultName": "user_capability",
-            "mode": "list",
-            "value": "user_capability"
-          },
-          "where": {
-            "values": [
-              {
-                "column": "username",
-                "value": "={{ $('Telegram Trigger').item.json.message.from.username.toLowerCase() }}"
-              },
-              {
-                "column": "is_enabled",
-                "value": "true"
-              },
-              {
-                "column": "is_deleted",
-                "value": "false"
-              }
-            ]
-          }
+          "query": "select distinct c.*\nfrom \"default\".user_capability uc \njoin \"default\".capability c on c.id = uc.capability_id \nwhere uc.is_enabled = true\n\tand uc.is_deleted = false\n\tand uc.username = $1"
         },
         "position": [
           3120,
@@ -7868,8 +7841,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-05-29T10:44:03.000Z",
-    "versionId": "5c776ec0-76cd-4b1e-a03a-fd56ad2e6ddf"
+    "updatedAt": "2025-06-02T12:39:21.000Z",
+    "versionId": "d6b387b7-8db5-48d6-a1a1-8b358732b3f9"
   },
   {
     "active": false,
