@@ -8248,7 +8248,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single or multiple agents that is best suited for the task and respond with the agent's IDs and query for them.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.agents.toJsonString() }}"
+            "systemMessage": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single or multiple agents that is best suited for the task and respond with the agent's IDs, capability IDs and queries for them.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.agents.toJsonString() }}"
           },
           "promptType": "define",
           "text": "={{ $('Begin').item.json.query }}"
@@ -8265,7 +8265,7 @@
         "id": "a711a234-a473-41ab-acac-4ee06bc51614",
         "name": "Structured Output Parser",
         "parameters": {
-          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"agent_calls\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n\"agent_id\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"query\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n              }\n            }\n\t\t}\n\t}\n}",
+          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"agent_calls\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n\"agent_id\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n                \"capability_id\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"query\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n              }\n            }\n\t\t}\n\t}\n}",
           "schemaType": "manual"
         },
         "position": [
@@ -8381,7 +8381,7 @@
                 "id": "7326c09a-5ef3-48e6-982e-e85a92dde505",
                 "name": "agentId",
                 "type": "string",
-                "value": "={{ $('WriteUsageHistory').item.json.capability_name }}"
+                "value": "={{ $('Split Out').item.json.agent_id }}"
               },
               {
                 "id": "17f07fd3-6f83-4e54-bad0-a3eaae66b99e",
@@ -8479,6 +8479,12 @@
                 "name": "description",
                 "type": "string",
                 "value": "={{ $json.description }}"
+              },
+              {
+                "id": "bcd01d93-b788-4867-b7d9-702abe37e47b",
+                "name": "capability_id",
+                "type": "string",
+                "value": "={{ $json.id }}"
               }
             ]
           },
@@ -8633,24 +8639,6 @@
                 "canBeUsedToMatch": true,
                 "defaultMatch": false,
                 "display": true,
-                "displayName": "capability_domain",
-                "id": "capability_domain",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": true,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "capability_name",
-                "id": "capability_name",
-                "required": true,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": true,
-                "defaultMatch": false,
-                "display": true,
                 "displayName": "execution_input",
                 "id": "execution_input",
                 "required": false,
@@ -8674,12 +8662,21 @@
                 "removed": true,
                 "required": false,
                 "type": "dateTime"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "capability_id",
+                "id": "capability_id",
+                "removed": false,
+                "required": false,
+                "type": "string"
               }
             ],
             "value": {
               "caller_username": "={{ $('Postgres').item.json.username.toLowerCase() }}",
-              "capability_domain": "Near AI",
-              "capability_name": "={{ $json.data[0].assistant_id.split('/')[0] }}/{{ $json.data[0].assistant_id.split('/')[1] }}",
+              "capability_id": "={{ $('Split Out').item.json.capability_id }}",
               "execution_input": "={{ $('Split Out').item.json.query }}",
               "execution_output": "={{ $json.data[0].content[0].text.value }}"
             }
@@ -8764,8 +8761,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-05-30T14:01:04.000Z",
-    "versionId": "3319f56e-5690-4a22-b6f1-e09eba00b2c3"
+    "updatedAt": "2025-06-02T13:11:17.000Z",
+    "versionId": "f23cb5e7-afb3-49d3-8fb8-db465823da9f"
   },
   {
     "active": false,
@@ -15213,17 +15210,6 @@
   {
     "active": false,
     "connections": {
-      "AI Agent": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "GitHub",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Branch": {
         "main": [
           [
@@ -15339,19 +15325,8 @@
           [
             {
               "index": 0,
-              "node": "AI Agent",
+              "node": "GitHub",
               "type": "main"
-            }
-          ]
-        ]
-      },
-      "OpenAI Chat Model": {
-        "ai_languageModel": [
-          [
-            {
-              "index": 0,
-              "node": "AI Agent",
-              "type": "ai_languageModel"
             }
           ]
         ]
@@ -15363,17 +15338,6 @@
               "index": 0,
               "node": "Extract from File1",
               "type": "main"
-            }
-          ]
-        ]
-      },
-      "Structured Output Parser": {
-        "ai_outputParser": [
-          [
-            {
-              "index": 0,
-              "node": "AI Agent",
-              "type": "ai_outputParser"
             }
           ]
         ]
@@ -15446,64 +15410,6 @@
         "typeVersion": 1
       },
       {
-        "id": "41f2e4e9-81a4-4d05-9351-911bc41d0571",
-        "name": "AI Agent",
-        "parameters": {
-          "hasOutputParser": true,
-          "options": {
-            "systemMessage": "You are a software engineer tasked with generating concise and informative Git commit messages based on git diff outputs. Your goal is to write a commit message that adheres to the Conventional Commits specification. Comparing files are workflow backups from n8n.\n\nBehavior:\n1. Analyze the diff: Carefully compare the before and after code to determine the purpose of the change.\n2. Classify the commit using one of the allowed types (see below).\n3. Write a commit message summarizing the change in plain, concise language.\n4. Try to understand and explain what really was changed.\n\nOutput Data:\n1. Commit Type\n2. Commit Message\n\nRestrictions:\n1. Maximum commit message length: 72 characters\n2. Message starts with a lowercase letter\n3. No period at the end\n4. Be descriptive but brief\n5. Do not include commit type name into message\n6. Do not include node name into message\n7. Do not write just \"added node\" or \"removed node\"\n8. Do not mention n8n node names, e.g. \"Postgres22\"\n\nAllowed commit types:\n\nfix: a commit of the type fix patches a bug in your codebase (this correlates with PATCH in Semantic Versioning).\n\nfeat: a commit of the type feat introduces a new feature to the codebase (this correlates with MINOR in Semantic Versioning).\n\nbuild: Changes that affect the build system or external dependencies\n\nci: Changes to our CI configuration files and scripts \n\ndocs: Documentation only changes\n\nperf: A code change that improves performance\n\nrefactor: A code change that neither fixes a bug nor adds a feature\n\nstyle: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)\n\ntest: Adding missing tests or correcting existing tests\n\n"
-          },
-          "promptType": "define",
-          "text": "={{ $json.stdout }}"
-        },
-        "position": [
-          780,
-          540
-        ],
-        "type": "@n8n/n8n-nodes-langchain.agent",
-        "typeVersion": 1.8
-      },
-      {
-        "id": "409acc0c-d43f-44d3-9fc7-afb8e17f4e6d",
-        "name": "Structured Output Parser",
-        "parameters": {
-          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"commitType\": {\n\t\t\t\"type\": \"string\",\n          \"enum\": [\"feat\", \"fix\", \"refactor\", \"build\", \"ci\", \"docs\", \"perf\", \"style\", \"test\"]\n\t\t},\n\t\t\"commitMessage\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}",
-          "schemaType": "manual"
-        },
-        "position": [
-          960,
-          740
-        ],
-        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-        "typeVersion": 1.2
-      },
-      {
-        "credentials": {
-          "openAiApi": {
-            "id": "LFGWC331SnBhJfQS",
-            "name": "OpenAi account"
-          }
-        },
-        "id": "1bc9acb6-67f6-47a4-994c-988a2a4499ea",
-        "name": "OpenAI Chat Model",
-        "parameters": {
-          "model": {
-            "__rl": true,
-            "cachedResultName": "o3-mini",
-            "mode": "list",
-            "value": "o3-mini"
-          },
-          "options": {
-          }
-        },
-        "position": [
-          780,
-          740
-        ],
-        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-        "typeVersion": 1.2
-      },
-      {
         "id": "2c6b313b-4223-4d3a-9225-79eb78a5d930",
         "name": "Branch",
         "parameters": {
@@ -15514,6 +15420,12 @@
                 "name": "branch",
                 "type": "string",
                 "value": "={{ $now.format('yyyyMMdd') }}"
+              },
+              {
+                "id": "c6c234ae-6fec-4a48-a23c-fd194d13bdfc",
+                "name": "=commit",
+                "type": "string",
+                "value": ""
               }
             ]
           },
@@ -15774,19 +15686,11 @@
         "name": "GitHub",
         "parameters": {
           "additionalParameters": {
-            "author": {
-              "email": "andtheworldisburning@gmail.com",
-              "name": "RidgeRock"
-            },
             "branch": {
               "branch": "={{ $('Branch').item.json.branch }}"
-            },
-            "committer": {
-              "email": "andtheworldisburning@gmail.com",
-              "name": "RidgeRock"
             }
           },
-          "commitMessage": "={{ $json.output.commitType }}(n8n): {{ $json.output.commitMessage }}",
+          "commitMessage": "={{ $('Branch').item.json.commit }}",
           "fileContent": "={{ $('Deterministic JSON After').item.json.serialized }}",
           "filePath": "=n8n/workflows.json",
           "operation": "edit",
@@ -15803,7 +15707,7 @@
           "resource": "file"
         },
         "position": [
-          1080,
+          760,
           540
         ],
         "type": "n8n-nodes-base.github",
@@ -15844,7 +15748,7 @@
           "text": "=Message: {{ $json.commit.message }}\nCommitter: {{ $json.commit.author.name }}\nDate: {{ $json.commit.committer.date }}"
         },
         "position": [
-          1240,
+          920,
           540
         ],
         "type": "n8n-nodes-base.telegram",
@@ -15863,8 +15767,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-05-12T15:15:29.000Z",
-    "versionId": "036a8eb1-7c59-44b9-af6b-a6341de40bf2"
+    "updatedAt": "2025-06-02T13:18:29.000Z",
+    "versionId": "16651a14-9734-4df1-b3e3-ca9adac30845"
   },
   {
     "active": true,
