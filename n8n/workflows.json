@@ -23030,34 +23030,12 @@
           ]
         ]
       },
-      "ExtractBeneficiaryId": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "GetTodayTransfers",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Get Capability": {
         "main": [
           [
             {
               "index": 0,
               "node": "ExtractAgentOwnerId1",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "Get NFT": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "ExtractBeneficiaryId",
               "type": "main"
             }
           ]
@@ -23235,7 +23213,7 @@
           [
             {
               "index": 0,
-              "node": "Get NFT",
+              "node": "GetTodayTransfers",
               "type": "main"
             }
           ],
@@ -23424,7 +23402,7 @@
           [
             {
               "index": 0,
-              "node": "Get NFT",
+              "node": "GetTodayTransfers",
               "type": "main"
             }
           ]
@@ -23705,12 +23683,12 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.agent_beneficiary_account_id }}"
+            "queryReplacement": "={{ $json.beneficiary_account_id }}"
           },
           "query": "select string_agg(amount, ',') as amounts\nfrom \"default\".reward_history\nwhere recipient_account_id = $1 and created_at >= now()::date"
         },
         "position": [
-          1680,
+          1280,
           -60
         ],
         "type": "n8n-nodes-base.postgres",
@@ -23724,7 +23702,7 @@
           "mode": "runOnceForEachItem"
         },
         "position": [
-          1860,
+          1580,
           -60
         ],
         "type": "n8n-nodes-base.code",
@@ -23737,7 +23715,7 @@
           "jsCode": "const rewardsPerDay = BigInt($('SumBigInts').first().json.total)\nconst maxRewardsPerDay = BigInt($('GetVariables').first().json.max_usage_reward_amount)\n\nreturn [{\n  json: {\n    shouldBeRewarded: rewardsPerDay < maxRewardsPerDay\n  }\n}]"
         },
         "position": [
-          2040,
+          1900,
           -60
         ],
         "type": "n8n-nodes-base.code",
@@ -23765,7 +23743,7 @@
         "parameters": {
           "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
           "privateKey": "={{ $('GetVariables').item.json.reward_account_private_key }}",
-          "recipientId": "={{ $('ExtractBeneficiaryId').item.json.agent_beneficiary_account_id }}",
+          "recipientId": "={{ $('IsNftIssued?').item.json.beneficiary_account_id }}",
           "senderId": "={{ $('GetVariables').item.json.reward_account_id }}"
         },
         "position": [
@@ -23790,7 +23768,7 @@
             "message_thread_id": "={{ $('GetVariables').item.json.telegram_monitoring_topic_id }}"
           },
           "chatId": "={{ $('GetVariables').item.json.telegram_monitoring_chat_id }}",
-          "text": "=Agent beneficiary {{ $json.recipient_account_id }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
+          "text": "=Agent beneficiary {{ $('IsNftIssued?').item.json.beneficiary_account_id }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
         },
         "position": [
           3000,
@@ -23815,7 +23793,7 @@
             "message_thread_id": "={{ $('GetVariables').item.json.telegram_monitoring_topic_id }}"
           },
           "chatId": "={{ $('GetVariables').item.json.telegram_monitoring_chat_id }}",
-          "text": "=Cannot reward {{ $json.recipient_account_id }} for agent usage\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
+          "text": "=Cannot reward {{ $('IsNftIssued?').item.json.beneficiary_account_id }} for agent usage\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
         },
         "position": [
           2720,
@@ -23854,7 +23832,7 @@
           }
         },
         "position": [
-          2240,
+          2200,
           -60
         ],
         "type": "n8n-nodes-base.if",
@@ -23948,7 +23926,7 @@
             ],
             "value": {
               "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
-              "recipient_account_id": "={{ $('ExtractBeneficiaryId').item.json.agent_beneficiary_account_id }}",
+              "recipient_account_id": "={{ $('IsNftIssued?').item.json.beneficiary_account_id }}",
               "related_item_id": "={{ $('Loop Over Items').item.json.id }}",
               "related_item_type": "usage-owner",
               "tx_hash": "={{ $json.result.transaction_outcome.id }}"
@@ -25545,9 +25523,31 @@
                 "removed": false,
                 "required": false,
                 "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "beneficiary_account_id",
+                "id": "beneficiary_account_id",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "beneficiary_network",
+                "id": "beneficiary_network",
+                "removed": false,
+                "required": false,
+                "type": "string"
               }
             ],
             "value": {
+              "beneficiary_account_id": "={{$('GetCapability').item.json.name.split('/')[0]}}",
+              "beneficiary_network": "near",
               "id": "={{ $('Loop Over Items').item.json.capability_id }}",
               "token_id": "={{ $('SetTokenId').item.json.token_id }}"
             }
@@ -25594,21 +25594,6 @@
         "typeVersion": 1
       },
       {
-        "id": "e016402c-195f-4c9d-997b-a14253a65724",
-        "name": "Get NFT",
-        "parameters": {
-          "contractId": "={{ $('GetVariables').item.json.nft_contract_id }}",
-          "methodArgs": "={{ JSON.stringify({ \n  token_id: $json.token_id\n}) }}",
-          "methodName": "nft_token"
-        },
-        "position": [
-          1280,
-          -60
-        ],
-        "type": "@dapplets/n8n-nodes-near-protocol.viewContractCall",
-        "typeVersion": 1
-      },
-      {
         "id": "d8399d46-273a-4725-9234-5546944a1869",
         "name": "SetTokenId",
         "parameters": {
@@ -25628,30 +25613,6 @@
         "position": [
           1480,
           120
-        ],
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4
-      },
-      {
-        "id": "d609e9f5-8653-41d0-a6b1-4ee34f975379",
-        "name": "ExtractBeneficiaryId",
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "63dd2cde-dbda-4a0f-8741-c7b5b6063f46",
-                "name": "agent_beneficiary_account_id",
-                "type": "string",
-                "value": "={{ JSON.parse($json.result.metadata.extra).beneficiary_account_id }}"
-              }
-            ]
-          },
-          "options": {
-          }
-        },
-        "position": [
-          1480,
-          -60
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
@@ -25829,8 +25790,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-06-02T16:39:01.000Z",
-    "versionId": "de216523-c5aa-4633-9abb-1103c27520e7"
+    "updatedAt": "2025-06-03T10:46:07.000Z",
+    "versionId": "be399525-e8ef-4574-98b5-f55a5de9a621"
   },
   {
     "active": false,
