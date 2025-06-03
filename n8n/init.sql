@@ -189,7 +189,9 @@ CREATE TABLE "default".capability (
     description character varying,
     stars integer DEFAULT 0 NOT NULL,
     token_id character varying,
-    id uuid DEFAULT gen_random_uuid() NOT NULL
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    beneficiary_network character varying,
+    beneficiary_account_id character varying
 );
 
 CREATE TABLE "default".user_capability (
