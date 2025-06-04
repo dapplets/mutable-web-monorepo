@@ -34,7 +34,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 /* ─────────────────── config ─────────────────── */
 const NETWORK_ID = process.env.NEXT_PUBLIC_NETWORK_ID || 'mainnet'
-const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL || 'https://rpc.mainnet.near.org'
+const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL || 'https://mainnet.near.dapplets.org'
 const WALLET_URL = process.env.NEXT_PUBLIC_WALLET_URL || 'https://app.mynearwallet.com'
 const HELPER_URL = process.env.NEXT_PUBLIC_HELPER_URL || 'https://helper.mainnet.near.org'
 const CONTRACT_NAME = process.env.NEXT_PUBLIC_CONTRACT_NAME || 'market.aigency.near'
