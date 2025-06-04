@@ -154,7 +154,9 @@ impl Contract {
         metadata.extra = extra;
         metadata_store.insert(&token_id, &metadata);
 
-        refund_deposit(env::storage_usage() - initial_storage);
+        if (env::storage_usage() > initial_storage) {
+            refund_deposit(env::storage_usage() - initial_storage);
+        }
     }
 
     // WARNING! We are not using royalties, but want to be compatible with existing marketplaces
