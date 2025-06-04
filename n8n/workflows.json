@@ -8884,6 +8884,17 @@
   {
     "active": false,
     "connections": {
+      "Aggregate Personal Memories": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Basic LLM Chain": {
         "main": [
           [
@@ -8906,6 +8917,17 @@
           ]
         ]
       },
+      "Create message": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send message to Telegram",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Default Data Loader": {
         "ai_document": [
           [
@@ -8914,6 +8936,12 @@
               "node": "Qdrant Vector Store1",
               "type": "ai_document"
             }
+          ]
+        ]
+      },
+      "Delete technical messages": {
+        "main": [
+          [
           ]
         ]
       },
@@ -8950,6 +8978,104 @@
           ]
         ]
       },
+      "Fix merge 2: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create message",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get all the subscriptions to check for  all users": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get last messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get technical ones",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get memories about the user": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate Personal Memories",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get technical ones": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Delete technical messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get users with enabled News Monitor": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get all the subscriptions to check for  all users",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GetPosts": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get memories about the user",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Send message to Telegram1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
       "Google Gemini Chat Model": {
         "ai_languageModel": [
           [
@@ -8972,6 +9098,39 @@
           ]
         ]
       },
+      "If3": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GetPosts",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge 2: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model1": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
       "Postgres": {
         "main": [
           [
@@ -8979,6 +9138,17 @@
               "index": 0,
               "node": "set-preview",
               "type": "main"
+            }
+          ]
+        ]
+      },
+      "Postgres Chat Memory1": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_memory"
             }
           ]
         ]
@@ -9012,6 +9182,39 @@
               "index": 0,
               "node": "Default Data Loader",
               "type": "ai_textSplitter"
+            }
+          ]
+        ]
+      },
+      "Send message to Telegram": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get last messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Speaker": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_outputParser"
             }
           ]
         ]
@@ -9052,6 +9255,11 @@
       "When clicking ‘Test workflow’": {
         "main": [
           [
+            {
+              "index": 0,
+              "node": "Get users with enabled News Monitor",
+              "type": "main"
+            }
           ]
         ]
       },
@@ -9546,18 +9754,6 @@
         "typeVersion": 1.1
       },
       {
-        "id": "93301204-08fe-45c9-ab50-27b9289e4050",
-        "name": "When clicking ‘Test workflow’",
-        "parameters": {
-        },
-        "position": [
-          320,
-          2440
-        ],
-        "type": "n8n-nodes-base.manualTrigger",
-        "typeVersion": 1
-      },
-      {
         "credentials": {
           "n8nApi": {
             "id": "29pMkB66wmwgdc6w",
@@ -9629,6 +9825,628 @@
         ],
         "type": "n8n-nodes-base.n8n",
         "typeVersion": 1
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "0b7329a5-c832-4849-874c-3b94411cc4fb",
+        "name": "GetPosts",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ [ $json.source, $json.link, new Date(new Date().getTime() - 60 * 60 * 1000 * 2) ] }}"
+          },
+          "query": "select cn.*\nfrom \"default\".context_edge ce\njoin \"default\".context_node cn \n\ton cn.namespace = ce.to_context_namespace\n\tand cn.type = ce.to_context_type \n\tand cn.id = ce.to_context_id\n    and cn.timestamp >= $3\nwhere\n\tce.from_context_namespace = $1\n\tand ce.from_context_type = 'profile'\n\tand ce.from_context_id = $2"
+        },
+        "position": [
+          1520,
+          3340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "129bb410-2231-4dd9-b388-458b950898af",
+        "name": "Postgres Chat Memory1",
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "=265110141",
+          "tableName": "=ridgerock"
+        },
+        "position": [
+          2480,
+          3640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "92e729e6-179a-452e-a31b-b023252eae3f",
+        "name": "Speaker",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things in one sentence. **Be extremely brief. Always include links without changes.**\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+          },
+          "promptType": "define",
+          "text": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\nmessage: {{ $json.text }}\nid: {{ $json.id }}"
+        },
+        "position": [
+          2400,
+          3460
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "LFGWC331SnBhJfQS",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "fc728a6c-2115-4a5f-b258-d0c11a0f7231",
+        "name": "OpenAI Chat Model1",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2340,
+          3640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "697528f8-607d-4637-9b6d-636abe9c0aa7",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          540,
+          3340
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "2a01b8cf-ac2a-4ad4-b502-94be000bbdba",
+        "name": "Fix merge: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6b089568-62eb-45ac-9f54-4a14998f55a6",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $('GetPosts').item.json.content.id }}"
+              },
+              {
+                "id": "93bce667-352c-488c-b117-602767f6abeb",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $('GetPosts').item.json.content.text }}"
+              },
+              {
+                "id": "673aac4a-bfa2-4cbd-b652-ff388427ca88",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $('GetPosts').item.json.content.createdAt }}"
+              },
+              {
+                "id": "7ec30b28-c3cb-4ea0-9670-b2d64b463379",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $('GetPosts').item.json.content.source }}"
+              },
+              {
+                "id": "5eb3a087-e569-4bbb-bf8f-d4f5a56406bb",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $('GetPosts').item.json.content.url }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2200,
+          3340
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "201052f1-910d-4815-86c3-a337ad605503",
+        "name": "Get users with enabled News Monitor",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select u.*\nfrom public.users as u\njoin \"default\".user_capability as uc\n  on uc.username = u.username\njoin \"default\".capability as ca\n  on uc.capability_id = ca.id\nwhere u.status = true\n  and uc.is_enabled = true\n  and uc.is_deleted = false\n  and ca.domain = 'core'\n  and ca.name = 'news-monitor'"
+        },
+        "position": [
+          760,
+          3340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "d195f3a5-3cc9-4583-8ce2-b0f43e30eaec",
+        "name": "Get all the subscriptions to check for  all users",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "jobs",
+            "mode": "list",
+            "value": "jobs"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "subscriptions",
+            "mode": "list",
+            "value": "subscriptions"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "is-active",
+                "value": "true"
+              },
+              {
+                "column": "userid",
+                "value": "={{ $('Get users with enabled News Monitor').item.json.id.toString() }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          1000,
+          3340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "executeOnce": true,
+        "id": "74d2b8fb-d4bc-4915-a712-1e9aec198250",
+        "name": "Get memories about the user",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "personal-data",
+            "mode": "list",
+            "value": "personal-data"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "=ridgerock"
+          }
+        },
+        "position": [
+          1760,
+          3340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "ba347c49-367a-4a4f-880c-428e16639678",
+        "name": "Aggregate Personal Memories",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "append",
+                "field": "data"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1980,
+          3340
+        ],
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "bfca7799-0197-4e1d-a73b-d51c7b107875",
+        "name": "Merge",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "output.id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2840,
+          3340
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "468b820f-1be9-4687-a6a9-f2b721760647",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n    \"title\": \"Message with ID\",\n    \"description\": \"Structured output (message) with flat stucture with only two properties\",\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"id\": {\n\t\t\t\"type\": \"number\",\n            \"description\": \"unchanged id\"\n\t\t},\n\t\t\"message\": {\n\t\t\t\"type\": \"string\",\n            \"description\": \"result message for the user\"\n\t\t}\n\t},\n    \"required\": [\n      \"id\",\n      \"message\"\n    ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          2620,
+          3640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "3481e8c1-5aae-452a-9c42-817ecad09ea9",
+        "name": "Fix merge 2: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "cb597d08-c8de-49c0-862b-9ad39d59aa92",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "34648597-c003-4805-8c9f-18ae6ca02427",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "992c0f0d-585f-4bb7-b948-281fe9e91f09",
+                "name": "date",
+                "type": "number",
+                "value": "={{ $json.date }}"
+              },
+              {
+                "id": "fca0388c-6cce-4a97-9a72-b270e612f837",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.source }}"
+              },
+              {
+                "id": "e6e0dc1c-ad2a-4a52-99a1-4b374f43fc70",
+                "name": "sourceType",
+                "type": "string",
+                "value": "={{ $json.sourceType }}"
+              },
+              {
+                "id": "702353e7-60f5-4efa-974a-e80753f26096",
+                "name": "relevant",
+                "type": "boolean",
+                "value": "={{ $json.relevant }}"
+              },
+              {
+                "id": "b91ca77c-da0f-456c-b052-32d6eef3227e",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json.link }}"
+              },
+              {
+                "id": "79a7a5e0-2472-4d60-8c37-0bf2f50c52cc",
+                "name": "privateChannel",
+                "type": "boolean",
+                "value": "={{ $json.privateChannel }}"
+              },
+              {
+                "id": "965a57d3-be10-407d-a259-7a64cd1278f4",
+                "name": "sourceId",
+                "type": "string",
+                "value": "={{ $json.sourceId }}"
+              },
+              {
+                "id": "44c82ac7-e349-4f9a-a799-b609fce0310f",
+                "name": "speakerText",
+                "type": "string",
+                "value": "={{ $json.output.message }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3080,
+          3340
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "512e70a1-7aa3-4096-90a2-87c328c53144",
+        "name": "Create message",
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.message = item.json.speakerText + '\\n\\nSource: ' + `[${item.json.source}](${item.json.link})`\n}\n\nreturn $input.all();"
+        },
+        "position": [
+          3320,
+          3340
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "id": "c2e2c00c-5a06-4830-8e35-3156b76eafb0",
+        "name": "Send message to Telegram",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "=265110141",
+          "text": "={{ $json.message }}"
+        },
+        "position": [
+          3560,
+          3340
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "2736d274-cd51-426b-9b0d-65c26ef75124"
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "9e626f6b-d9c1-4998-9390-41533ee780ed",
+        "name": "Get last messages",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          3800,
+          3340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "c27298ea-7f8b-44ba-bf94-f5bf92f22b09",
+        "name": "Get technical ones",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f406eacc-38ac-491a-905a-21896fcb7911",
+                "leftValue": "={{ $json.message.content }}",
+                "operator": {
+                  "operation": "startsWith",
+                  "type": "string"
+                },
+                "rightValue": "This message is not from user"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          4040,
+          3340
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "5bece3ef-a4d1-4835-a033-49a70c617ceb",
+        "name": "Delete technical messages",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Items1').item.json.username.toLowerCase() }}"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          4280,
+          3340
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "id": "a3f13a45-e925-466f-960f-34f8a3c349be",
+        "name": "If3",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "d7b3fd14-e20f-45f3-a1ae-6db85f80a802",
+                "leftValue": "={{ $json.userid }}",
+                "operator": {
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "=265110141"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1220,
+          3340
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "credentials": {
+          "telegramApi": {
+            "id": "0Z6YSeWPzl1d2jdc",
+            "name": "@yourxenbot"
+          }
+        },
+        "executeOnce": true,
+        "id": "3457f3bd-3823-4201-9071-75fb451460a0",
+        "name": "Send message to Telegram1",
+        "parameters": {
+          "additionalFields": {
+            "appendAttribution": false
+          },
+          "chatId": "=265110141",
+          "text": "={{ $json.content.source }}\n\n{{ $json.content.text }}"
+        },
+        "position": [
+          1760,
+          3160
+        ],
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "webhookId": "2736d274-cd51-426b-9b0d-65c26ef75124"
       }
     ],
     "pinData": {
@@ -9642,8 +10460,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-04-21T07:44:02.000Z",
-    "versionId": "6054543d-6f28-4fd6-9be8-e18c59e5a61a"
+    "updatedAt": "2025-06-03T09:19:18.000Z",
+    "versionId": "0f13ee42-36cd-45e1-88d8-68f3680f0ae8"
   },
   {
     "active": true,
@@ -21385,255 +22203,6 @@
   {
     "active": false,
     "connections": {
-      "24h": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "HTTP Request",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "HTTP Request": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Postgres3",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "Postgres3": {
-        "main": [
-          [
-          ]
-        ]
-      }
-    },
-    "createdAt": "2025-04-24T12:40:40.820Z",
-    "id": "kxL7VE6UEY3sbt1V",
-    "isArchived": false,
-    "meta": {
-      "templateCredsSetupCompleted": true
-    },
-    "name": "Sync Capabilities",
-    "nodes": [
-      {
-        "id": "05380c28-0c9a-42d2-b9b3-c5abbdca65d8",
-        "name": "HTTP Request",
-        "parameters": {
-          "headerParameters": {
-            "parameters": [
-              {
-                "name": "accept",
-                "value": "application/json"
-              }
-            ]
-          },
-          "method": "POST",
-          "options": {
-            "pagination": {
-              "pagination": {
-                "parameters": {
-                  "parameters": [
-                    {
-                      "name": "offset",
-                      "value": "={{ $pageCount * 20}}"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "queryParameters": {
-            "parameters": [
-              {
-                "name": "total",
-                "value": "20"
-              },
-              {
-                "name": "show_hidden",
-                "value": "false"
-              },
-              {
-                "name": "show_latest_version",
-                "value": "true"
-              }
-            ]
-          },
-          "sendHeaders": true,
-          "sendQuery": true,
-          "url": "https://api.near.ai/v1/registry/list_entries"
-        },
-        "position": [
-          140,
-          520
-        ],
-        "type": "n8n-nodes-base.httpRequest",
-        "typeVersion": 4.2
-      },
-      {
-        "id": "e1457158-0698-45cd-a2eb-071c6812aacc",
-        "name": "24h",
-        "parameters": {
-          "rule": {
-            "interval": [
-              {
-                "triggerAtHour": 3
-              }
-            ]
-          }
-        },
-        "position": [
-          -100,
-          520
-        ],
-        "type": "n8n-nodes-base.scheduleTrigger",
-        "typeVersion": 1.2
-      },
-      {
-        "credentials": {
-          "postgres": {
-            "id": "8ZOLCkWqvhw8gGkU",
-            "name": "Postgres account"
-          }
-        },
-        "id": "4282035c-2a35-47fc-af35-13a046dab8a7",
-        "name": "Postgres3",
-        "parameters": {
-          "columns": {
-            "attemptToConvertTypes": false,
-            "convertFieldsToString": false,
-            "mappingMode": "defineBelow",
-            "matchingColumns": [
-              "domain",
-              "name"
-            ],
-            "schema": [
-              {
-                "canBeUsedToMatch": true,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "domain",
-                "id": "domain",
-                "removed": false,
-                "required": true,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": true,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "name",
-                "id": "name",
-                "removed": false,
-                "required": true,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": false,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "title",
-                "id": "title",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": false,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "description",
-                "id": "description",
-                "required": false,
-                "type": "string"
-              },
-              {
-                "canBeUsedToMatch": false,
-                "defaultMatch": false,
-                "display": true,
-                "displayName": "stars",
-                "id": "stars",
-                "removed": false,
-                "required": false,
-                "type": "number"
-              }
-            ],
-            "value": {
-              "description": "={{ $json.description }}\n{{ $json.details.agent.welcome.description }}",
-              "domain": "Near AI",
-              "name": "={{ $json.namespace }}/{{ $json.name }}",
-              "stars": "={{ $json.num_stars }}",
-              "title": "={{ $json.details.agent.welcome.title }}"
-            }
-          },
-          "operation": "upsert",
-          "options": {
-          },
-          "schema": {
-            "__rl": true,
-            "cachedResultName": "default",
-            "mode": "list",
-            "value": "default"
-          },
-          "table": {
-            "__rl": true,
-            "cachedResultName": "capability",
-            "mode": "list",
-            "value": "capability"
-          }
-        },
-        "position": [
-          360,
-          520
-        ],
-        "type": "n8n-nodes-base.postgres",
-        "typeVersion": 2.6
-      },
-      {
-        "id": "359c11ba-6065-45c5-9972-c3c79a8be59f",
-        "name": "Sticky Note",
-        "parameters": {
-          "content": "Import all NEAR AI agents",
-          "height": 200,
-          "width": 460
-        },
-        "position": [
-          80,
-          480
-        ],
-        "type": "n8n-nodes-base.stickyNote",
-        "typeVersion": 1
-      }
-    ],
-    "pinData": {
-    },
-    "settings": {
-      "executionOrder": "v1"
-    },
-    "staticData": {
-      "node:24h": {
-        "recurrenceRules": [
-        ]
-      },
-      "node:24h1": {
-        "recurrenceRules": [
-        ]
-      }
-    },
-    "tags": [
-    ],
-    "triggerCount": 1,
-    "updatedAt": "2025-05-30T13:52:31.000Z",
-    "versionId": "024c27ec-3232-4082-9562-016569a3748d"
-  },
-  {
-    "active": false,
-    "connections": {
       "Aggregate": {
         "main": [
           [
@@ -22461,34 +23030,12 @@
           ]
         ]
       },
-      "ExtractBeneficiaryId": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "GetTodayTransfers",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Get Capability": {
         "main": [
           [
             {
               "index": 0,
               "node": "ExtractAgentOwnerId1",
-              "type": "main"
-            }
-          ]
-        ]
-      },
-      "Get NFT": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "ExtractBeneficiaryId",
               "type": "main"
             }
           ]
@@ -22666,7 +23213,7 @@
           [
             {
               "index": 0,
-              "node": "Get NFT",
+              "node": "GetTodayTransfers",
               "type": "main"
             }
           ],
@@ -22855,7 +23402,7 @@
           [
             {
               "index": 0,
-              "node": "Get NFT",
+              "node": "GetTodayTransfers",
               "type": "main"
             }
           ]
@@ -23136,12 +23683,12 @@
         "parameters": {
           "operation": "executeQuery",
           "options": {
-            "queryReplacement": "={{ $json.agent_beneficiary_account_id }}"
+            "queryReplacement": "={{ $json.beneficiary_account_id }}"
           },
           "query": "select string_agg(amount, ',') as amounts\nfrom \"default\".reward_history\nwhere recipient_account_id = $1 and created_at >= now()::date"
         },
         "position": [
-          1680,
+          1280,
           -60
         ],
         "type": "n8n-nodes-base.postgres",
@@ -23155,7 +23702,7 @@
           "mode": "runOnceForEachItem"
         },
         "position": [
-          1860,
+          1580,
           -60
         ],
         "type": "n8n-nodes-base.code",
@@ -23168,7 +23715,7 @@
           "jsCode": "const rewardsPerDay = BigInt($('SumBigInts').first().json.total)\nconst maxRewardsPerDay = BigInt($('GetVariables').first().json.max_usage_reward_amount)\n\nreturn [{\n  json: {\n    shouldBeRewarded: rewardsPerDay < maxRewardsPerDay\n  }\n}]"
         },
         "position": [
-          2040,
+          1900,
           -60
         ],
         "type": "n8n-nodes-base.code",
@@ -23196,7 +23743,7 @@
         "parameters": {
           "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
           "privateKey": "={{ $('GetVariables').item.json.reward_account_private_key }}",
-          "recipientId": "={{ $('ExtractBeneficiaryId').item.json.agent_beneficiary_account_id }}",
+          "recipientId": "={{ $('IsNftIssued?').item.json.beneficiary_account_id }}",
           "senderId": "={{ $('GetVariables').item.json.reward_account_id }}"
         },
         "position": [
@@ -23221,7 +23768,7 @@
             "message_thread_id": "={{ $('GetVariables').item.json.telegram_monitoring_topic_id }}"
           },
           "chatId": "={{ $('GetVariables').item.json.telegram_monitoring_chat_id }}",
-          "text": "=Agent beneficiary {{ $json.recipient_account_id }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
+          "text": "=Agent beneficiary {{ $('IsNftIssued?').item.json.beneficiary_account_id }} rewarded for agent usage\nTx: https://nearblocks.io/txns/{{ $('Transfer NEAR').item.json.result.transaction_outcome.id }}\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
         },
         "position": [
           3000,
@@ -23246,7 +23793,7 @@
             "message_thread_id": "={{ $('GetVariables').item.json.telegram_monitoring_topic_id }}"
           },
           "chatId": "={{ $('GetVariables').item.json.telegram_monitoring_chat_id }}",
-          "text": "=Cannot reward {{ $json.recipient_account_id }} for agent usage\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
+          "text": "=Cannot reward {{ $('IsNftIssued?').item.json.beneficiary_account_id }} for agent usage\nCaller: @{{ $('Loop Over Items').item.json.caller_username }}\nRequest: {{ $('Loop Over Items').item.json.execution_input }}"
         },
         "position": [
           2720,
@@ -23285,7 +23832,7 @@
           }
         },
         "position": [
-          2240,
+          2200,
           -60
         ],
         "type": "n8n-nodes-base.if",
@@ -23379,7 +23926,7 @@
             ],
             "value": {
               "amount": "={{ $('GetVariables').item.json.usage_reward_amount }}",
-              "recipient_account_id": "={{ $('ExtractBeneficiaryId').item.json.agent_beneficiary_account_id }}",
+              "recipient_account_id": "={{ $('IsNftIssued?').item.json.beneficiary_account_id }}",
               "related_item_id": "={{ $('Loop Over Items').item.json.id }}",
               "related_item_type": "usage-owner",
               "tx_hash": "={{ $json.result.transaction_outcome.id }}"
@@ -24976,9 +25523,31 @@
                 "removed": false,
                 "required": false,
                 "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "beneficiary_account_id",
+                "id": "beneficiary_account_id",
+                "removed": false,
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "beneficiary_network",
+                "id": "beneficiary_network",
+                "removed": false,
+                "required": false,
+                "type": "string"
               }
             ],
             "value": {
+              "beneficiary_account_id": "={{$('GetCapability').item.json.name.split('/')[0]}}",
+              "beneficiary_network": "near",
               "id": "={{ $('Loop Over Items').item.json.capability_id }}",
               "token_id": "={{ $('SetTokenId').item.json.token_id }}"
             }
@@ -25025,21 +25594,6 @@
         "typeVersion": 1
       },
       {
-        "id": "e016402c-195f-4c9d-997b-a14253a65724",
-        "name": "Get NFT",
-        "parameters": {
-          "contractId": "={{ $('GetVariables').item.json.nft_contract_id }}",
-          "methodArgs": "={{ JSON.stringify({ \n  token_id: $json.token_id\n}) }}",
-          "methodName": "nft_token"
-        },
-        "position": [
-          1280,
-          -60
-        ],
-        "type": "@dapplets/n8n-nodes-near-protocol.viewContractCall",
-        "typeVersion": 1
-      },
-      {
         "id": "d8399d46-273a-4725-9234-5546944a1869",
         "name": "SetTokenId",
         "parameters": {
@@ -25059,30 +25613,6 @@
         "position": [
           1480,
           120
-        ],
-        "type": "n8n-nodes-base.set",
-        "typeVersion": 3.4
-      },
-      {
-        "id": "d609e9f5-8653-41d0-a6b1-4ee34f975379",
-        "name": "ExtractBeneficiaryId",
-        "parameters": {
-          "assignments": {
-            "assignments": [
-              {
-                "id": "63dd2cde-dbda-4a0f-8741-c7b5b6063f46",
-                "name": "agent_beneficiary_account_id",
-                "type": "string",
-                "value": "={{ JSON.parse($json.result.metadata.extra).beneficiary_account_id }}"
-              }
-            ]
-          },
-          "options": {
-          }
-        },
-        "position": [
-          1480,
-          -60
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
@@ -25260,8 +25790,8 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-06-02T16:39:01.000Z",
-    "versionId": "de216523-c5aa-4633-9abb-1103c27520e7"
+    "updatedAt": "2025-06-03T10:46:07.000Z",
+    "versionId": "be399525-e8ef-4574-98b5-f55a5de9a621"
   },
   {
     "active": false,
@@ -29185,7 +29715,7 @@
         "parameters": {
           "hasOutputParser": true,
           "options": {
-            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things. **Be very brief. Always include links without changes.**\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”.\n\nYou naturally notice everything that happens in the house — when lights turn on, the door opens, the temperature changes, someone arrives. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
+            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things in one sentence. **Be extremely brief. Always include links without changes.**\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('Aggregate Personal Memories').item.json.appended_data }}"
           },
           "promptType": "define",
           "text": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\nmessage: {{ $json.text }}\nid: {{ $json.id }}"
@@ -30015,8 +30545,8 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-05-30T07:29:50.000Z",
-    "versionId": "00e4e1d6-9d38-4234-9311-a95392287d3e"
+    "updatedAt": "2025-06-03T09:20:55.000Z",
+    "versionId": "983b5f01-405f-45c7-8a26-8639753c2242"
   },
   {
     "active": true,
@@ -30089,11 +30619,6 @@
       "Webhook": {
         "main": [
           [
-            {
-              "index": 0,
-              "node": "Get Active Subscriptions",
-              "type": "main"
-            }
           ]
         ]
       }
@@ -30583,8 +31108,8 @@
     "tags": [
     ],
     "triggerCount": 2,
-    "updatedAt": "2025-05-29T20:13:21.000Z",
-    "versionId": "75a35dea-e40e-48a0-a4d6-09dd2b1cb591"
+    "updatedAt": "2025-06-03T07:33:25.000Z",
+    "versionId": "bb57ca4d-9d95-49d9-bf88-9bf164cf7143"
   },
   {
     "active": false,
@@ -32994,5 +33519,243 @@
     "triggerCount": 2,
     "updatedAt": "2025-05-30T13:26:06.000Z",
     "versionId": "7b7ddbd8-e8ec-4f3c-ab0b-71380217da34"
+  },
+  {
+    "active": true,
+    "connections": {
+      "Extract Metadata": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Update Capabilities",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get Capabilities with NFTs": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get NFT Metadata",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get NFT Metadata": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extract Metadata",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get Variables": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get Capabilities with NFTs",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get Variables",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-06-03T08:16:14.949Z",
+    "id": "O0FM2PV9dUOf6xSl",
+    "isArchived": false,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Sync NFT Metadata",
+    "nodes": [
+      {
+        "id": "6638dd9f-2914-4631-b33a-2e45ec5a171e",
+        "name": "Schedule Trigger",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "minutes"
+              }
+            ]
+          }
+        },
+        "position": [
+          -260,
+          -100
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "e602a371-6e32-4b4e-b635-11b1cff98040",
+        "name": "Get Capabilities with NFTs",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "default",
+            "mode": "list",
+            "value": "default"
+          },
+          "table": {
+            "__rl": true,
+            "cachedResultName": "capability",
+            "mode": "list",
+            "value": "capability"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "token_id",
+                "condition": "IS NOT NULL"
+              }
+            ]
+          }
+        },
+        "position": [
+          180,
+          -100
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "e0705977-0de0-429b-a202-6cdcf3a89e7d",
+        "name": "Get Variables",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+          },
+          "query": "select \n\t(select value from environment.variables where type = 'NFT_CONTRACT_ID') as nft_contract_id"
+        },
+        "position": [
+          -40,
+          -100
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "id": "73a6d1d2-f766-43fd-91e9-e4a419575d46",
+        "name": "Get NFT Metadata",
+        "parameters": {
+          "contractId": "={{ $('Get Variables').item.json.nft_contract_id }}",
+          "methodArgs": "={{ JSON.stringify({ token_id: $json.token_id}) }}",
+          "methodName": "nft_token"
+        },
+        "position": [
+          400,
+          -100
+        ],
+        "type": "@dapplets/n8n-nodes-near-protocol.viewContractCall",
+        "typeVersion": 1
+      },
+      {
+        "id": "59f0e48d-6c57-4438-8655-5bf1fd3a4f67",
+        "name": "Extract Metadata",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "92169fb5-36f4-4ef7-aa53-3e5de4ed2d0f",
+                "name": "extra",
+                "type": "object",
+                "value": "={{ JSON.parse($json.result.metadata.extra) }}"
+              },
+              {
+                "id": "58d202d0-18e5-4dba-af2a-7189638acf89",
+                "name": "token_id",
+                "type": "string",
+                "value": "={{ $json.result.token_id }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          620,
+          -100
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "postgres": {
+            "id": "8ZOLCkWqvhw8gGkU",
+            "name": "Postgres account"
+          }
+        },
+        "id": "ac111184-e735-40e7-a2a1-931a8bcf87da",
+        "name": "Update Capabilities",
+        "parameters": {
+          "operation": "executeQuery",
+          "options": {
+            "queryReplacement": "={{ [\n$json.extra.beneficiary_network,\n$json.extra.beneficiary_account_id,\n$json.extra.agent_domain,\n$json.extra.agent_id,\n$json.token_id\n] }}"
+          },
+          "query": "update \"default\".capability\nset beneficiary_network = $1,\n    beneficiary_account_id = $2,\n    domain = $3,\n    name = $4\nwhere token_id = $5"
+        },
+        "position": [
+          840,
+          -100
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "callerPolicy": "workflowsFromSameOwner",
+      "errorWorkflow": "ATeafIxZxFrZ0jIR",
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:Schedule Trigger": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 1,
+    "updatedAt": "2025-06-03T09:43:05.000Z",
+    "versionId": "8042fd34-4d5e-4c3c-9cb7-a042b5517933"
   }
 ]
