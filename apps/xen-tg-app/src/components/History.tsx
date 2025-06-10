@@ -36,7 +36,7 @@ const History = () => {
     queryKey: ['history'],
     queryFn: queryFn('getUsageHistory', {
       offset: 0,
-      limit: 10,
+      limit: 100,
     }),
   })
 
