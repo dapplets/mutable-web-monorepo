@@ -2,13 +2,54 @@ import PlusIcon from '@/assets/plus'
 import SyncIcon from '@/assets/sync'
 import { API_URL } from '@/env'
 import { useGoBack } from '@/hooks/useGoBack'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatDistance } from 'date-fns'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TSubscription } from '../types'
 import Layout from './Layout'
 import { NewSubscription, Subscription } from './NewsSource'
 import Spinner from './Spinner'
+
+const PAGE_LIMIT = 10
+
+async function query<T, U>(name: string, params: T): Promise<U> {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
+  }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
+
+const queryFn =
+  (name: string) =>
+  async ({
+    pageParam,
+  }: {
+    pageParam: {
+      offset: number
+      limit: number
+    }
+  }): Promise<{ total: number; items: TSubscription[] | null | undefined }> =>
+    query<
+      { offset: number; limit: number },
+      { total: number; items: TSubscription[] | null | undefined }
+    >(name, pageParam)
 
 const mutationFn = async ({
   methodName,
@@ -40,48 +81,63 @@ const mutationFn = async ({
   return data.result
 }
 
-const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
-  if (!window.Telegram.WebApp.initData) {
-    throw new Error('Telegram is not available')
-  }
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      method: name,
-      params: params ?? {},
-      id: 1,
-    }),
-  })
-  if (!response.ok) {
-    throw new Error('Network response was not ok')
-  }
-  const data = await response.json()
-  return data.result
-}
-
 const NewsMonitor = () => {
   const queryClient = useQueryClient()
   const [showNewSubscriptionForm, setShowNewSubscriptionForm] = useState(false)
-
-  const { data: subscriptions, isPending } = useQuery<{ items: TSubscription[]; total: number }>({
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const {
+    data: subscriptions,
+    // error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    // status,
+  } = useInfiniteQuery({
     queryKey: ['subscriptions'],
-    queryFn: queryFn('getSubscriptions', {
+    queryFn: queryFn('getSubscriptions'),
+    initialPageParam: {
       offset: 0,
-      limit: 100,
-    }),
+      limit: PAGE_LIMIT,
+    },
+    getNextPageParam: (lastPage, __, lastPageParam) => {
+      if (lastPage.total <= lastPageParam.offset + lastPageParam.limit) return
+      return {
+        offset: lastPageParam.offset + PAGE_LIMIT,
+        limit: PAGE_LIMIT,
+      }
+    },
   })
 
   const { data: nextScanOfSubscriptions, isPending: isPendingNextScanOfSubscriptions } = useQuery<{
     nextScanAt: string
   }>({
     queryKey: ['nextScanOfSubscriptions'],
-    queryFn: queryFn('getNextScanOfSubscriptions'),
+    queryFn: () => query<null, { nextScanAt: string }>('getNextScanOfSubscriptions', null),
   })
+
+  useEffect(() => {
+    const sentinelEl = sentinelRef.current
+    if (!sentinelEl) return
+    observerRef.current?.disconnect()
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage && hasNextPage) fetchNextPage()
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      }
+    )
+
+    observerRef.current.observe(sentinelEl)
+    return () => {
+      observerRef.current?.disconnect()
+    }
+  }, [isFetchingNextPage, fetchNextPage, hasNextPage])
 
   const handleUpdateSubscription = useMutation({
     mutationFn,
@@ -124,15 +180,23 @@ const NewsMonitor = () => {
             onClick={() => setShowNewSubscriptionForm(true)}
             disabled={showNewSubscriptionForm}
           >
-            {isPending ? <Spinner /> : <PlusIcon />}
+            {isFetching ? <Spinner /> : <PlusIcon />}
           </button>
         </div>
         {showNewSubscriptionForm ? (
           <NewSubscription onClose={() => setShowNewSubscriptionForm(false)} />
         ) : null}
-        {subscriptions?.items.map((newsSource) => (
-          <Subscription key={newsSource.id} subscription={newsSource} />
-        ))}
+        {subscriptions?.pages.map((group) =>
+          group?.items?.map((newsSource) => (
+            <Subscription key={newsSource.id} subscription={newsSource} />
+          ))
+        )}
+        <div ref={sentinelRef} />
+        {hasNextPage ? (
+          <div className="flex h-10 w-full justify-center">
+            {isFetching || isFetchingNextPage ? <Spinner /> : null}
+          </div>
+        ) : null}
       </div>
     </Layout>
   )
