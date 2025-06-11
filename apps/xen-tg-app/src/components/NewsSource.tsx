@@ -94,8 +94,8 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
   }, [newLink])
 
   const onSubmit = () => {
-    if (!source || !newLink) return
-    if (!isValid) {
+    if (!newLink) return
+    if (!isValid || !source) {
       setShowWrongSubscriptionNameMessage(true)
     } else {
       addSubscription.mutate({
