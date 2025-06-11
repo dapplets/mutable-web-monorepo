@@ -1,3 +1,4 @@
+import EmptyIcon from '@/assets/empty.svg'
 import FilePlusIcon from '@/assets/file-plus'
 import PlusIcon from '@/assets/plus'
 import RedditIcon from '@/assets/reddit.svg'
@@ -36,18 +37,39 @@ const mutationFn = async ({
     throw new Error('Network response was not ok')
   }
   const data = await response.json()
+  if (data.error) {
+    throw new Error(data.error.message)
+  }
   return data.result
+}
+
+const getIcon = (source: TSubscription['source'] | null) => {
+  switch (source) {
+    case 'telegram':
+      return TelegramIcon
+    case 'reddit':
+      return RedditIcon
+    default:
+      return EmptyIcon
+  }
 }
 
 export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null)
+
   const [newLink, setNewLink] = useState('')
   const [showWrongSubscriptionNameMessage, setShowWrongSubscriptionNameMessage] = useState(false)
+  const [source, setSource] = useState<'reddit' | 'telegram' | null>(null)
+  const [isValid, setIsValid] = useState(false)
+
   const queryClient = useQueryClient()
   const addSubscription = useMutation({
     mutationFn,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subscriptions'] }).then(onClose)
+    },
+    onError: () => {
+      setShowWrongSubscriptionNameMessage(true)
     },
   })
 
@@ -55,15 +77,31 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
     if (inputRef.current) inputRef.current.focus()
   }, [inputRef])
 
+  useEffect(() => {
+    if (/^r\/[a-zA-Z0-9_]+$/.test(newLink)) {
+      setSource('reddit')
+      setIsValid(true)
+    } else if (
+      /^https:\/\/t\.me\/[a-zA-Z0-9_]+$/.test(newLink) ||
+      /^@[a-zA-Z0-9_]+$/.test(newLink)
+    ) {
+      setSource('telegram')
+      setIsValid(true)
+    } else {
+      setSource(null)
+      setIsValid(false)
+    }
+  }, [newLink])
+
   const onSubmit = () => {
-    const isValidated = /^r\/[a-zA-Z0-9_]+$/.test(newLink) // ToDo: hardcoded for Reddit
-    if (!isValidated) {
+    if (!source || !newLink) return
+    if (!isValid) {
       setShowWrongSubscriptionNameMessage(true)
     } else {
       addSubscription.mutate({
         methodName: 'addSubscription',
         params: {
-          source: 'reddit', // ToDo: hardcoded
+          source,
           link: newLink,
         },
       })
@@ -73,7 +111,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
   return (
     <div className="flex w-full flex-col items-center justify-between gap-2 rounded-[10px] bg-[#ffffff] px-2.5 py-1.5 dark:bg-[#f8f9ff4c]">
       <form className="flex w-full items-center justify-between gap-3.5" action={onSubmit}>
-        <img src={RedditIcon} alt="Reddit icon" />
+        <img src={getIcon(source)} alt="Source icon" />
 
         <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
           <input
@@ -122,9 +160,16 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
       </form>
       {showWrongSubscriptionNameMessage ? (
         <div className="text-destructive flex w-full items-center gap-1 ps-10 text-xs">
-          <p>
-            <b>Error:</b> Subscription name is invalid. It's supposed to look like <b>r/beatles</b>
-          </p>
+          {addSubscription.isError ? (
+            <p>
+              <b>Error:</b> {addSubscription.error.message}
+            </p>
+          ) : (
+            <p>
+              <b>Error:</b> Subscription name is invalid. It's supposed to look like{' '}
+              <b>r/beatles</b> for Reddit, <b>@durov</b> or <b>https://t.me/durov</b> for Telegram.
+            </p>
+          )}
         </div>
       ) : null}
     </div>
