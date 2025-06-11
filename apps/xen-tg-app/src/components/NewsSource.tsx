@@ -214,10 +214,7 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
 
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) px-2.5 py-1.5">
-      <img
-        src={subscription.source === 'telegram' ? TelegramIcon : RedditIcon}
-        alt={subscription.source === 'telegram' ? 'Telegram icon' : 'Reddit icon'}
-      />
+      <img src={getIcon(subscription.source)} alt="Source icon" />
 
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
         <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
@@ -244,9 +241,6 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
       </button>
 
       <button
-        style={{
-          visibility: subscription.source === 'telegram' ? 'hidden' : 'visible',
-        }}
         className="mr-1 flex w-8 cursor-pointer items-center justify-center py-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
         onClick={onRemove}
       >
