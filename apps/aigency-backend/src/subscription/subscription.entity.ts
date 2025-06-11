@@ -1,0 +1,22 @@
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+
+@Entity({ name: 'subscriptions', schema: 'jobs' })
+export class Subscription {
+  @PrimaryGeneratedColumn({ type: 'integer' })
+  id!: number;
+
+  @Column({ type: 'varchar', nullable: true })
+  username?: string;
+
+  @Column({ name: 'userid', type: 'varchar', nullable: true })
+  userId?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  source?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  link?: string;
+
+  @Column({ name: 'is-active', type: 'boolean', default: true })
+  isEnabled!: boolean;
+}

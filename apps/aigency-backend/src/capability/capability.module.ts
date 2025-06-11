@@ -1,0 +1,19 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Capability } from './capability.entity';
+import { CapabilityRepository } from './capability.repository';
+import { CapabilitiesService } from './capability.service';
+import { CapabilityController } from './capability.controller';
+import { UserCapability } from './user-capability.entity';
+import { UserCapabilityRepository } from './user-capability.repository';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([Capability, UserCapability])],
+  providers: [
+    CapabilityRepository,
+    UserCapabilityRepository,
+    CapabilitiesService,
+  ],
+  controllers: [CapabilityController],
+})
+export class CapabilityModule {}

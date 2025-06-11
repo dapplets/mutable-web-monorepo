@@ -1,0 +1,27 @@
+import { Injectable } from '@nestjs/common';
+import { SubscriptionRepository } from './subscription.repository';
+
+@Injectable()
+export class SubscriptionService {
+  constructor(
+    private readonly subscriptionRepository: SubscriptionRepository,
+  ) {}
+
+  async getSubscriptions(username: string, limit: number, offset: number) {
+    const [items, total] = await this.subscriptionRepository.findAndCount({
+      where: { username },
+      take: limit,
+      skip: offset,
+    });
+
+    return {
+      total,
+      items: items.map((item) => ({
+        id: item.id,
+        source: item.source,
+        link: item.link,
+        isEnabled: item.isEnabled,
+      })),
+    };
+  }
+}
