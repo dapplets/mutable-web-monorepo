@@ -17,7 +17,7 @@ const App = () => {
       >
         <SettingsIcon />
       </Link>
-      <div className="z-1 m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full select-none">
+      <div className="z-1 m-2.5 flex w-[210px] justify-center overflow-hidden rounded-full border border-(--color-opposite-text) select-none dark:border-(--color-main-text)/30">
         <img src={XEN_IMAGE} alt="xen-photo" className="h-full w-full" />
       </div>
       <Wallet />
