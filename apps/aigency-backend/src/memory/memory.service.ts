@@ -17,4 +17,8 @@ export class MemoryService {
       items: items.map((item) => item.toDto()),
     };
   }
+
+  async deleteAllMemories(username: string) {
+    await this.memoryRepository.deleteAllMemories(username);
+  }
 }
