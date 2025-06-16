@@ -44,4 +44,19 @@ export class SubscriptionController {
       params.id,
     );
   }
+
+  @ZodToOpenRPC({ params: z.object({ source: z.string(), link: z.string() }) })
+  public addSubscription(
+    @Body()
+    params: { source: string; link: string },
+    @UserInfo()
+    user: UserInfo,
+  ) {
+    return this.subscriptionService.addSubscription(
+      user.username,
+      user.id.toString(),
+      params.source,
+      params.link,
+    );
+  }
 }

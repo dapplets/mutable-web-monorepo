@@ -39,4 +39,28 @@ export class SubscriptionService {
       { isEnabled: false },
     );
   }
+
+  async addSubscription(
+    username: string,
+    userId: string,
+    source: string,
+    link: string,
+  ) {
+    const subscription = this.subscriptionRepository.create({
+      username,
+      userId,
+      source,
+      link,
+      isEnabled: true,
+    });
+
+    await this.subscriptionRepository.insert(subscription);
+
+    return {
+      id: subscription.id,
+      source: subscription.source,
+      link: subscription.link,
+      isEnabled: subscription.isEnabled,
+    };
+  }
 }
