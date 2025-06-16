@@ -4,12 +4,14 @@ import { CapabilityModule } from '../capability';
 import { SubscriptionModule } from '../subscription';
 import { EnvironmentModule } from '../env';
 import { ConfigService } from '@nestjs/config';
+import { UserModule } from '../user';
 
 @Module({
   imports: [
     EnvironmentModule,
     CapabilityModule,
     SubscriptionModule,
+    UserModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],
