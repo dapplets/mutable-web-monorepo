@@ -3,31 +3,31 @@ import { Entity, Index, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'context_edge' })
 @Index(
   [
-    'from_context_namespace',
-    'from_context_type',
-    'from_context_id',
-    'to_context_namespace',
-    'to_context_type',
-    'to_context_id',
+    'fromContextNamespace',
+    'fromContextType',
+    'fromContextId',
+    'toContextNamespace',
+    'toContextType',
+    'toContextId',
   ],
   { unique: true },
 )
 export class ContextEdge {
-  @PrimaryColumn()
-  from_context_namespace: string;
+  @PrimaryColumn({ name: 'from_context_namespace' })
+  fromContextNamespace!: string;
 
-  @PrimaryColumn()
-  from_context_type: string;
+  @PrimaryColumn({ name: 'from_context_type' })
+  fromContextType!: string;
 
-  @PrimaryColumn()
-  from_context_id: string;
+  @PrimaryColumn({ name: 'from_context_id' })
+  fromContextId!: string;
 
-  @PrimaryColumn()
-  to_context_namespace: string;
+  @PrimaryColumn({ name: 'to_context_namespace' })
+  toContextNamespace!: string;
 
-  @PrimaryColumn()
-  to_context_type: string;
+  @PrimaryColumn({ name: 'to_context_type' })
+  toContextType!: string;
 
-  @PrimaryColumn()
-  to_context_id: string;
+  @PrimaryColumn({ name: 'to_context_id' })
+  toContextId!: string;
 }

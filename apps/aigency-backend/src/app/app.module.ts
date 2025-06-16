@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CapabilityModule } from '../capability';
 import { SubscriptionModule } from '../subscription';
-import { EnvironmentModule } from 'src/env';
+import { EnvironmentModule } from '../env';
 import { ConfigService } from '@nestjs/config';
 
 @Module({
@@ -22,7 +22,7 @@ import { ConfigService } from '@nestjs/config';
         database: config.get<string>('DB_NAME'),
         schema: config.get<string>('DB_SCHEMA'),
         entities: ['dist/**/*.entity.js'],
-        synchronize: true,
+        synchronize: false, // ToDo
       }),
     }),
   ],

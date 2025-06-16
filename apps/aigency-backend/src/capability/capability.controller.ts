@@ -1,8 +1,8 @@
 import { Body, UseGuards } from '@nestjs/common';
 import { ZodToOpenRPC } from '@dapplets/openrpc-nestjs-json-rpc';
 import { z } from 'zod';
-import { AuthGuard, UserInfo } from 'src/auth/auth.guard';
-import { PaginationDto, PaginationSchema } from 'src/common/pagination.dto';
+import { AuthGuard, UserInfo } from '../auth/auth.guard';
+import { PaginationDto, PaginationSchema } from '../common/pagination.dto';
 import { CapabilitiesService } from './capability.service';
 import { RpcService } from '../common/rpc-service.decorator';
 

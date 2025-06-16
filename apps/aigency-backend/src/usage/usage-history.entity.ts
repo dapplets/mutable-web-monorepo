@@ -3,20 +3,20 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity({ name: 'usage_history' })
 export class UsageHistory {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column()
-  caller_username: string;
+  @Column({ type: 'text', name: 'caller_username' })
+  callerUsername!: string;
 
-  @Column({ type: 'uuid' })
-  capability_id: string;
+  @Column({ name: 'capability_id', type: 'uuid' })
+  capabilityId!: string;
 
-  @Column({ nullable: true })
-  execution_input: string;
+  @Column({ type: 'text', name: 'execution_input', nullable: true })
+  executionInput!: string | null;
 
-  @Column({ nullable: true })
-  execution_output: string;
+  @Column({ type: 'text', name: 'execution_output', nullable: true })
+  executionOutput!: string | null;
 
-  @Column({ type: 'timestamptz', default: () => 'now()' })
-  created_at: Date;
+  @Column({ name: 'created_at', type: 'timestamptz', default: () => 'now()' })
+  createdAt!: Date;
 }

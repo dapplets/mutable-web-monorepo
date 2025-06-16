@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CapabilityRepository } from './capability.repository';
-import { PaginationDto } from 'src/common/pagination.dto';
 import { UserCapabilityRepository } from './user-capability.repository';
 
 @Injectable()

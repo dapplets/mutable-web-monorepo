@@ -10,6 +10,7 @@ export class SubscriptionService {
   async getSubscriptions(username: string, limit: number, offset: number) {
     const [items, total] = await this.subscriptionRepository.findAndCount({
       where: { username },
+      order: { id: 'DESC' },
       take: limit,
       skip: offset,
     });
@@ -23,5 +24,19 @@ export class SubscriptionService {
         isEnabled: item.isEnabled,
       })),
     };
+  }
+
+  async enableSubscription(username: string, id: number) {
+    await this.subscriptionRepository.update(
+      { username, id },
+      { isEnabled: true },
+    );
+  }
+
+  async disableSubscription(username: string, id: number) {
+    await this.subscriptionRepository.update(
+      { username, id },
+      { isEnabled: false },
+    );
   }
 }

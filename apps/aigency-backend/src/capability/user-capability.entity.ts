@@ -12,18 +12,18 @@ import { Capability } from './capability.entity';
 @Index(['username', 'capabilityId'], { unique: true })
 export class UserCapability {
   @PrimaryColumn()
-  username: string;
+  username!: string;
 
   @PrimaryColumn({ type: 'uuid', name: 'capability_id' })
-  capabilityId: string;
+  capabilityId!: string;
 
   @Column({ default: true, name: 'is_enabled' })
-  isEnabled: boolean;
+  isEnabled!: boolean;
 
   @Column({ default: false, name: 'is_deleted' })
-  isDeleted: boolean;
+  isDeleted!: boolean;
 
   @ManyToOne(() => Capability, (capability) => capability.users)
   @JoinColumn({ name: 'capability_id' })
-  capability: Capability;
+  capability!: Capability;
 }

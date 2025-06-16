@@ -4,17 +4,17 @@ import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 @Index(['namespace', 'type', 'id'], { unique: true })
 export class ContextNode {
   @PrimaryColumn()
-  namespace: string;
+  namespace!: string;
 
   @PrimaryColumn()
-  type: string;
+  type!: string;
 
   @PrimaryColumn()
-  id: string;
+  id!: string;
 
-  @Column({ type: 'json', nullable: true })
-  content: any;
+  @Column({ type: 'simple-json', nullable: true })
+  content!: any;
 
   @Column({ type: 'timestamptz', default: () => 'now()' })
-  timestamp: Date;
+  timestamp!: Date;
 }

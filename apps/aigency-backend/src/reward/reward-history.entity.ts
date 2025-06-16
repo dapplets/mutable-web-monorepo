@@ -3,23 +3,23 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity({ name: 'reward_history' })
 export class RewardHistory {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column({ nullable: true })
-  recipient_account_id: string;
+  @Column({ name: 'recipient_account_id', type: 'text', nullable: true })
+  recipientAccountId!: string | null;
 
-  @Column()
-  amount: string;
+  @Column({ type: 'text' })
+  amount!: string;
 
-  @Column({ nullable: true })
-  tx_hash: string;
+  @Column({ name: 'tx_hash', type: 'text', nullable: true })
+  txHash!: string | null;
 
-  @Column()
-  related_item_type: string;
+  @Column({ name: 'related_item_type', type: 'text' })
+  relatedItemType!: string;
 
-  @Column({ type: 'uuid' })
-  related_item_id: string;
+  @Column({ name: 'related_item_id', type: 'uuid' })
+  relatedItemId!: string;
 
-  @Column({ type: 'timestamptz', default: () => 'now()' })
-  created_at: Date;
+  @Column({ name: 'created_at', type: 'timestamptz', default: () => 'now()' })
+  createdAt!: Date;
 }

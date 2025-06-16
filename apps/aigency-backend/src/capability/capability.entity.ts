@@ -4,35 +4,35 @@ import { UserCapability } from './user-capability.entity';
 @Entity({ name: 'capability' })
 export class Capability {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column()
-  domain: string;
+  @Column({ type: 'text' })
+  domain!: string;
 
-  @Column()
-  name: string;
+  @Column({ type: 'text' })
+  name!: string;
 
-  @Column({ nullable: true })
-  title: string;
+  @Column({ type: 'text', nullable: true })
+  title!: string | null;
 
-  @Column({ nullable: true })
-  description: string;
+  @Column({ type: 'text', nullable: true })
+  description!: string | null;
+
+  @Column({ type: 'text', nullable: true, name: 'token_id' })
+  tokenId!: string | null;
+
+  @Column({ type: 'text', nullable: true, name: 'beneficiary_network' })
+  beneficiaryNetwork!: string | null;
+
+  @Column({ type: 'text', nullable: true, name: 'beneficiary_account_id' })
+  beneficiaryAccountId!: string | null;
 
   @Column({ default: 0 })
-  stars: number;
-
-  @Column({ nullable: true, name: 'token_id' })
-  tokenId: string;
-
-  @Column({ nullable: true, name: 'beneficiary_network' })
-  beneficiaryNetwork: string;
-
-  @Column({ nullable: true, name: 'beneficiary_account_id' })
-  beneficiaryAccountId: string;
+  stars!: number;
 
   @OneToMany(
     () => UserCapability,
     (userCapability) => userCapability.capability,
   )
-  users: UserCapability[];
+  users!: UserCapability[];
 }

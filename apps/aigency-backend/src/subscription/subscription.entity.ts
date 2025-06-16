@@ -6,16 +6,16 @@ export class Subscription {
   id!: number;
 
   @Column({ type: 'varchar', nullable: true })
-  username?: string;
+  username!: string | null;
 
   @Column({ name: 'userid', type: 'varchar', nullable: true })
-  userId?: string;
+  userId!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  source?: string;
+  source!: string | null;
 
   @Column({ type: 'varchar', nullable: true })
-  link?: string;
+  link!: string | null;
 
   @Column({ name: 'is-active', type: 'boolean', default: true })
   isEnabled!: boolean;
