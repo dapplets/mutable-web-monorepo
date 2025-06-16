@@ -21,4 +21,8 @@ export class MemoryService {
   async deleteAllMemories(username: string) {
     await this.memoryRepository.deleteAllMemories(username);
   }
+
+  async deleteMemory(username: string, id: number) {
+    await this.memoryRepository.deleteMemory(username, id);
+  }
 }

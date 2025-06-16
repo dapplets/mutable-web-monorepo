@@ -27,4 +27,12 @@ export class MemoryController {
   public deleteAllMemories(@UserInfo() user: UserInfo) {
     return this.memoryService.deleteAllMemories(user.username);
   }
+
+  @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
+  public deleteMemory(
+    @Body() params: { id: number },
+    @UserInfo() user: UserInfo,
+  ) {
+    return this.memoryService.deleteMemory(user.username, params.id);
+  }
 }

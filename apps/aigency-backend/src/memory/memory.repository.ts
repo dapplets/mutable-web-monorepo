@@ -14,9 +14,7 @@ export class MemoryRepository extends Repository<Memory> {
     limit: number,
     offset: number,
   ): Promise<[Memory[], number]> {
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      throw new Error('Invalid username');
-    }
+    this._validateUsername(username);
 
     const rows = await this.dataSource.query<
       {
@@ -47,10 +45,24 @@ export class MemoryRepository extends Repository<Memory> {
   }
 
   async deleteAllMemories(username: string) {
+    this._validateUsername(username);
+
+    await this.dataSource.query(`DELETE FROM "personal-data"."${username}"`);
+  }
+
+  async deleteMemory(username: string, id: number) {
+    this._validateUsername(username);
+
+    await this.dataSource.query(
+      `DELETE FROM "personal-data"."${username}" WHERE id = $1`,
+      [id],
+    );
+  }
+
+  private _validateUsername(username: string) {
+    // prevents SQL injection
     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
       throw new Error('Invalid username');
     }
-
-    await this.dataSource.query(`DELETE FROM "personal-data"."${username}"`);
   }
 }
