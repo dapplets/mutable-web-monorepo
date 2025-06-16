@@ -46,6 +46,14 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
+  async disableDevMode(id: number) {
+    const user = await this.userRepository.findOneByOrFail({ id });
+
+    user.isDeveloper = false;
+
+    await this.userRepository.save(user);
+  }
+
   private async _getBalance(accountId: string) {
     const url = this.configService.get<string>('NEAR_NODE_URL')!;
 

@@ -29,4 +29,9 @@ export class UserController {
   public enableDevMode(@UserInfo() user: UserInfo) {
     return this.userService.enableDevMode(user.id);
   }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public disableDevMode(@UserInfo() user: UserInfo) {
+    return this.userService.disableDevMode(user.id);
+  }
 }
