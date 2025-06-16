@@ -22,4 +22,13 @@ export class Warning {
 
   @Column({ type: 'text' })
   hash!: string;
+
+  toDto() {
+    return {
+      id: this.id,
+      title: this.title,
+      description: this.description,
+      createdAt: this.createdAt,
+    };
+  }
 }
