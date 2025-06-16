@@ -38,6 +38,14 @@ export class UserService {
     return user.isDeveloper;
   }
 
+  async enableDevMode(id: number) {
+    const user = await this.userRepository.findOneByOrFail({ id });
+
+    user.isDeveloper = true;
+
+    await this.userRepository.save(user);
+  }
+
   private async _getBalance(accountId: string) {
     const url = this.configService.get<string>('NEAR_NODE_URL')!;
 
