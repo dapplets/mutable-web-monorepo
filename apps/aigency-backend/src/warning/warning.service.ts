@@ -18,4 +18,8 @@ export class WarningService {
       items: items.map((item) => item.toDto()),
     };
   }
+
+  async deleteAllWarnings(username: string) {
+    await this.warningRepository.update({ username }, { isDeleted: true });
+  }
 }

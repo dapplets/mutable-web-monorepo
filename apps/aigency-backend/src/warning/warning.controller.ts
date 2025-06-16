@@ -4,6 +4,7 @@ import { AuthGuard, UserInfo } from '../auth/auth.guard';
 import { WarningService } from './warning.service';
 import { RpcService } from '../common/rpc-service.decorator';
 import { PaginationDto, PaginationSchema } from 'src/common/pagination.dto';
+import { z } from 'zod';
 
 @UseGuards(AuthGuard)
 @RpcService()
@@ -20,5 +21,10 @@ export class WarningController {
       params.limit,
       params.offset,
     );
+  }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public deleteAllWarnings(@UserInfo() user: UserInfo) {
+    return this.warningService.deleteAllWarnings(user.username);
   }
 }
