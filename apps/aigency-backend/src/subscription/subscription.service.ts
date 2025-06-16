@@ -54,6 +54,8 @@ export class SubscriptionService {
       isEnabled: true,
     });
 
+    // ToDo: check subscription link before save
+
     await this.subscriptionRepository.insert(subscription);
 
     return {
@@ -62,5 +64,9 @@ export class SubscriptionService {
       link: subscription.link,
       isEnabled: subscription.isEnabled,
     };
+  }
+
+  async removeSubscription(username: string, id: number) {
+    await this.subscriptionRepository.delete({ username, id });
   }
 }

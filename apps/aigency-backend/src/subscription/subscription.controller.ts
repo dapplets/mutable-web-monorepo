@@ -59,4 +59,16 @@ export class SubscriptionController {
       params.link,
     );
   }
+
+  @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
+  public removeSubscription(
+    @Body() params: { id: number },
+    @UserInfo()
+    user: UserInfo,
+  ) {
+    return this.subscriptionService.removeSubscription(
+      user.username,
+      params.id,
+    );
+  }
 }
