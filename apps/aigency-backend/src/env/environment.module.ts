@@ -16,6 +16,7 @@ export const envSchema = z
     NODE_ENV: z
       .enum(['development', 'production', 'test'])
       .default('development'),
+    NEAR_NODE_URL: z.string().url(),
   })
   // Cast DB_PORT → number so callers get the right type
   .transform((vars) => ({ ...vars, DB_PORT: Number(vars.DB_PORT) }));

@@ -102,6 +102,15 @@ importers:
       '@dapplets/openrpc-nestjs-json-rpc':
         specifier: ^0.0.8
         version: 0.0.8(@nestjs/common@11.1.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.3(@nestjs/common@11.1.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/microservices@11.1.3)(@nestjs/platform-express@11.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.3(@nestjs/common@11.1.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.3))(reflect-metadata@0.2.2)
+      '@near-js/accounts':
+        specifier: ^2.1.0
+        version: 2.1.0(@near-js/crypto@1.4.2)(@near-js/providers@2.1.0(@near-js/crypto@1.4.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))(encoding@0.1.13))(@near-js/signers@0.2.2)(@near-js/tokens@2.1.0)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))
+      '@near-js/providers':
+        specifier: ^2.1.0
+        version: 2.1.0(@near-js/crypto@1.4.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))(encoding@0.1.13)
+      '@near-js/utils':
+        specifier: ^2.1.0
+        version: 2.1.0(@near-js/types@0.3.1)
       '@nestjs/common':
         specifier: ^11.0.1
         version: 11.1.3(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -4713,6 +4722,17 @@ packages:
   '@near-js/accounts@1.4.1':
     resolution: {integrity: sha512-ni3QT9H3NdrbVVKyx56yvz93r89Dvpc/vgVtiIK2OdXjkK6jcj+UKMDRQ6F7rd9qJOInLkHZbVBtcR6j1CXLjw==}
 
+  '@near-js/accounts@2.1.0':
+    resolution: {integrity: sha512-QjTcfkuy5/3KREpixe4O1rq8HxESlFIg7eQ+q/SJ0pZQP4TwyhOefiJdZixsBZ18yWxELyUuRh1WyHtrHvmkdQ==}
+    peerDependencies:
+      '@near-js/crypto': ^2.0.1
+      '@near-js/providers': ^2.0.1
+      '@near-js/signers': ^2.0.1
+      '@near-js/tokens': ^2.0.1
+      '@near-js/transactions': ^2.0.1
+      '@near-js/types': ^2.0.1
+      '@near-js/utils': ^2.0.1
+
   '@near-js/crypto@0.0.4':
     resolution: {integrity: sha512-2mSIVv6mZway1rQvmkktrXAFoUvy7POjrHNH3LekKZCMCs7qMM/23Hz2+APgxZPqoV2kjarSNOEYJjxO7zQ/rQ==}
 
@@ -4773,6 +4793,14 @@ packages:
   '@near-js/providers@1.0.3':
     resolution: {integrity: sha512-VJMboL14R/+MGKnlhhE3UPXCGYvMd1PpvF9OqZ9yBbulV7QVSIdTMfY4U1NnDfmUC2S3/rhAEr+3rMrIcNS7Fg==}
 
+  '@near-js/providers@2.1.0':
+    resolution: {integrity: sha512-/djAXcmPUkcKzXDO9rZpojslpGFQOI9G2NjJgzZzLqan9MC3ILFO0aCjadaT9fl7Blui3ep1yDP36HZg95fFjA==}
+    peerDependencies:
+      '@near-js/crypto': ^2.0.1
+      '@near-js/transactions': ^2.0.1
+      '@near-js/types': ^2.0.1
+      '@near-js/utils': ^2.0.1
+
   '@near-js/signers@0.0.4':
     resolution: {integrity: sha512-xCglo3U/WIGsz/izPGFMegS5Q3PxOHYB8a1E7RtVhNm5QdqTlQldLCm/BuMg2G/u1l1ZZ0wdvkqRTG9joauf3Q==}
 
@@ -4784,6 +4812,9 @@ packages:
 
   '@near-js/signers@0.2.2':
     resolution: {integrity: sha512-M6ib+af9zXAPRCjH2RyIS0+RhCmd9gxzCeIkQ+I2A3zjgGiEDkBZbYso9aKj8Zh2lPKKSH7h+u8JGymMOSwgyw==}
+
+  '@near-js/tokens@2.1.0':
+    resolution: {integrity: sha512-jYTPVjrg2kO645Q2yz8BFQfhPY8ES+3sZSj5cbJEGig3DNwbGgLrLbgmz1BAB/WT8B3CyCj/Egliz5Fz02DVjQ==}
 
   '@near-js/transactions@0.2.0':
     resolution: {integrity: sha512-ejcYkDz0tdQ40i/7ETV23fL5hp/pIiNXYmh4bNuZ9FjeowBODtlXGLqjG3wZbCygHCirJKilmVi5BtM+rh4ovQ==}
@@ -4817,6 +4848,11 @@ packages:
 
   '@near-js/utils@1.1.0':
     resolution: {integrity: sha512-5XWRq7xpu8Wud9pRXe2U347KXyi0mXofedUY2DQ9TaqiZUcMIaN9xj7DbCs2v6dws3pJyYrT1KWxeNp5fSaY3w==}
+
+  '@near-js/utils@2.1.0':
+    resolution: {integrity: sha512-Zj09Q38Aifj2bU+NDy1oAJX5FpSuDU67bv9AY2rEpsvLiBZY5B1oRGLOs7u/P50NByYULfD8odPj1gRtgkgsZQ==}
+    peerDependencies:
+      '@near-js/types': ^2.0.1
 
   '@near-js/wallet-account@0.0.6':
     resolution: {integrity: sha512-oyxQM6tf2WG4it+8IMu0ZQ6pa4OQhF1o+Q33Rb2+4Mb1Fm+L7MO7PJoCPcveCIFYVPOjSVk0oyoz1KbE3y62gA==}
@@ -22169,6 +22205,22 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
+  '@near-js/accounts@2.1.0(@near-js/crypto@1.4.2)(@near-js/providers@2.1.0(@near-js/crypto@1.4.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))(encoding@0.1.13))(@near-js/signers@0.2.2)(@near-js/tokens@2.1.0)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))':
+    dependencies:
+      '@near-js/crypto': 1.4.2
+      '@near-js/providers': 2.1.0(@near-js/crypto@1.4.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))(encoding@0.1.13)
+      '@near-js/signers': 0.2.2
+      '@near-js/tokens': 2.1.0
+      '@near-js/transactions': 1.3.3
+      '@near-js/types': 0.3.1
+      '@near-js/utils': 2.1.0(@near-js/types@0.3.1)
+      '@noble/hashes': 1.7.1
+      borsh: 1.0.0
+      depd: 2.0.0
+      is-my-json-valid: 2.20.6
+      lru_map: 0.4.1
+      near-abi: 0.2.0
+
   '@near-js/crypto@0.0.4':
     dependencies:
       '@near-js/types': 0.0.4
@@ -22311,6 +22363,19 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
+  '@near-js/providers@2.1.0(@near-js/crypto@1.4.2)(@near-js/transactions@1.3.3)(@near-js/types@0.3.1)(@near-js/utils@2.1.0(@near-js/types@0.3.1))(encoding@0.1.13)':
+    dependencies:
+      '@near-js/crypto': 1.4.2
+      '@near-js/transactions': 1.3.3
+      '@near-js/types': 0.3.1
+      '@near-js/utils': 2.1.0(@near-js/types@0.3.1)
+      borsh: 1.0.0
+      exponential-backoff: 3.1.2
+    optionalDependencies:
+      node-fetch: 2.6.7(encoding@0.1.13)
+    transitivePeerDependencies:
+      - encoding
+
   '@near-js/signers@0.0.4':
     dependencies:
       '@near-js/crypto': 0.0.4
@@ -22334,6 +22399,8 @@ snapshots:
       '@near-js/crypto': 1.4.2
       '@near-js/keystores': 0.2.2
       '@noble/hashes': 1.3.3
+
+  '@near-js/tokens@2.1.0': {}
 
   '@near-js/transactions@0.2.0':
     dependencies:
@@ -22402,6 +22469,13 @@ snapshots:
       mustache: 4.0.0
 
   '@near-js/utils@1.1.0':
+    dependencies:
+      '@near-js/types': 0.3.1
+      '@scure/base': 1.2.4
+      depd: 2.0.0
+      mustache: 4.0.0
+
+  '@near-js/utils@2.1.0(@near-js/types@0.3.1)':
     dependencies:
       '@near-js/types': 0.3.1
       '@scure/base': 1.2.4
@@ -36336,7 +36410,7 @@ snapshots:
   ox@0.6.7(typescript@5.8.3)(zod@3.25.61):
     dependencies:
       '@adraffy/ens-normalize': 1.11.0
-      '@noble/curves': 1.8.1
+      '@noble/curves': 1.8.2
       '@noble/hashes': 1.7.2
       '@scure/bip32': 1.6.2
       '@scure/bip39': 1.5.4

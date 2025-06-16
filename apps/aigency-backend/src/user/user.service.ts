@@ -1,11 +1,46 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
+import { Account } from '@near-js/accounts';
+import { JsonRpcProvider } from '@near-js/providers';
+import { ConfigService } from '@nestjs/config';
+import { formatNearAmount } from '@near-js/utils';
+import { CodedRpcException } from '@dapplets/openrpc-nestjs-json-rpc';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly configService: ConfigService,
+  ) {}
 
-  getUserById(id: number) {
-    return this.userRepository.findOneBy({ id }).then((user) => user?.toDto());
+  async getUserById(id: number) {
+    const user = await this.userRepository.findOneByOrFail({ id });
+    return user.toDto();
+  }
+
+  async getBalance(id: number) {
+    const user = await this.userRepository.findOneByOrFail({ id });
+
+    if (!user.nearAccountId) {
+      throw new CodedRpcException('User is not logged in');
+    }
+
+    const balance = await this._getBalance(user.nearAccountId);
+
+    return {
+      balance: balance.toString(),
+      formatted: formatNearAmount(balance.toString(), 4),
+    };
+  }
+
+  private async _getBalance(accountId: string) {
+    const url = this.configService.get<string>('NEAR_NODE_URL')!;
+
+    const provider = new JsonRpcProvider({ url });
+
+    const account = new Account(accountId, provider);
+    const accountBalance = await account.getBalance();
+
+    return accountBalance;
   }
 }

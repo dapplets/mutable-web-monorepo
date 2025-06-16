@@ -14,4 +14,9 @@ export class UserController {
   public getCurrentUser(@UserInfo() user: UserInfo) {
     return this.userService.getUserById(user.id);
   }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public getBalance(@UserInfo() user: UserInfo) {
+    return this.userService.getBalance(user.id);
+  }
 }
