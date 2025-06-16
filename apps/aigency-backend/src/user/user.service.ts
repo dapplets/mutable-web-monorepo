@@ -33,6 +33,11 @@ export class UserService {
     };
   }
 
+  async getDevMode(id: number) {
+    const user = await this.userRepository.findOneByOrFail({ id });
+    return user.isDeveloper;
+  }
+
   private async _getBalance(accountId: string) {
     const url = this.configService.get<string>('NEAR_NODE_URL')!;
 
