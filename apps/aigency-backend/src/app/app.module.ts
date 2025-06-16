@@ -6,6 +6,7 @@ import { EnvironmentModule } from '../env';
 import { ConfigService } from '@nestjs/config';
 import { UserModule } from '../user';
 import { WarningModule } from '../warning';
+import { MemoryModule } from '../memory';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { WarningModule } from '../warning';
     SubscriptionModule,
     UserModule,
     WarningModule,
+    MemoryModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],
