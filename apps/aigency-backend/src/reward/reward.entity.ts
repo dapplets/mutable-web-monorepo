@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'reward_history' })
-export class RewardHistory {
+export class Reward {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
