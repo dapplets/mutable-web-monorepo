@@ -241,6 +241,9 @@ ALTER TABLE ONLY jobs.reminders
 ALTER TABLE ONLY jobs.subscriptions
     ADD CONSTRAINT subscriptions_pk_1 PRIMARY KEY (id);
 
+ALTER TABLE ONLY jobs.subscriptions
+    ADD CONSTRAINT subscriptions_unique UNIQUE (userid, source, link);
+
 ALTER TABLE ONLY jobs.tasks
     ADD CONSTRAINT tasks_pk PRIMARY KEY (id);
 
