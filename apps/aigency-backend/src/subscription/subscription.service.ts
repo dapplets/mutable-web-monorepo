@@ -69,4 +69,24 @@ export class SubscriptionService {
   async removeSubscription(username: string, id: number) {
     await this.subscriptionRepository.delete({ username, id });
   }
+
+  getNextScanOfSubscriptions() {
+    const date = new Date();
+
+    // every 1h at 2nd minute
+    const EVERY_HOURS = 1;
+    const AT_PAST_MINUTES = 2;
+
+    date.setSeconds(0, 0);
+
+    if (date.getMinutes() >= AT_PAST_MINUTES) {
+      date.setHours(date.getHours() + EVERY_HOURS);
+    }
+
+    date.setMinutes(AT_PAST_MINUTES);
+
+    return {
+      nextScanAt: date.toISOString(),
+    };
+  }
 }

@@ -71,4 +71,9 @@ export class SubscriptionController {
       params.id,
     );
   }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public getNextScanOfSubscriptions() {
+    return this.subscriptionService.getNextScanOfSubscriptions();
+  }
 }
