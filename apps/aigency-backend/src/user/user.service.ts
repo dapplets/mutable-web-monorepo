@@ -18,6 +18,11 @@ export class UserService {
     return user.toDto();
   }
 
+  async getUserByUsername(username: string) {
+    const user = await this.userRepository.findOneByOrFail({ username });
+    return user.toDto();
+  }
+
   async getBalance(id: number) {
     const user = await this.userRepository.findOneByOrFail({ id });
 
