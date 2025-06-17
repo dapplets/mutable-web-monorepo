@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'usage_history' })
-export class UsageHistory {
+export class Usage {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
