@@ -1,5 +1,8 @@
 import { Body, UseGuards } from '@nestjs/common';
-import { ZodToOpenRPC } from '@dapplets/openrpc-nestjs-json-rpc';
+import {
+  CodedRpcException,
+  ZodToOpenRPC,
+} from '@dapplets/openrpc-nestjs-json-rpc';
 import { AuthGuard, UserInfo } from '../auth/auth.guard';
 import { PaginationDto, PaginationSchema } from '../common/pagination.dto';
 import { SubscriptionService } from './subscription.service';
@@ -75,5 +78,10 @@ export class SubscriptionController {
   @ZodToOpenRPC({ params: z.object({}) })
   public getNextScanOfSubscriptions() {
     return this.subscriptionService.getNextScanOfSubscriptions();
+  }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public scanSubscriptions() {
+    throw new CodedRpcException('Not implemented');
   }
 }
