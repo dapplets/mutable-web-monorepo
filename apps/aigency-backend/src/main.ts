@@ -5,6 +5,8 @@ import { JsonRpcServer } from '@dapplets/openrpc-nestjs-json-rpc';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('api');
+
   app.connectMicroservice({
     strategy: new JsonRpcServer({
       path: '/rpc',

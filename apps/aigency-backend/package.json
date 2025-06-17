@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@dapplets/openrpc-nestjs-json-rpc": "^0.0.8",
+    "@mweb/near-ai-client": "workspace:*",
     "@near-js/accounts": "^2.1.0",
+    "@near-js/crypto": "^2.1.0",
     "@near-js/providers": "^2.1.0",
     "@near-js/utils": "^2.1.0",
     "@nestjs/common": "^11.0.1",
@@ -35,8 +37,7 @@
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20",
-    "zod": "^3.25.57",
-    "@mweb/near-ai-client": "workspace:*"
+    "zod": "^3.25.57"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

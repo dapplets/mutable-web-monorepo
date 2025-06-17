@@ -1,13 +1,13 @@
-import { Body, UseGuards } from '@nestjs/common';
 import { ZodToOpenRPC } from '@dapplets/openrpc-nestjs-json-rpc';
-import { AuthGuard, UserInfo } from '../auth/auth.guard';
-import { UserService } from './user.service';
-import { RpcService } from '../common/rpc-service.decorator';
+import { UseGuards } from '@nestjs/common';
 import { z } from 'zod';
+import { AuthGuard, UserInfo } from '../auth/auth.guard';
+import { RpcService } from '../common/rpc-service.decorator';
+import { UserService } from './user.service';
 
 @UseGuards(AuthGuard)
 @RpcService()
-export class UserController {
+export class UserRpcController {
   constructor(private userService: UserService) {}
 
   @ZodToOpenRPC({ params: z.object({}) })
@@ -38,5 +38,10 @@ export class UserController {
   @ZodToOpenRPC({ params: z.object({}) })
   public logout(@UserInfo() user: UserInfo) {
     return this.userService.logout(user.id);
+  }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public login(@UserInfo() user: UserInfo) {
+    return this.userService.login(user.id);
   }
 }
