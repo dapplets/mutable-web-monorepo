@@ -59,6 +59,18 @@ export class UserService {
     await this.userRepository.save(user);
   }
 
+  async logout(id: number) {
+    const user = await this.userRepository.findOneByOrFail({ id });
+
+    // clear auth user data
+    user.nearAccountId = null;
+    user.privateKey = null;
+    user.networkId = null;
+    user.nearAiToken = null;
+
+    await this.userRepository.save(user);
+  }
+
   private async _getBalance(accountId: string) {
     const url = this.configService.get<string>('NEAR_NODE_URL')!;
 

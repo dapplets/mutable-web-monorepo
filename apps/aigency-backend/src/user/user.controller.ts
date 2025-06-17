@@ -34,4 +34,9 @@ export class UserController {
   public disableDevMode(@UserInfo() user: UserInfo) {
     return this.userService.disableDevMode(user.id);
   }
+
+  @ZodToOpenRPC({ params: z.object({}) })
+  public logout(@UserInfo() user: UserInfo) {
+    return this.userService.logout(user.id);
+  }
 }
