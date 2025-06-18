@@ -3,13 +3,13 @@ import { ZodToOpenRPC } from '@dapplets/openrpc-nestjs-json-rpc';
 import { z } from 'zod';
 import { AuthGuard, UserInfo } from '../auth/auth.guard';
 import { PaginationDto, PaginationSchema } from '../common/pagination.dto';
-import { CapabilitiesService } from './capability.service';
+import { CapabilityService } from './capability.service';
 import { RpcService } from '../common/rpc-service.decorator';
 
 @UseGuards(AuthGuard)
 @RpcService()
 export class CapabilityController {
-  constructor(private capabilityService: CapabilitiesService) {}
+  constructor(private capabilityService: CapabilityService) {}
 
   @ZodToOpenRPC({ params: PaginationSchema })
   public getCapabilities(

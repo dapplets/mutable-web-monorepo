@@ -35,4 +35,14 @@ export class Capability {
     (userCapability) => userCapability.capability,
   )
   users!: UserCapability[];
+
+  toDto() {
+    return {
+      id: this.id,
+      domain: this.domain,
+      name: this.name,
+      title: this.title,
+      description: this.description,
+    };
+  }
 }

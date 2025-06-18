@@ -1,9 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, Check } from 'typeorm';
+import { Entity, PrimaryColumn, Column, Check } from 'typeorm';
 
 @Entity({ name: 'users', schema: 'public' })
 @Check(`"username" ~ '^[a-z0-9]+$'`)
 export class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id!: number;
 
   @Column({ type: 'varchar', length: 32, nullable: false })

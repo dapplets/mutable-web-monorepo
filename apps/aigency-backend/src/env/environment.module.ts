@@ -23,6 +23,7 @@ export const envSchema = z
     TELEGRAM_BOT_USERNAME: z.string().nonempty(),
     TELEGRAM_MAIN_BOT_ID: z.number({ coerce: true }),
     TELEGRAM_DEBUG_BOT_ID: z.number({ coerce: true }).optional(),
+    TELEGRAM_BOT_TOKEN: z.string().nonempty(),
   })
   // Cast DB_PORT → number so callers get the right type
   .transform((vars) => ({ ...vars, DB_PORT: Number(vars.DB_PORT) }));

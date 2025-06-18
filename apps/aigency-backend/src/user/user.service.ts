@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { formatNearAmount } from '@near-js/utils';
 import { CodedRpcException } from '@dapplets/openrpc-nestjs-json-rpc';
 import { KeyPair } from '@near-js/crypto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { UserCreatedEvent } from './user-created.event';
 
 @Injectable()
 export class UserService {
@@ -17,16 +19,17 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async getUserById(id: number) {
-    const user = await this.userRepository.findOneByOrFail({ id });
-    return user.toDto();
+    const user = await this.userRepository.findOneBy({ id });
+    return user?.toDto();
   }
 
   async getUserByUsername(username: string) {
-    const user = await this.userRepository.findOneByOrFail({ username });
-    return user.toDto();
+    const user = await this.userRepository.findOneBy({ username });
+    return user?.toDto();
   }
 
   async getBalance(id: number) {
@@ -127,9 +130,30 @@ export class UserService {
 
     this._pendingLogins.delete(loginId);
 
+    // ToDo: claim rewards
+
     return {
       redirectUrl: `https://t.me/${tgBotUsername}?startapp`,
     };
+  }
+
+  async createUser(createUserDto: { username: string; id: number }) {
+    const user = this.userRepository.create({
+      id: createUserDto.id,
+      username: createUserDto.username.toLowerCase(),
+      status: true, // ToDo: remove?
+    });
+
+    await this.userRepository.createUserWithTables(user);
+
+    this.eventEmitter.emit(
+      'user.created',
+      new UserCreatedEvent(user.id, user.username),
+    );
+  }
+
+  async deleteUser(userId: number) {
+    await this.userRepository.deleteUserWithTables(userId);
   }
 
   // ToDo: move to near service?

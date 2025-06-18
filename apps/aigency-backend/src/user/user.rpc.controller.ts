@@ -1,9 +1,9 @@
+import { Body, Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ZodToOpenRPC } from '@dapplets/openrpc-nestjs-json-rpc';
-import { UseGuards } from '@nestjs/common';
-import { z } from 'zod';
 import { AuthGuard, UserInfo } from '../auth/auth.guard';
-import { RpcService } from '../common/rpc-service.decorator';
 import { UserService } from './user.service';
+import { RpcService } from '../common/rpc-service.decorator';
+import { z } from 'zod';
 
 @UseGuards(AuthGuard)
 @RpcService()

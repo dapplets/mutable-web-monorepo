@@ -9,6 +9,8 @@ import { WarningModule } from '../warning';
 import { MemoryModule } from '../memory';
 import { UsageModule } from '../usage';
 import { RewardModule } from '../reward';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -35,6 +37,14 @@ import { RewardModule } from '../reward';
         synchronize: false, // ToDo
       }),
     }),
+    TelegrafModule.forRootAsync({
+      imports: [EnvironmentModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        token: config.get<string>('TELEGRAM_BOT_TOKEN')!,
+      }),
+    }),
+    EventEmitterModule.forRoot(),
   ],
 })
 export class AppModule {}
