@@ -1,4 +1,4 @@
-import { Body, UseGuards } from '@nestjs/common';
+import { Body, UseFilters, UseGuards } from '@nestjs/common';
 import {
   CodedRpcException,
   ZodToOpenRPC,
@@ -8,7 +8,9 @@ import { PaginationDto, PaginationSchema } from '../common/pagination.dto';
 import { SubscriptionService } from './subscription.service';
 import { RpcService } from '../common/rpc-service.decorator';
 import { z } from 'zod';
+import { AllRpcExceptionsFilter } from 'src/common/all-rpc-exceptions.filter';
 
+@UseFilters(AllRpcExceptionsFilter)
 @UseGuards(AuthGuard)
 @RpcService()
 export class SubscriptionController {

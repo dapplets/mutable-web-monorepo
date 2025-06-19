@@ -2,7 +2,10 @@ import { Update, Ctx, Start, Command } from 'nestjs-telegraf';
 import { TelegrafContext } from '../common/telegraf-context.interface';
 import { UserService } from './user.service';
 import { WelcomeMessage } from './user.bot.messages';
+import { UseFilters } from '@nestjs/common';
+import { AllExceptionsFilter } from '../common/all-exceptions.filter';
 
+@UseFilters(AllExceptionsFilter)
 @Update()
 export class UserBotController {
   constructor(private readonly userService: UserService) {}
@@ -42,5 +45,10 @@ export class UserBotController {
     }
 
     await ctx.reply('Your account has been deleted');
+  }
+
+  @Command('throw')
+  throw() {
+    throw new Error('Test error');
   }
 }
