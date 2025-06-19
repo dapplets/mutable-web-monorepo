@@ -11,6 +11,7 @@ import { UsageModule } from '../usage';
 import { RewardModule } from '../reward';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SettingsModule } from 'src/settings';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     MemoryModule,
     UsageModule,
     RewardModule,
+    SettingsModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],
