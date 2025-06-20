@@ -1,6 +1,6 @@
 import { Link } from 'react-router'
 import SettingsIcon from './assets/settings'
-import XEN_IMAGE from './assets/xen-anime-style-portrait.png'
+import XEN_IMAGE from '/xen.png'
 import Capabilities from './components/Capabilities'
 import Layout from './components/Layout'
 import Wallet from './components/Wallet'
