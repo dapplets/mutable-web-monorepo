@@ -9,8 +9,34 @@ import { TSubscription } from '../types'
 import Layout from './Layout'
 import { NewSubscription, Subscription } from './NewsSource'
 import Spinner from './Spinner'
+import { Switch } from '@/components/ui/switch'
+import StarsIcon from '@/assets/stars'
 
 const PAGE_LIMIT = 10
+
+// ToDo: delete mocked data
+const MOCKED_FINDER_SUBSCRIPTIONS: { pages: { items: TSubscription[] }[] } = {
+  pages: [
+    {
+      items: [
+        {
+          id: 1,
+          link: 'Xen News',
+          source: 'telegram',
+          isEnabled: true,
+          isByFinder: true,
+        },
+        {
+          id: 2,
+          link: 'r/xenproject',
+          source: 'reddit',
+          isEnabled: true,
+          isByFinder: true,
+        },
+      ],
+    },
+  ],
+}
 
 async function query<T, U>(name: string, params: T): Promise<U> {
   if (!window.Telegram.WebApp.initData) {
@@ -149,8 +175,35 @@ const NewsMonitor = () => {
 
   useGoBack()
 
+  // ToDo: delete mocked logic
+  const [isFinderActive, setIsFinderActive] = useState(false)
+  const [isWaitingFinder, setIsWaitingFinder] = useState(false)
+  const handleChangeFinderStatus = async () => {
+    setIsWaitingFinder(true)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setIsFinderActive((prev) => !prev)
+    setIsWaitingFinder(false)
+  }
+  const [mockedFinderSubscriptions] = useState(MOCKED_FINDER_SUBSCRIPTIONS)
+  // end of ToDo
+
   return (
     <Layout>
+      <div className="z-1 flex w-full items-center justify-between gap-2.5 px-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-6 w-6 items-center justify-between">
+            {isWaitingFinder ? <Spinner /> : <StarsIcon />}
+          </div>
+          <div className="text-[18px]/[150%] font-normal">AI channel discovery</div>
+        </div>
+        <div className="flex items-center px-2">
+          <Switch
+            onCheckedChange={handleChangeFinderStatus}
+            checked={isFinderActive}
+            disabled={isWaitingFinder}
+          />
+        </div>
+      </div>
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-(--color-opposite-text) p-2.5 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
         <div className="my-1.5 flex w-full items-center justify-between">
           <div className="flex flex-col items-start justify-start">
@@ -176,7 +229,7 @@ const NewsMonitor = () => {
             </div>
           </div>
           <button
-            className="mr-3.5 flex cursor-pointer items-center justify-center p-1.5 text-(--color-gray-text) transition hover:not-disabled:text-(--color-main-text)"
+            className="mr-1.5 flex h-12 w-12 cursor-pointer items-center justify-center p-1.5 text-(--color-gray-text) transition hover:not-disabled:text-(--color-main-text)"
             onClick={() => setShowNewSubscriptionForm(true)}
             disabled={showNewSubscriptionForm}
           >
@@ -186,6 +239,12 @@ const NewsMonitor = () => {
         {showNewSubscriptionForm ? (
           <NewSubscription onClose={() => setShowNewSubscriptionForm(false)} />
         ) : null}
+        {isFinderActive &&
+          mockedFinderSubscriptions?.pages.map((group) =>
+            group?.items?.map((newsSource) => (
+              <Subscription key={newsSource.id} subscription={newsSource} />
+            ))
+          )}
         {subscriptions?.pages.map((group) =>
           group?.items?.map((newsSource) => (
             <Subscription key={newsSource.id} subscription={newsSource} />

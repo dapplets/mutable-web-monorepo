@@ -41,6 +41,7 @@ export type TSubscription = {
   link: string
   source: string
   isEnabled: boolean
+  isByFinder?: boolean
 }
 
 export type TWarning = {

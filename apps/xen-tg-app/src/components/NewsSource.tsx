@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FC, useEffect, useRef, useState } from 'react'
 import { TSubscription } from '../types'
 import Spinner from './Spinner'
+import StarsIcon from '@/assets/stars'
 
 const mutationFn = async ({
   methodName,
@@ -153,7 +154,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
             onClose()
           }}
         >
-          <div className="flex rotate-45 items-center justify-center">
+          <div className="flex h-5 w-5 rotate-45 items-center justify-center">
             <PlusIcon />
           </div>
         </button>
@@ -217,7 +218,12 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
       <img src={getIcon(subscription.source)} alt="Source icon" />
 
       <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
-        <div className="flex py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
+        <div className="flex items-center gap-1 py-0.25 text-[14px]/[100%] font-semibold wrap-anywhere">
+          {subscription.isByFinder ? (
+            <div className="flex h-4 w-4 items-center justify-center text-(--my-primary)">
+              <StarsIcon />
+            </div>
+          ) : null}
           {subscription.link}
         </div>
         {subscription.source ? (
@@ -229,7 +235,13 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
 
       <button
         className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal select-none dark:bg-(--color-light-white-bg) ${subscription.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
-        onClick={subscription.isEnabled ? onDisable : onEnable}
+        onClick={
+          subscription.isByFinder
+            ? () => console.log('TODO: MOCKED')
+            : subscription.isEnabled
+              ? onDisable
+              : onEnable
+        }
       >
         {handleToggleSubscription.isPending ? (
           <Spinner />
@@ -242,9 +254,13 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
 
       <button
         className="mr-1 flex w-8 cursor-pointer items-center justify-center py-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
-        onClick={onRemove}
+        onClick={
+          subscription.isByFinder ? () => console.log('TODO: Convert to subscription') : onRemove
+        }
       >
-        {handleRemoveSubscription.isPending || handleRemoveSubscription.isSuccess ? (
+        {subscription.isByFinder ? (
+          <PlusIcon />
+        ) : handleRemoveSubscription.isPending || handleRemoveSubscription.isSuccess ? (
           <Spinner />
         ) : (
           <TrashIcon />
