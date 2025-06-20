@@ -5,7 +5,7 @@ import { Usage } from './usage.entity';
 
 @Injectable()
 export class UsageRepository extends Repository<Usage> {
-  constructor(@InjectDataSource() dataSource: DataSource) {
+  constructor(@InjectDataSource() private dataSource: DataSource) {
     super(Usage, dataSource.manager);
   }
 
@@ -69,5 +69,46 @@ export class UsageRepository extends Repository<Usage> {
       })),
       total[0].count,
     ];
+  }
+
+  public async getUnpaidUsagesForUsageCaller(username: string) {
+    return this._getUnpaidUsages(username, 'usage-caller');
+  }
+
+  public async getUnpaidUsagesForUsageOwner(username: string) {
+    return this._getUnpaidUsages(username, 'usage-owner');
+  }
+
+  private async _getUnpaidUsages(username: string, rewardReason: string) {
+    const query = `
+      SELECT uh.*
+      FROM "default".usage_history uh
+      LEFT JOIN "default".reward_history rh 
+        ON rh.related_item_type = $2 AND rh.related_item_id = uh.id
+      WHERE rh.id IS NULL AND uh.caller_username = $1
+      ORDER BY uh.created_at ASC
+    `;
+
+    const rows = await this.dataSource.query<
+      {
+        id: string;
+        caller_username: string;
+        capability_id: string;
+        created_at: string;
+        execution_input: string;
+        execution_output: string;
+      }[]
+    >(query, [username, rewardReason]);
+
+    return rows.map((row) =>
+      this.create({
+        id: row.id,
+        callerUsername: row.caller_username,
+        capabilityId: row.capability_id,
+        createdAt: new Date(row.created_at),
+        executionInput: row.execution_input,
+        executionOutput: row.execution_output,
+      }),
+    );
   }
 }

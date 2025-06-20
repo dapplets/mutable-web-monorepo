@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Usage } from 'src/usage/usage.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({ name: 'reward_history' })
 export class Reward {
@@ -22,4 +29,8 @@ export class Reward {
 
   @Column({ name: 'created_at', type: 'timestamptz', default: () => 'now()' })
   createdAt!: Date;
+
+  @OneToOne(() => Usage, (usage) => usage.reward)
+  @JoinColumn({ name: 'related_item_id' })
+  usage!: Usage;
 }

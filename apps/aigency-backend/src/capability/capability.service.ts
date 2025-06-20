@@ -6,6 +6,9 @@ import { CodedRpcException } from '@dapplets/openrpc-nestjs-json-rpc';
 import { NearAiService } from '../nearai/nearai.service';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { UserCreatedEvent } from 'src/user/user-created.event';
+import { NearService } from 'src/near/near.service';
+import { ConfigService } from '@nestjs/config';
+import { NftMintedEvent } from './nft-minted.event';
 
 @Injectable()
 export class CapabilityService {
@@ -14,6 +17,8 @@ export class CapabilityService {
     private readonly userCapabilityRepository: UserCapabilityRepository,
     private readonly userService: UserService,
     private readonly nearAiService: NearAiService,
+    private readonly nearService: NearService,
+    private readonly configService: ConfigService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -109,6 +114,94 @@ export class CapabilityService {
         { conflictPaths: ['capabilityId', 'username'] },
       );
     }
+  }
+
+  async getOrMintCapabilityWithNft(
+    capabilityId: string,
+    callerUsername: string,
+  ) {
+    let capability = await this.capabilityRepository.findOneBy({
+      id: capabilityId,
+    });
+
+    // mint NFT if not minted
+    if (!capability?.tokenId) {
+      capability = await this.mintNftForCapability(
+        capabilityId,
+        callerUsername,
+      );
+    }
+
+    return {
+      ...capability.toDto(),
+      tokenId: capability.tokenId,
+      beneficiaryNetwork: capability.beneficiaryNetwork,
+      beneficiaryAccountId: capability.beneficiaryAccountId,
+    };
+  }
+
+  async mintNftForCapability(capabilityId: string, callerUsername: string) {
+    const capability = await this.capabilityRepository.findOneBy({
+      id: capabilityId,
+    });
+
+    if (!capability) {
+      throw new CodedRpcException('Capability not found');
+    }
+
+    if (capability.tokenId) {
+      throw new CodedRpcException('NFT already minted');
+    }
+
+    const contractOwnerPrivateKey = this.configService.get<string>(
+      'NFT_CONTRACT_OWNER_PRIVATE_KEY',
+    )!;
+    const contractOwnerId = this.configService.get<string>(
+      'NFT_CONTRACT_OWNER_ID',
+    )!;
+    const nftContractId = this.configService.get<string>('NFT_CONTRACT_ID')!;
+
+    const newTokenId = (await this.nearService.viewContractCall(
+      nftContractId,
+      'nft_total_supply',
+      {},
+    )) as string;
+
+    await this.nearService.writeContractCall(
+      contractOwnerPrivateKey,
+      contractOwnerId,
+      nftContractId,
+      'nft_mint',
+      {
+        token_id: newTokenId,
+        token_owner_id: capability.name.split('/')[0],
+        token_metadata: {
+          copies: 1,
+          description: capability.description,
+          title: `${capability.name.split('/')[1]} by ${capability.name.split('/')[0]}`,
+          extra: JSON.stringify({
+            beneficiary_network: 'near',
+            beneficiary_account_id: capability.name.split('/')[0],
+            agent_domain: 'Near AI',
+            agent_id: capability.name,
+          }),
+        },
+      },
+      8560000000000000000000n,
+    );
+
+    capability.tokenId = newTokenId;
+    capability.beneficiaryNetwork = 'near'; // ToDo: hardcoded
+    capability.beneficiaryAccountId = capability.name.split('/')[0];
+
+    await this.capabilityRepository.save(capability);
+
+    this.eventEmitter.emit(
+      'capability.minted',
+      new NftMintedEvent(nftContractId, newTokenId, callerUsername),
+    );
+
+    return capability;
   }
 
   @OnEvent('user.created')

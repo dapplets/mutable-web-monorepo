@@ -17,4 +17,12 @@ export class UsageService {
       items,
     };
   }
+
+  async getUnpaidUsagesForUsageCaller(username: string) {
+    return this.usageRepository.getUnpaidUsagesForUsageCaller(username);
+  }
+
+  async getUnpaidUsagesForUsageOwner(username: string) {
+    return this.usageRepository.getUnpaidUsagesForUsageOwner(username);
+  }
 }

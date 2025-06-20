@@ -8,12 +8,14 @@ import { UserCapability } from './user-capability.entity';
 import { UserCapabilityRepository } from './user-capability.repository';
 import { UserModule } from 'src/user';
 import { NearAiModule } from 'src/nearai';
+import { NearModule } from 'src/near';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Capability, UserCapability]),
     UserModule,
     NearAiModule,
+    NearModule,
   ],
   providers: [
     CapabilityRepository,

@@ -16,14 +16,25 @@ export const envSchema = z
     NODE_ENV: z
       .enum(['development', 'production', 'test'])
       .default('development'),
-    NEAR_NODE_URL: z.string().url(),
     AIGENCY_API_URL: z.string().url(),
-    NEAR_WALLET_URL: z.string().url(),
     NEAR_LOGIN_CONTRACT_ID: z.string().nonempty(),
     TELEGRAM_BOT_USERNAME: z.string().nonempty(),
     TELEGRAM_MAIN_BOT_ID: z.number({ coerce: true }),
     TELEGRAM_DEBUG_BOT_ID: z.number({ coerce: true }).optional(),
     TELEGRAM_BOT_TOKEN: z.string().nonempty(),
+    NEAR_NETWORK_ID: z.string().nonempty(),
+    NEAR_NODE_URL: z.string().url(),
+    NEAR_WALLET_URL: z.string().url(),
+    NEAR_HELPER_URL: z.string().url(),
+    NFT_CONTRACT_OWNER_PRIVATE_KEY: z.string().nonempty(),
+    NFT_CONTRACT_OWNER_ID: z.string().nonempty(),
+    NFT_CONTRACT_ID: z.string().nonempty(),
+    TELEGRAM_MONITORING_TOPIC_ID: z.string().nonempty(),
+    TELEGRAM_MONITORING_CHAT_ID: z.string().nonempty(),
+    REWARD_ACCOUNT_PRIVATE_KEY: z.string().nonempty(),
+    REWARD_ACCOUNT_ID: z.string().nonempty(),
+    BUG_REWARD_AMOUNT: z.string().nonempty(),
+    USAGE_REWARD_AMOUNT: z.string().nonempty(),
   })
   // Cast DB_PORT → number so callers get the right type
   .transform((vars) => ({ ...vars, DB_PORT: Number(vars.DB_PORT) }));

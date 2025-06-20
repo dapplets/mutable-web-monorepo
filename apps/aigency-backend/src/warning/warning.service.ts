@@ -22,4 +22,8 @@ export class WarningService {
   async deleteAllWarnings(username: string) {
     await this.warningRepository.update({ username }, { isDeleted: true });
   }
+
+  async getUnpaidWarnings(username: string) {
+    return this.warningRepository.getUnpaidWarnings(username);
+  }
 }

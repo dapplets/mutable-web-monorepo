@@ -12,6 +12,10 @@ import { RewardModule } from '../reward';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SettingsModule } from 'src/settings';
+import { MonitorModule } from 'src/monitor';
+import { NearAiModule } from 'src/nearai';
+import { NearModule } from 'src/near';
+import { BotModule } from 'src/bot';
 
 @Module({
   imports: [
@@ -24,6 +28,10 @@ import { SettingsModule } from 'src/settings';
     UsageModule,
     RewardModule,
     SettingsModule,
+    MonitorModule,
+    NearAiModule,
+    NearModule,
+    BotModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],

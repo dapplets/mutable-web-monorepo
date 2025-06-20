@@ -9,5 +9,6 @@ import { WarningController } from './warning.controller';
   imports: [TypeOrmModule.forFeature([Warning])],
   providers: [WarningRepository, WarningService],
   controllers: [WarningController],
+  exports: [WarningService],
 })
 export class WarningModule {}

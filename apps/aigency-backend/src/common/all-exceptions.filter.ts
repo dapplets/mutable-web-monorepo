@@ -4,7 +4,6 @@ import { BaseExceptionFilter } from '@nestjs/core';
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-    console.log({ type: 'AllExceptionsFilter', exception, host });
     super.catch(exception, host);
   }
 }
