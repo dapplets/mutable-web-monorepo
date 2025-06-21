@@ -8,8 +8,6 @@ import Wallet from './components/Wallet'
 const App = () => {
   const tg = window.Telegram.WebApp
   if (!tg.isExpanded) tg.expand()
-  const newTg = tg as any // eslint-disable-line -- wait for a new version of @types/telegram-web-app
-  if (!newTg.isFullscreen && newTg.requestFullscreen) newTg.requestFullscreen()
 
   return (
     <Layout>

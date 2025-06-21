@@ -7,6 +7,7 @@ import DeveloperMode from './DeveloperMode'
 import Layout from './Layout'
 import ThemeButton from './ThemeButton'
 import Warnings from './Warnings'
+import FullscreenMode from './FullscreenMode'
 
 const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -46,6 +47,7 @@ const Settings = () => {
   return (
     <Layout>
       <ThemeButton />
+      <FullscreenMode />
       <DeveloperMode />
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-(--color-opposite-text) px-2.5 py-2 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
         <div className="z-1 flex w-full items-center justify-between">

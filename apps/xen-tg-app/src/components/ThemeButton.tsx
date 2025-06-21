@@ -1,4 +1,4 @@
-import { useTheme } from '@/components/theme-provider'
+import { useTheme } from '@/hooks/use-theme'
 import DesktopIcon from '../assets/desktop'
 import MoonIcon from '../assets/moon'
 import SunIcon from '../assets/sun'
