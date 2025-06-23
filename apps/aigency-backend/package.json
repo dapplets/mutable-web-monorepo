@@ -17,7 +17,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migration:generate": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:generate -d typeorm.config.ts",
+    "migration:run": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run -d typeorm.config.ts",
+    "migration:revert": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js migration:revert -d typeorm.config.ts"
   },
   "dependencies": {
     "@dapplets/openrpc-nestjs-json-rpc": "^0.0.8",
@@ -35,6 +38,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^10.0.2",
     "@telegram-apps/init-data-node": "^2.0.8",
+    "dotenv": "^16.4.5",
     "near-api-js": "^6.1.0",
     "nestjs-telegraf": "^2.9.1",
     "pg": "^8.13.3",

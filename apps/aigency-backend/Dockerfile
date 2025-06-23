@@ -42,4 +42,4 @@ COPY --from=installer /app ./
 
 ENV NODE_ENV=production
 
-CMD node apps/aigency-backend/dist/main.js
+CMD ["sh", "./apps/aigency-backend/docker-entrypoint.sh"]
