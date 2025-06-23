@@ -73,22 +73,22 @@ services:
       timeout: 5s
       retries: 10
 
-  # n8n-import:
-  #   <<: *service-n8n
-  #   hostname: n8n-import
-  #   container_name: n8n-import
-  #   entrypoint: /bin/sh
-  #   command:
-  #     - '/backup/init.sh'
-  #   volumes:
-  #     - n8n_storage:/home/node/.n8n
-  #     - ./:/backup
-  #     - ./shared:/data/shared
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   labels:
-  #     - 'traefik.enable=false'
+  n8n-import:
+    <<: *service-n8n
+    hostname: n8n-import
+    container_name: n8n-import
+    entrypoint: /bin/sh
+    command:
+      - '/backup/init.sh'
+    volumes:
+      - n8n_storage:/home/node/.n8n
+      - ./:/backup
+      - ./shared:/data/shared
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - 'traefik.enable=false'
 
   n8n:
     <<: *service-n8n
