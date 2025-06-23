@@ -1,6 +1,6 @@
 import { Entity, PrimaryColumn, Column, Check } from 'typeorm';
 
-@Entity({ name: 'users', schema: 'public' })
+@Entity({ name: 'users' })
 @Check(`"username" ~ '^[a-z0-9]+$'`)
 export class User {
   @PrimaryColumn()

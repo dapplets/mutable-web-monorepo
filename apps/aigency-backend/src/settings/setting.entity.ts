@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity({ schema: 'environment', name: 'variables' })
+@Entity({ name: 'variables' })
 export class Setting {
   @PrimaryColumn({ type: 'varchar', name: 'type' })
   key!: string;
