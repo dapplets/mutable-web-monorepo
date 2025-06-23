@@ -29,6 +29,9 @@ WORKDIR /app
 COPY --from=builder /app/out/json/ .
 RUN pnpm install --frozen-lockfile
 
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the project
 COPY --from=builder /app/out/full/ .
 RUN pnpm run build

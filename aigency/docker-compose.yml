@@ -164,9 +164,9 @@ services:
     build:
       context: ..
       dockerfile: apps/xen-tg-app/Dockerfile
+      args:
+        VITE_API_URL: ${AIGENCY_API_URL}
     networks: ['demo']
-    environment:
-      - VITE_API_URL=${AIGENCY_API_URL}
     env_file:
       - .env
     hostname: tgapp
