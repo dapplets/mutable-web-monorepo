@@ -34,9 +34,12 @@ COPY --from=builder /app/out/full/ .
 RUN pnpm run build
 
 FROM base AS runner
-WORKDIR /app/apps/aigency-backend
+
+WORKDIR /app
 
 USER node
+
+WORKDIR /app/apps/aigency-backend
 
 COPY --from=installer /app ./
 
