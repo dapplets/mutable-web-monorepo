@@ -34,7 +34,7 @@ COPY --from=builder /app/out/full/ .
 RUN pnpm run build
 
 FROM base AS runner
-WORKDIR /app
+WORKDIR /app/apps/aigency-backend
 
 USER node
 
@@ -42,4 +42,4 @@ COPY --from=installer /app ./
 
 ENV NODE_ENV=production
 
-CMD ["sh", "./apps/aigency-backend/docker-entrypoint.sh"]
+CMD ["sh", "./docker-entrypoint.sh"]
