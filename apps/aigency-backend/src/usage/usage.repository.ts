@@ -18,8 +18,8 @@ export class UsageRepository extends Repository<Usage> {
       `select count(*) as count
       from (
         select *
-        from "default".reward_history rh 
-        join "default".usage_history uh on uh.id = rh.related_item_id
+        from reward_history rh 
+        join usage_history uh on uh.id = rh.related_item_id
         where uh.caller_username = $1
       )`,
       [username],
@@ -36,9 +36,9 @@ export class UsageRepository extends Repository<Usage> {
         rh.created_at,
         rh.recipient_account_id,
         case when rh.related_item_type = 'usage-caller' then 'income' else 'outcome' end as operation_type
-      from "default".reward_history rh 
-      join "default".usage_history uh on uh.id = rh.related_item_id 
-      join "default".capability c on c.id = uh.capability_id 
+      from reward_history rh 
+      join usage_history uh on uh.id = rh.related_item_id 
+      join capability c on c.id = uh.capability_id 
       where uh.caller_username = $1
       order by rh.created_at desc
       limit $2
@@ -82,8 +82,8 @@ export class UsageRepository extends Repository<Usage> {
   private async _getUnpaidUsages(username: string, rewardReason: string) {
     const query = `
       SELECT uh.*
-      FROM "default".usage_history uh
-      LEFT JOIN "default".reward_history rh 
+      FROM usage_history uh
+      LEFT JOIN reward_history rh 
         ON rh.related_item_type = $2 AND rh.related_item_id = uh.id
       WHERE rh.id IS NULL AND uh.caller_username = $1
       ORDER BY uh.created_at ASC

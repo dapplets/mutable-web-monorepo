@@ -12,8 +12,8 @@ export class RewardRepository extends Repository<Reward> {
   public async getUnclaimedRewardsForUsageCaller(username: string) {
     return (await this.query(
       `select rh.amount
-      from "default".reward_history rh 
-      join "default".usage_history uh on uh.id = rh.related_item_id and rh.related_item_type = 'usage-caller'
+      from reward_history rh 
+      join usage_history uh on uh.id = rh.related_item_id and rh.related_item_type = 'usage-caller'
       where uh.caller_username = $1
         and rh.tx_hash is null
         and rh.amount != '0'`,
@@ -24,8 +24,8 @@ export class RewardRepository extends Repository<Reward> {
   public async getUnclaimedRewardsForBugs(username: string) {
     return (await this.query(
       `select rh.amount
-      from "default".reward_history rh 
-      join "default".warning w on w.id = rh.related_item_id and rh.related_item_type = 'bug'
+      from reward_history rh 
+      join warning w on w.id = rh.related_item_id and rh.related_item_type = 'bug'
       where w.username = $1
         and rh.tx_hash is null
         and rh.amount != '0'`,
@@ -36,8 +36,8 @@ export class RewardRepository extends Repository<Reward> {
   public async getAllRewardsForUsageCaller(username: string) {
     return (await this.query(
       `select rh.amount
-      from "default".reward_history rh 
-      join "default".usage_history uh on uh.id = rh.related_item_id and rh.related_item_type = 'usage-caller'
+      from reward_history rh 
+      join usage_history uh on uh.id = rh.related_item_id and rh.related_item_type = 'usage-caller'
       where uh.caller_username = $1
         and rh.amount != '0'`,
       [username],
@@ -47,8 +47,8 @@ export class RewardRepository extends Repository<Reward> {
   public async getAllRewardsForBugs(username: string) {
     return (await this.query(
       `select rh.amount
-      from "default".reward_history rh 
-      join "default".warning w on w.id = rh.related_item_id and rh.related_item_type = 'bug'
+      from reward_history rh 
+      join warning w on w.id = rh.related_item_id and rh.related_item_type = 'bug'
       where w.username = $1
         and rh.amount != '0'`,
       [username],

@@ -6,11 +6,14 @@ export class MemoryService {
   constructor(private readonly memoryRepository: MemoryRepository) {}
 
   async getMemories(username: string, limit: number, offset: number) {
-    const [items, total] = await this.memoryRepository.getMemories(
-      username,
-      limit,
-      offset,
-    );
+    this._validateUsername(username);
+
+    const [items, total] = await this.memoryRepository.findAndCount({
+      where: { username },
+      order: { id: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
 
     return {
       total,
@@ -19,10 +22,19 @@ export class MemoryService {
   }
 
   async deleteAllMemories(username: string) {
-    await this.memoryRepository.deleteAllMemories(username);
+    this._validateUsername(username);
+    await this.memoryRepository.delete({ username });
   }
 
   async deleteMemory(username: string, id: number) {
-    await this.memoryRepository.deleteMemory(username, id);
+    this._validateUsername(username);
+    await this.memoryRepository.delete({ username, id });
+  }
+
+  private _validateUsername(username: string) {
+    // prevents SQL injection
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      throw new Error('Invalid username');
+    }
   }
 }

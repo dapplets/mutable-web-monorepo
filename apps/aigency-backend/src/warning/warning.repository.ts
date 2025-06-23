@@ -12,8 +12,8 @@ export class WarningRepository extends Repository<Warning> {
   public async getUnpaidWarnings(username: string) {
     const query = `
       SELECT w.*
-      FROM "default".warning w
-      left join "default".reward_history rh on rh.related_item_type = 'bug' and rh.related_item_id = w.id
+      FROM warning w
+      left join reward_history rh on rh.related_item_type = 'bug' and rh.related_item_id = w.id
       where rh.id is null and w.username = $1
       order by w.created_at asc
     `;

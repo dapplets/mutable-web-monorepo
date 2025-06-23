@@ -9,6 +9,7 @@ import { UserCreatedEvent } from 'src/user/user-created.event';
 import { NearService } from 'src/near/near.service';
 import { ConfigService } from '@nestjs/config';
 import { NftMintedEvent } from './nft-minted.event';
+import { UserDeletedEvent } from 'src/user/user-deleted.event';
 
 @Injectable()
 export class CapabilityService {
@@ -235,5 +236,10 @@ export class CapabilityService {
     await this.userCapabilityRepository.addTop10CapabilitiesToUser(
       event.username,
     );
+  }
+
+  @OnEvent('user.deleted')
+  async handleUserDeleted(event: UserDeletedEvent) {
+    await this.userCapabilityRepository.delete(event.userId);
   }
 }

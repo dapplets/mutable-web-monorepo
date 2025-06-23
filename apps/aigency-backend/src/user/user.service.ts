@@ -8,6 +8,7 @@ import { CodedRpcException } from '@dapplets/openrpc-nestjs-json-rpc';
 import { KeyPair } from '@near-js/crypto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserCreatedEvent } from './user-created.event';
+import { UserDeletedEvent } from './user-deleted.event';
 
 @Injectable()
 export class UserService {
@@ -144,7 +145,7 @@ export class UserService {
       status: true, // ToDo: remove?
     });
 
-    await this.userRepository.createUserWithTables(user);
+    await this.userRepository.insert(user);
 
     this.eventEmitter.emit(
       'user.created',
@@ -153,7 +154,14 @@ export class UserService {
   }
 
   async deleteUser(userId: number) {
-    await this.userRepository.deleteUserWithTables(userId);
+    const user = await this.userRepository.findOneByOrFail({ id: userId });
+
+    await this.userRepository.delete(userId);
+
+    this.eventEmitter.emit(
+      'user.deleted',
+      new UserDeletedEvent(user.id, user.username),
+    );
   }
 
   // ToDo: move to near service?
