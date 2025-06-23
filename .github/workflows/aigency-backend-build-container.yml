@@ -1,0 +1,54 @@
+name: Build and Publish Aigency Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/aigency-backend/**'
+      - '.github/workflows/aigency-backend-build-container.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Set up pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract package name and version
+        id: vars
+        run: |
+          name=$(jq -r .name apps/aigency-backend/package.json | sed 's|@||; s|/|-|g')
+          version=$(jq -r .version apps/aigency-backend/package.json)
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/${{ steps.vars.outputs.name }}
+          docker build -t $IMAGE:latest -t $IMAGE:${{ steps.vars.outputs.version }} -f apps/aigency-backend/Dockerfile .
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ steps.vars.outputs.version }}

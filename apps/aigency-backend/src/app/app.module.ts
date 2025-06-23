@@ -37,12 +37,12 @@ import { BotModule } from 'src/bot';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: config.get<string>('DB_HOST'),
-        port: config.get<number>('DB_PORT'),
+        host: config.get<string>('POSTGRES_HOST'),
+        port: config.get<number>('POSTGRES_PORT'),
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        schema: config.get<string>('DB_SCHEMA'),
+        schema: config.get<string>('POSTGRES_SCHEMA'),
         entities: ['dist/**/*.entity.js'],
         synchronize: false, // ToDo
       }),

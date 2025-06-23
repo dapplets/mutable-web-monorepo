@@ -4,15 +4,15 @@ import { z } from 'zod';
 
 export const envSchema = z
   .object({
-    DB_HOST: z.string().min(1, 'DB_HOST is required'),
-    DB_PORT: z
+    POSTGRES_HOST: z.string().min(1, 'POSTGRES_HOST is required'),
+    POSTGRES_PORT: z
       .string()
-      .regex(/^\d+$/, 'DB_PORT must be a number')
+      .regex(/^\d+$/, 'POSTGRES_PORT must be a number')
       .default('5432'),
     DB_USERNAME: z.string().min(1, 'DB_USERNAME is required'),
     DB_PASSWORD: z.string().min(1, 'DB_PASSWORD is required'),
     DB_NAME: z.string().min(1, 'DB_NAME is required'),
-    DB_SCHEMA: z.string().default('default'),
+    POSTGRES_SCHEMA: z.string().default('default'),
     NODE_ENV: z
       .enum(['development', 'production', 'test'])
       .default('development'),
@@ -36,8 +36,8 @@ export const envSchema = z
     BUG_REWARD_AMOUNT: z.string().nonempty(),
     USAGE_REWARD_AMOUNT: z.string().nonempty(),
   })
-  // Cast DB_PORT → number so callers get the right type
-  .transform((vars) => ({ ...vars, DB_PORT: Number(vars.DB_PORT) }));
+  // Cast POSTGRES_PORT → number so callers get the right type
+  .transform((vars) => ({ ...vars, POSTGRES_PORT: Number(vars.POSTGRES_PORT) }));
 
 export function validateEnv(raw: Record<string, unknown>) {
   const parsed = envSchema.safeParse(raw);
