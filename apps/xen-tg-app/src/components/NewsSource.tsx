@@ -122,6 +122,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
             value={newLink}
             onChange={(e) => {
               setShowWrongSubscriptionNameMessage(false)
+              addSubscription.reset()
               setNewLink(e.target.value)
             }}
           />
@@ -129,11 +130,13 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
 
         <button
           type="submit"
-          className={`flex h-8 w-15 shrink-0 cursor-pointer items-center justify-center gap-1 rounded-[10px] bg-(--color-green) text-xs/[100%] font-normal text-(--color-opposite-text) capitalize dark:bg-(--color-main-text) dark:text-(--color-opposite-text)`}
+          className={`flex h-8 w-15 shrink-0 cursor-pointer items-center justify-center gap-1 rounded-[10px] bg-(--color-green) text-xs/[100%] font-normal text-(--color-opposite-text) capitalize opacity-100 disabled:opacity-50 dark:bg-(--color-main-text) dark:text-(--color-opposite-text)`}
           disabled={
             showWrongSubscriptionNameMessage ||
             addSubscription.isPending ||
-            addSubscription.isSuccess
+            addSubscription.isSuccess ||
+            addSubscription.isError ||
+            !newLink
           }
         >
           {addSubscription.isPending || addSubscription.isSuccess ? (
@@ -161,7 +164,12 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
       </form>
       {showWrongSubscriptionNameMessage ? (
         <div className="text-destructive flex w-full items-center gap-1 ps-10 text-xs">
-          {addSubscription.isError ? (
+          {/* ToDo: do not use an error message but an error type */}
+          {addSubscription.isError && /^duplicate key value/.test(addSubscription.error.message) ? (
+            <p>
+              <b>Error: you are already subscribed to this source</b>
+            </p>
+          ) : addSubscription.isError ? (
             <p>
               <b>Error:</b> {addSubscription.error.message}
             </p>
