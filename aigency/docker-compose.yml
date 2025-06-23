@@ -134,6 +134,7 @@ services:
       - DB_PASSWORD=${POSTGRES_PASSWORD}
       - DB_NAME=${POSTGRES_DB}
       - DB_SCHEMA=public
+      - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}
     env_file:
       - .env
     hostname: aigency
