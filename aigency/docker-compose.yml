@@ -165,7 +165,7 @@ services:
       context: ..
       dockerfile: apps/xen-tg-app/Dockerfile
       args:
-        VITE_API_URL: https://(`${SUBDOMAIN_API}.${DOMAIN_NAME}/rpc
+        VITE_API_URL: https://${SUBDOMAIN_API}.${DOMAIN_NAME}/rpc
     networks: ['demo']
     env_file:
       - .env
