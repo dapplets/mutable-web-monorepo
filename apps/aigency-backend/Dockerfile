@@ -39,9 +39,9 @@ WORKDIR /app
 
 USER node
 
-WORKDIR /app/apps/aigency-backend
-
 COPY --from=installer /app ./
+
+WORKDIR /app/apps/aigency-backend
 
 ENV NODE_ENV=production
 
