@@ -35,7 +35,7 @@ RUN pnpm run build
 
 # production environment
 FROM nginx:stable-alpine
-COPY --from=installer /app/xen-tg-app/dist /usr/share/nginx/html
-COPY --from=installer /app/xen-tg-app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=installer /app/apps/xen-tg-app/dist /usr/share/nginx/html
+COPY --from=installer /app/apps/xen-tg-app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
