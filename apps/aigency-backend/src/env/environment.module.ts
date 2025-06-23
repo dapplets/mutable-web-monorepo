@@ -9,9 +9,9 @@ export const envSchema = z
       .string()
       .regex(/^\d+$/, 'POSTGRES_PORT must be a number')
       .default('5432'),
-    DB_USERNAME: z.string().min(1, 'DB_USERNAME is required'),
-    DB_PASSWORD: z.string().min(1, 'DB_PASSWORD is required'),
-    DB_NAME: z.string().min(1, 'DB_NAME is required'),
+    POSTGRES_USER: z.string().min(1, 'POSTGRES_USER is required'),
+    POSTGRES_PASSWORD: z.string().min(1, 'POSTGRES_PASSWORD is required'),
+    POSTGRES_DB: z.string().min(1, 'POSTGRES_DB is required'),
     POSTGRES_SCHEMA: z.string().default('default'),
     NODE_ENV: z
       .enum(['development', 'production', 'test'])

@@ -39,9 +39,9 @@ import { BotModule } from 'src/bot';
         type: 'postgres',
         host: config.get<string>('POSTGRES_HOST'),
         port: config.get<number>('POSTGRES_PORT'),
-        username: config.get<string>('DB_USERNAME'),
-        password: config.get<string>('DB_PASSWORD'),
-        database: config.get<string>('DB_NAME'),
+        username: config.get<string>('POSTGRES_USER'),
+        password: config.get<string>('POSTGRES_PASSWORD'),
+        database: config.get<string>('POSTGRES_DB'),
         schema: config.get<string>('POSTGRES_SCHEMA'),
         entities: ['dist/**/*.entity.js'],
         synchronize: false, // ToDo

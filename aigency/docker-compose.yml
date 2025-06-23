@@ -128,12 +128,12 @@ services:
       dockerfile: apps/aigency-backend/Dockerfile
     networks: ['demo']
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_USERNAME=${POSTGRES_USER}
-      - DB_PASSWORD=${POSTGRES_PASSWORD}
-      - DB_NAME=${POSTGRES_DB}
-      - DB_SCHEMA=public
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_SCHEMA=public
       - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}
     env_file:
       - .env
