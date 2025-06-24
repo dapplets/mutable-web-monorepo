@@ -12,6 +12,6 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ['true-ways-hide.loca.lt'],
+    allowedHosts: true,
   },
 })

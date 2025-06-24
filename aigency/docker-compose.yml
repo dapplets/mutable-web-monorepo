@@ -25,6 +25,7 @@ x-n8n: &service-n8n
     - N8N_PROTOCOL=https
     - NODE_ENV=production
     - WEBHOOK_URL=https://${SUBDOMAIN_N8N}.${DOMAIN_NAME}/
+    - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}
   env_file:
     - .env
 
@@ -135,6 +136,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_SCHEMA=public
       - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}
+      - N8N_WEBHOOK_URL=https://${SUBDOMAIN_N8N}.${DOMAIN_NAME}
     env_file:
       - .env
     hostname: aigency

@@ -35,9 +35,13 @@ export const envSchema = z
     REWARD_ACCOUNT_ID: z.string().nonempty(),
     BUG_REWARD_AMOUNT: z.string().nonempty(),
     USAGE_REWARD_AMOUNT: z.string().nonempty(),
+    N8N_WEBHOOK_URL: z.string().url(),
   })
   // Cast POSTGRES_PORT → number so callers get the right type
-  .transform((vars) => ({ ...vars, POSTGRES_PORT: Number(vars.POSTGRES_PORT) }));
+  .transform((vars) => ({
+    ...vars,
+    POSTGRES_PORT: Number(vars.POSTGRES_PORT),
+  }));
 
 export function validateEnv(raw: Record<string, unknown>) {
   const parsed = envSchema.safeParse(raw);

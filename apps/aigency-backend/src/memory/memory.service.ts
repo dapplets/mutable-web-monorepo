@@ -21,6 +21,14 @@ export class MemoryService {
     };
   }
 
+  async getAllMemories(username: string) {
+    this._validateUsername(username);
+    return this.memoryRepository.find({
+      where: { username },
+      order: { id: 'DESC' }, // last memories first for next ai agent prompt
+    });
+  }
+
   async deleteAllMemories(username: string) {
     this._validateUsername(username);
     await this.memoryRepository.delete({ username });

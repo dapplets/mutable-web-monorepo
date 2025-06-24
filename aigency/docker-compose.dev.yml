@@ -9,6 +9,8 @@ networks:
 x-n8n: &service-n8n
   image: n8nio/n8n:latest
   networks: ['demo']
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
   environment:
     - DB_TYPE=postgresdb
     - DB_POSTGRESDB_HOST=postgres
@@ -29,6 +31,7 @@ x-n8n: &service-n8n
     - N8N_ENCRYPTION_KEY=super-secret-key
     - N8N_USER_MANAGEMENT_JWT_SECRET=even-more-secret
     - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+    - AIGENCY_API_URL=http://host.docker.internal:3000
 
 services:
   postgres:
