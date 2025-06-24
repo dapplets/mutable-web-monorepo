@@ -16,12 +16,6 @@ const UserInfoKey = new TypesafeKey<UserInfo>('aigency:auth:UserInfo');
 
 export type UserInfo = {
   id: number;
-  first_name: string;
-  last_name?: string;
-  username: string;
-  language_code?: string;
-  allows_write_to_pm?: boolean;
-  photo_url?: string;
 };
 
 export class AuthGuard implements CanActivate {
@@ -48,8 +42,8 @@ export class AuthGuard implements CanActivate {
 
     const user = JSON.parse(userJson) as UserInfo;
 
-    if (!user.username) {
-      throw new CodedRpcException("User doesn't have username");
+    if (!user.id) {
+      throw new CodedRpcException("Telegram user doesn't have ID in init data");
     }
 
     // ToDo: validate telegram initData

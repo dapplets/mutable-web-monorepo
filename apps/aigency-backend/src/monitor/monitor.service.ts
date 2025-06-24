@@ -30,8 +30,9 @@ export class MonitorService {
 
   @OnEvent('capability.minted')
   async handleNftMinted(event: NftMintedEvent) {
+    // ToDo: human readable caller id
     await this.notify(
-      `New NFT minted: https://nearblocks.io/nft-token/${event.contractId}/${event.tokenId}\nCaller: @${event.callerUsername}`,
+      `New NFT minted: https://nearblocks.io/nft-token/${event.contractId}/${event.tokenId}\nCaller: @${event.userId}`,
     );
   }
 
@@ -39,19 +40,21 @@ export class MonitorService {
   async handleRewardSuccess(event: RewardSucceedEvent) {
     // ToDo: different reward reasons
     // ToDo: notify caller also
+    // ToDo: human readable caller id
     await this.notify(
       `NEAR account ${event.beneficiaryAccountId} rewarded\n` +
         `Tx: https://nearblocks.io/txns/${event.txHash} \n` +
-        `Caller: @${event.callerUsername}`,
+        `Caller: @${event.callerUserId}`,
     );
   }
 
   @OnEvent('reward.failed')
   async handleRewardFailed(event: RewardFailedEvent) {
     // ToDo: different reward reasons
+    // ToDo: human readable caller id
     await this.notify(
       `Cannot reward ${event.beneficiaryAccountId}\n` +
-        `Caller: @${event.callerUsername}\n`,
+        `Caller: @${event.callerUserId}\n`,
     );
   }
 }

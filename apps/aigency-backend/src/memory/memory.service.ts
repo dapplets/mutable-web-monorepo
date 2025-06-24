@@ -5,11 +5,9 @@ import { MemoryRepository } from './memory.repository';
 export class MemoryService {
   constructor(private readonly memoryRepository: MemoryRepository) {}
 
-  async getMemories(username: string, limit: number, offset: number) {
-    this._validateUsername(username);
-
+  async getMemories(userId: number, limit: number, offset: number) {
     const [items, total] = await this.memoryRepository.findAndCount({
-      where: { username },
+      where: { userId },
       order: { id: 'DESC' },
       take: limit,
       skip: offset,
@@ -21,28 +19,18 @@ export class MemoryService {
     };
   }
 
-  async getAllMemories(username: string) {
-    this._validateUsername(username);
+  async getAllMemories(userId: number) {
     return this.memoryRepository.find({
-      where: { username },
+      where: { userId },
       order: { id: 'DESC' }, // last memories first for next ai agent prompt
     });
   }
 
-  async deleteAllMemories(username: string) {
-    this._validateUsername(username);
-    await this.memoryRepository.delete({ username });
+  async deleteAllMemories(userId: number) {
+    await this.memoryRepository.delete({ userId });
   }
 
-  async deleteMemory(username: string, id: number) {
-    this._validateUsername(username);
-    await this.memoryRepository.delete({ username, id });
-  }
-
-  private _validateUsername(username: string) {
-    // prevents SQL injection
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      throw new Error('Invalid username');
-    }
+  async deleteMemory(userId: number, id: number) {
+    await this.memoryRepository.delete({ userId, id });
   }
 }

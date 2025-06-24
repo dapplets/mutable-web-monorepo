@@ -9,31 +9,31 @@ export class WarningRepository extends Repository<Warning> {
     super(Warning, dataSource.manager);
   }
 
-  public async getUnpaidWarnings(username: string) {
+  public async getUnpaidWarnings(userId: number) {
     const query = `
       SELECT w.*
       FROM warning w
       left join reward_history rh on rh.related_item_type = 'bug' and rh.related_item_id = w.id
-      where rh.id is null and w.username = $1
+      where rh.id is null and w.user_id = $1
       order by w.created_at asc
     `;
 
     const rows = await this.dataSource.query<
       {
         id: string;
-        username: string;
+        user_id: number;
         title: string;
         description: string;
         created_at: string;
         is_deleted: boolean;
         hash: string;
       }[]
-    >(query, [username]);
+    >(query, [userId]);
 
     return rows.map((row) =>
       this.create({
         id: row.id,
-        username: row.username,
+        userId: row.user_id,
         title: row.title,
         description: row.description,
         createdAt: new Date(row.created_at),

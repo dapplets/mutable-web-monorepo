@@ -19,7 +19,7 @@ export class WarningController {
     @UserInfo() user: UserInfo,
   ) {
     return this.warningService.getWarnings(
-      user.username,
+      user.id,
       params.limit,
       params.offset,
     );
@@ -27,6 +27,6 @@ export class WarningController {
 
   @ZodToOpenRPC({ params: z.object({}) })
   public deleteAllWarnings(@UserInfo() user: UserInfo) {
-    return this.warningService.deleteAllWarnings(user.username);
+    return this.warningService.deleteAllWarnings(user.id);
   }
 }

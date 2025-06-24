@@ -9,13 +9,9 @@ export class UserCapabilityRepository extends Repository<UserCapability> {
     super(UserCapability, dataSource.manager);
   }
 
-  async getCapabilitiesForUser(
-    username: string,
-    limit: number,
-    offset: number,
-  ) {
+  async getCapabilitiesForUser(userId: number, limit: number, offset: number) {
     return this.findAndCount({
-      where: { username, isDeleted: false },
+      where: { userId, isDeleted: false },
       relations: { capability: true },
       order: { capability: { domain: 'ASC', name: 'ASC' } },
       take: limit,
@@ -23,15 +19,15 @@ export class UserCapabilityRepository extends Repository<UserCapability> {
     });
   }
 
-  async addTop10CapabilitiesToUser(username: string) {
+  async addTop10CapabilitiesToUser(userId: number) {
     await this.query(
-      `insert into user_capability (username, capability_id)
-      select $1 as username, c.id
+      `insert into user_capability (user_id, capability_id)
+      select $1 as user_id, c.id
       from capability c
       where c.domain = 'Near AI'
       order by c.stars desc, c.domain asc, c.name asc
       limit 10`,
-      [username],
+      [userId],
     );
   }
 }

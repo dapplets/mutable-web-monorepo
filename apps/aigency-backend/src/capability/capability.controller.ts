@@ -19,7 +19,7 @@ export class CapabilityController {
     @UserInfo() user: UserInfo,
   ) {
     return this.capabilityService.getCapabilitiesForUser(
-      user.username,
+      user.id,
       params.limit,
       params.offset,
     );
@@ -30,7 +30,7 @@ export class CapabilityController {
     @Body() params: { id: string },
     @UserInfo() user: UserInfo,
   ) {
-    return this.capabilityService.removeCapability(user.username, params.id);
+    return this.capabilityService.removeCapability(user.id, params.id);
   }
 
   @ZodToOpenRPC({ params: z.object({ id: z.string() }) })
@@ -38,7 +38,7 @@ export class CapabilityController {
     @Body() params: { id: string },
     @UserInfo() user: UserInfo,
   ) {
-    return this.capabilityService.enableCapability(user.username, params.id);
+    return this.capabilityService.enableCapability(user.id, params.id);
   }
 
   @ZodToOpenRPC({ params: z.object({ id: z.string() }) })
@@ -46,11 +46,11 @@ export class CapabilityController {
     @Body() params: { id: string },
     @UserInfo() user: UserInfo,
   ) {
-    return this.capabilityService.disableCapability(user.username, params.id);
+    return this.capabilityService.disableCapability(user.id, params.id);
   }
 
   @ZodToOpenRPC({ params: z.object({}) })
   public syncCapabilities(@UserInfo() user: UserInfo) {
-    return this.capabilityService.syncCapabilities(user.username);
+    return this.capabilityService.syncCapabilities(user.id);
   }
 }

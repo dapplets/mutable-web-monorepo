@@ -24,7 +24,7 @@ export class BotService {
       throw new Error('User not found');
     }
 
-    const memories = await this.memoryService.getAllMemories(user.username);
+    const memories = await this.memoryService.getAllMemories(user.id);
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const request = { user, memories, message };

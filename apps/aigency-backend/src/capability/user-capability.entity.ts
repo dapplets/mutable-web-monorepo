@@ -9,10 +9,10 @@ import {
 import { Capability } from './capability.entity';
 
 @Entity({ name: 'user_capability' })
-@Index(['username', 'capabilityId'], { unique: true })
+@Index(['userId', 'capabilityId'], { unique: true })
 export class UserCapability {
-  @PrimaryColumn()
-  username!: string;
+  @PrimaryColumn({ name: 'user_id' })
+  userId!: number;
 
   @PrimaryColumn({ type: 'uuid', name: 'capability_id' })
   capabilityId!: string;

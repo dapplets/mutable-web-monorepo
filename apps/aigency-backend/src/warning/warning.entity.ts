@@ -5,8 +5,8 @@ export class Warning {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'text' })
-  username!: string;
+  @Column({ type: 'text', name: 'user_id' })
+  userId!: number;
 
   @Column({ type: 'text', nullable: true })
   title!: string | null;

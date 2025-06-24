@@ -28,11 +28,6 @@ export class UserService {
     return user?.toDto();
   }
 
-  async getUserByUsername(username: string) {
-    const user = await this.userRepository.findOneBy({ username });
-    return user?.toDto();
-  }
-
   async getBalance(id: number) {
     const user = await this.userRepository.findOneByOrFail({ id });
 
@@ -138,19 +133,16 @@ export class UserService {
     };
   }
 
-  async createUser(createUserDto: { username: string; id: number }) {
+  async createUser(createUserDto: { username: string | null; id: number }) {
     const user = this.userRepository.create({
       id: createUserDto.id,
-      username: createUserDto.username.toLowerCase(),
+      username: createUserDto.username?.toLowerCase(),
       status: true, // ToDo: remove?
     });
 
     await this.userRepository.insert(user);
 
-    this.eventEmitter.emit(
-      'user.created',
-      new UserCreatedEvent(user.id, user.username),
-    );
+    this.eventEmitter.emit('user.created', new UserCreatedEvent(user.id));
   }
 
   async deleteUser(userId: number) {
@@ -158,10 +150,7 @@ export class UserService {
 
     await this.userRepository.delete(userId);
 
-    this.eventEmitter.emit(
-      'user.deleted',
-      new UserDeletedEvent(user.id, user.username),
-    );
+    this.eventEmitter.emit('user.deleted', new UserDeletedEvent(user.id));
   }
 
   // ToDo: move to near service?

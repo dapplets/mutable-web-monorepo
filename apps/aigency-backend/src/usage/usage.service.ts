@@ -5,9 +5,9 @@ import { UsageRepository } from './usage.repository';
 export class UsageService {
   constructor(private readonly usageRepository: UsageRepository) {}
 
-  async getUsageHistory(username: string, limit: number, offset: number) {
+  async getUsageHistory(userId: number, limit: number, offset: number) {
     const [items, total] = await this.usageRepository.getUsageHistory(
-      username,
+      userId,
       limit,
       offset,
     );
@@ -18,11 +18,11 @@ export class UsageService {
     };
   }
 
-  async getUnpaidUsagesForUsageCaller(username: string) {
-    return this.usageRepository.getUnpaidUsagesForUsageCaller(username);
+  async getUnpaidUsagesForUsageCaller(userId: number) {
+    return this.usageRepository.getUnpaidUsagesForUsageCaller(userId);
   }
 
-  async getUnpaidUsagesForUsageOwner(username: string) {
-    return this.usageRepository.getUnpaidUsagesForUsageOwner(username);
+  async getUnpaidUsagesForUsageOwner(userId: number) {
+    return this.usageRepository.getUnpaidUsagesForUsageOwner(userId);
   }
 }

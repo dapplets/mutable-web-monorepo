@@ -8,8 +8,8 @@ export class Memory {
   @Column({ type: 'text', nullable: true })
   data!: string | null;
 
-  @Column({ type: 'text' })
-  username!: string;
+  @Column({ name: 'user_id' })
+  userId!: number;
 
   @Column({ name: 'datetime', type: 'timestamptz', default: () => 'now()' })
   createdAt!: Date;

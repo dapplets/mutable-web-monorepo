@@ -23,17 +23,17 @@ export class RewardService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async getRewardAmount(username: string) {
+  async getRewardAmount(userId: number) {
     const [
       unclaimedRewardsForUsageCaller,
       unclaimedRewardsForBugs,
       allRewardsForUsageCaller,
       allRewardsForBugs,
     ] = await Promise.all([
-      this.rewardRepository.getUnclaimedRewardsForUsageCaller(username),
-      this.rewardRepository.getUnclaimedRewardsForBugs(username),
-      this.rewardRepository.getAllRewardsForUsageCaller(username),
-      this.rewardRepository.getAllRewardsForBugs(username),
+      this.rewardRepository.getUnclaimedRewardsForUsageCaller(userId),
+      this.rewardRepository.getUnclaimedRewardsForBugs(userId),
+      this.rewardRepository.getAllRewardsForUsageCaller(userId),
+      this.rewardRepository.getAllRewardsForBugs(userId),
     ]);
 
     const sumBigInts = (...arr: { amount: string }[][]) =>
@@ -55,23 +55,23 @@ export class RewardService {
     };
   }
 
-  async proceedAllUserRewards(username: string) {
-    await this._rewardAgentOwner(username);
-    await this._rewardAgentCaller(username);
-    await this._rewardBugHunter(username);
+  async proceedAllUserRewards(userId: number) {
+    await this._rewardAgentOwner(userId);
+    await this._rewardAgentCaller(userId);
+    await this._rewardBugHunter(userId);
   }
 
-  private async _rewardAgentOwner(username: string) {
+  private async _rewardAgentOwner(userId: number) {
     const rewardAmount = this.configService.get<string>('USAGE_REWARD_AMOUNT')!;
 
     const unpaidUsages =
-      await this.usageService.getUnpaidUsagesForUsageOwner(username);
+      await this.usageService.getUnpaidUsagesForUsageOwner(userId);
 
     for (const usage of unpaidUsages) {
       const capability =
         await this.capabilityService.getOrMintCapabilityWithNft(
           usage.capabilityId,
-          username,
+          userId,
         );
 
       if (!capability.beneficiaryAccountId) {
@@ -85,13 +85,13 @@ export class RewardService {
         BigInt(rewardAmount),
         usage.capabilityId,
         'usage-owner', // ToDo: magic value
-        username,
+        userId,
       );
     }
   }
 
-  private async _rewardAgentCaller(username: string) {
-    const user = await this.userService.getUserByUsername(username);
+  private async _rewardAgentCaller(userId: number) {
+    const user = await this.userService.getUserById(userId);
 
     if (!user?.nearAccountId) {
       throw new Error('User is not logged in');
@@ -100,7 +100,7 @@ export class RewardService {
     const rewardAmount = this.configService.get<string>('USAGE_REWARD_AMOUNT')!;
 
     const unpaidUsages =
-      await this.usageService.getUnpaidUsagesForUsageCaller(username);
+      await this.usageService.getUnpaidUsagesForUsageCaller(userId);
 
     for (const usage of unpaidUsages) {
       // ToDo: add business logic to check if reward is needed
@@ -110,13 +110,13 @@ export class RewardService {
         BigInt(rewardAmount),
         usage.id,
         'usage-caller', // ToDo: magic value
-        username,
+        userId,
       );
     }
   }
 
-  private async _rewardBugHunter(username: string) {
-    const user = await this.userService.getUserByUsername(username);
+  private async _rewardBugHunter(userId: number) {
+    const user = await this.userService.getUserById(userId);
 
     if (!user?.nearAccountId) {
       throw new Error('User is not logged in');
@@ -124,8 +124,7 @@ export class RewardService {
 
     const rewardAmount = this.configService.get<string>('BUG_REWARD_AMOUNT')!;
 
-    const unpaidWarnings =
-      await this.warningService.getUnpaidWarnings(username);
+    const unpaidWarnings = await this.warningService.getUnpaidWarnings(userId);
 
     for (const warning of unpaidWarnings) {
       // ToDo: add business logic to check if reward is needed
@@ -135,7 +134,7 @@ export class RewardService {
         BigInt(rewardAmount),
         warning.id,
         'bug', // ToDo: magic value
-        username,
+        userId,
       );
     }
   }
@@ -145,7 +144,7 @@ export class RewardService {
     amount: bigint,
     relatedItemId: string,
     relatedItemType: string,
-    callerUsername: string,
+    callerUserId: number,
   ) {
     let txHash: string | null = null;
 
@@ -168,14 +167,14 @@ export class RewardService {
 
         this.eventEmitter.emit(
           'reward.succeed',
-          new RewardSucceedEvent(recipientAccountId, txHash, callerUsername),
+          new RewardSucceedEvent(recipientAccountId, txHash, callerUserId),
         );
       } catch (error) {
         console.log(error);
 
         this.eventEmitter.emit(
           'reward.failed',
-          new RewardFailedEvent(recipientAccountId, callerUsername),
+          new RewardFailedEvent(recipientAccountId, callerUserId),
         );
 
         // do not insert reward receipt

@@ -12,16 +12,16 @@ export class UserBotController {
 
   @Start()
   async start(@Ctx() ctx: TelegrafContext) {
-    if (!ctx.from?.username) {
-      await ctx.reply('You must have a username to use this bot');
+    if (!ctx.from?.id) {
+      await ctx.reply('You must have an ID to use this bot');
       return;
     }
 
-    const user = await this.userService.getUserByUsername(ctx.from.username);
+    const user = await this.userService.getUserById(ctx.from.id);
 
     if (!user) {
       await this.userService.createUser({
-        username: ctx.from.username,
+        username: ctx.from.username ?? null,
         id: ctx.from.id,
       });
     }
@@ -33,12 +33,11 @@ export class UserBotController {
 
   @Command('wipe')
   async wipe(@Ctx() ctx: TelegrafContext) {
-    if (!ctx.from?.username) {
-      await ctx.reply('You must have a username to use this bot');
-      return;
+    if (!ctx.from?.id) {
+      throw new Error('User ID not found');
     }
 
-    const user = await this.userService.getUserByUsername(ctx.from.username);
+    const user = await this.userService.getUserById(ctx.from.id);
 
     if (user) {
       await this.userService.deleteUser(ctx.from.id);

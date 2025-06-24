@@ -36,6 +36,7 @@ export const envSchema = z
     BUG_REWARD_AMOUNT: z.string().nonempty(),
     USAGE_REWARD_AMOUNT: z.string().nonempty(),
     N8N_WEBHOOK_URL: z.string().url(),
+    AIGENCY_API_KEY: z.string().nonempty(),
   })
   // Cast POSTGRES_PORT → number so callers get the right type
   .transform((vars) => ({

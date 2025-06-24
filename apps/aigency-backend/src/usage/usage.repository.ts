@@ -9,20 +9,16 @@ export class UsageRepository extends Repository<Usage> {
     super(Usage, dataSource.manager);
   }
 
-  public async getUsageHistory(
-    username: string,
-    limit: number,
-    offset: number,
-  ) {
+  public async getUsageHistory(userId: number, limit: number, offset: number) {
     const total = (await this.query(
       `select count(*) as count
       from (
         select *
         from reward_history rh 
         join usage_history uh on uh.id = rh.related_item_id
-        where uh.caller_username = $1
+        where uh.caller_user_id = $1
       )`,
-      [username],
+      [userId],
     )) as { count: number }[];
 
     const items = (await this.query(
@@ -39,11 +35,11 @@ export class UsageRepository extends Repository<Usage> {
       from reward_history rh 
       join usage_history uh on uh.id = rh.related_item_id 
       join capability c on c.id = uh.capability_id 
-      where uh.caller_username = $1
+      where uh.caller_user_id = $1
       order by rh.created_at desc
       limit $2
       offset $3`,
-      [username, limit, offset],
+      [userId, limit, offset],
     )) as {
       id: string;
       capability_domain: string;
@@ -71,39 +67,39 @@ export class UsageRepository extends Repository<Usage> {
     ];
   }
 
-  public async getUnpaidUsagesForUsageCaller(username: string) {
-    return this._getUnpaidUsages(username, 'usage-caller');
+  public async getUnpaidUsagesForUsageCaller(userId: number) {
+    return this._getUnpaidUsages(userId, 'usage-caller');
   }
 
-  public async getUnpaidUsagesForUsageOwner(username: string) {
-    return this._getUnpaidUsages(username, 'usage-owner');
+  public async getUnpaidUsagesForUsageOwner(userId: number) {
+    return this._getUnpaidUsages(userId, 'usage-owner');
   }
 
-  private async _getUnpaidUsages(username: string, rewardReason: string) {
+  private async _getUnpaidUsages(userId: number, rewardReason: string) {
     const query = `
       SELECT uh.*
       FROM usage_history uh
       LEFT JOIN reward_history rh 
         ON rh.related_item_type = $2 AND rh.related_item_id = uh.id
-      WHERE rh.id IS NULL AND uh.caller_username = $1
+      WHERE rh.id IS NULL AND uh.caller_user_id = $1
       ORDER BY uh.created_at ASC
     `;
 
     const rows = await this.dataSource.query<
       {
         id: string;
-        caller_username: string;
+        caller_user_id: number;
         capability_id: string;
         created_at: string;
         execution_input: string;
         execution_output: string;
       }[]
-    >(query, [username, rewardReason]);
+    >(query, [userId, rewardReason]);
 
     return rows.map((row) =>
       this.create({
         id: row.id,
-        callerUsername: row.caller_username,
+        callerUserId: row.caller_user_id,
         capabilityId: row.capability_id,
         createdAt: new Date(row.created_at),
         executionInput: row.execution_input,
