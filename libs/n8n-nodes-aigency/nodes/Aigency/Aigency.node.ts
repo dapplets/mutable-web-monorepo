@@ -34,10 +34,13 @@ export class Aigency implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				options: [
+					{ name: 'Add Message', value: 'addMessage' },
 					{ name: 'Add Subscription', value: 'addSubscription' },
 					{ name: 'Delete All Memories', value: 'deleteAllMemories' },
+					{ name: 'Delete All Messages', value: 'deleteMessages' },
 					{ name: 'Delete All Warnings', value: 'deleteAllWarnings' },
 					{ name: 'Delete Memory', value: 'deleteMemory' },
+					{ name: 'Delete Message', value: 'deleteMessage' },
 					{ name: 'Disable Capability', value: 'disableCapability' },
 					{ name: 'Disable Dev Mode', value: 'disableDevMode' },
 					{ name: 'Disable Subscription', value: 'disableSubscription' },
@@ -49,6 +52,7 @@ export class Aigency implements INodeType {
 					{ name: 'Get Current User', value: 'getCurrentUser' },
 					{ name: 'Get Dev Mode', value: 'getDevMode' },
 					{ name: 'Get Memories', value: 'getMemories' },
+					{ name: 'Get Messages', value: 'getMessages' },
 					{ name: 'Get Next Scan', value: 'getNextScanOfSubscriptions' },
 					{ name: 'Get OpenRPC Document', value: 'getOpenRPCDocument' },
 					{ name: 'Get Reward Amount', value: 'getRewardAmount' },
@@ -133,9 +137,7 @@ export class Aigency implements INodeType {
 				name: 'limit',
 				type: 'number',
 				description: 'Max number of results to return',
-				typeOptions: {
-					minValue: 1,
-				},
+				typeOptions: { minValue: 1 },
 				required: true,
 				displayOptions: {
 					show: {
@@ -145,6 +147,7 @@ export class Aigency implements INodeType {
 							'getWarnings',
 							'getMemories',
 							'getUsageHistory',
+							'getMessages',
 						],
 					},
 				},
@@ -163,6 +166,7 @@ export class Aigency implements INodeType {
 							'getWarnings',
 							'getMemories',
 							'getUsageHistory',
+							'getMessages',
 						],
 					},
 				},
@@ -173,11 +177,7 @@ export class Aigency implements INodeType {
 				name: 'source',
 				type: 'string',
 				required: true,
-				displayOptions: {
-					show: {
-						operation: ['addSubscription'],
-					},
-				},
+				displayOptions: { show: { operation: ['addSubscription'] } },
 				default: '',
 			},
 			{
@@ -185,11 +185,7 @@ export class Aigency implements INodeType {
 				name: 'link',
 				type: 'string',
 				required: true,
-				displayOptions: {
-					show: {
-						operation: ['addSubscription'],
-					},
-				},
+				displayOptions: { show: { operation: ['addSubscription'] } },
 				default: '',
 			},
 			{
@@ -197,9 +193,34 @@ export class Aigency implements INodeType {
 				name: 'text',
 				type: 'string',
 				required: true,
+				displayOptions: { show: { operation: ['sendMessage'] } },
+				default: '',
+			},
+			{
+				displayName: 'Session ID',
+				name: 'sessionId',
+				type: 'string',
+				required: true,
+				displayOptions: { show: { operation: ['getMessages', 'addMessage', 'deleteMessages'] } },
+				default: '',
+			},
+			{
+				displayName: 'Message (JSON)',
+				name: 'message',
+				type: 'json',
+				required: true,
+				displayOptions: { show: { operation: ['addMessage'] } },
+				default: '',
+				description: 'A message object with content and type as required fields',
+			},
+			{
+				displayName: 'Message ID',
+				name: 'messageId',
+				type: 'string',
+				required: true,
 				displayOptions: {
 					show: {
-						operation: ['sendMessage'],
+						operation: ['deleteMessage'],
 					},
 				},
 				default: '',
@@ -211,11 +232,9 @@ export class Aigency implements INodeType {
 		if (!apiKey || !apiUrl) {
 			return { status: 'Error', message: 'Credentials are empty' };
 		}
-
 		const isOk = await request({ apiKey, apiUrl, method: 'getStatus' })
 			.then(() => true)
 			.catch(() => false);
-
 		if (isOk) {
 			return { status: 'OK', message: 'Connection successful!' };
 		} else {
@@ -226,23 +245,19 @@ export class Aigency implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnItems: INodeExecutionData[] = [];
-
 		let apiKey: string | undefined;
 		let apiUrl: string | undefined;
-
 		try {
 			const credentials = (await this.getCredentials('aigencyCredentialsApi')) as {
 				apiKey: string;
 				apiUrl: string;
 			};
-
 			apiKey = credentials.apiKey;
 			apiUrl = credentials.apiUrl;
 		} catch (error) {
 			apiKey = process.env.AIGENCY_API_KEY;
 			apiUrl = process.env.AIGENCY_API_URL;
 		}
-
 		if (!apiKey || !apiUrl) {
 			throw new NodeOperationError(
 				this.getNode(),
@@ -250,13 +265,22 @@ export class Aigency implements INodeType {
 			);
 		}
 
-		const parametersToCollect = ['id', 'limit', 'offset', 'source', 'link', 'text', 'userId'];
+		const parametersToCollect = [
+			'id',
+			'limit',
+			'offset',
+			'source',
+			'link',
+			'text',
+			'userId',
+			'sessionId',
+			'message',
+			'messageId',
+		];
 
 		for (let i = 0; i < items.length; i++) {
 			const method = this.getNodeParameter('operation', i) as string;
-
 			const params: any = {};
-
 			for (const parameter of parametersToCollect) {
 				try {
 					params[parameter] = this.getNodeParameter(parameter, i, undefined, {
@@ -264,7 +288,6 @@ export class Aigency implements INodeType {
 					});
 				} catch (_) {}
 			}
-
 			try {
 				const response = await request({ apiKey, apiUrl, userId: params.userId, method, params });
 				if (response.error) {
@@ -307,13 +330,11 @@ const request = async ({
 		params,
 		id: 'dontcare',
 	};
-
 	const authTokenParams = new URLSearchParams();
 	authTokenParams.set('api_key', apiKey);
 	if (userId) {
 		authTokenParams.set('user', JSON.stringify({ id: userId.toString() }));
 	}
-
 	const response = await fetch(apiUrl, {
 		method: 'POST',
 		headers: {
@@ -322,8 +343,6 @@ const request = async ({
 		},
 		body: JSON.stringify(payload),
 	});
-
 	const json: any = await response.json();
-
 	return json;
 };
