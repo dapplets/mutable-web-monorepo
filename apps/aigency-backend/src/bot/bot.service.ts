@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectBot } from 'nestjs-telegraf';
 import { TelegrafContext } from 'src/common/telegraf-context.interface';
 import { MemoryService } from 'src/memory/memory.service';
-import { N8NService } from 'src/n8n/n8n.service';
+import { N8NService, WebhookEvent } from 'src/n8n/n8n.service';
 import { UserService } from 'src/user/user.service';
 import { Telegraf } from 'telegraf';
 
@@ -30,7 +30,10 @@ export class BotService {
     const request = { user, memories, message };
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const result = await this.n8nService.callMainWorkflow(request);
+    const result = await this.n8nService.callMainWorkflow(
+      WebhookEvent.MessageReceived,
+      request,
+    );
 
     return result;
   }

@@ -1,6 +1,6 @@
 {
-	"name": "@mweb/n8n-nodes-aigency",
-	"version": "0.1.0",
+	"name": "@dapplets/n8n-nodes-aigency",
+	"version": "0.1.7",
 	"description": "N8N plugin to access Aigency API",
 	"keywords": [
 		"n8n-community-node-package"
@@ -32,8 +32,13 @@
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
-		"credentials": [],
-		"nodes": []
+		"credentials": [
+			"dist/credentials/AigencyApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Aigency/Aigency.node.js",
+			"dist/nodes/AigencyTrigger/AigencyTrigger.node.js"
+		]
 	},
 	"devDependencies": {
 		"@typescript-eslint/parser": "~8.32.0",
