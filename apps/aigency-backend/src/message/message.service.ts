@@ -47,4 +47,27 @@ export class MessageService {
   async deleteMessages(userId: number, sessionId: string): Promise<void> {
     await this.messageRepository.delete({ userId, sessionId });
   }
+
+  async deleteMessage(
+    userId: number,
+    sessionId: string,
+    messageId: string,
+  ): Promise<void> {
+    await this.messageRepository.delete({ id: messageId, userId, sessionId });
+  }
+
+  async deleteLastMessages(
+    userId: number,
+    sessionId: string,
+    limit: number,
+  ): Promise<void> {
+    const messages = await this.messageRepository.find({
+      select: { id: true },
+      where: { userId, sessionId },
+      order: { createdAt: 'DESC' },
+      take: limit,
+    });
+
+    await this.messageRepository.delete(messages.map((message) => message.id));
+  }
 }

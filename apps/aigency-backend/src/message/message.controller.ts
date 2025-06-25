@@ -59,4 +59,32 @@ export class MessageController {
   ) {
     return this.messageService.deleteMessages(user.id, params.sessionId);
   }
+
+  @ZodToOpenRPC({
+    params: z.object({ sessionId: z.string(), messageId: z.string() }),
+  })
+  public deleteMessage(
+    @Body() params: { sessionId: string; messageId: string },
+    @UserInfo() user: UserInfo,
+  ) {
+    return this.messageService.deleteMessage(
+      user.id,
+      params.sessionId,
+      params.messageId,
+    );
+  }
+
+  @ZodToOpenRPC({
+    params: z.object({ sessionId: z.string(), limit: z.number() }),
+  })
+  public deleteLastMessages(
+    @Body() params: { sessionId: string; limit: number },
+    @UserInfo() user: UserInfo,
+  ) {
+    return this.messageService.deleteLastMessages(
+      user.id,
+      params.sessionId,
+      params.limit,
+    );
+  }
 }

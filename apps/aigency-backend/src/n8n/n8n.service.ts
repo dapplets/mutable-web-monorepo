@@ -10,9 +10,17 @@ export enum WebhookEvent {
 export class N8NService {
   constructor(private configService: ConfigService) {}
 
-  async callMainWorkflow(event: WebhookEvent, params: any): Promise<any> {
+  async callMainWorkflow(
+    event: WebhookEvent,
+    params: any,
+    isTest: boolean,
+  ): Promise<any> {
     const n8nWebhookUrl = this.configService.get<string>('N8N_WEBHOOK_URL')!;
-    const url = new URL('/webhook-test/aigency', n8nWebhookUrl);
+
+    const url = new URL(
+      isTest ? `/webhook-test/aigency` : `/webhook/aigency`,
+      n8nWebhookUrl,
+    );
 
     // ToDo: auth
 

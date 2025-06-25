@@ -18,4 +18,11 @@ export class BotRpcController {
   ) {
     return this.botService.sendMessage(params.userId, params.text);
   }
+
+  @ZodToOpenRPC({
+    params: z.object({ fileId: z.string() }),
+  })
+  public getFileUrl(@Body() params: { fileId: string }) {
+    return this.botService.getFileUrl(params.fileId);
+  }
 }

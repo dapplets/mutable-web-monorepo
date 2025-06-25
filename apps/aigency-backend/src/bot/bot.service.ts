@@ -33,6 +33,7 @@ export class BotService {
     const result = await this.n8nService.callMainWorkflow(
       WebhookEvent.MessageReceived,
       request,
+      user.isDeveloper,
     );
 
     return result;
@@ -42,5 +43,10 @@ export class BotService {
     await this.bot.telegram.sendMessage(userId, text, {
       parse_mode: 'Markdown',
     });
+  }
+
+  async getFileUrl(fileId: string) {
+    const url = await this.bot.telegram.getFileLink(fileId);
+    return { url };
   }
 }
