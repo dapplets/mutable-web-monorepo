@@ -31,7 +31,8 @@ export class AuthGuard implements CanActivate {
 
     const isValidToken =
       (await this._isMainBot(tgInitData)) ||
-      (await this._isDebugBot(tgInitData));
+      (await this._isDebugBot(tgInitData)) ||
+      this._isAdmin(tgInitData);
 
     if (!isValidToken) return false;
 
@@ -66,6 +67,12 @@ export class AuthGuard implements CanActivate {
     return validate3rd(tgInitData, debugBotId)
       .then(() => true)
       .catch(() => false);
+  }
+
+  private _isAdmin(tgInitData: string) {
+    const apiKey = this.configService.get<string>('AIGENCY_API_KEY');
+    const tgInitDataParams = new URLSearchParams(tgInitData);
+    return tgInitDataParams.get('api_key') === apiKey;
   }
 }
 

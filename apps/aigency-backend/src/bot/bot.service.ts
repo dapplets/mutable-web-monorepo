@@ -35,8 +35,8 @@ export class BotService {
     return result;
   }
 
-  async sendMessage(chatId: number | string, text: string) {
-    await this.bot.telegram.sendMessage(chatId, text, {
+  async sendMessage(userId: number | string, text: string) {
+    await this.bot.telegram.sendMessage(userId, text, {
       parse_mode: 'Markdown',
     });
   }

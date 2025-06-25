@@ -16,9 +16,11 @@ import { MonitorModule } from 'src/monitor';
 import { NearAiModule } from 'src/nearai';
 import { NearModule } from 'src/near';
 import { BotModule } from 'src/bot';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
+    AuthModule,
     EnvironmentModule,
     CapabilityModule,
     SubscriptionModule,

@@ -11,11 +11,11 @@ export class BotRpcController {
   constructor(private botService: BotService) {}
 
   @ZodToOpenRPC({
-    params: z.object({ chatId: z.number().or(z.string()), text: z.string() }),
+    params: z.object({ userId: z.number().or(z.string()), text: z.string() }),
   })
   public sendMessage(
-    @Body() params: { chatId: number | string; text: string },
+    @Body() params: { userId: number | string; text: string },
   ) {
-    return this.botService.sendMessage(params.chatId, params.text);
+    return this.botService.sendMessage(params.userId, params.text);
   }
 }
