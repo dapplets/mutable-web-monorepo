@@ -49,6 +49,19 @@ export class CapabilityController {
     return this.capabilityService.disableCapability(user.id, params.id);
   }
 
+  @ZodToOpenRPC({
+    params: z.object({
+      id: z.string(),
+      text: z.string().optional(),
+    }),
+  })
+  public callCapability(
+    @Body() { id, ...message }: { id: string; text?: string },
+    @UserInfo() user: UserInfo,
+  ) {
+    return this.capabilityService.callCapability(user.id, id, message);
+  }
+
   @ZodToOpenRPC({ params: z.object({}) })
   public syncCapabilities(@UserInfo() user: UserInfo) {
     return this.capabilityService.syncCapabilities(user.id);

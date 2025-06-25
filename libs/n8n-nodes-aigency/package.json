@@ -1,6 +1,6 @@
 {
 	"name": "@dapplets/n8n-nodes-aigency",
-	"version": "0.1.20",
+	"version": "0.1.21",
 	"description": "N8N plugin to access Aigency API",
 	"keywords": [
 		"n8n-community-node-package"

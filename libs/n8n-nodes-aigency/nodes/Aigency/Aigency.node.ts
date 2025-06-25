@@ -36,6 +36,7 @@ export class Aigency implements INodeType {
 				options: [
 					{ name: 'Add Message', value: 'addMessage' },
 					{ name: 'Add Subscription', value: 'addSubscription' },
+					{ name: 'Call Capability', value: 'callCapability' },
 					{ name: 'Delete All Memories', value: 'deleteAllMemories' },
 					{ name: 'Delete All Messages', value: 'deleteMessages' },
 					{ name: 'Delete All Warnings', value: 'deleteAllWarnings' },
@@ -83,6 +84,7 @@ export class Aigency implements INodeType {
 						operation: [
 							'addMessage',
 							'addSubscription',
+							'callCapability',
 							'deleteAllMemories',
 							'deleteMessages',
 							'deleteAllWarnings',
@@ -127,6 +129,7 @@ export class Aigency implements INodeType {
 				displayOptions: {
 					show: {
 						operation: [
+							'callCapability',
 							'removeCapability',
 							'enableCapability',
 							'disableCapability',
@@ -201,7 +204,7 @@ export class Aigency implements INodeType {
 				name: 'text',
 				type: 'string',
 				required: true,
-				displayOptions: { show: { operation: ['sendMessage'] } },
+				displayOptions: { show: { operation: ['sendMessage', 'callCapability'] } },
 				default: '',
 			},
 			{

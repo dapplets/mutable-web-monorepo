@@ -72,6 +72,36 @@ export class CapabilityService {
     return capability.toDto();
   }
 
+  async callCapability(
+    userId: number,
+    capabilityId: string,
+    message: { text?: string },
+  ): Promise<{ text?: string } | null> {
+    const capability = await this.capabilityRepository.findOneBy({
+      id: capabilityId,
+    });
+
+    if (!capability) {
+      throw new CodedRpcException('Capability not found');
+    }
+
+    const userCapability = await this.userCapabilityRepository.findOneBy({
+      userId,
+      capabilityId,
+    });
+
+    if (!userCapability || !userCapability.isEnabled) {
+      throw new CodedRpcException('Capability is disabled');
+    }
+
+    switch (capability.domain) {
+      case 'Near AI':
+        return this.nearAiService.callAgent(capability.name, message);
+      default:
+        throw new CodedRpcException('Only Near AI capabilities are callable');
+    }
+  }
+
   async syncCapabilities(userId: number) {
     const user = await this.userService.getUserById(userId);
 
