@@ -164,7 +164,12 @@ class AigencyChatMessageHistory extends BaseListChatMessageHistory {
 			throw new ApplicationError(error);
 		}
 
-		return mapStoredMessagesToChatMessages(result.items.reverse().map((msg: any) => msg.message));
+		return mapStoredMessagesToChatMessages(
+			result.items.reverse().map((row: any) => {
+				const { type, ...data } = row.message;
+				return { type, data };
+			}),
+		);
 	}
 
 	async addMessage(baseMessage: BaseMessage): Promise<void> {
