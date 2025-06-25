@@ -11,7 +11,7 @@ import type {
 	INodeTypeDescription,
 	SupplyData,
 } from 'n8n-workflow';
-import { NodeConnectionType, NodeOperationError } from 'n8n-workflow';
+import { ApplicationError, NodeConnectionType, NodeOperationError } from 'n8n-workflow';
 
 export class AigencyChatMemory implements INodeType {
 	description: INodeTypeDescription = {
@@ -155,12 +155,16 @@ class AigencyChatMessageHistory extends BaseListChatMessageHistory {
 	}
 
 	async getMessages(): Promise<BaseMessage[]> {
-		const { items }: { items: any[] } = await this.rpcCall({
+		const { error, result } = await this.rpcCall({
 			method: 'getMessages',
 			params: { sessionId: this.sessionId, limit: this.contextWindowLength, offset: 0 },
 		});
 
-		return mapStoredMessagesToChatMessages(items.reverse().map((msg: any) => msg.message));
+		if (error) {
+			throw new ApplicationError(error);
+		}
+
+		return mapStoredMessagesToChatMessages(result.items.reverse().map((msg: any) => msg.message));
 	}
 
 	async addMessage(baseMessage: BaseMessage): Promise<void> {
@@ -168,7 +172,13 @@ class AigencyChatMessageHistory extends BaseListChatMessageHistory {
 
 		await this.rpcCall({
 			method: 'addMessage',
-			params: { sessionId: this.sessionId, message },
+			params: {
+				sessionId: this.sessionId,
+				message: {
+					type: message.type,
+					...message.data,
+				},
+			},
 		});
 	}
 
