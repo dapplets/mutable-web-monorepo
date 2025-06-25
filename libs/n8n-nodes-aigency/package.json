@@ -1,6 +1,6 @@
 {
 	"name": "@dapplets/n8n-nodes-aigency",
-	"version": "0.1.7",
+	"version": "0.1.10",
 	"description": "N8N plugin to access Aigency API",
 	"keywords": [
 		"n8n-community-node-package"
@@ -37,7 +37,8 @@
 		],
 		"nodes": [
 			"dist/nodes/Aigency/Aigency.node.js",
-			"dist/nodes/AigencyTrigger/AigencyTrigger.node.js"
+			"dist/nodes/AigencyTrigger/AigencyTrigger.node.js",
+			"dist/nodes/AigencyChatMemory/AigencyChatMemory.node.js"
 		]
 	},
 	"devDependencies": {
@@ -50,5 +51,9 @@
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
+	},
+	"dependencies": {
+		"@langchain/core": "^0.3.40",
+		"langchain": "^0.3.29"
 	}
 }
