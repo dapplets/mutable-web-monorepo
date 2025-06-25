@@ -138,6 +138,7 @@ services:
       - POSTGRES_SCHEMA=public
       - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}
       - N8N_WEBHOOK_URL=https://${SUBDOMAIN_N8N}.${DOMAIN_NAME}
+      - NEAR_AI_API_KEY=${NEAR_AI_API_KEY}
     env_file:
       - .env
     hostname: aigency
