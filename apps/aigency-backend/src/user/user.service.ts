@@ -38,8 +38,12 @@ export class UserService {
     const balance = await this._getBalance(user.nearAccountId);
 
     return {
-      balance: balance.toString(),
-      formatted: formatNearAmount(balance.toString(), 4),
+      balance: {
+        available: balance.toString(),
+      },
+      formatted: {
+        available: formatNearAmount(balance.toString(), 4),
+      },
     };
   }
 
