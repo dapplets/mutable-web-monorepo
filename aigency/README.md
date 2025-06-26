@@ -123,25 +123,15 @@ sudo systemctl restart docker
 
    Open `https://n8n.example.com` in your browser and create your user account when prompted.
 
-5. **Verify and configure workflows**:
+5. **Verify workflows**:
 
-   - Ensure workflows are imported and active.
-   - The `Main` workflow may initially show an error — we’ll resolve that next.
+   - Ensure workflows are imported and `Main` workflow is active.
 
-6. **Add your API credentials** in n8n:
+6. **Set the Mini App URL**:
 
-   - Go to the **Credentials** tab.
-   - Set up credentials for **OpenAI** using your API key.
+   - Return to **@BotFather** and set the bot’s Mini App URL that you defined in `.env`, e.g. `https://tgapp.example.com`
 
-7. **Return to the Workflows tab**:
-
-   - Confirm the `Main` workflow error is resolved.
-
-8. **Set the Mini App URL**:
-
-   - Return to **@BotFather** and set the bot’s Mini App URL (as defined in `.env`, e.g., `tgapp.example.com`).
-
-9. ✅ **You’re ready!**
+7. ✅ **You’re ready!**
 
    - Start chatting with your Telegram bot to manage your Aigency instance.
 
