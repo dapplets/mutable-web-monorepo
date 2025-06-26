@@ -28,46 +28,64 @@ Before installation, make sure you have the following:
 
 6. **NEAR AI API Key** — Sign in at [app.near.ai](https://app.near.ai/), open developer tools, and [locate the `auth` cookie](./docs/near-ai-api-token.png).
 
-7. _(Optional but recommended)_ **Basic Server Security Hardening**:
+7. _(Optional but recommended)_ **Change the default SSH port** — edit `/etc/ssh/sshd_config`, e.g., set `Port 49100` and restart SSH
 
-   - **Change the default SSH port** (edit `/etc/ssh/sshd_config`, e.g., set `Port 49100` and restart SSH)
+8. _(Optional but recommended)_ **Configure UFW (Uncomplicated Firewall)**
 
-   - **Configure UFW (Uncomplicated Firewall)**:
+```bash
+sudo ufw allow 443/tcp   # HTTPS
+sudo ufw allow 80/tcp    # HTTP
+sudo ufw allow 49100/tcp # Custom SSH port
+sudo ufw allow 5432/tcp  # PostgreSQL (optional)
+sudo ufw enable
+```
 
-     ```bash
-     sudo ufw allow 443/tcp   # HTTPS
-     sudo ufw allow 80/tcp    # HTTP
-     sudo ufw allow 49100/tcp # Custom SSH port
-     sudo ufw allow 5432/tcp  # PostgreSQL (optional)
-     sudo ufw enable
-     ```
+9. _(Optional but recommended)_ **Install and configure Fail2Ban** to prevent brute-force attacks:
 
-   - **Install and configure Fail2Ban** to prevent brute-force attacks:
+```bash
+sudo apt install fail2ban
+sudo nano /etc/fail2ban/jail.local
+```
 
-     ```bash
-     sudo apt install fail2ban
-     sudo nano /etc/fail2ban/jail.local
-     ```
+Paste the following:
 
-     Paste the following:
+```ini
+[sshd]
+enabled = true
+port = 49100
+filter = sshd
+logpath = /var/log/auth.log
+maxretry = 3
+findtime = 600
+bantime = 3600
+```
 
-     ```ini
-     [sshd]
-     enabled = true
-     port = 49100
-     filter = sshd
-     logpath = /var/log/auth.log
-     maxretry = 3
-     findtime = 600
-     bantime = 3600
-     ```
+Then restart and verify:
 
-     Then restart and verify:
+```bash
+sudo systemctl restart fail2ban
+sudo fail2ban-client status sshd
+```
 
-     ```bash
-     sudo systemctl restart fail2ban
-     sudo fail2ban-client status sshd
-     ```
+10. _(Optional but recommended)_ **Set global log rotation policy for Docker** to prevent log growth
+
+Edit or create the file `/etc/docker/daemon.json`:
+
+```json
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  }
+}
+```
+
+Restart Docker:
+
+```bash
+sudo systemctl restart docker
+```
 
 ---
 
