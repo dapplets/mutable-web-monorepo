@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { SettingsRepository } from './settings.repository';
 
 export enum SettingKey {
-  About = 'about',
+  About = 'ABOUT_MESSAGE',
+  IsBotInitialized = 'IS_BOT_INITIALIZED',
 }
 
 @Injectable()

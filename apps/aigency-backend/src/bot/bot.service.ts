@@ -1,17 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectBot } from 'nestjs-telegraf';
 import { TelegrafContext } from 'src/common/telegraf-context.interface';
 import { MemoryService } from 'src/memory/memory.service';
 import { N8NService, WebhookEvent } from 'src/n8n/n8n.service';
+import { SettingKey, SettingsService } from 'src/settings/settings.service';
 import { UserService } from 'src/user/user.service';
 import { Telegraf } from 'telegraf';
 
 @Injectable()
 export class BotService {
+  private readonly logger = new Logger(BotService.name);
+
   constructor(
     private n8nService: N8NService,
     private userService: UserService,
     private memoryService: MemoryService,
+    private settingsService: SettingsService,
     @InjectBot() private bot: Telegraf<TelegrafContext>,
   ) {}
 
@@ -48,5 +52,28 @@ export class BotService {
   async getFileUrl(fileId: string) {
     const url = await this.bot.telegram.getFileLink(fileId);
     return { url };
+  }
+
+  async initializeBot() {
+    const isBotInitialized = await this.settingsService.get(
+      SettingKey.IsBotInitialized,
+    );
+
+    if (isBotInitialized === 'true') {
+      this.logger.log('Telegram Bot is already initialized. Skipping...');
+      return;
+    }
+
+    await this.bot.telegram.setMyName('Your Xen');
+    await this.bot.telegram.setMyDescription(
+      'Xen is a locally running, privacy-focused AI assistant designed to integrate seamlessly into your digital life. Built by a global community of developers and privacy advocates, Xen isn’t just another chatbot — it’s your trusted co-pilot in the age of intelligent automation. https://myxen.ai',
+    );
+    await this.bot.telegram.setMyShortDescription(
+      'Powerful personal AI assistant in your pocket',
+    );
+
+    await this.settingsService.set(SettingKey.IsBotInitialized, 'true');
+
+    this.logger.log('New Telegram bot is initialized successfully');
   }
 }
