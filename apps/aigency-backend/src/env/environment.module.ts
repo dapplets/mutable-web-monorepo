@@ -22,6 +22,7 @@ export const envSchema = z
     TELEGRAM_MAIN_BOT_ID: z.number({ coerce: true }),
     TELEGRAM_DEBUG_BOT_ID: z.number({ coerce: true }).optional(),
     TELEGRAM_BOT_TOKEN: z.string().nonempty(),
+    TELEGRAM_DEBUG_BOT_TOKEN: z.string().nonempty(),
     NEAR_NETWORK_ID: z.string().nonempty(),
     NEAR_NODE_URL: z.string().url(),
     NEAR_WALLET_URL: z.string().url(),

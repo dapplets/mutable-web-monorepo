@@ -52,6 +52,7 @@ import { BotModule } from 'src/bot';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         token: config.get<string>('TELEGRAM_BOT_TOKEN')!,
+        debugToken: config.get<string>('TELEGRAM_DEBUG_BOT_TOKEN')!,
       }),
     }),
     EventEmitterModule.forRoot(),

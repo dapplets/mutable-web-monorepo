@@ -91,9 +91,14 @@ const Capabilities = () => {
       limit: PAGE_LIMIT,
     },
     getNextPageParam: (lastPage, __, lastPageParam) => {
-      if (lastPage.total <= lastPageParam.offset + lastPageParam.limit) return
+      if (
+        !lastPage ||
+        !lastPageParam ||
+        lastPage.total <= lastPageParam.offset + lastPageParam.limit
+      )
+        return
       return {
-        offset: lastPageParam.offset + PAGE_LIMIT,
+        offset: lastPageParam?.offset + PAGE_LIMIT,
         limit: PAGE_LIMIT,
       }
     },
@@ -156,9 +161,7 @@ const Capabilities = () => {
         </button>
       </div>
       {capabilities?.pages.map((group) =>
-        group?.items?.map((capabilitiy) => (
-          <Agent key={capabilitiy.id} capabilitiy={capabilitiy} />
-        ))
+        group?.items?.map((capabilitiy) => <Agent key={capabilitiy.id} capabilitiy={capabilitiy} />)
       )}
       <div ref={sentinelRef} />
       {hasNextPage ? (
