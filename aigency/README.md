@@ -95,6 +95,12 @@ Before installation, make sure you have the following:
    docker compose up --build --no-deps --force-recreate -d
    ```
 
+   To ensure there are no errors, you can view the logs.
+   
+   ```bash
+   docker compose logs -f
+   ```
+
 4. **Access the n8n UI**:
 
    Open `https://n8n.example.com` in your browser and create your user account when prompted.
