@@ -150,7 +150,10 @@ export class CapabilityService {
 
     // mint NFT if not minted
     if (!capability?.tokenId) {
-      capability = await this.mintNftForCapability(capabilityId, callerUserId);
+      capability = await this.tryMintNftForCapability(
+        capabilityId,
+        callerUserId,
+      );
     }
 
     return {
@@ -161,7 +164,7 @@ export class CapabilityService {
     };
   }
 
-  async mintNftForCapability(capabilityId: string, callerUserId: number) {
+  async tryMintNftForCapability(capabilityId: string, callerUserId: number) {
     const capability = await this.capabilityRepository.findOneBy({
       id: capabilityId,
     });
@@ -170,17 +173,26 @@ export class CapabilityService {
       throw new CodedRpcException('Capability not found');
     }
 
+    const contractOwnerPrivateKey = this.configService.get<string | null>(
+      'NFT_CONTRACT_OWNER_PRIVATE_KEY',
+    );
+    const contractOwnerId = this.configService.get<string | null>(
+      'NFT_CONTRACT_OWNER_ID',
+    );
+    const nftContractId = this.configService.get<string | null>(
+      'NFT_CONTRACT_ID',
+    );
+
+    if (!contractOwnerPrivateKey || !contractOwnerId || !nftContractId) {
+      console.warn(
+        'NFT minting is disabled. Set NFT_CONTRACT_OWNER_PRIVATE_KEY, NFT_CONTRACT_OWNER_ID and NFT_CONTRACT_ID to enable.',
+      );
+      return capability;
+    }
+
     if (capability.tokenId) {
       throw new CodedRpcException('NFT already minted');
     }
-
-    const contractOwnerPrivateKey = this.configService.get<string>(
-      'NFT_CONTRACT_OWNER_PRIVATE_KEY',
-    )!;
-    const contractOwnerId = this.configService.get<string>(
-      'NFT_CONTRACT_OWNER_ID',
-    )!;
-    const nftContractId = this.configService.get<string>('NFT_CONTRACT_ID')!;
 
     const newTokenId = (await this.nearService.viewContractCall(
       nftContractId,

@@ -30,9 +30,7 @@ export class AuthGuard implements CanActivate {
     if (!tgInitData) return false;
 
     const isValidToken =
-      (await this._isMainBot(tgInitData)) ||
-      (await this._isDebugBot(tgInitData)) ||
-      this._isAdmin(tgInitData);
+      (await this._isValidInitData(tgInitData)) || this._isAdmin(tgInitData);
 
     if (!isValidToken) return false;
 
@@ -54,17 +52,10 @@ export class AuthGuard implements CanActivate {
     return true;
   }
 
-  private async _isMainBot(tgInitData: string) {
-    const mainBotId = this.configService.get<number>('TELEGRAM_MAIN_BOT_ID')!;
-    return validate3rd(tgInitData, mainBotId)
-      .then(() => true)
-      .catch(() => false);
-  }
-
-  private async _isDebugBot(tgInitData: string) {
-    const debugBotId = this.configService.get<number>('TELEGRAM_DEBUG_BOT_ID');
-    if (!debugBotId) return false;
-    return validate3rd(tgInitData, debugBotId)
+  private async _isValidInitData(tgInitData: string) {
+    const botToken = this.configService.get<string>('TELEGRAM_BOT_TOKEN')!;
+    const [botId] = botToken.split(':');
+    return validate3rd(tgInitData, Number(botId))
       .then(() => true)
       .catch(() => false);
   }

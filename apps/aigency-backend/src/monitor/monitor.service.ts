@@ -16,15 +16,22 @@ export class MonitorService {
   ) {}
 
   async notify(message: string) {
-    const chatId = this.configService.get<string>(
+    const chatId = this.configService.get<string | null>(
       'TELEGRAM_MONITORING_CHAT_ID',
     )!;
-    const topicId = this.configService.get<string>(
+    const topicId = this.configService.get<string | null>(
       'TELEGRAM_MONITORING_TOPIC_ID',
     )!;
 
+    if (!chatId) {
+      console.warn(
+        'Monitoring chat is disabled. Set TELEGRAM_MONITORING_CHAT_ID and TELEGRAM_MONITORING_TOPIC_ID to enable.',
+      );
+      return;
+    }
+
     await this.bot.telegram.sendMessage(chatId, message, {
-      message_thread_id: Number(topicId),
+      message_thread_id: topicId ? Number(topicId) : undefined,
     });
   }
 

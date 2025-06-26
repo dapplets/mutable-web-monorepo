@@ -49,4 +49,12 @@ export class BotService {
     const url = await this.bot.telegram.getFileLink(fileId);
     return { url };
   }
+
+  async getCurrentBotInfo() {
+    const info = await this.bot.telegram.getMe();
+    return {
+      username: info.username,
+      id: info.id,
+    };
+  }
 }

@@ -10,5 +10,6 @@ import { MemoryModule } from 'src/memory';
   providers: [BotBotController, BotService],
   imports: [N8NModule, UserModule, MemoryModule],
   controllers: [BotRpcController],
+  exports: [BotService],
 })
 export class BotModule {}

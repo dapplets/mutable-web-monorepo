@@ -75,7 +75,8 @@ export class RewardService {
         );
 
       if (!capability.beneficiaryAccountId) {
-        throw new Error('Beneficiary account not found');
+        console.warn('Beneficiary account is not found. Skip reward.');
+        return;
       }
 
       // ToDo: add business logic to check if reward is needed
@@ -149,12 +150,20 @@ export class RewardService {
     let txHash: string | null = null;
 
     if (amount !== BigInt(0)) {
-      const privateKey = this.configService.get<string>(
+      const privateKey = this.configService.get<string | null>(
         'REWARD_ACCOUNT_PRIVATE_KEY',
-      )!;
+      );
 
-      const fundAccountId =
-        this.configService.get<string>('REWARD_ACCOUNT_ID')!;
+      const fundAccountId = this.configService.get<string | null>(
+        'REWARD_ACCOUNT_ID',
+      );
+
+      if (!privateKey || !fundAccountId) {
+        console.warn(
+          'Rewards are disabled. Set REWARD_ACCOUNT_PRIVATE_KEY and REWARD_ACCOUNT_ID to enable.',
+        );
+        return;
+      }
 
       try {
         const receipt = await this.nearService.transfer(
