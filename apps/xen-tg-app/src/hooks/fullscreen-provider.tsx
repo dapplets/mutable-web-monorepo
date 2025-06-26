@@ -11,7 +11,7 @@ export function FullscreenProvider({
   storageKey = 'fullscreen-enabled',
 }: FullscreenProviderProps) {
   const [isFullscreenEnabled, setIsEnabled] = useState<boolean>(
-    () => !(localStorage.getItem(storageKey) === 'disabled') // Default (without localStorage value) is enabled
+    () => localStorage.getItem(storageKey) === 'enabled' // Default (without localStorage value) is disabled
   )
 
   const newTg = window.Telegram.WebApp as any // eslint-disable-line -- wait for a new version of @types/telegram-web-app
