@@ -83,7 +83,7 @@ Before installation, make sure you have the following:
 2. **Set up the environment variables**:
 
    ```bash
-   cp .env.example .env
+   bash generate-env.sh
    nano .env
    ```
 

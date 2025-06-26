@@ -9,7 +9,9 @@ import { KeyPair } from '@near-js/crypto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserCreatedEvent } from './user-created.event';
 import { UserDeletedEvent } from './user-deleted.event';
-import { BotService } from 'src/bot/bot.service';
+import { TelegrafContext } from 'src/common/telegraf-context.interface';
+import { Telegraf } from 'telegraf';
+import { InjectBot } from 'nestjs-telegraf';
 
 @Injectable()
 export class UserService {
@@ -22,7 +24,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
     private readonly eventEmitter: EventEmitter2,
-    private readonly botService: BotService,
+    @InjectBot() private bot: Telegraf<TelegrafContext>,
   ) {}
 
   async getUserById(id: number) {
@@ -126,7 +128,7 @@ export class UserService {
 
     await this.userRepository.save(user);
 
-    const tgBotInfo = await this.botService.getCurrentBotInfo();
+    const tgBotInfo = await this.bot.telegram.getMe();
 
     this._pendingLogins.delete(loginId);
 
