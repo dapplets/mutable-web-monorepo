@@ -13,7 +13,7 @@ export class UserCapabilityRepository extends Repository<UserCapability> {
     return this.findAndCount({
       where: { userId, isDeleted: false },
       relations: { capability: true },
-      order: { capability: { domain: 'ASC', name: 'ASC' } },
+      order: { capability: { domain: 'DESC', name: 'ASC' } },
       take: limit,
       skip: offset,
     });
