@@ -19,13 +19,20 @@ export class BotService {
     @InjectBot() private bot: Telegraf<TelegrafContext>,
   ) {}
 
-  async processMessage(chatId: number | string, message: any): Promise<any> {
+  async processMessage(
+    chatId: number | string,
+    username: string | undefined,
+    message: any,
+  ): Promise<any> {
     await this.bot.telegram.sendChatAction(chatId, 'typing');
 
-    const user = await this.userService.getUserById(Number(chatId)); // ToDo: fix types
+    let user = await this.userService.getUserById(Number(chatId)); // ToDo: fix types
 
     if (!user) {
-      throw new Error('User not found');
+      user = await this.userService.createUser({
+        username: username ?? null,
+        id: Number(chatId),
+      });
     }
 
     const memories = await this.memoryService.getAllMemories(user.id);

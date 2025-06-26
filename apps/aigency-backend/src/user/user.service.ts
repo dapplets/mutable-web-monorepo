@@ -149,6 +149,8 @@ export class UserService {
     await this.userRepository.insert(user);
 
     this.eventEmitter.emit('user.created', new UserCreatedEvent(user.id));
+
+    return user.toDto();
   }
 
   async deleteUser(userId: number) {

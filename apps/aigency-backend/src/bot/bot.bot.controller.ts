@@ -16,13 +16,17 @@ export class BotBotController {
     @Message() message: any,
     @Ctx() ctx: TelegrafContext,
   ): Promise<string | undefined> {
-    if (!ctx.chat?.id) {
-      return 'Chat ID not found';
+    if (!ctx.from?.id) {
+      return 'User ID not found';
     }
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      await this.botService.processMessage(ctx.chat.id, message);
+      await this.botService.processMessage(
+        ctx.from.id,
+        ctx.from.username,
+        message,
+      );
     } catch (error) {
       this.logger.error(error);
 
