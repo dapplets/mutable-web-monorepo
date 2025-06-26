@@ -18,11 +18,7 @@ export class BotBotController {
       return JSON.stringify({ error: 'Chat ID not found' });
     }
 
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      await this.botService.processMessage(ctx.chat.id, message);
-    } catch (error) {
-      return JSON.stringify(error);
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    await this.botService.processMessage(ctx.chat.id, message);
   }
 }

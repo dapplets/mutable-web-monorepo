@@ -92,7 +92,7 @@ Before installation, make sure you have the following:
 3. **Launch the application using Docker Compose**:
 
    ```bash
-   docker compose up -d --build
+   docker compose up --build --no-deps --force-recreate
    ```
 
 4. **Access the n8n UI**:
