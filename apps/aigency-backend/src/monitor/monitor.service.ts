@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
 import { InjectBot } from 'nestjs-telegraf';
@@ -10,6 +10,8 @@ import { Telegraf } from 'telegraf';
 
 @Injectable()
 export class MonitorService {
+  private readonly logger = new Logger(MonitorService.name);
+
   constructor(
     private configService: ConfigService,
     @InjectBot() private bot: Telegraf<TelegrafContext>,
@@ -24,7 +26,7 @@ export class MonitorService {
     )!;
 
     if (!chatId) {
-      console.warn(
+      this.logger.warn(
         'Monitoring chat is disabled. Set TELEGRAM_MONITORING_CHAT_ID and TELEGRAM_MONITORING_TOPIC_ID to enable.',
       );
       return;

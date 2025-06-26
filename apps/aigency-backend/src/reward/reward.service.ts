@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { RewardRepository } from './reward.repository';
 import { UsageService } from 'src/usage/usage.service';
 import { WarningService } from 'src/warning/warning.service';
@@ -12,6 +12,8 @@ import { RewardFailedEvent } from './reward-failed.event';
 
 @Injectable()
 export class RewardService {
+  private readonly logger = new Logger(RewardService.name);
+
   constructor(
     private readonly rewardRepository: RewardRepository,
     private readonly usageService: UsageService,
@@ -75,7 +77,7 @@ export class RewardService {
         );
 
       if (!capability.beneficiaryAccountId) {
-        console.warn('Beneficiary account is not found. Skip reward.');
+        this.logger.warn('Beneficiary account is not found. Skip reward.');
         return;
       }
 
@@ -159,7 +161,7 @@ export class RewardService {
       );
 
       if (!privateKey || !fundAccountId) {
-        console.warn(
+        this.logger.warn(
           'Rewards are disabled. Set REWARD_ACCOUNT_PRIVATE_KEY and REWARD_ACCOUNT_ID to enable.',
         );
         return;
@@ -179,7 +181,7 @@ export class RewardService {
           new RewardSucceedEvent(recipientAccountId, txHash, callerUserId),
         );
       } catch (error) {
-        console.log(error);
+        this.logger.error(error);
 
         this.eventEmitter.emit(
           'reward.failed',

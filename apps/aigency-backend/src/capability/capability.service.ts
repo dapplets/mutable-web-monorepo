@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CapabilityRepository } from './capability.repository';
 import { UserCapabilityRepository } from './user-capability.repository';
 import { UserService } from '../user/user.service';
@@ -13,6 +13,8 @@ import { UserDeletedEvent } from 'src/user/user-deleted.event';
 
 @Injectable()
 export class CapabilityService {
+  private readonly logger = new Logger(CapabilityService.name);
+
   constructor(
     private readonly capabilityRepository: CapabilityRepository,
     private readonly userCapabilityRepository: UserCapabilityRepository,
@@ -184,7 +186,7 @@ export class CapabilityService {
     );
 
     if (!contractOwnerPrivateKey || !contractOwnerId || !nftContractId) {
-      console.warn(
+      this.logger.warn(
         'NFT minting is disabled. Set NFT_CONTRACT_OWNER_PRIVATE_KEY, NFT_CONTRACT_OWNER_ID and NFT_CONTRACT_ID to enable.',
       );
       return capability;
