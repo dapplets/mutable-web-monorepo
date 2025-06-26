@@ -1,6 +1,3 @@
-#!/bin/bash
-set -e
-
 echo "🔧 Ensuring custom nodes directory exists..."
 mkdir -p /home/node/.n8n/nodes
 
