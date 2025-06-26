@@ -26,7 +26,7 @@ Before installation, make sure you have the following:
 
 5. **OpenAI API Key** — Obtain from [platform.openai.com](https://platform.openai.com/api-keys).
 
-6. **NEAR AI API Key** — Sign in at [near.ai](https://near.ai/), open developer tools, and locate the `auth` cookie.
+6. **NEAR AI API Key** — Sign in at [app.near.ai](https://app.near.ai/), open developer tools, and [locate the `auth` cookie](./docs/near-ai-api-token.png).
 
 7. _(Optional but recommended)_ **Basic Server Security Hardening**:
 
@@ -96,7 +96,7 @@ Before installation, make sure you have the following:
    ```
 
    To ensure there are no errors, you can view the logs.
-   
+
    ```bash
    docker compose logs -f
    ```
