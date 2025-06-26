@@ -239,6 +239,12 @@
         "typeVersion": 1
       },
       {
+        "credentials": {
+          "githubApi": {
+            "id": "1wzYZwS1QNwElEgs",
+            "name": "GitHub account"
+          }
+        },
         "id": "a0e2d2e1-04c6-49dd-8f60-7ec092cb652a",
         "name": "get-workflows-from-github",
         "onError": "continueRegularOutput",
@@ -246,7 +252,7 @@
           "additionalParameters": {
             "reference": "={{ $('Branch').item.json.branch }}"
           },
-          "filePath": "=n8n/workflows.json",
+          "filePath": "=aigency/workflows.json",
           "operation": "get",
           "owner": {
             "__rl": true,
@@ -454,6 +460,12 @@
         "typeVersion": 2
       },
       {
+        "credentials": {
+          "githubApi": {
+            "id": "1wzYZwS1QNwElEgs",
+            "name": "GitHub account"
+          }
+        },
         "id": "c602bf8c-26d2-4d4d-a781-b9651cc72dbd",
         "name": "GitHub",
         "parameters": {
@@ -464,7 +476,7 @@
           },
           "commitMessage": "={{ $('Branch').item.json.commit }}",
           "fileContent": "={{ $('Deterministic JSON After').item.json.serialized }}",
-          "filePath": "=n8n/workflows.json",
+          "filePath": "=aigency/workflows.json",
           "operation": "edit",
           "owner": {
             "__rl": true,
@@ -496,8 +508,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-06-25T22:30:06.737Z",
-    "versionId": "89d5dc2f-78e5-48e8-81be-0330fe265eac"
+    "updatedAt": "2025-06-25T22:37:56.862Z",
+    "versionId": "26abcdba-8681-49b4-9c04-9060a92abc5f"
   },
   {
     "active": false,
@@ -524,23 +536,23 @@
           ]
         ]
       },
-      "Aigency1": {
-        "main": [
-          [
-            {
-              "index": 0,
-              "node": "Filter Empty",
-              "type": "main"
-            }
-          ]
-        ]
-      },
       "Begin": {
         "main": [
           [
             {
               "index": 0,
               "node": "Aigency",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Call Near AI agents": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter Empty",
               "type": "main"
             }
           ]
@@ -617,7 +629,7 @@
           [
             {
               "index": 0,
-              "node": "Aigency1",
+              "node": "Call Near AI agents",
               "type": "main"
             }
           ]
@@ -661,7 +673,7 @@
           }
         },
         "position": [
-          1060,
+          1420,
           0
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -680,7 +692,7 @@
           "text": "={{ $('Begin').item.json.query }}"
         },
         "position": [
-          1280,
+          1560,
           0
         ],
         "retryOnFail": true,
@@ -695,7 +707,7 @@
           "schemaType": "manual"
         },
         "position": [
-          1460,
+          1740,
           240
         ],
         "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
@@ -710,7 +722,7 @@
           }
         },
         "position": [
-          1680,
+          1880,
           0
         ],
         "type": "n8n-nodes-base.splitOut",
@@ -726,7 +738,7 @@
           }
         },
         "position": [
-          2560,
+          2520,
           0
         ],
         "type": "n8n-nodes-base.aggregate",
@@ -788,7 +800,7 @@
           }
         },
         "position": [
-          1280,
+          1560,
           240
         ],
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
@@ -811,7 +823,7 @@
           }
         },
         "position": [
-          0,
+          640,
           0
         ],
         "type": "n8n-nodes-base.executeWorkflowTrigger",
@@ -853,13 +865,19 @@
           }
         },
         "position": [
-          860,
+          1280,
           0
         ],
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4
       },
       {
+        "credentials": {
+          "aigencyCredentialsApi": {
+            "id": "NT3LNHu3KSSR2MMu",
+            "name": "Aigency Credentials account"
+          }
+        },
         "id": "bfac805f-65a7-4a29-b8b7-6a5854114b18",
         "name": "Aigency",
         "parameters": {
@@ -868,7 +886,7 @@
           "userId": "={{ $json.userId }}"
         },
         "position": [
-          220,
+          800,
           0
         ],
         "type": "@dapplets/n8n-nodes-aigency.aigency",
@@ -883,7 +901,7 @@
           }
         },
         "position": [
-          440,
+          960,
           0
         ],
         "type": "n8n-nodes-base.splitOut",
@@ -928,27 +946,11 @@
           }
         },
         "position": [
-          660,
+          1120,
           0
         ],
         "type": "n8n-nodes-base.filter",
         "typeVersion": 2.2
-      },
-      {
-        "id": "cd4df5ac-3353-450e-9516-27473433d3c0",
-        "name": "Aigency1",
-        "parameters": {
-          "id": "={{ $json.capability_id }}",
-          "operation": "callCapability",
-          "text": "={{ $json.query }}",
-          "userId": "={{ $('Begin').item.json.userId }}"
-        },
-        "position": [
-          1900,
-          0
-        ],
-        "type": "@dapplets/n8n-nodes-aigency.aigency",
-        "typeVersion": 1
       },
       {
         "id": "058d878f-9237-4ddd-adfa-8f1686af50ae",
@@ -979,11 +981,27 @@
           }
         },
         "position": [
-          2120,
+          2200,
           0
         ],
         "type": "n8n-nodes-base.filter",
         "typeVersion": 2.2
+      },
+      {
+        "id": "cd4df5ac-3353-450e-9516-27473433d3c0",
+        "name": "Call Near AI agents",
+        "parameters": {
+          "id": "={{ $json.capability_id }}",
+          "operation": "callCapability",
+          "text": "={{ $json.query }}",
+          "userId": "={{ $('Begin').item.json.userId }}"
+        },
+        "position": [
+          2040,
+          0
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
       }
     ],
     "pinData": {
@@ -995,8 +1013,8 @@
     "tags": [
     ],
     "triggerCount": 0,
-    "updatedAt": "2025-06-25T22:19:18.214Z",
-    "versionId": "ff0ce4c2-b754-4b31-bd68-7708a490a81d"
+    "updatedAt": "2025-06-26T14:24:45.191Z",
+    "versionId": "c2f74d2f-fa8b-4420-9ffc-dc11873aff56"
   },
   {
     "active": true,
@@ -1709,6 +1727,12 @@
         "typeVersion": 1.8
       },
       {
+        "credentials": {
+          "aigencyCredentialsApi": {
+            "id": "NT3LNHu3KSSR2MMu",
+            "name": "Aigency Credentials account"
+          }
+        },
         "id": "895d96b6-5130-454a-9679-80f8023bfd5c",
         "name": "Unknown format/action",
         "parameters": {
@@ -1724,6 +1748,12 @@
         "typeVersion": 1
       },
       {
+        "credentials": {
+          "aigencyCredentialsApi": {
+            "id": "NT3LNHu3KSSR2MMu",
+            "name": "Aigency Credentials account"
+          }
+        },
         "id": "a5b5b410-1b92-43b8-98f7-92ecb8329138",
         "name": "Get Photo URL",
         "parameters": {
@@ -1738,6 +1768,12 @@
         "typeVersion": 1
       },
       {
+        "credentials": {
+          "aigencyCredentialsApi": {
+            "id": "NT3LNHu3KSSR2MMu",
+            "name": "Aigency Credentials account"
+          }
+        },
         "id": "3e768481-2487-4019-ad61-559ca6e1803a",
         "name": "Get Audio URL",
         "parameters": {
@@ -1974,7 +2010,7 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-06-25T22:25:32.942Z",
-    "versionId": "677af449-f1f3-4cda-9ce3-8a77f3d195cc"
+    "updatedAt": "2025-06-26T14:24:35.686Z",
+    "versionId": "19e7d59b-ef39-4b87-9cdb-b8e9e2645722"
   }
 ]
