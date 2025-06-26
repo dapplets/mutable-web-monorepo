@@ -80,6 +80,10 @@ services:
     hostname: n8n-import
     container_name: n8n-import
     entrypoint: /bin/sh
+    environment:
+      - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}/rpc
+      - AIGENCY_API_KEY=${AIGENCY_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     command:
       - '/backup/init.sh'
     volumes:
