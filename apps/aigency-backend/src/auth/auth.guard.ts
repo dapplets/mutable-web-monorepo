@@ -16,12 +16,6 @@ const UserInfoKey = new TypesafeKey<UserInfo>('aigency:auth:UserInfo');
 
 export type UserInfo = {
   id: number;
-  first_name: string;
-  last_name?: string;
-  username: string;
-  language_code?: string;
-  allows_write_to_pm?: boolean;
-  photo_url?: string;
 };
 
 export class AuthGuard implements CanActivate {
@@ -37,7 +31,8 @@ export class AuthGuard implements CanActivate {
 
     const isValidToken =
       (await this._isMainBot(tgInitData)) ||
-      (await this._isDebugBot(tgInitData));
+      (await this._isDebugBot(tgInitData)) ||
+      this._isAdmin(tgInitData);
 
     if (!isValidToken) return false;
 
@@ -48,8 +43,8 @@ export class AuthGuard implements CanActivate {
 
     const user = JSON.parse(userJson) as UserInfo;
 
-    if (!user.username) {
-      throw new CodedRpcException("User doesn't have username");
+    if (!user.id) {
+      throw new CodedRpcException("Telegram user doesn't have ID in init data");
     }
 
     // ToDo: validate telegram initData
@@ -72,6 +67,12 @@ export class AuthGuard implements CanActivate {
     return validate3rd(tgInitData, debugBotId)
       .then(() => true)
       .catch(() => false);
+  }
+
+  private _isAdmin(tgInitData: string) {
+    const apiKey = this.configService.get<string>('AIGENCY_API_KEY');
+    const tgInitDataParams = new URLSearchParams(tgInitData);
+    return tgInitDataParams.get('api_key') === apiKey;
   }
 }
 

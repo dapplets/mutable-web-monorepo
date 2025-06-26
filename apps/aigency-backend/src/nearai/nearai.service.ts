@@ -1,16 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { RegistryApi, Configuration } from '@mweb/near-ai-client';
+import {
+  RegistryApi,
+  AssistantsApi,
+  Configuration,
+  ThreadsApi,
+} from '@mweb/near-ai-client';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NearAiService {
-  constructor() {}
+  private registry: RegistryApi;
+  private assistants: AssistantsApi;
+  private threads: ThreadsApi;
+
+  constructor(private configService: ConfigService) {
+    const apiKey = this.configService.get<string>('NEAR_AI_API_KEY')!;
+
+    const config = new Configuration({
+      basePath: 'https://api.near.ai',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+    });
+
+    this.registry = new RegistryApi(config);
+    this.assistants = new AssistantsApi(config);
+    this.threads = new ThreadsApi(config);
+  }
 
   async getAgentsForUser(nearAccountId: string) {
-    const config = new Configuration({ basePath: 'https://api.near.ai' });
-    const registry = new RegistryApi(config);
-
     const entries = await this._paginate(({ offset, total }) =>
-      registry.listEntriesV1RegistryListEntriesPost({
+      this.registry.listEntriesV1RegistryListEntriesPost({
         starredBy: nearAccountId,
         showHidden: false,
         showLatestVersion: true,
@@ -36,6 +56,38 @@ export class NearAiService {
 
       stars: entry.numStars,
     }));
+  }
+
+  public async callAgent(
+    agentId: string,
+    message: { text?: string },
+  ): Promise<{ text?: string } | null> {
+    if (!message?.text) return null;
+
+    const threadId = await this.assistants.runAgentV1ThreadsRunsPost({
+      createThreadAndRunRequest: {
+        agentId: `${agentId}/latest`,
+        newMessage: message?.text,
+      },
+    });
+
+    const messages =
+      await this.threads.listMessagesV1ThreadsThreadIdMessagesGet({
+        threadId,
+      });
+
+    // https://github.com/nearai/nearai/blob/e4b838f3a15dc26d7de63c95381c02354a0b9d5d/hub/demo/src/components/AgentRunner.tsx#L229
+    const answers = messages.data.filter(
+      (msg) =>
+        !(
+          msg.metadata?.message_type?.startsWith('system:') ||
+          msg.metadata?.message_type?.startsWith('agent:log')
+        ),
+    );
+
+    const text = answers[0]?.content[0]?.text?.value;
+
+    return text ? { text } : null;
   }
 
   private async _paginate<T>(

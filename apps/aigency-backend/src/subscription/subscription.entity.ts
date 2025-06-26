@@ -5,11 +5,8 @@ export class Subscription {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id!: number;
 
-  @Column({ type: 'varchar', nullable: true })
-  username!: string | null;
-
-  @Column({ name: 'userid', type: 'varchar', nullable: true })
-  userId!: string | null;
+  @Column()
+  userId!: number;
 
   @Column({ type: 'varchar', nullable: true })
   source!: string | null;

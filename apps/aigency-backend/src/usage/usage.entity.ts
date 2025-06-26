@@ -14,8 +14,8 @@ export class Usage {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'text', name: 'caller_username' })
-  callerUsername!: string;
+  @Column({ name: 'caller_user_id' })
+  callerUserId!: number;
 
   @Column({ name: 'capability_id', type: 'uuid' })
   capabilityId!: string;

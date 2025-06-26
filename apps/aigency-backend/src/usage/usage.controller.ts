@@ -18,7 +18,7 @@ export class UsageController {
     @UserInfo() user: UserInfo,
   ) {
     return this.usageService.getUsageHistory(
-      user.username,
+      user.id,
       params.limit,
       params.offset,
     );

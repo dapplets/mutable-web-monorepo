@@ -5,9 +5,9 @@ import { WarningRepository } from './warning.repository';
 export class WarningService {
   constructor(private readonly warningRepository: WarningRepository) {}
 
-  async getWarnings(username: string, limit: number, offset: number) {
+  async getWarnings(userId: number, limit: number, offset: number) {
     const [items, total] = await this.warningRepository.findAndCount({
-      where: { username, isDeleted: false },
+      where: { userId, isDeleted: false },
       order: { createdAt: 'DESC' },
       take: limit,
       skip: offset,
@@ -19,11 +19,11 @@ export class WarningService {
     };
   }
 
-  async deleteAllWarnings(username: string) {
-    await this.warningRepository.update({ username }, { isDeleted: true });
+  async deleteAllWarnings(userId: number) {
+    await this.warningRepository.update({ userId }, { isDeleted: true });
   }
 
-  async getUnpaidWarnings(username: string) {
-    return this.warningRepository.getUnpaidWarnings(username);
+  async getUnpaidWarnings(userId: number) {
+    return this.warningRepository.getUnpaidWarnings(userId);
   }
 }

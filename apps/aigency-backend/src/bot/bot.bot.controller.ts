@@ -13,18 +13,14 @@ export class BotBotController {
   async onMessage(
     @Message() message: any,
     @Ctx() ctx: TelegrafContext,
-  ): Promise<string> {
+  ): Promise<string | undefined> {
     if (!ctx.chat?.id) {
-      return JSON.stringify({ error: 'Chat id not found' });
+      return JSON.stringify({ error: 'Chat ID not found' });
     }
 
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const result = await this.botService.processMessage(ctx.chat.id, message);
-      if (typeof result === 'string') {
-        return result;
-      }
-      return JSON.stringify(result);
+      await this.botService.processMessage(ctx.chat.id, message);
     } catch (error) {
       return JSON.stringify(error);
     }

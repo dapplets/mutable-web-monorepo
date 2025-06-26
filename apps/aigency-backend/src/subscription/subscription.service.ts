@@ -7,9 +7,9 @@ export class SubscriptionService {
     private readonly subscriptionRepository: SubscriptionRepository,
   ) {}
 
-  async getSubscriptions(username: string, limit: number, offset: number) {
+  async getSubscriptions(userId: number, limit: number, offset: number) {
     const [items, total] = await this.subscriptionRepository.findAndCount({
-      where: { username },
+      where: { userId },
       order: { id: 'DESC' },
       take: limit,
       skip: offset,
@@ -26,28 +26,22 @@ export class SubscriptionService {
     };
   }
 
-  async enableSubscription(username: string, id: number) {
+  async enableSubscription(userId: number, id: number) {
     await this.subscriptionRepository.update(
-      { username, id },
+      { userId, id },
       { isEnabled: true },
     );
   }
 
-  async disableSubscription(username: string, id: number) {
+  async disableSubscription(userId: number, id: number) {
     await this.subscriptionRepository.update(
-      { username, id },
+      { userId, id },
       { isEnabled: false },
     );
   }
 
-  async addSubscription(
-    username: string,
-    userId: string,
-    source: string,
-    link: string,
-  ) {
+  async addSubscription(userId: number, source: string, link: string) {
     const subscription = this.subscriptionRepository.create({
-      username,
       userId,
       source,
       link,
@@ -66,8 +60,8 @@ export class SubscriptionService {
     };
   }
 
-  async removeSubscription(username: string, id: number) {
-    await this.subscriptionRepository.delete({ username, id });
+  async removeSubscription(userId: number, id: number) {
+    await this.subscriptionRepository.delete({ userId, id });
   }
 
   getNextScanOfSubscriptions() {

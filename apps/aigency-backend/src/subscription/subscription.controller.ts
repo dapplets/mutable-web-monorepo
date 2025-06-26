@@ -22,7 +22,7 @@ export class SubscriptionController {
     @UserInfo() user: UserInfo,
   ) {
     return this.subscriptionService.getSubscriptions(
-      user.username,
+      user.id,
       params.limit,
       params.offset,
     );
@@ -33,10 +33,7 @@ export class SubscriptionController {
     @Body() params: { id: number },
     @UserInfo() user: UserInfo,
   ) {
-    return this.subscriptionService.enableSubscription(
-      user.username,
-      params.id,
-    );
+    return this.subscriptionService.enableSubscription(user.id, params.id);
   }
 
   @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
@@ -44,10 +41,7 @@ export class SubscriptionController {
     @Body() params: { id: number },
     @UserInfo() user: UserInfo,
   ) {
-    return this.subscriptionService.disableSubscription(
-      user.username,
-      params.id,
-    );
+    return this.subscriptionService.disableSubscription(user.id, params.id);
   }
 
   @ZodToOpenRPC({ params: z.object({ source: z.string(), link: z.string() }) })
@@ -58,8 +52,7 @@ export class SubscriptionController {
     user: UserInfo,
   ) {
     return this.subscriptionService.addSubscription(
-      user.username,
-      user.id.toString(),
+      user.id,
       params.source,
       params.link,
     );
@@ -71,10 +64,7 @@ export class SubscriptionController {
     @UserInfo()
     user: UserInfo,
   ) {
-    return this.subscriptionService.removeSubscription(
-      user.username,
-      params.id,
-    );
+    return this.subscriptionService.removeSubscription(user.id, params.id);
   }
 
   @ZodToOpenRPC({ params: z.object({}) })

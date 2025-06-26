@@ -16,9 +16,12 @@ import { MonitorModule } from 'src/monitor';
 import { NearAiModule } from 'src/nearai';
 import { NearModule } from 'src/near';
 import { BotModule } from 'src/bot';
+import { AuthModule } from 'src/auth/auth.module';
+import { MessageModule } from 'src/message';
 
 @Module({
   imports: [
+    AuthModule,
     EnvironmentModule,
     CapabilityModule,
     SubscriptionModule,
@@ -32,6 +35,7 @@ import { BotModule } from 'src/bot';
     NearAiModule,
     NearModule,
     BotModule,
+    MessageModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],

@@ -6,8 +6,8 @@ export class User {
   @PrimaryColumn()
   id!: number;
 
-  @Column({ type: 'varchar', length: 32, nullable: false })
-  username!: string;
+  @Column({ type: 'varchar', length: 32, nullable: true })
+  username!: string | null;
 
   @Column({ type: 'boolean', default: true, nullable: false })
   status!: boolean;

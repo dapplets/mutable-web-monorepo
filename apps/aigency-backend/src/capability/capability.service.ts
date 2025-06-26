@@ -23,14 +23,10 @@ export class CapabilityService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async getCapabilitiesForUser(
-    username: string,
-    limit: number,
-    offset: number,
-  ) {
+  async getCapabilitiesForUser(userId: number, limit: number, offset: number) {
     const [items, total] =
       await this.userCapabilityRepository.getCapabilitiesForUser(
-        username,
+        userId,
         limit,
         offset,
       );
@@ -44,23 +40,23 @@ export class CapabilityService {
     };
   }
 
-  async removeCapability(username: string, capabilityId: string) {
+  async removeCapability(userId: number, capabilityId: string) {
     await this.userCapabilityRepository.update(
-      { username, capabilityId },
+      { userId, capabilityId },
       { isDeleted: true },
     );
   }
 
-  async enableCapability(username: string, capabilityId: string) {
+  async enableCapability(userId: number, capabilityId: string) {
     await this.userCapabilityRepository.update(
-      { username, capabilityId },
+      { userId, capabilityId },
       { isEnabled: true },
     );
   }
 
-  async disableCapability(username: string, capabilityId: string) {
+  async disableCapability(userId: number, capabilityId: string) {
     await this.userCapabilityRepository.update(
-      { username, capabilityId },
+      { userId, capabilityId },
       { isEnabled: false },
     );
   }
@@ -76,8 +72,38 @@ export class CapabilityService {
     return capability.toDto();
   }
 
-  async syncCapabilities(username: string) {
-    const user = await this.userService.getUserByUsername(username);
+  async callCapability(
+    userId: number,
+    capabilityId: string,
+    message: { text?: string },
+  ): Promise<{ text?: string } | null> {
+    const capability = await this.capabilityRepository.findOneBy({
+      id: capabilityId,
+    });
+
+    if (!capability) {
+      throw new CodedRpcException('Capability not found');
+    }
+
+    const userCapability = await this.userCapabilityRepository.findOneBy({
+      userId,
+      capabilityId,
+    });
+
+    if (!userCapability || !userCapability.isEnabled) {
+      throw new CodedRpcException('Capability is disabled');
+    }
+
+    switch (capability.domain) {
+      case 'Near AI':
+        return this.nearAiService.callAgent(capability.name, message);
+      default:
+        throw new CodedRpcException('Only Near AI capabilities are callable');
+    }
+  }
+
+  async syncCapabilities(userId: number) {
+    const user = await this.userService.getUserById(userId);
 
     if (!user) {
       throw new CodedRpcException('User not found');
@@ -110,27 +136,21 @@ export class CapabilityService {
       await this.userCapabilityRepository.upsert(
         {
           capabilityId: existingAgent.id,
-          username,
+          userId,
         },
-        { conflictPaths: ['capabilityId', 'username'] },
+        { conflictPaths: ['capabilityId', 'userId'] },
       );
     }
   }
 
-  async getOrMintCapabilityWithNft(
-    capabilityId: string,
-    callerUsername: string,
-  ) {
+  async getOrMintCapabilityWithNft(capabilityId: string, callerUserId: number) {
     let capability = await this.capabilityRepository.findOneBy({
       id: capabilityId,
     });
 
     // mint NFT if not minted
     if (!capability?.tokenId) {
-      capability = await this.mintNftForCapability(
-        capabilityId,
-        callerUsername,
-      );
+      capability = await this.mintNftForCapability(capabilityId, callerUserId);
     }
 
     return {
@@ -141,7 +161,7 @@ export class CapabilityService {
     };
   }
 
-  async mintNftForCapability(capabilityId: string, callerUsername: string) {
+  async mintNftForCapability(capabilityId: string, callerUserId: number) {
     const capability = await this.capabilityRepository.findOneBy({
       id: capabilityId,
     });
@@ -199,7 +219,7 @@ export class CapabilityService {
 
     this.eventEmitter.emit(
       'capability.minted',
-      new NftMintedEvent(nftContractId, newTokenId, callerUsername),
+      new NftMintedEvent(nftContractId, newTokenId, callerUserId),
     );
 
     return capability;
@@ -227,14 +247,14 @@ export class CapabilityService {
     await this.userCapabilityRepository.upsert(
       {
         capabilityId: capability.id,
-        username: event.username,
+        userId: event.userId,
       },
-      { conflictPaths: ['capabilityId', 'username'] },
+      { conflictPaths: ['capabilityId', 'userId'] },
     );
 
     // top 10 near ai capabilities
     await this.userCapabilityRepository.addTop10CapabilitiesToUser(
-      event.username,
+      event.userId,
     );
   }
 

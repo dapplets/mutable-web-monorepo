@@ -1,5 +1,5 @@
-export const WelcomeMessage = ({ username }: { username: string }) =>
-  `*Hi @${username}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*
+export const WelcomeMessage = ({ username }: { username?: string | null }) =>
+  `*Hi${username ? ` @${username}` : ''}, great to meet you! I’m XEN - your personal assistant, here to help you organize your life, get things done, and interact more easily with the world of web3 and beyond.*
 
 You can message me, send voice notes in any language, or share images - and I’ll do my best to proactively support you.
 

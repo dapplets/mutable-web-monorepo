@@ -14,6 +14,6 @@ export class RewardController {
 
   @ZodToOpenRPC({ params: z.object({}) })
   public getRewardAmount(@UserInfo() user: UserInfo) {
-    return this.rewardService.getRewardAmount(user.username);
+    return this.rewardService.getRewardAmount(user.id);
   }
 }

@@ -1,6 +1,6 @@
 export class RewardFailedEvent {
   constructor(
     public readonly beneficiaryAccountId: string,
-    public readonly callerUsername: string,
+    public readonly callerUserId: number,
   ) {}
 }

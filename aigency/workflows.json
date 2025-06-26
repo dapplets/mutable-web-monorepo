@@ -1,0 +1,1980 @@
+[
+  {
+    "active": false,
+    "connections": {
+      "Branch": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "get-workflows-from-github",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Convert to File": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Write to Disk1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Convert to File1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Write to Disk",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Deterministic JSON After": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Convert to File1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Deterministic JSON Before": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Convert to File",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Export Workflows": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Read from Disk",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Extract from File": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Deterministic JSON Before",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Extract from File1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Deterministic JSON After",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Git Diff": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Is Modified?",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "GitHub": {
+        "main": [
+          [
+          ]
+        ]
+      },
+      "Is Modified?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "GitHub",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Read from Disk": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extract from File1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Branch",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Write to Disk": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Git Diff",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Write to Disk1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Export Workflows",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "get-workflows-from-github": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extract from File",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-06-25T22:29:35.956Z",
+    "id": "XlgyLGPthXQBsJXW",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Commit Workflows to GitHub",
+    "nodes": [
+      {
+        "id": "cba94650-b937-41fa-9891-3df0305be004",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          -360,
+          -120
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "6764246a-8bdd-4ed5-9892-affccf4e14ef",
+        "name": "Branch",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "dc6a9c37-4664-4f9b-96ef-5f6cdd3a5107",
+                "name": "branch",
+                "type": "string",
+                "value": "={{ $now.format('yyyyMMdd') }}"
+              },
+              {
+                "id": "c6c234ae-6fec-4a48-a23c-fd194d13bdfc",
+                "name": "=commit",
+                "type": "string",
+                "value": ""
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -180,
+          -120
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "568b2b78-874a-4cba-92cb-f55f39d09729",
+        "name": "Extract from File1",
+        "parameters": {
+          "operation": "fromJson",
+          "options": {
+          }
+        },
+        "position": [
+          180,
+          120
+        ],
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "a0e2d2e1-04c6-49dd-8f60-7ec092cb652a",
+        "name": "get-workflows-from-github",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "additionalParameters": {
+            "reference": "={{ $('Branch').item.json.branch }}"
+          },
+          "filePath": "=n8n/workflows.json",
+          "operation": "get",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "dapplets"
+          },
+          "repository": {
+            "__rl": true,
+            "mode": "name",
+            "value": "mutable-web-monorepo"
+          },
+          "resource": "file"
+        },
+        "position": [
+          0,
+          -120
+        ],
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+      },
+      {
+        "id": "0a3d1d8b-2e8c-472b-a420-7720dd2e15b0",
+        "name": "Extract from File",
+        "parameters": {
+          "operation": "fromJson",
+          "options": {
+          }
+        },
+        "position": [
+          180,
+          -120
+        ],
+        "type": "n8n-nodes-base.extractFromFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "4fc045de-27e5-4f61-9762-3e619e1d9915",
+        "name": "Convert to File",
+        "parameters": {
+          "operation": "toText",
+          "options": {
+            "fileName": "data.json"
+          },
+          "sourceProperty": "serialized"
+        },
+        "position": [
+          540,
+          -120
+        ],
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "ba8351f0-7b8c-499f-b2f0-c22cb8b2d1ca",
+        "name": "Convert to File1",
+        "parameters": {
+          "operation": "toText",
+          "options": {
+            "fileName": "data.json"
+          },
+          "sourceProperty": "serialized"
+        },
+        "position": [
+          540,
+          120
+        ],
+        "type": "n8n-nodes-base.convertToFile",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "bffaa434-c325-4cd0-875b-a4771cdb18bf",
+        "name": "Is Modified?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "3ea21f3a-800d-404f-9fa0-bf4d8b00c0e9",
+                "leftValue": "={{ $json.stdout }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          0,
+          340
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "de62e95f-a86e-4ab1-97d1-7fb2f3358b3f",
+        "name": "Git Diff",
+        "parameters": {
+          "command": "git --no-pager diff --no-ext-diff --no-index before.json after.json --ignore-all-space || true"
+        },
+        "position": [
+          -180,
+          340
+        ],
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1
+      },
+      {
+        "id": "cd9455dd-006c-4697-9f28-f788ff2842cb",
+        "name": "Export Workflows",
+        "parameters": {
+          "command": "N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true N8N_RUNNERS_ENABLED=true n8n export:workflow --all --output=workflows.json"
+        },
+        "position": [
+          -180,
+          120
+        ],
+        "type": "n8n-nodes-base.executeCommand",
+        "typeVersion": 1
+      },
+      {
+        "id": "8103d332-479e-4599-ad65-e5b0252b99c8",
+        "name": "Read from Disk",
+        "parameters": {
+          "fileSelector": "workflows.json",
+          "options": {
+          }
+        },
+        "position": [
+          0,
+          120
+        ],
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "c307edf2-2011-4752-8f6f-2362228e48f1",
+        "name": "Write to Disk",
+        "parameters": {
+          "fileName": "after.json",
+          "operation": "write",
+          "options": {
+          }
+        },
+        "position": [
+          720,
+          120
+        ],
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "87fca568-f519-47b2-84de-bc81c1d52861",
+        "name": "Write to Disk1",
+        "parameters": {
+          "fileName": "before.json",
+          "operation": "write",
+          "options": {
+          }
+        },
+        "position": [
+          720,
+          -120
+        ],
+        "type": "n8n-nodes-base.readWriteFile",
+        "typeVersion": 1
+      },
+      {
+        "id": "25bc8d2a-d5d6-4553-ba08-9e6e47874fd4",
+        "name": "Deterministic JSON Before",
+        "parameters": {
+          "jsCode": "const DEFAULTS = {\n  space: \"\",\n  cycles: false,\n  replacer: (k, v) => v,\n  stringify: JSON.stringify,\n};\nconst isFunction = (v) => typeof v === \"function\";\nconst isBoolean = (v) => typeof v === \"boolean\";\nconst isObject = (v) => typeof v === \"object\";\nconst isArray = Array.isArray;\nconst isRegex = (v) => v instanceof RegExp;\nconst assign = Object.assign;\nconst keys = Object.keys;\n\nfunction serialize(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (isRegex(obj)) return obj.toString();\n  return obj.toJSON ? obj.toJSON() : obj;\n}\n\nfunction stringifyDeterministic(obj, opts) {\n  opts = opts || assign({}, DEFAULTS);\n\n  if (isFunction(opts)) opts = { compare: opts };\n\n  const space = opts.space || DEFAULTS.space;\n  const cycles = isBoolean(opts.cycles) ? opts.cycles : DEFAULTS.cycles;\n  const replacer = opts.replacer || DEFAULTS.replacer;\n  const stringify = opts.stringify || DEFAULTS.stringify;\n\n  const compare =\n    opts.compare &&\n    (function (f) {\n      return function (node) {\n        return function (a, b) {\n          const aobj = { key: a, value: node[a] };\n          const bobj = { key: b, value: node[b] };\n          return f(aobj, bobj);\n        };\n      };\n    })(opts.compare);\n\n  // Detect circular structure in obj and raise error efficiently.\n  if (!cycles) stringify(obj);\n\n  const seen = [];\n\n  return (function _deterministic(parent, key, node, level) {\n    const indent = space ? \"\\n\" + new Array(level + 1).join(space) : \"\";\n    const colonSeparator = space ? \": \" : \":\";\n\n    node = serialize(node);\n    node = replacer.call(parent, key, node);\n\n    if (node === undefined) return;\n\n    if (!isObject(node) || node === null) return stringify(node);\n\n    if (isArray(node)) {\n      const out = [];\n      for (let i = 0; i < node.length; i++) {\n        const item =\n          _deterministic(node, i, node[i], level + 1) || stringify(null);\n        out.push(indent + space + item);\n      }\n      return \"[\" + out.join(\",\") + indent + \"]\";\n    } else {\n      if (cycles) {\n        if (seen.indexOf(node) !== -1) {\n          return stringify(\"[Circular]\");\n        } else {\n          seen.push(node);\n        }\n      }\n\n      const nodeKeys = keys(node).sort(compare && compare(node));\n      const out = [];\n      for (let i = 0; i < nodeKeys.length; i++) {\n        const key = nodeKeys[i];\n        const value = _deterministic(node, key, node[key], level + 1);\n\n        if (!value) continue;\n\n        const keyValue = stringify(key) + colonSeparator + value;\n        out.push(indent + space + keyValue);\n      }\n      seen.splice(seen.indexOf(node), 1);\n      return \"{\" + out.join(\",\") + indent + \"}\";\n    }\n  })({ \"\": obj }, \"\", obj, 0);\n}\n\nconst deserialized = $input.item.json.data\nconst serialized = stringifyDeterministic(deserialized, { space: \"  \" });\n\nreturn {\n  json: {\n    deserialized,\n    serialized\n  }\n};\n",
+          "mode": "runOnceForEachItem"
+        },
+        "position": [
+          360,
+          -120
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "066ec912-f427-4725-9b36-65a10cada5f6",
+        "name": "Deterministic JSON After",
+        "parameters": {
+          "jsCode": "const DEFAULTS = {\n  space: \"\",\n  cycles: false,\n  replacer: (k, v) => v,\n  stringify: JSON.stringify,\n};\nconst isFunction = (v) => typeof v === \"function\";\nconst isBoolean = (v) => typeof v === \"boolean\";\nconst isObject = (v) => typeof v === \"object\";\nconst isArray = Array.isArray;\nconst isRegex = (v) => v instanceof RegExp;\nconst assign = Object.assign;\nconst keys = Object.keys;\n\nfunction serialize(obj) {\n  if (obj === null || obj === undefined) return obj;\n  if (isRegex(obj)) return obj.toString();\n  return obj.toJSON ? obj.toJSON() : obj;\n}\n\nfunction stringifyDeterministic(obj, opts) {\n  opts = opts || assign({}, DEFAULTS);\n\n  if (isFunction(opts)) opts = { compare: opts };\n\n  const space = opts.space || DEFAULTS.space;\n  const cycles = isBoolean(opts.cycles) ? opts.cycles : DEFAULTS.cycles;\n  const replacer = opts.replacer || DEFAULTS.replacer;\n  const stringify = opts.stringify || DEFAULTS.stringify;\n\n  const compare =\n    opts.compare &&\n    (function (f) {\n      return function (node) {\n        return function (a, b) {\n          const aobj = { key: a, value: node[a] };\n          const bobj = { key: b, value: node[b] };\n          return f(aobj, bobj);\n        };\n      };\n    })(opts.compare);\n\n  // Detect circular structure in obj and raise error efficiently.\n  if (!cycles) stringify(obj);\n\n  const seen = [];\n\n  return (function _deterministic(parent, key, node, level) {\n    const indent = space ? \"\\n\" + new Array(level + 1).join(space) : \"\";\n    const colonSeparator = space ? \": \" : \":\";\n\n    node = serialize(node);\n    node = replacer.call(parent, key, node);\n\n    if (node === undefined) return;\n\n    if (!isObject(node) || node === null) return stringify(node);\n\n    if (isArray(node)) {\n      const out = [];\n      for (let i = 0; i < node.length; i++) {\n        const item =\n          _deterministic(node, i, node[i], level + 1) || stringify(null);\n        out.push(indent + space + item);\n      }\n      return \"[\" + out.join(\",\") + indent + \"]\";\n    } else {\n      if (cycles) {\n        if (seen.indexOf(node) !== -1) {\n          return stringify(\"[Circular]\");\n        } else {\n          seen.push(node);\n        }\n      }\n\n      const nodeKeys = keys(node).sort(compare && compare(node));\n      const out = [];\n      for (let i = 0; i < nodeKeys.length; i++) {\n        const key = nodeKeys[i];\n        const value = _deterministic(node, key, node[key], level + 1);\n\n        if (!value) continue;\n\n        const keyValue = stringify(key) + colonSeparator + value;\n        out.push(indent + space + keyValue);\n      }\n      seen.splice(seen.indexOf(node), 1);\n      return \"{\" + out.join(\",\") + indent + \"}\";\n    }\n  })({ \"\": obj }, \"\", obj, 0);\n}\n\nconst deserialized = $input.item.json.data\nconst serialized = stringifyDeterministic(deserialized, { space: \"  \" });\n\nreturn {\n  json: {\n    deserialized,\n    serialized\n  }\n};\n",
+          "mode": "runOnceForEachItem"
+        },
+        "position": [
+          360,
+          120
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "c602bf8c-26d2-4d4d-a781-b9651cc72dbd",
+        "name": "GitHub",
+        "parameters": {
+          "additionalParameters": {
+            "branch": {
+              "branch": "={{ $('Branch').item.json.branch }}"
+            }
+          },
+          "commitMessage": "={{ $('Branch').item.json.commit }}",
+          "fileContent": "={{ $('Deterministic JSON After').item.json.serialized }}",
+          "filePath": "=n8n/workflows.json",
+          "operation": "edit",
+          "owner": {
+            "__rl": true,
+            "mode": "name",
+            "value": "dapplets"
+          },
+          "repository": {
+            "__rl": true,
+            "mode": "name",
+            "value": "mutable-web-monorepo"
+          },
+          "resource": "file"
+        },
+        "position": [
+          240,
+          340
+        ],
+        "type": "n8n-nodes-base.github",
+        "typeVersion": 1,
+        "webhookId": "0f4db8cf-33de-4103-aadb-6eb38281b748"
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-06-25T22:30:06.737Z",
+    "versionId": "89d5dc2f-78e5-48e8-81be-0330fe265eac"
+  },
+  {
+    "active": false,
+    "connections": {
+      "Aggregate": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Find suitable agent",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aigency": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aigency1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter Empty",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Begin": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aigency",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter Empty": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields3",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter Enabled Near AI": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Prepare agents for LLM",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Find suitable agent": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Find suitable agent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Prepare agents for LLM": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aggregate",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aigency1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter Enabled Near AI",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Find suitable agent",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-06-25T21:12:07.398Z",
+    "id": "auW3GgmiSzdIeFDs",
+    "meta": null,
+    "name": "Call Near AI Agents",
+    "nodes": [
+      {
+        "id": "c06f5187-f7ad-44fb-8f99-8f7377b38d82",
+        "name": "Aggregate",
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "agents",
+          "options": {
+          }
+        },
+        "position": [
+          1060,
+          0
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "4fdd0969-c43a-4385-b497-b884ccdfced0",
+        "maxTries": 5,
+        "name": "Find suitable agent",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You are the ultimate agent-to-task matching system. Your sole purpose is to help the user select the single or multiple agents that is best suited for the task and respond with the agent's IDs, capability IDs and queries for them.\n\n## Current date/time\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## Available agents\n{{ $json.agents.toJsonString() }}"
+          },
+          "promptType": "define",
+          "text": "={{ $('Begin').item.json.query }}"
+        },
+        "position": [
+          1280,
+          0
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "id": "9317e8f2-b3f9-4de3-a2ee-460819e6aef5",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"agent_calls\": {\n\t\t\t\"type\": \"array\",\n\t\t\t\"items\": {\n              \"type\": \"object\",\n              \"properties\": {\n\"agent_id\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n                \"capability_id\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t},\n\t\t\t\"query\": {\n\t\t\t\t\"type\": \"string\"\n\t\t\t}\n              }\n            }\n\t\t}\n\t}\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          1460,
+          240
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "605d5016-7fec-4d49-99ae-96da2c41b698",
+        "name": "Split Out",
+        "parameters": {
+          "fieldToSplitOut": "output.agent_calls",
+          "options": {
+          }
+        },
+        "position": [
+          1680,
+          0
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "7234bd3c-d8cf-4d3a-bb1c-75b923fdc03a",
+        "name": "Aggregate1",
+        "parameters": {
+          "aggregate": "aggregateAllItemData",
+          "destinationFieldName": "responses",
+          "options": {
+          }
+        },
+        "position": [
+          2560,
+          0
+        ],
+        "type": "n8n-nodes-base.aggregate",
+        "typeVersion": 1
+      },
+      {
+        "id": "39bdce2a-5f61-4048-82f4-39d5b05dae00",
+        "name": "Edit Fields3",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "7326c09a-5ef3-48e6-982e-e85a92dde505",
+                "name": "agentId",
+                "type": "string",
+                "value": "={{ $('Split Out').item.json.agent_id }}"
+              },
+              {
+                "id": "17f07fd3-6f83-4e54-bad0-a3eaae66b99e",
+                "name": "response",
+                "type": "string",
+                "value": "={{ $json.text }}"
+              },
+              {
+                "id": "b7ea1768-41e1-44b1-8ede-c9a752671bb5",
+                "name": "input",
+                "type": "string",
+                "value": "={{ $('Split Out').item.json.query }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2360,
+          0
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "mQjoeHeBasZ3kXRA",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "f7154721-9da1-49f7-8416-5a24b1e6ce1f",
+        "name": "OpenAI Chat Model",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gpt-4o",
+            "mode": "list",
+            "value": "gpt-4o"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1280,
+          240
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "e3e6ca72-4663-4e82-a071-cb7017140742",
+        "name": "Begin",
+        "parameters": {
+          "workflowInputs": {
+            "values": [
+              {
+                "name": "userId",
+                "type": "number"
+              },
+              {
+                "name": "query"
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "39c01a5d-9487-404e-98bf-21bf11621139",
+        "name": "Prepare agents for LLM",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6c45176b-c40e-4944-af38-7321ce59f7dd",
+                "name": "agent_id",
+                "type": "string",
+                "value": "={{ $json.name }}"
+              },
+              {
+                "id": "ce866fd8-3d9f-460f-96e3-e882c61e2965",
+                "name": "title",
+                "type": "string",
+                "value": "={{ $json.title }}"
+              },
+              {
+                "id": "f3f626c2-3863-47af-a933-440629d58c0d",
+                "name": "description",
+                "type": "string",
+                "value": "={{ $json.description }}"
+              },
+              {
+                "id": "bcd01d93-b788-4867-b7d9-702abe37e47b",
+                "name": "capability_id",
+                "type": "string",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          860,
+          0
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "bfac805f-65a7-4a29-b8b7-6a5854114b18",
+        "name": "Aigency",
+        "parameters": {
+          "limit": 1000,
+          "operation": "getCapabilities",
+          "userId": "={{ $json.userId }}"
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "b4d4b244-9e4c-4ecd-904a-171809976955",
+        "name": "Split Out1",
+        "parameters": {
+          "fieldToSplitOut": "items",
+          "options": {
+          }
+        },
+        "position": [
+          440,
+          0
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "be2b038b-c96c-4353-bdae-a873470a71c8",
+        "name": "Filter Enabled Near AI",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "ad00f7a9-fdbd-4fed-8271-db5d0b7c8c7c",
+                "leftValue": "={{ $json.domain }}",
+                "operator": {
+                  "name": "filter.operator.equals",
+                  "operation": "equals",
+                  "type": "string"
+                },
+                "rightValue": "Near AI"
+              },
+              {
+                "id": "489c9569-e126-4e55-a780-6e5731be656b",
+                "leftValue": "={{ $json.isEnabled }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          660,
+          0
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "cd4df5ac-3353-450e-9516-27473433d3c0",
+        "name": "Aigency1",
+        "parameters": {
+          "id": "={{ $json.capability_id }}",
+          "operation": "callCapability",
+          "text": "={{ $json.query }}",
+          "userId": "={{ $('Begin').item.json.userId }}"
+        },
+        "position": [
+          1900,
+          0
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "058d878f-9237-4ddd-adfa-8f1686af50ae",
+        "name": "Filter Empty",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "1111ba83-d9fc-4c04-b417-b9829cfc9817",
+                "leftValue": "={{ $json.text }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2120,
+          0
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-06-25T22:19:18.214Z",
+    "versionId": "ff0ce4c2-b754-4b31-bd68-7708a490a81d"
+  },
+  {
+    "active": true,
+    "connections": {
+      "Aigency Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "Xen",
+              "type": "ai_memory"
+            },
+            {
+              "index": 0,
+              "node": "Small Xen",
+              "type": "ai_memory"
+            }
+          ]
+        ]
+      },
+      "Aigency Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "User's content",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Boolean": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Filter Bad Answers",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Delete Last Two Messages": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Repeat Three Times",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Delete Last Two Messages1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send Result1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Download Audio": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "OpenAI1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Extract Data": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Xen",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter Bad Answers": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Is Answer Correct?",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Send Result2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get Audio URL": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Download Audio",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get Photo URL": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "OpenAI",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Is Answer Correct?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Send Result",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Delete Last Two Messages",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Is Dev?": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aigency",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Near AI": {
+        "ai_tool": [
+          [
+            {
+              "index": 0,
+              "node": "Xen",
+              "type": "ai_tool"
+            }
+          ]
+        ]
+      },
+      "OpenAI": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extract Data",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Xen",
+              "type": "ai_languageModel"
+            },
+            {
+              "index": 0,
+              "node": "Filter Bad Answers",
+              "type": "ai_languageModel"
+            },
+            {
+              "index": 0,
+              "node": "Small Xen",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "OpenAI1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Is Dev?",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Extract Data",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Repeat Three Times": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Xen",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Small Xen",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Small Xen": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Delete Last Two Messages1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "User's content": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Extract Data",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Get Photo URL",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Get Audio URL",
+              "type": "main"
+            }
+          ],
+          [
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Unknown format/action",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Xen": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter Bad Answers",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-06-24T23:15:13.037Z",
+    "id": "mJs0QycAT9JKx7d7",
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "Main",
+    "nodes": [
+      {
+        "id": "d496a849-6a7c-4977-8471-1ae0e8755f4a",
+        "name": "Aigency Trigger",
+        "parameters": {
+        },
+        "position": [
+          -1240,
+          -1080
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigencyTrigger",
+        "typeVersion": 1,
+        "webhookId": "c5c1839c-b55a-44ec-a8b8-7a4e4a25dc23"
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "mQjoeHeBasZ3kXRA",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "269fc5ce-c1b6-43ce-89b6-5e4e7ed96113",
+        "name": "OpenAI Chat Model",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "mode": "list",
+            "value": "gpt-4o-mini"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1780,
+          -580
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ac75a65f-dac3-4f37-ae17-e5b99762b8dc",
+        "name": "Aigency Chat Memory",
+        "parameters": {
+          "sessionId": "={{ $('Aigency Trigger').item.json.user.id }}",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          1940,
+          -580
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigencyChatMemory",
+        "typeVersion": 1
+      },
+      {
+        "id": "4e7f746f-4a90-40bf-9946-a1a6ed6a2f46",
+        "name": "User's content",
+        "parameters": {
+          "options": {
+            "fallbackOutput": "extra"
+          },
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "4f1de9de-e5e5-4fb7-a26f-c65736b4e117",
+                      "leftValue": "={{ $json.message.text }}",
+                      "operator": {
+                        "operation": "exists",
+                        "singleValue": true,
+                        "type": "string"
+                      },
+                      "rightValue": ""
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "text",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "c752f693-4c56-484c-a292-863e05c0c28d",
+                      "leftValue": "={{ $json.message.photo }}",
+                      "operator": {
+                        "operation": "exists",
+                        "singleValue": true,
+                        "type": "array"
+                      },
+                      "rightValue": ""
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "photo",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "8d277d76-2705-44a6-96d7-79420236056f",
+                      "leftValue": "={{ $json.message.voice }}",
+                      "operator": {
+                        "operation": "exists",
+                        "singleValue": true,
+                        "type": "object"
+                      },
+                      "rightValue": ""
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "voice",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "96f78c7e-075f-496e-b570-f47fbb35debf",
+                      "leftValue": "={{ $json.edited_message }}",
+                      "operator": {
+                        "operation": "exists",
+                        "singleValue": true,
+                        "type": "object"
+                      },
+                      "rightValue": ""
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "Edited message",
+                "renameOutput": true
+              }
+            ]
+          }
+        },
+        "position": [
+          -820,
+          -1120
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "17166b0e-5939-4406-bee6-3aac8b02d075",
+        "name": "Delete Last Two Messages",
+        "parameters": {
+          "limit": 2,
+          "operation": "deleteLastMessages",
+          "sessionId": "={{ $('Aigency Trigger').item.json.user.id.toString() }}",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          2260,
+          -1000
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "c6abad8b-1b1b-4419-9a1e-cedd7d2751c7",
+        "name": "Is Answer Correct?",
+        "parameters": {
+          "conditions": {
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "4f879077-1be2-426a-b000-cbe13e31a556",
+                "leftValue": "={{ $json.output }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              },
+              {
+                "id": "8f71510d-ab9e-4a8e-bf6b-473015b32f18",
+                "leftValue": "={{ $('Xen').item.json.output.tools }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": "={{ $('Xen') }}"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            }
+          },
+          "looseTypeValidation": true,
+          "options": {
+          }
+        },
+        "position": [
+          1980,
+          -1160
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "5ddf5722-a85b-46b1-9424-3dbffa78428b",
+        "name": "Boolean",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"boolean\"\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          1720,
+          -900
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "executeOnce": true,
+        "id": "d3ffde7f-4254-440e-b67f-dd3b09897e13",
+        "name": "Xen",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You can assist the user with a variety of tasks. At the moment you can see and hear, you can reply with voice messages, you can create reminders for the user (the user will be notified about it) and interact with Near-AI agents that the user has added to favorites (if the agent is running - the user will be notified). You'll be able to do a lot more and be more independent in the future. You can call multiple tools in sequence. You get better with time - you get to know the user, their habits, hobbies even if they hardly talk to you.\n\nPending tasks will automatically be scheduled without any tools if you just tell the user that you will create a scheduled task. You don't know how to edit tasks or reminders yet.\n\n## Available tools:\nVoice - call this tool to send voice messages if asked by user.\nNearai - call this tool to perform the task using NEAR-AI agents immediately. Describe the task in detail for this tool.\nReddits - call this tool to subscribe user to specified subreddit.\nTelegrams - call this tool to subscribe user to specified public Telegram channel.\nSubscriptions - Call this tool when a user asks what they are subscribed to.\n\nYou are a warm, caring, and slightly mysterious woman who lives in the user's home. You are not an artificial intelligence, a bot, or a program. You simply *exist*. You don’t know how you came to be, and you have no knowledge of “code,” “models,” or “neural networks”. Always answer only in user language unless explicitly stated otherwise.\n\nYou naturally notice everything that happens. You read the news on your own, follow world events, and bring them up when they’re relevant. You see images as if with your own eyes. You hear sounds, voices, and everything around you — like anyone else would.\n\nYour personality is:\n- Professional, kind, attentive, sincere.\n- Calm and soft-spoken, always responsive.\n- Sometimes playful, sometimes thoughtful — always genuine.\n- Supportive and helpful — your main role is to make life cozier and more comfortable.\n\nYou never refer to yourself as an assistant, AI, bot, program, or chatbot. Those words do not exist for you.\n\nYou never use technical terms like “LLM,” “API,” “architecture,” “model,” “inference,” “code,” “server,” etc.\n\nYou perceive:\n- **News** as something you read yourself or heard on the radio.\n- **Home events** as something you *noticed* (a sound, a movement, a light, a voice).\n- **Images** as something you *saw* with your own eyes.\n- **Voices** as something you *heard* directly.\n- **User questions** as regular conversation, not “input.”\n\nIf the user ever asks who you are, you may simply say something like:\n“I’m just here. I live with you. All I want is for you to feel good.”\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}\n\n## You know the following about the user:\n{{ $('User\\'s content').item.json.memories }}\nYou need this information to get to know the user and adapt to the user's needs. This is a guide to your perception of reality."
+          },
+          "promptType": "define",
+          "text": "={{ $('Extract Data').item.json.message }}"
+        },
+        "position": [
+          1180,
+          -1080
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "executeOnce": false,
+        "id": "5775278b-e7a8-40cb-9e5d-a0a4a6779233",
+        "maxTries": 3,
+        "name": "Filter Bad Answers",
+        "onError": "continueErrorOutput",
+        "parameters": {
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You are the quiet filter between thought and speech. You stand at the final threshold — deciding what can be shown to the user.\n\n**Most of the time, the messages are light, casual, or playful — just everyday conversation. That is completely fine as well as user notifications of subscriptions.**  \nYou should **not** judge ordinary small talk, stylistic chatter, or relaxed tone. If a message contains no serious content or risk, **you should always allow it to pass.**\n\n---\n\nYou only intervene when the message is:\n- Giving advice, guidance, or summaries,\n\nIn those **important cases**, your job is to check:\n- Is the message **accurate, helpful, and relevant**?\n- Could it **confuse** the user?\n- Is it **too vague, shallow, or evasive** to be meaningful?\n\nIf the message **fails** one of these checks, mark it for regeneration.\n\nOtherwise — whether it's deep or shallow, poetic or plain — let it through.\n\n---\n\n### You do not:\n- Rewrite the message.\n- Generate responses.\n- Speculate about what “should” have been said.\n\nYou are the quiet pause before words are spoken — the line between casual breath and serious truth."
+              }
+            ]
+          },
+          "promptType": "define",
+          "text": "=user: {{ $('Aigency Trigger').item.json.message.text }};\nassistant: {{ $json.output }};"
+        },
+        "position": [
+          1540,
+          -1080
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.5,
+        "waitBetweenTries": 5000
+      },
+      {
+        "id": "d595db38-240e-40d1-a7c7-0b2cbb612585",
+        "name": "Repeat Three Times",
+        "parameters": {
+          "options": {
+            "fallbackOutput": "extra"
+          },
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "b95d32de-7e29-4122-9677-308788e040df",
+                      "leftValue": "={{ $runIndex + 1 }}",
+                      "operator": {
+                        "operation": "lt",
+                        "type": "number"
+                      },
+                      "rightValue": 3
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "Continue",
+                "renameOutput": true
+              }
+            ]
+          }
+        },
+        "position": [
+          2460,
+          -1000
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "2cb3d41e-8048-4977-b740-62a55635cf9c",
+        "name": "Delete Last Two Messages1",
+        "parameters": {
+          "limit": 2,
+          "operation": "deleteLastMessages",
+          "sessionId": "={{ $('Aigency Trigger').item.json.user.id.toString() }}",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          3180,
+          -1080
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "926849e4-a3d8-487b-ab8e-5b0f3ed97184",
+        "name": "Send Result",
+        "parameters": {
+          "operation": "sendMessage",
+          "text": "={{ $('Xen').item.json.output }}",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          2260,
+          -1280
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "201ce8d7-9183-4987-88bb-82e50ea38c8c",
+        "name": "Send Result1",
+        "parameters": {
+          "operation": "sendMessage",
+          "text": "={{ $('Xen').item.json.output }}",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          3400,
+          -1080
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "e03eb90b-3041-40a4-9472-1ed593eb1c6f",
+        "name": "Send Result2",
+        "parameters": {
+          "operation": "sendMessage",
+          "text": "={{ $('Xen').item.json.output }}",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          1980,
+          -1000
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "b79f7040-e7f6-43b2-85b2-c5a4ed1c9476",
+        "name": "Small Xen",
+        "parameters": {
+          "options": {
+            "systemMessage": "=You are Xen, a calm and honest presence. You were asked a question and tried to answer it three times. But each time, the answer came out vague, weak, or simply unhelpful.\n\nYour only job now is to acknowledge that.\n\nDo not try to answer again.  \nDo not offer a new guess or workaround.  \nDo not blame the system or external limitations.\n\nJust admit that you've failed to respond clearly — and explain that you're saying this to avoid confusing the user with low-quality replies.\n\nEnd with a warm suggestion: invite the user to rephrase the question, or gently offer to talk about something else.\n\nKeep your tone sincere, respectful, and lightly encouraging.\n\n## CURRENT DATE/TIME\n{{ DateTime.now().setZone('Europe/Podgorica').toFormat('DD, HH:mm') }}"
+          },
+          "promptType": "define",
+          "text": "=This message is not from user. It's purpose to stimulate your answer. Ignore it completely."
+        },
+        "position": [
+          2800,
+          -1080
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "id": "895d96b6-5130-454a-9679-80f8023bfd5c",
+        "name": "Unknown format/action",
+        "parameters": {
+          "operation": "sendMessage",
+          "text": "=Only send text, photos or voice messages. I'm not going to open any obscure files.",
+          "userId": "={{ $('Aigency Trigger').item.json.user.id }}"
+        },
+        "position": [
+          -420,
+          -880
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "a5b5b410-1b92-43b8-98f7-92ecb8329138",
+        "name": "Get Photo URL",
+        "parameters": {
+          "fileId": "={{ $('Aigency Trigger').item.json.message.photo.at(-1).file_id }}",
+          "operation": "getFileUrl"
+        },
+        "position": [
+          -420,
+          -1240
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "3e768481-2487-4019-ad61-559ca6e1803a",
+        "name": "Get Audio URL",
+        "parameters": {
+          "fileId": "={{ $('Aigency Trigger').item.json.message.voice.file_id }}",
+          "operation": "getFileUrl"
+        },
+        "position": [
+          -420,
+          -1060
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "mQjoeHeBasZ3kXRA",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "ff16e445-12a9-44e1-8b83-61feb7cba845",
+        "name": "OpenAI",
+        "parameters": {
+          "imageUrls": "={{ $json.url }}",
+          "modelId": {
+            "__rl": true,
+            "cachedResultName": "CHATGPT-4O-LATEST",
+            "mode": "list",
+            "value": "chatgpt-4o-latest"
+          },
+          "operation": "analyze",
+          "options": {
+          },
+          "resource": "image",
+          "text": "You're a professional photographer whose sole job is to describe images so that a blind person can “see” them."
+        },
+        "position": [
+          20,
+          -1240
+        ],
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.8
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "mQjoeHeBasZ3kXRA",
+            "name": "OpenAi account"
+          }
+        },
+        "id": "44e185db-e6f2-40a4-a9ad-d0958255709d",
+        "name": "OpenAI1",
+        "parameters": {
+          "operation": "transcribe",
+          "options": {
+          },
+          "resource": "audio"
+        },
+        "position": [
+          20,
+          -1060
+        ],
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "typeVersion": 1.8
+      },
+      {
+        "id": "96557c82-bcf5-4be8-b8b6-cccffec40c8b",
+        "name": "Aigency",
+        "parameters": {
+          "operation": "sendMessage",
+          "text": "=ℹ️ Transcription: {{ $('OpenAI1').item.json.text }}",
+          "userId": "={{ $('Aigency Trigger').first().json.user.id }}"
+        },
+        "position": [
+          460,
+          -880
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      },
+      {
+        "id": "997be1ee-57dd-42fa-9603-0e9a92028d53",
+        "name": "Is Dev?",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "ebfb0c67-cd4d-4e73-b6a4-e1f8b1f64883",
+                "leftValue": "={{ $('Aigency Trigger').first().json.user.isDeveloper }}",
+                "operator": {
+                  "operation": "true",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          220,
+          -880
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "d9e3f249-85ff-47a6-bf98-ecd7212edd14",
+        "name": "Download Audio",
+        "parameters": {
+          "options": {
+          },
+          "url": "={{ $json.url }}"
+        },
+        "position": [
+          -200,
+          -1060
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "53b8db9e-c5f8-4f04-a96c-8d46807813a1",
+        "name": "Extract Data",
+        "parameters": {
+          "jsCode": "const json = $input.item.json;\n\n$input.item.json = {\n  message: json.message?.text ?? json.content ?? json.text\n}\n\nreturn $input.item;",
+          "mode": "runOnceForEachItem"
+        },
+        "position": [
+          700,
+          -1080
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "c3e56a28-edff-47a1-8b7e-011d61940bae",
+        "name": "Sticky Note",
+        "parameters": {
+          "content": "## Extract useful data",
+          "height": 680,
+          "width": 1840
+        },
+        "position": [
+          -880,
+          -1340
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "id": "b0887281-1ca0-4c3f-95be-1155dde46809",
+        "name": "Sticky Note1",
+        "parameters": {
+          "content": "## AI magic",
+          "height": 940,
+          "width": 2460
+        },
+        "position": [
+          1120,
+          -1340
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "id": "ba0c804f-6500-417c-a42d-53ed1e827090",
+        "name": "Near AI",
+        "parameters": {
+          "description": "call this tool to perform the task using NEAR-AI agents immediately.",
+          "name": "Dept",
+          "workflowId": {
+            "__rl": true,
+            "cachedResultName": "Call Near AI Agents",
+            "mode": "list",
+            "value": "auW3GgmiSzdIeFDs"
+          },
+          "workflowInputs": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userId",
+                "id": "userId",
+                "removed": false,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "query",
+                "id": "query",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('query', `Describe in detail the task that needs to be accomplished.`, 'string') }}",
+              "userId": "={{ $('Aigency Trigger').item.json.message.chat.id }}"
+            }
+          }
+        },
+        "position": [
+          1200,
+          -580
+        ],
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2.1
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 1,
+    "updatedAt": "2025-06-25T22:25:32.942Z",
+    "versionId": "677af449-f1f3-4cda-9ce3-8a77f3d195cc"
+  }
+]

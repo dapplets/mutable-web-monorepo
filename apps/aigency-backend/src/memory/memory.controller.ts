@@ -18,16 +18,12 @@ export class MemoryController {
     @Body() params: PaginationDto,
     @UserInfo() user: UserInfo,
   ) {
-    return this.memoryService.getMemories(
-      user.username,
-      params.limit,
-      params.offset,
-    );
+    return this.memoryService.getMemories(user.id, params.limit, params.offset);
   }
 
   @ZodToOpenRPC({ params: z.object({}) })
   public deleteAllMemories(@UserInfo() user: UserInfo) {
-    return this.memoryService.deleteAllMemories(user.username);
+    return this.memoryService.deleteAllMemories(user.id);
   }
 
   @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
@@ -35,6 +31,6 @@ export class MemoryController {
     @Body() params: { id: number },
     @UserInfo() user: UserInfo,
   ) {
-    return this.memoryService.deleteMemory(user.username, params.id);
+    return this.memoryService.deleteMemory(user.id, params.id);
   }
 }
