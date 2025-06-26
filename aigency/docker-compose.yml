@@ -138,7 +138,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_SCHEMA=public
       - AIGENCY_API_URL=https://${SUBDOMAIN_API}.${DOMAIN_NAME}
-      - N8N_WEBHOOK_URL=https://${SUBDOMAIN_N8N}.${DOMAIN_NAME}
+      - N8N_WEBHOOK_URL=http://n8n
       - NEAR_AI_API_KEY=${NEAR_AI_API_KEY}
     env_file:
       - .env
