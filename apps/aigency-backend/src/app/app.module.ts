@@ -18,6 +18,7 @@ import { NearModule } from 'src/near';
 import { BotModule } from 'src/bot';
 import { AuthModule } from 'src/auth/auth.module';
 import { MessageModule } from 'src/message';
+import { ContextModule } from 'src/context';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MessageModule } from 'src/message';
     NearModule,
     BotModule,
     MessageModule,
+    ContextModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],
