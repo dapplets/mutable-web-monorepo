@@ -8,19 +8,19 @@ Easily self-host **Aigency**, a powerful AI-driven automation platform, using Do
 
 Before installation, make sure you have the following:
 
-1. **A Virtual Private Server (VPS)** with:
+1. **A Server** with:
 
    - A public IP address
    - At least **2 vCPUs**, **4 GB RAM**, **40 GB SSD**
    - **Ubuntu 24.04 LTS** (tested)
 
-2. **Domain Configuration** — Point your domain's A-records to your VPS IP:
+2. **Domain Configuration** — Point your domain's A-records to your server IP:
 
    - `api.example.com` — Aigency backend API
    - `n8n.example.com` — [n8n](https://github.com/n8n-io/n8n) low-code automation engine
    - `tgapp.example.com` — Telegram Mini App (UI for Aigency)
 
-3. **Docker** installed on your VPS. You can follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04).
+3. **Docker** installed on your server. You can follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-22-04).
 
 4. **Telegram Bot** — Create one via [@BotFather](https://t.me/BotFather) and save the token.
 
@@ -28,9 +28,12 @@ Before installation, make sure you have the following:
 
 6. **NEAR AI API Key** — Sign in at [app.near.ai](https://app.near.ai/), open developer tools, and [locate the `auth` cookie](./docs/near-ai-api-token.png).
 
-7. _(Optional but recommended)_ **Change the default SSH port** — edit `/etc/ssh/sshd_config`, e.g., set `Port 49100` and restart SSH
+<details>
+<summary>Optional but recommended</summary>
 
-8. _(Optional but recommended)_ **Configure UFW (Uncomplicated Firewall)**
+7. **Change the default SSH port** — edit `/etc/ssh/sshd_config`, e.g., set `Port 49100` and restart SSH
+
+8. **Configure UFW (Uncomplicated Firewall)**
 
 ```bash
 sudo ufw allow 443/tcp   # HTTPS
@@ -40,7 +43,7 @@ sudo ufw allow 5432/tcp  # PostgreSQL (optional)
 sudo ufw enable
 ```
 
-9. _(Optional but recommended)_ **Install and configure Fail2Ban** to prevent brute-force attacks:
+9. **Install and configure Fail2Ban** to prevent brute-force attacks:
 
 ```bash
 sudo apt install fail2ban
@@ -67,7 +70,7 @@ sudo systemctl restart fail2ban
 sudo fail2ban-client status sshd
 ```
 
-10. _(Optional but recommended)_ **Set global log rotation policy for Docker** to prevent log growth
+10. **Set global log rotation policy for Docker** to prevent log growth
 
 Edit or create the file `/etc/docker/daemon.json`:
 
@@ -86,6 +89,8 @@ Restart Docker:
 ```bash
 sudo systemctl restart docker
 ```
+
+</details>
 
 ---
 
