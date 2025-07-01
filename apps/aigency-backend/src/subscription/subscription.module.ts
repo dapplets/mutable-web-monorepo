@@ -9,7 +9,7 @@ import { SubscriptionController } from './subscription.controller';
   imports: [TypeOrmModule.forFeature([Subscription])],
   providers: [
     SubscriptionRepository,
-    SubscriptionRepository,
+    SubscriptionRepository, // ToDo: remove?
     SubscriptionService,
   ],
   controllers: [SubscriptionController],

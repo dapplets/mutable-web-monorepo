@@ -10,6 +10,15 @@ export type TransferableContext = {
   parent: TransferableContext | null;
 };
 
+export type TransferableContextEdge = {
+  fromContextNamespace: string;
+  fromContextType: string;
+  fromContextId: string;
+  toContextNamespace: string;
+  toContextType: string;
+  toContextId: string;
+};
+
 @Injectable()
 export class ContextService {
   constructor(
@@ -32,6 +41,22 @@ export class ContextService {
       namespace: context.namespace,
       type: context.type,
       content: context.content,
+    });
+  }
+
+  async addContextEdge(contextEdge: TransferableContextEdge): Promise<void> {
+    console.log(contextEdge);
+    // todo: check cache
+    // todo: call n8n
+    // todo: save response from n8n to db (cache)
+
+    await this.contextEdgeRepository.save({
+      fromContextNamespace: contextEdge.fromContextNamespace,
+      fromContextType: contextEdge.fromContextType,
+      fromContextId: contextEdge.fromContextId,
+      toContextNamespace: contextEdge.toContextNamespace,
+      toContextType: contextEdge.toContextType,
+      toContextId: contextEdge.toContextId,
     });
   }
 }
