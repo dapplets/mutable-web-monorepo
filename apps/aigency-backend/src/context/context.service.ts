@@ -26,6 +26,14 @@ export class ContextService {
     private readonly contextEdgeRepository: ContextEdgeRepository,
   ) {}
 
+  async getContexts(source: string, link: string, timestamp: string) {
+    return this.contextNodeRepository.getContextsByProfile(
+      source,
+      link,
+      timestamp,
+    );
+  }
+
   async addContext(context: TransferableContext): Promise<void> {
     console.log(context);
     // todo: check cache

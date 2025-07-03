@@ -35,6 +35,23 @@ export class ContextController {
   constructor(private contextService: ContextService) {}
 
   @ZodToOpenRPC({
+    params: z.object({
+      source: z.string(),
+      link: z.string(),
+      timestamp: z.string(),
+    }),
+  })
+  public async getContexts(
+    @Body() params: { source: string; link: string; timestamp: string },
+  ) {
+    return this.contextService.getContexts(
+      params.source,
+      params.link,
+      params.timestamp,
+    );
+  }
+
+  @ZodToOpenRPC({
     params: z.object({ context: ContextSchema }),
   })
   public async addContext(@Body() params: { context: TransferableContext }) {
