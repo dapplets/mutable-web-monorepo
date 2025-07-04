@@ -16,4 +16,11 @@ export class Subscription {
 
   @Column({ name: 'is-active', type: 'boolean', default: true })
   isEnabled!: boolean;
+
+  @Column({
+    type: 'timestamptz',
+    nullable: true,
+    name: 'last_seen_post_timestamp',
+  })
+  lastSeenPostTimestamp!: Date | null;
 }

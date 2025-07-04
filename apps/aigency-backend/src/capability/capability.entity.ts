@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { UserCapability } from './user-capability.entity';
-import { Usage } from 'src/usage/usage.entity';
+// import { Usage } from 'src/usage/usage.entity'; // ToDo: remove?
 
 @Entity({ name: 'capability' })
 export class Capability {
