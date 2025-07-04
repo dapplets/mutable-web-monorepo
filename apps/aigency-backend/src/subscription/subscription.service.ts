@@ -22,6 +22,7 @@ export class SubscriptionService {
         source: item.source,
         link: item.link,
         isEnabled: item.isEnabled,
+        lastSeenPostTimestamp: item.lastSeenPostTimestamp,
       })),
     };
   }
@@ -40,12 +41,18 @@ export class SubscriptionService {
     );
   }
 
-  async addSubscription(userId: number, source: string, link: string) {
+  async addSubscription(
+    userId: number,
+    source: string,
+    link: string,
+    timestamp?: string,
+  ) {
     const subscription = this.subscriptionRepository.create({
       userId,
       source,
       link,
       isEnabled: true,
+      lastSeenPostTimestamp: timestamp ?? null,
     });
 
     // ToDo: check subscription link before save
@@ -57,6 +64,7 @@ export class SubscriptionService {
       source: subscription.source,
       link: subscription.link,
       isEnabled: subscription.isEnabled,
+      lastSeenPostTimestamp: subscription.lastSeenPostTimestamp,
     };
   }
 

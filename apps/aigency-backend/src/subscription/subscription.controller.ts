@@ -48,10 +48,16 @@ export class SubscriptionController {
   }
 
   @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
-  @ZodToOpenRPC({ params: z.object({ source: z.string(), link: z.string() }) })
+  @ZodToOpenRPC({
+    params: z.object({
+      source: z.string(),
+      link: z.string(),
+      timestamp: z.string().optional(),
+    }),
+  })
   public addSubscription(
     @Body()
-    params: { source: string; link: string },
+    params: { source: string; link: string; timestamp?: string },
     @UserInfo()
     user: UserInfo,
   ) {
@@ -59,6 +65,7 @@ export class SubscriptionController {
       user.id,
       params.source,
       params.link,
+      params.timestamp,
     );
   }
 
