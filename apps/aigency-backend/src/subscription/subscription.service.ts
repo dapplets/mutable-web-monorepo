@@ -83,4 +83,16 @@ export class SubscriptionService {
       nextScanAt: date.toISOString(),
     };
   }
+
+  async setLastSeenPostTimestamp(
+    userId: number,
+    source: string,
+    link: string,
+    timestamp: string,
+  ) {
+    await this.subscriptionRepository.update(
+      { userId, source, link },
+      { lastSeenPostTimestamp: timestamp },
+    );
+  }
 }

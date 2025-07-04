@@ -11,11 +11,12 @@ import { z } from 'zod';
 import { AllRpcExceptionsFilter } from 'src/common/all-rpc-exceptions.filter';
 
 @UseFilters(AllRpcExceptionsFilter)
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
 @RpcService()
 export class SubscriptionController {
   constructor(private subscriptionService: SubscriptionService) {}
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: PaginationSchema })
   public getSubscriptions(
     @Body() params: PaginationDto,
@@ -28,6 +29,7 @@ export class SubscriptionController {
     );
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
   public enableSubscription(
     @Body() params: { id: number },
@@ -36,6 +38,7 @@ export class SubscriptionController {
     return this.subscriptionService.enableSubscription(user.id, params.id);
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
   public disableSubscription(
     @Body() params: { id: number },
@@ -44,6 +47,7 @@ export class SubscriptionController {
     return this.subscriptionService.disableSubscription(user.id, params.id);
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({ source: z.string(), link: z.string() }) })
   public addSubscription(
     @Body()
@@ -58,6 +62,7 @@ export class SubscriptionController {
     );
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({ id: z.number() }) })
   public removeSubscription(
     @Body() params: { id: number },
@@ -67,13 +72,41 @@ export class SubscriptionController {
     return this.subscriptionService.removeSubscription(user.id, params.id);
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({}) })
   public getNextScanOfSubscriptions() {
     return this.subscriptionService.getNextScanOfSubscriptions();
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({}) })
   public scanSubscriptions() {
     throw new CodedRpcException('Not implemented');
+  }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      userId: z.number(),
+      source: z.string(),
+      link: z.string(),
+      timestamp: z.string(),
+    }),
+  })
+  public setLastSeenPostTimestamp(
+    @Body()
+    params: {
+      userId: number;
+      source: string;
+      link: string;
+      timestamp: string;
+    },
+  ) {
+    return this.subscriptionService.setLastSeenPostTimestamp(
+      params.userId,
+      params.source,
+      params.link,
+      params.timestamp,
+    );
   }
 }
