@@ -116,4 +116,26 @@ export class SubscriptionController {
       params.timestamp,
     );
   }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      userId: z.number(),
+      onlyActive: z.boolean().optional(),
+    }),
+  })
+  public getSubscriptionsByUser(
+    @Body()
+    params: {
+      userId: number;
+      onlyActive?: boolean;
+    },
+  ) {
+    return this.subscriptionService.getSubscriptions(
+      params.userId,
+      Number.MAX_SAFE_INTEGER,
+      0,
+      params.onlyActive,
+    );
+  }
 }
