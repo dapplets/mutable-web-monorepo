@@ -1,15 +1,16 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { CapabilityRepository } from './capability.repository';
-import { UserCapabilityRepository } from './user-capability.repository';
-import { UserService } from '../user/user.service';
 import { CodedRpcException } from '@dapplets/openrpc-nestjs-json-rpc';
-import { NearAiService } from '../nearai/nearai.service';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { UserCreatedEvent } from 'src/user/user-created.event';
-import { NearService } from 'src/near/near.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NftMintedEvent } from './nft-minted.event';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
+import { NearService } from 'src/near/near.service';
+import { UserCreatedEvent } from 'src/user/user-created.event';
 import { UserDeletedEvent } from 'src/user/user-deleted.event';
+import { NearAiService } from '../nearai/nearai.service';
+import { UserRepository } from '../user/user.repository';
+import { UserService } from '../user/user.service';
+import { CapabilityRepository } from './capability.repository';
+import { NftMintedEvent } from './nft-minted.event';
+import { UserCapabilityRepository } from './user-capability.repository';
 
 @Injectable()
 export class CapabilityService {
@@ -23,6 +24,7 @@ export class CapabilityService {
     private readonly nearService: NearService,
     private readonly configService: ConfigService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async getCapabilitiesForUser(userId: number, limit: number, offset: number) {
@@ -40,6 +42,31 @@ export class CapabilityService {
         isEnabled: item.isEnabled,
       })),
     };
+  }
+
+  async getUsersByCapability(
+    domain: string,
+    name: string,
+    onlyActive?: boolean,
+  ) {
+    const users = await this.userRepository
+      .createQueryBuilder('u')
+      .innerJoin('user_capability', 'uc', 'uc.user_id = u.id')
+      .innerJoin('capability', 'ca', 'ca.id = uc.capability_id')
+      .where('u.status = true')
+      .andWhere('uc.is_deleted = false')
+      .andWhere('ca.domain = :domain', { domain })
+      .andWhere('ca.name = :name', { name })
+      .andWhere(onlyActive ? 'uc.is_enabled = true' : '1=1')
+      .getMany();
+
+    return users.map((user) => ({
+      id: user.id,
+      username: user.username,
+      status: user.status,
+      nearAccountId: user.nearAccountId,
+      isDeveloper: user.isDeveloper,
+    }));
   }
 
   async removeCapability(userId: number, capabilityId: string) {
