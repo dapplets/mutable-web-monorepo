@@ -7,14 +7,16 @@ export class SubscriptionService {
     private readonly subscriptionRepository: SubscriptionRepository,
   ) {}
 
-  async getSubscriptions(
-    userId: number,
-    limit: number,
-    offset: number,
-    onlyActive?: boolean,
-  ) {
+  async getSubscriptions(props: {
+    userId?: number;
+    source?: string;
+    limit: number;
+    offset: number;
+    onlyActive?: boolean;
+  }) {
+    const { userId, limit, offset, onlyActive, source } = props;
     const [items, total] = await this.subscriptionRepository.findAndCount({
-      where: { userId, isEnabled: onlyActive ? true : undefined },
+      where: { userId, isEnabled: onlyActive ? true : undefined, source },
       order: { id: 'DESC' },
       take: limit,
       skip: offset,

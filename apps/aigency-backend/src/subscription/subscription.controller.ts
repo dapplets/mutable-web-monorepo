@@ -22,11 +22,11 @@ export class SubscriptionController {
     @Body() params: PaginationDto,
     @UserInfo() user: UserInfo,
   ) {
-    return this.subscriptionService.getSubscriptions(
-      user.id,
-      params.limit,
-      params.offset,
-    );
+    return this.subscriptionService.getSubscriptions({
+      userId: user.id,
+      limit: params.limit,
+      offset: params.offset,
+    });
   }
 
   @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
@@ -131,11 +131,33 @@ export class SubscriptionController {
       onlyActive?: boolean;
     },
   ) {
-    return this.subscriptionService.getSubscriptions(
-      params.userId,
-      Number.MAX_SAFE_INTEGER,
-      0,
-      params.onlyActive,
-    );
+    return this.subscriptionService.getSubscriptions({
+      userId: params.userId,
+      limit: Number.MAX_SAFE_INTEGER,
+      offset: 0,
+      onlyActive: params.onlyActive,
+    });
+  }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      source: z.string(),
+      onlyActive: z.boolean().optional(),
+    }),
+  })
+  public getSubscriptionsBySource(
+    @Body()
+    params: {
+      source: string;
+      onlyActive?: boolean;
+    },
+  ) {
+    return this.subscriptionService.getSubscriptions({
+      source: params.source,
+      limit: Number.MAX_SAFE_INTEGER,
+      offset: 0,
+      onlyActive: params.onlyActive,
+    });
   }
 }
