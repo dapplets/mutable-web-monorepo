@@ -21,7 +21,7 @@ export class ContextNodeRepository extends Repository<ContextNode> {
         on cn.namespace = ce.to_context_namespace
         and cn.type = ce.to_context_type 
         and cn.id = ce.to_context_id
-        and cn.timestamp >= $3
+        and cn.timestamp > $3
       where
         ce.from_context_namespace = $1
         and ce.from_context_type = 'profile'
