@@ -21,12 +21,13 @@ export class MessageService {
     });
   }
 
-  async getMessages(
-    userId: number,
-    sessionId: string,
-    limit: number,
-    offset: number,
-  ) {
+  async getMessages(params: {
+    userId: number;
+    sessionId?: string;
+    limit: number;
+    offset: number;
+  }) {
+    const { userId, sessionId, limit, offset } = params;
     const [items, total] = await this.messageRepository.findAndCount({
       where: { userId, sessionId },
       order: { createdAt: 'DESC' },
@@ -50,8 +51,8 @@ export class MessageService {
 
   async deleteMessage(
     userId: number,
-    sessionId: string,
     messageId: string,
+    sessionId: string,
   ): Promise<void> {
     await this.messageRepository.delete({ id: messageId, userId, sessionId });
   }

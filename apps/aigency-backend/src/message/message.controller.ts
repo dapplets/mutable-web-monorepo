@@ -8,11 +8,12 @@ import { AllRpcExceptionsFilter } from 'src/common/all-rpc-exceptions.filter';
 import { StoredAigencyMessageData } from './message.entity';
 
 @UseFilters(AllRpcExceptionsFilter)
-@UseGuards(AuthGuard)
+// @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
 @RpcService()
 export class MessageController {
   constructor(private messageService: MessageService) {}
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({
     params: z.object({
       sessionId: z.string(),
@@ -24,14 +25,38 @@ export class MessageController {
     @Body() params: { sessionId: string; limit: number; offset: number },
     @UserInfo() user: UserInfo,
   ) {
-    return this.messageService.getMessages(
-      user.id,
-      params.sessionId,
-      params.limit,
-      params.offset,
-    );
+    return this.messageService.getMessages({
+      userId: user.id,
+      sessionId: params.sessionId,
+      limit: params.limit,
+      offset: params.offset,
+    });
   }
 
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      userId: z.number(),
+      limit: z.number(),
+      offset: z.number(),
+    }),
+  })
+  public getMessagesByUser(
+    @Body()
+    params: {
+      userId: number;
+      limit: number;
+      offset: number;
+    },
+  ) {
+    return this.messageService.getMessages({
+      userId: params.userId,
+      limit: params.limit,
+      offset: params.offset,
+    });
+  }
+
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({
     params: z.object({
       sessionId: z.string(),
@@ -52,6 +77,7 @@ export class MessageController {
     return this.messageService.addMessage(user.id, message);
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({ params: z.object({ sessionId: z.string() }) })
   public deleteMessages(
     @Body() params: { sessionId: string },
@@ -60,6 +86,7 @@ export class MessageController {
     return this.messageService.deleteMessages(user.id, params.sessionId);
   }
 
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({
     params: z.object({ sessionId: z.string(), messageId: z.string() }),
   })
@@ -69,11 +96,30 @@ export class MessageController {
   ) {
     return this.messageService.deleteMessage(
       user.id,
-      params.sessionId,
       params.messageId,
+      params.sessionId,
     );
   }
 
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      userId: z.number(),
+      messageId: z.string(),
+      sessionId: z.string().optional(),
+    }),
+  })
+  public deleteMessageByUser(
+    @Body() params: { userId: number; messageId: string; sessionId?: string },
+  ) {
+    return this.messageService.deleteMessage(
+      params.userId,
+      params.messageId,
+      params.sessionId ?? params.userId.toString(),
+    );
+  }
+
+  @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
   @ZodToOpenRPC({
     params: z.object({ sessionId: z.string(), limit: z.number() }),
   })
