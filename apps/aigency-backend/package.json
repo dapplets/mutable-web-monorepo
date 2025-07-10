@@ -39,6 +39,7 @@
     "@nestjs/typeorm": "^10.0.2",
     "@telegram-apps/init-data-node": "^2.0.8",
     "dotenv": "^16.4.5",
+    "html-to-text": "^9.0.5",
     "near-api-js": "^6.1.0",
     "nestjs-telegraf": "^2.9.1",
     "pg": "^8.13.3",
@@ -47,6 +48,7 @@
     "sqlite3": "^5.1.7",
     "telegraf": "^4.16.3",
     "typeorm": "^0.3.20",
+    "xml-js": "^1.6.11",
     "zod": "^3.25.57"
   },
   "devDependencies": {
@@ -58,6 +60,7 @@
     "@swc/cli": "^0.6.0",
     "@swc/core": "^1.10.7",
     "@types/express": "^5.0.0",
+    "@types/html-to-text": "^9.0.4",
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.3",

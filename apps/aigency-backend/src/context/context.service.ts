@@ -35,7 +35,7 @@ export class ContextService {
   }
 
   async addContext(context: TransferableContext): Promise<void> {
-    console.log(context);
+    // console.log(context);
     // todo: check cache
     // todo: call n8n
     // todo: save response from n8n to db (cache)
@@ -53,7 +53,7 @@ export class ContextService {
   }
 
   async addContextEdge(contextEdge: TransferableContextEdge): Promise<void> {
-    console.log(contextEdge);
+    // console.log(contextEdge);
     // todo: check cache
     // todo: call n8n
     // todo: save response from n8n to db (cache)

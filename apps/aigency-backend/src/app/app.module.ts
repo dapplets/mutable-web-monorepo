@@ -19,6 +19,7 @@ import { BotModule } from 'src/bot';
 import { AuthModule } from 'src/auth/auth.module';
 import { MessageModule } from 'src/message';
 import { ContextModule } from 'src/context';
+import { RedditModule } from 'src/grabbers/reddit';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ContextModule } from 'src/context';
     BotModule,
     MessageModule,
     ContextModule,
+    RedditModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],
