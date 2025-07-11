@@ -20,6 +20,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { MessageModule } from 'src/message';
 import { ContextModule } from 'src/context';
 import { RedditModule } from 'src/grabbers/reddit';
+import { TelegramModule } from 'src/grabbers/telegram/telegram.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { RedditModule } from 'src/grabbers/reddit';
     MessageModule,
     ContextModule,
     RedditModule,
+    TelegramModule,
     TypeOrmModule.forRootAsync({
       imports: [EnvironmentModule],
       inject: [ConfigService],
