@@ -52,6 +52,15 @@ export class ContextController {
   }
 
   @ZodToOpenRPC({
+    params: z.object({
+      link: z.string(),
+    }),
+  })
+  public async getLastSavedTelegramMessageId(@Body() params: { link: string }) {
+    return this.contextService.getLastSavedTelegramMessageId(params.link);
+  }
+
+  @ZodToOpenRPC({
     params: z.object({ context: ContextSchema }),
   })
   public async addContext(@Body() params: { context: TransferableContext }) {

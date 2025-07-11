@@ -34,6 +34,10 @@ export class ContextService {
     );
   }
 
+  async getLastSavedTelegramMessageId(link: string) {
+    return this.contextNodeRepository.getLastSavedTelegramMessageId(link);
+  }
+
   async addContext(context: TransferableContext): Promise<void> {
     // console.log(context);
     // todo: check cache

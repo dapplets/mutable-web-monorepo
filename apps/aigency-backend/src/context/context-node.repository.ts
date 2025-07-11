@@ -48,4 +48,27 @@ export class ContextNodeRepository extends Repository<ContextNode> {
       }),
     );
   }
+
+  public async getLastSavedTelegramMessageId(link: string) {
+    const query = `
+      select max(cast(cn.id as int))
+      from context_edge ce
+      join context_node cn
+        on cn.namespace = ce.to_context_namespace
+        and cn.type = ce.to_context_type 
+        and cn.id = ce.to_context_id
+      where
+        ce.from_context_namespace = 'telegram'
+        and ce.from_context_type = 'profile'
+        and ce.from_context_id = $1
+    `;
+
+    const rows = await this.dataSource.query<
+      {
+        max: number;
+      }[]
+    >(query, [link]);
+
+    return rows[0].max;
+  }
 }
