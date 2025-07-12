@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { FinderRepository } from './finder.repository';
+import { UserCreatedEvent } from 'src/user/user-created.event';
+import { UserDeletedEvent } from 'src/user/user-deleted.event';
 
 @Injectable()
 export class FinderService {
@@ -16,11 +19,13 @@ export class FinderService {
 
   async getFinderActivityState(props: { userId?: number }) {
     const { userId } = props;
-    return this.finderRepository.find({
-      where: { userId },
-      order: { id: 'DESC' },
-      take: 1,
-    });
+    return this.finderRepository
+      .find({
+        where: { userId },
+        order: { id: 'DESC' },
+        take: 1,
+      })
+      .then((finders) => finders[0]?.isEnabled);
   }
 
   async enableFinder(userId: number) {
@@ -47,5 +52,15 @@ export class FinderService {
 
   async removeFinder(userId: number) {
     await this.finderRepository.delete({ userId });
+  }
+
+  @OnEvent('user.created')
+  async handleUserCreated(event: UserCreatedEvent) {
+    await this.addFinder(event.userId);
+  }
+
+  @OnEvent('user.deleted')
+  async handleUserDeleted(event: UserDeletedEvent) {
+    await this.removeFinder(event.userId);
   }
 }
