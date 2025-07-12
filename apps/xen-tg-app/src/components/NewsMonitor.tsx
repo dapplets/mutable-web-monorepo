@@ -2,13 +2,80 @@ import PlusIcon from '@/assets/plus'
 import SyncIcon from '@/assets/sync'
 import { API_URL } from '@/env'
 import { useGoBack } from '@/hooks/useGoBack'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { formatDistance } from 'date-fns'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TSubscription } from '../types'
 import Layout from './Layout'
 import { NewSubscription, Subscription } from './NewsSource'
 import Spinner from './Spinner'
+import { Switch } from '@/components/ui/switch'
+import StarsIcon from '@/assets/stars'
+
+const PAGE_LIMIT = 10
+
+// ToDo: delete mocked data
+const MOCKED_FINDER_SUBSCRIPTIONS: { pages: { items: TSubscription[] }[] } = {
+  pages: [
+    {
+      items: [
+        {
+          id: 1,
+          link: 'Xen News',
+          source: 'telegram',
+          isEnabled: true,
+          isByFinder: true,
+        },
+        {
+          id: 2,
+          link: 'r/xenproject',
+          source: 'reddit',
+          isEnabled: true,
+          isByFinder: true,
+        },
+      ],
+    },
+  ],
+}
+
+async function query<T, U>(name: string, params: T): Promise<U> {
+  if (!window.Telegram.WebApp.initData) {
+    throw new Error('Telegram is not available')
+  }
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: name,
+      params: params ?? {},
+      id: 1,
+    }),
+  })
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const data = await response.json()
+  return data.result
+}
+
+const queryFn =
+  (name: string) =>
+  async ({
+    pageParam,
+  }: {
+    pageParam: {
+      offset: number
+      limit: number
+    }
+  }): Promise<{ total: number; items: TSubscription[] | null | undefined }> =>
+    query<
+      { offset: number; limit: number },
+      { total: number; items: TSubscription[] | null | undefined }
+    >(name, pageParam)
 
 const mutationFn = async ({
   methodName,
@@ -40,48 +107,63 @@ const mutationFn = async ({
   return data.result
 }
 
-const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
-  if (!window.Telegram.WebApp.initData) {
-    throw new Error('Telegram is not available')
-  }
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      jsonrpc: '2.0',
-      method: name,
-      params: params ?? {},
-      id: 1,
-    }),
-  })
-  if (!response.ok) {
-    throw new Error('Network response was not ok')
-  }
-  const data = await response.json()
-  return data.result
-}
-
 const NewsMonitor = () => {
   const queryClient = useQueryClient()
   const [showNewSubscriptionForm, setShowNewSubscriptionForm] = useState(false)
-
-  const { data: subscriptions, isPending } = useQuery<{ items: TSubscription[]; total: number }>({
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const observerRef = useRef<IntersectionObserver | null>(null)
+  const {
+    data: subscriptions,
+    // error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    // status,
+  } = useInfiniteQuery({
     queryKey: ['subscriptions'],
-    queryFn: queryFn('getSubscriptions', {
+    queryFn: queryFn('getSubscriptions'),
+    initialPageParam: {
       offset: 0,
-      limit: 10,
-    }),
+      limit: PAGE_LIMIT,
+    },
+    getNextPageParam: (lastPage, __, lastPageParam) => {
+      if (lastPage.total <= lastPageParam.offset + lastPageParam.limit) return
+      return {
+        offset: lastPageParam.offset + PAGE_LIMIT,
+        limit: PAGE_LIMIT,
+      }
+    },
   })
 
   const { data: nextScanOfSubscriptions, isPending: isPendingNextScanOfSubscriptions } = useQuery<{
     nextScanAt: string
   }>({
     queryKey: ['nextScanOfSubscriptions'],
-    queryFn: queryFn('getNextScanOfSubscriptions'),
+    queryFn: () => query<null, { nextScanAt: string }>('getNextScanOfSubscriptions', null),
   })
+
+  useEffect(() => {
+    const sentinelEl = sentinelRef.current
+    if (!sentinelEl) return
+    observerRef.current?.disconnect()
+
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !isFetchingNextPage && hasNextPage) fetchNextPage()
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1,
+      }
+    )
+
+    observerRef.current.observe(sentinelEl)
+    return () => {
+      observerRef.current?.disconnect()
+    }
+  }, [isFetchingNextPage, fetchNextPage, hasNextPage])
 
   const handleUpdateSubscription = useMutation({
     mutationFn,
@@ -93,8 +175,35 @@ const NewsMonitor = () => {
 
   useGoBack()
 
+  // ToDo: delete mocked logic
+  const [isFinderActive, setIsFinderActive] = useState(false)
+  const [isWaitingFinder, setIsWaitingFinder] = useState(false)
+  const handleChangeFinderStatus = async () => {
+    setIsWaitingFinder(true)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setIsFinderActive((prev) => !prev)
+    setIsWaitingFinder(false)
+  }
+  const [mockedFinderSubscriptions] = useState(MOCKED_FINDER_SUBSCRIPTIONS)
+  // end of ToDo
+
   return (
     <Layout>
+      <div className="z-1 flex w-full items-center justify-between gap-2.5 px-2.5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-6 w-6 items-center justify-between">
+            {isWaitingFinder ? <Spinner /> : <StarsIcon />}
+          </div>
+          <div className="text-[18px]/[150%] font-normal">AI channel discovery</div>
+        </div>
+        <div className="flex items-center px-2">
+          <Switch
+            onCheckedChange={handleChangeFinderStatus}
+            checked={isFinderActive}
+            disabled={isWaitingFinder}
+          />
+        </div>
+      </div>
       <div className="z-1 flex w-full flex-col items-center justify-between gap-2.5 rounded-xl border border-(--color-opposite-text) p-2.5 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30">
         <div className="my-1.5 flex w-full items-center justify-between">
           <div className="flex flex-col items-start justify-start">
@@ -120,19 +229,33 @@ const NewsMonitor = () => {
             </div>
           </div>
           <button
-            className="mr-3.5 flex cursor-pointer items-center justify-center p-1.5 text-(--color-gray-text) transition hover:not-disabled:text-(--color-main-text)"
+            className="mr-1.5 flex h-12 w-12 cursor-pointer items-center justify-center p-1.5 text-(--color-gray-text) transition hover:not-disabled:text-(--color-main-text)"
             onClick={() => setShowNewSubscriptionForm(true)}
             disabled={showNewSubscriptionForm}
           >
-            {isPending ? <Spinner /> : <PlusIcon />}
+            {isFetching ? <Spinner /> : <PlusIcon />}
           </button>
         </div>
         {showNewSubscriptionForm ? (
           <NewSubscription onClose={() => setShowNewSubscriptionForm(false)} />
         ) : null}
-        {subscriptions?.items.map((newsSource) => (
-          <Subscription key={newsSource.id} subscription={newsSource} />
-        ))}
+        {isFinderActive &&
+          mockedFinderSubscriptions?.pages.map((group) =>
+            group?.items?.map((newsSource) => (
+              <Subscription key={newsSource.id} subscription={newsSource} />
+            ))
+          )}
+        {subscriptions?.pages.map((group) =>
+          group?.items?.map((newsSource) => (
+            <Subscription key={newsSource.id} subscription={newsSource} />
+          ))
+        )}
+        <div ref={sentinelRef} />
+        {hasNextPage ? (
+          <div className="flex h-10 w-full justify-center">
+            {isFetching || isFetchingNextPage ? <Spinner /> : null}
+          </div>
+        ) : null}
       </div>
     </Layout>
   )
