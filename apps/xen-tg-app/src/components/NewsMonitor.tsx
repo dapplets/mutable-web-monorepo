@@ -1,5 +1,7 @@
 import PlusIcon from '@/assets/plus'
+import StarsIcon from '@/assets/stars'
 import SyncIcon from '@/assets/sync'
+import { Switch } from '@/components/ui/switch'
 import { API_URL } from '@/env'
 import { useGoBack } from '@/hooks/useGoBack'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -9,8 +11,6 @@ import { TSubscription } from '../types'
 import Layout from './Layout'
 import { NewSubscription, Subscription } from './NewsSource'
 import Spinner from './Spinner'
-import { Switch } from '@/components/ui/switch'
-import StarsIcon from '@/assets/stars'
 
 const PAGE_LIMIT = 10
 
@@ -143,6 +143,11 @@ const NewsMonitor = () => {
     queryFn: () => query<null, { nextScanAt: string }>('getNextScanOfSubscriptions', null),
   })
 
+  const { data: isFinderActive, isPending: isPendingIsFinderActive } = useQuery<boolean>({
+    queryKey: ['isFinderActive'],
+    queryFn: () => query<null, boolean>('getFinderActivityState', null),
+  })
+
   useEffect(() => {
     const sentinelEl = sentinelRef.current
     if (!sentinelEl) return
@@ -173,17 +178,19 @@ const NewsMonitor = () => {
     },
   })
 
+  const handleChangeFinderStatus = useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
+      queryClient.invalidateQueries({ queryKey: ['isFinderActive'] })
+    },
+  })
+
+  useEffect(() => handleChangeFinderStatus.reset(), [isFinderActive])
+
   useGoBack()
 
   // ToDo: delete mocked logic
-  const [isFinderActive, setIsFinderActive] = useState(false)
-  const [isWaitingFinder, setIsWaitingFinder] = useState(false)
-  const handleChangeFinderStatus = async () => {
-    setIsWaitingFinder(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsFinderActive((prev) => !prev)
-    setIsWaitingFinder(false)
-  }
   const [mockedFinderSubscriptions] = useState(MOCKED_FINDER_SUBSCRIPTIONS)
   // end of ToDo
 
@@ -192,15 +199,27 @@ const NewsMonitor = () => {
       <div className="z-1 flex w-full items-center justify-between gap-2.5 px-2.5">
         <div className="flex items-center gap-2.5">
           <div className="flex h-6 w-6 items-center justify-between">
-            {isWaitingFinder ? <Spinner /> : <StarsIcon />}
+            {isPendingIsFinderActive || handleChangeFinderStatus.isPending ? (
+              <Spinner />
+            ) : (
+              <StarsIcon />
+            )}
           </div>
           <div className="text-[18px]/[150%] font-normal">AI channel discovery</div>
         </div>
         <div className="flex items-center px-2">
           <Switch
-            onCheckedChange={handleChangeFinderStatus}
+            onCheckedChange={() =>
+              handleChangeFinderStatus.mutate({
+                methodName: isFinderActive ? 'disableFinder' : 'enableFinder',
+              })
+            }
             checked={isFinderActive}
-            disabled={isWaitingFinder}
+            disabled={
+              isPendingIsFinderActive ||
+              handleChangeFinderStatus.isPending ||
+              handleChangeFinderStatus.isSuccess
+            }
           />
         </div>
       </div>
