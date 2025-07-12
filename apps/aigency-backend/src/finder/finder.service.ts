@@ -6,10 +6,12 @@ export class FinderService {
   constructor(private readonly finderRepository: FinderRepository) {}
 
   async getActiveFinders() {
-    return this.finderRepository.find({
-      where: { isEnabled: true },
-      order: { id: 'DESC' },
-    });
+    return this.finderRepository
+      .find({
+        where: { isEnabled: true },
+        order: { id: 'DESC' },
+      })
+      .then((finders) => finders.map((finder) => finder.userId));
   }
 
   async getFinderActivityState(props: { userId?: number }) {
