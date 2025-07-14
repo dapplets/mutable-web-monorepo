@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { RedditService } from './reddit.service';
-import { RedditController } from './reddit.controller';
-import { SubscriptionModule } from 'src/subscription';
 import { ContextModule } from 'src/context';
+import { FinderModule } from 'src/finder';
+import { SubscriptionModule } from 'src/subscription';
+import { RedditController } from './reddit.controller';
+import { RedditService } from './reddit.service';
 
 @Module({
-  imports: [SubscriptionModule, ContextModule],
+  imports: [SubscriptionModule, ContextModule, FinderModule],
   providers: [RedditService],
   controllers: [RedditController],
   exports: [RedditService],

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import * as dotenv from 'dotenv';
 import { ContextService } from 'src/context/context.service';
+import { FinderService } from 'src/finder/finder.service';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 import { TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions/index.js';
 import { getMessages } from './get-messages';
-import * as dotenv from 'dotenv';
 
 // ToDo: use config???
 dotenv.config();
@@ -20,6 +21,7 @@ export class TelegramService {
   constructor(
     private subscriptionService: SubscriptionService,
     private contextService: ContextService,
+    private finderService: FinderService,
   ) {
     // ToDo: use config???
     this.T_API_ID = Number(process.env.TELEGRAM_API_ID);
@@ -57,9 +59,19 @@ export class TelegramService {
         });
       if (!activeSubscriptions || !activeSubscriptions.total) return;
 
+      const usersWithActiveFinders =
+        await this.finderService.getActiveFinders();
+
       const uniqueTelegrams: string[] = Array.from(
         new Set(
-          activeSubscriptions.items.map((sub) => sub.link!).filter(Boolean),
+          activeSubscriptions.items
+            .filter(
+              (item) =>
+                !item.isByFinder ||
+                usersWithActiveFinders.includes(item.userId),
+            )
+            .map((sub) => sub.link)
+            .filter(Boolean),
         ),
       );
 

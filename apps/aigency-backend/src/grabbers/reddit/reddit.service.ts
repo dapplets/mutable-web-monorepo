@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import * as convertHTML from 'html-to-text';
 import { ContextService } from 'src/context/context.service';
+import { FinderService } from 'src/finder/finder.service';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 import * as convertXML from 'xml-js';
-import * as convertHTML from 'html-to-text';
 
 type RedditEntry = {
   feed: {
@@ -62,6 +63,7 @@ export class RedditService {
   constructor(
     private subscriptionService: SubscriptionService,
     private contextService: ContextService,
+    private finderService: FinderService,
   ) {}
 
   async grabSubmissions() {
@@ -75,9 +77,21 @@ export class RedditService {
         });
       if (!activeSubscriptions || !activeSubscriptions.total) return;
 
+      const usersWithActiveFinders =
+        await this.finderService.getActiveFinders();
+
       const uniqueReddits = Array.from(
-        new Set(activeSubscriptions.items.map((sub) => sub.link)),
+        new Set(
+          activeSubscriptions.items
+            .filter(
+              (item) =>
+                !item.isByFinder ||
+                usersWithActiveFinders.includes(item.userId),
+            )
+            .map((sub) => sub.link),
+        ),
       );
+
       const submissionXmls = await Promise.allSettled(
         uniqueReddits.map((reddit) =>
           this.getRSS(`https://www.reddit.com/${reddit}.rss`),

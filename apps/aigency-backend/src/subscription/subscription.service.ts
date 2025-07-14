@@ -25,12 +25,7 @@ export class SubscriptionService {
     return {
       total,
       items: items.map((item) => ({
-        id: item.id,
-        source: item.source,
-        link: item.link,
-        isEnabled: item.isEnabled,
-        lastSeenPostTimestamp: item.lastSeenPostTimestamp,
-        isByFinder: item.isByFinder,
+        ...item,
         evaluations: item.evaluations?.map(Number),
       })),
     };

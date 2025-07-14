@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TelegramService } from './telegram.service';
-import { TelegramController } from './telegram.controller';
-import { SubscriptionModule } from 'src/subscription';
 import { ContextModule } from 'src/context';
+import { FinderModule } from 'src/finder';
+import { SubscriptionModule } from 'src/subscription';
+import { TelegramController } from './telegram.controller';
+import { TelegramService } from './telegram.service';
 
 @Module({
-  imports: [SubscriptionModule, ContextModule],
+  imports: [SubscriptionModule, ContextModule, FinderModule],
   providers: [TelegramService],
   controllers: [TelegramController],
   exports: [TelegramService],
