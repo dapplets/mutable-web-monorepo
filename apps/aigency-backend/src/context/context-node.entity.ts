@@ -17,4 +17,7 @@ export class ContextNode {
 
   @Column({ type: 'timestamptz', default: () => 'now()' })
   timestamp!: Date;
+
+  @Column({ name: 'provider_id', type: 'varchar', nullable: true })
+  providerId!: string | null;
 }

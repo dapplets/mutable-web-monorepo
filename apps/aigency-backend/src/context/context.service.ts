@@ -7,6 +7,7 @@ export type TransferableContext = {
   type: string;
   id: string;
   content: unknown;
+  providerId?: string | null;
   parent: TransferableContext | null;
 };
 
@@ -26,11 +27,17 @@ export class ContextService {
     private readonly contextEdgeRepository: ContextEdgeRepository,
   ) {}
 
-  async getContexts(source: string, link: string, timestamp: string) {
+  async getContexts(
+    source: string,
+    link: string,
+    timestamp: string,
+    providerId?: string,
+  ) {
     return this.contextNodeRepository.getContextsByProfile(
       source,
       link,
       timestamp,
+      providerId,
     );
   }
 
@@ -53,6 +60,7 @@ export class ContextService {
       namespace: context.namespace,
       type: context.type,
       content: context.content,
+      providerId: context.providerId,
     });
   }
 

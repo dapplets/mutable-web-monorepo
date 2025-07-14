@@ -14,6 +14,7 @@ const BaseContextSchema = z.object({
   type: z.string(),
   id: z.string(),
   content: z.any(),
+  providerId: z.string().optional(),
 });
 
 const ContextSchema = BaseContextSchema.extend({
@@ -39,15 +40,23 @@ export class ContextController {
       source: z.string(),
       link: z.string(),
       timestamp: z.string(),
+      providerId: z.string().optional(),
     }),
   })
   public async getContexts(
-    @Body() params: { source: string; link: string; timestamp: string },
+    @Body()
+    params: {
+      source: string;
+      link: string;
+      timestamp: string;
+      providerId?: string;
+    },
   ) {
     return this.contextService.getContexts(
       params.source,
       params.link,
       params.timestamp,
+      params.providerId,
     );
   }
 

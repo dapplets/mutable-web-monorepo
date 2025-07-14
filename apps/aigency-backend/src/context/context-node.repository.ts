@@ -13,6 +13,7 @@ export class ContextNodeRepository extends Repository<ContextNode> {
     source: string,
     link: string,
     timestamp: string,
+    providerId?: string,
   ) {
     const query = `
       SELECT cn.*
@@ -28,15 +29,20 @@ export class ContextNodeRepository extends Repository<ContextNode> {
         and ce.from_context_id = $2
     `;
 
-    const rows = await this.dataSource.query<
+    let rows = await this.dataSource.query<
       {
         namespace: string;
         type: string;
         id: string;
         content: string;
         timestamp: string;
+        provider_id: string | null;
       }[]
     >(query, [source, link, timestamp]);
+
+    if (providerId) {
+      rows = rows.filter((row) => row.provider_id! === providerId);
+    }
 
     return rows.map((row) =>
       this.create({
@@ -45,6 +51,7 @@ export class ContextNodeRepository extends Repository<ContextNode> {
         id: row.id,
         content: row.content,
         timestamp: new Date(row.timestamp),
+        providerId: row.provider_id,
       }),
     );
   }
