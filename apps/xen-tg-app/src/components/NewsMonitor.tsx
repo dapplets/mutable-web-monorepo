@@ -14,30 +14,6 @@ import Spinner from './Spinner'
 
 const PAGE_LIMIT = 10
 
-// ToDo: delete mocked data
-const MOCKED_FINDER_SUBSCRIPTIONS: { pages: { items: TSubscription[] }[] } = {
-  pages: [
-    {
-      items: [
-        {
-          id: 1,
-          link: 'Xen News',
-          source: 'telegram',
-          isEnabled: true,
-          isByFinder: true,
-        },
-        {
-          id: 2,
-          link: 'r/xenproject',
-          source: 'reddit',
-          isEnabled: true,
-          isByFinder: true,
-        },
-      ],
-    },
-  ],
-}
-
 async function query<T, U>(name: string, params: T): Promise<U> {
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
@@ -190,10 +166,6 @@ const NewsMonitor = () => {
 
   useGoBack()
 
-  // ToDo: delete mocked logic
-  const [mockedFinderSubscriptions] = useState(MOCKED_FINDER_SUBSCRIPTIONS)
-  // end of ToDo
-
   return (
     <Layout>
       <div className="z-1 flex w-full items-center justify-between gap-2.5 px-2.5">
@@ -258,16 +230,10 @@ const NewsMonitor = () => {
         {showNewSubscriptionForm ? (
           <NewSubscription onClose={() => setShowNewSubscriptionForm(false)} />
         ) : null}
-        {isFinderActive &&
-          mockedFinderSubscriptions?.pages.map((group) =>
-            group?.items?.map((newsSource) => (
-              <Subscription key={newsSource.id} subscription={newsSource} />
-            ))
-          )}
         {subscriptions?.pages.map((group) =>
-          group?.items?.map((newsSource) => (
-            <Subscription key={newsSource.id} subscription={newsSource} />
-          ))
+          group?.items
+            ?.filter((newsSource) => !newsSource.isByFinder || isFinderActive)
+            .map((newsSource) => <Subscription key={newsSource.id} subscription={newsSource} />)
         )}
         <div ref={sentinelRef} />
         {hasNextPage ? (

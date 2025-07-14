@@ -16,7 +16,7 @@ const mutationFn = async ({
   params,
 }: {
   methodName: string
-  params?: { [key: string]: string | number }
+  params?: { [key: string]: string | number | boolean }
 }) => {
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
@@ -197,6 +197,11 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
     onSettled: () => queryClient.invalidateQueries({ queryKey: ['subscriptions'] }),
   })
 
+  const handleTurnSubscriptionToPermanent = useMutation({
+    mutationFn,
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['subscriptions'] }),
+  })
+
   const onRemove = () =>
     handleRemoveSubscription.mutate({
       methodName: 'removeSubscription',
@@ -221,6 +226,18 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
       },
     })
 
+  const onTurnSubscriptionToPermanent = () => {
+    handleTurnSubscriptionToPermanent.mutate({
+      methodName: 'setIsByFinder',
+      params: {
+        entityId: subscription.id,
+        isByFinder: false,
+      },
+    })
+  }
+
+  useEffect(() => handleTurnSubscriptionToPermanent.reset(), [subscription])
+
   return (
     <div className="flex w-full items-center justify-between gap-3.5 rounded-[10px] bg-(--color-light-white-bg) px-2.5 py-1.5">
       <img src={getIcon(subscription.source)} alt="Source icon" />
@@ -243,13 +260,7 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
 
       <button
         className={`flex h-9 w-15 shrink-0 cursor-pointer items-center justify-center rounded-[10px] text-xs/[100%] font-normal select-none dark:bg-(--color-light-white-bg) ${subscription.isEnabled ? 'bg-(--color-my-primary) text-(--color-opposite-text) dark:text-(--color-my-primary)' : 'bg-(--color-opposite-text) text-(--color-gray-text) dark:text-(--color-gray-text)'} capitalize`}
-        onClick={
-          subscription.isByFinder
-            ? () => console.log('TODO: MOCKED')
-            : subscription.isEnabled
-              ? onDisable
-              : onEnable
-        }
+        onClick={subscription.isEnabled ? onDisable : onEnable}
       >
         {handleToggleSubscription.isPending ? (
           <Spinner />
@@ -262,14 +273,15 @@ export const Subscription: FC<{ subscription: TSubscription }> = ({ subscription
 
       <button
         className="mr-1 flex w-8 cursor-pointer items-center justify-center py-1.5 text-(--color-gray-text) transition hover:text-(--color-main-text)"
-        onClick={
-          subscription.isByFinder ? () => console.log('TODO: Convert to subscription') : onRemove
-        }
+        onClick={subscription.isByFinder ? onTurnSubscriptionToPermanent : onRemove}
       >
-        {subscription.isByFinder ? (
-          <PlusIcon />
-        ) : handleRemoveSubscription.isPending || handleRemoveSubscription.isSuccess ? (
+        {handleRemoveSubscription.isPending ||
+        handleRemoveSubscription.isSuccess ||
+        handleTurnSubscriptionToPermanent.isPending ||
+        handleTurnSubscriptionToPermanent.isSuccess ? (
           <Spinner />
+        ) : subscription.isByFinder ? (
+          <PlusIcon />
         ) : (
           <TrashIcon />
         )}
