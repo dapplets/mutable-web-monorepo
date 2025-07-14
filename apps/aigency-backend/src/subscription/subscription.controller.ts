@@ -61,12 +61,40 @@ export class SubscriptionController {
     @UserInfo()
     user: UserInfo,
   ) {
-    return this.subscriptionService.addSubscription(
-      user.id,
-      params.source,
-      params.link,
-      params.timestamp,
-    );
+    return this.subscriptionService.addSubscription({
+      userId: user.id,
+      source: params.source,
+      link: params.link,
+      timestamp: params.timestamp,
+      isByFinder: false,
+    });
+  }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      userId: z.number(),
+      source: z.string(),
+      link: z.string(),
+      timestamp: z.string().optional(),
+    }),
+  })
+  public addSubscriptionByUser(
+    @Body()
+    params: {
+      userId: number;
+      source: string;
+      link: string;
+      timestamp?: string;
+    },
+  ) {
+    return this.subscriptionService.addSubscription({
+      userId: params.userId,
+      source: params.source,
+      link: params.link,
+      timestamp: params.timestamp,
+      isByFinder: true,
+    });
   }
 
   @UseGuards(AuthGuard) // ToDo: ??????? how to guard only rpc methods?
@@ -159,5 +187,52 @@ export class SubscriptionController {
       offset: 0,
       onlyActive: params.onlyActive,
     });
+  }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({ id: z.number(), newValue: z.coerce.number().finite() }),
+  })
+  public addEvaluation(
+    @Body()
+    params: {
+      id: number;
+      newValue: number;
+    },
+  ) {
+    return this.subscriptionService.addEvaluation(params.id, params.newValue);
+  }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({ id: z.number() }),
+  })
+  public getEvaluations(
+    @Body()
+    params: {
+      id: number;
+    },
+  ) {
+    return this.subscriptionService.getEvaluations(params.id);
+  }
+
+  // ToDo: add admin auth guard
+  @ZodToOpenRPC({
+    params: z.object({
+      entityId: z.number(),
+      isByFinder: z.boolean().optional(),
+    }),
+  })
+  public setIsByFinder(
+    @Body()
+    params: {
+      entityId: number;
+      isByFinder: boolean;
+    },
+  ) {
+    return this.subscriptionService.setIsByFinder(
+      params.entityId,
+      params.isByFinder,
+    );
   }
 }

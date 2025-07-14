@@ -30,6 +30,8 @@ export class SubscriptionService {
         link: item.link,
         isEnabled: item.isEnabled,
         lastSeenPostTimestamp: item.lastSeenPostTimestamp,
+        isByFinder: item.isByFinder,
+        evaluations: item.evaluations?.map(Number),
       })),
     };
   }
@@ -48,18 +50,21 @@ export class SubscriptionService {
     );
   }
 
-  async addSubscription(
-    userId: number,
-    source: string,
-    link: string,
-    timestamp?: string,
-  ) {
+  async addSubscription(props: {
+    userId: number;
+    source: string;
+    link: string;
+    timestamp?: string;
+    isByFinder: boolean;
+  }) {
+    const { userId, source, link, timestamp, isByFinder } = props;
     const subscription = this.subscriptionRepository.create({
       userId,
       source,
       link,
       isEnabled: true,
       lastSeenPostTimestamp: timestamp ?? null,
+      isByFinder,
     });
 
     // ToDo: check subscription link before save
@@ -72,6 +77,8 @@ export class SubscriptionService {
       link: subscription.link,
       isEnabled: subscription.isEnabled,
       lastSeenPostTimestamp: subscription.lastSeenPostTimestamp,
+      isByFinder: subscription.isByFinder,
+      evaluations: subscription.evaluations,
     };
   }
 
@@ -109,5 +116,21 @@ export class SubscriptionService {
       { userId, source, link },
       { lastSeenPostTimestamp: timestamp },
     );
+  }
+
+  async addEvaluation(entityId: number, newValue: number): Promise<void> {
+    await this.subscriptionRepository.addEvaluation(entityId, newValue);
+  }
+
+  /** Read all 10 values in the order they were added (newest first). */
+  async getEvaluations(entityId: number): Promise<number[] | undefined> {
+    const row = await this.subscriptionRepository.findOneByOrFail({
+      id: entityId,
+    });
+    return row.evaluations?.map(Number);
+  }
+
+  async setIsByFinder(entityId: number, isByFinder: boolean): Promise<void> {
+    await this.subscriptionRepository.update({ id: entityId }, { isByFinder });
   }
 }
