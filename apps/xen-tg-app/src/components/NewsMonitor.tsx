@@ -56,14 +56,16 @@ const queryFn =
 const mutationFn = async ({
   methodName,
   params,
+  url,
 }: {
   methodName: string
-  params?: { [key: string]: string | number }
+  params?: { [key: string]: string | number | undefined }
+  url?: string
 }) => {
   if (!window.Telegram.WebApp.initData) {
     throw new Error('Telegram is not available')
   }
-  const response = await fetch(API_URL, {
+  const response = await fetch(url ?? API_URL, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${window.Telegram.WebApp.initData}`,
@@ -163,6 +165,26 @@ const NewsMonitor = () => {
   })
 
   useEffect(() => handleChangeFinderStatus.reset(), [isFinderActive])
+
+  const handleRunFinder = useMutation({
+    mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
+    },
+  })
+
+  useEffect(() => {
+    if (
+      isFinderActive &&
+      !subscriptions?.pages.flatMap((page) => page.items?.filter((item) => item.isByFinder)).length
+    ) {
+      handleRunFinder.mutate({
+        methodName: 'runFinder',
+        url: 'https://n8n-ways-hide.loca.lt/webhook/run-finder',
+        params: { userId: window.Telegram.WebApp.initDataUnsafe.user?.id },
+      })
+    }
+  }, [isFinderActive, subscriptions])
 
   useGoBack()
 
