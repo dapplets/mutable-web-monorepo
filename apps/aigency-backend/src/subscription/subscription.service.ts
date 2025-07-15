@@ -107,10 +107,19 @@ export class SubscriptionService {
     link: string,
     timestamp: string,
   ) {
-    await this.subscriptionRepository.update(
-      { userId, source, link },
-      { lastSeenPostTimestamp: timestamp },
-    );
+    await this.subscriptionRepository
+      .createQueryBuilder()
+      .update()
+      .set({
+        lastSeenPostTimestamp: () =>
+          `GREATEST(lastSeenPostTimestamp, '${timestamp}')`,
+      })
+      .where('userId = :userId AND source = :source AND link = :link', {
+        userId,
+        source,
+        link,
+      })
+      .execute();
   }
 
   async addEvaluation(entityId: number, newValue: number): Promise<void> {
