@@ -174,6 +174,7 @@ const NewsMonitor = () => {
   })
 
   useEffect(() => {
+    if (!subscriptions) return
     if (
       isFinderActive &&
       !subscriptions?.pages.flatMap((page) => page.items?.filter((item) => item.isByFinder)).length
