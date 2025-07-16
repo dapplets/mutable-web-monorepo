@@ -13,6 +13,6 @@ export class RedditController {
 
   @ZodToOpenRPC({ params: z.object({}) })
   public grabReddits() {
-    return this.redditService.grabSubmissions();
+    return this.redditService.grabReddits();
   }
 }

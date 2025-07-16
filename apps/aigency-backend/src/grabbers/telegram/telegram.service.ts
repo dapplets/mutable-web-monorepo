@@ -48,7 +48,7 @@ export class TelegramService {
     }
   }
 
-  async grabSubmissions() {
+  async grabTelegrams() {
     try {
       const activeSubscriptions =
         await this.subscriptionService.getSubscriptions({

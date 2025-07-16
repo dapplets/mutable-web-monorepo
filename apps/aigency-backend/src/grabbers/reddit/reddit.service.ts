@@ -66,7 +66,7 @@ export class RedditService {
     private finderService: FinderService,
   ) {}
 
-  async grabSubmissions() {
+  async grabReddits() {
     try {
       const activeSubscriptions =
         await this.subscriptionService.getSubscriptions({

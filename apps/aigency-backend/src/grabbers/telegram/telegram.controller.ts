@@ -13,6 +13,6 @@ export class TelegramController {
 
   @ZodToOpenRPC({ params: z.object({}) })
   public grabTelegrams() {
-    return this.telegramService.grabSubmissions();
+    return this.telegramService.grabTelegrams();
   }
 }
