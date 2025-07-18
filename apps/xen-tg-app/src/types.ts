@@ -51,9 +51,9 @@ export type TWarning = {
 }
 
 export type TMemory = {
-  id: string
+  id: number
   data: string
-  datetime: string
+  createdAt: string
 }
 
 export type THistoryNote = {
