@@ -1,11 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import * as convertHTML from 'html-to-text';
 import { ContextService } from 'src/context/context.service';
 import { FinderService } from 'src/finder/finder.service';
 import { SubscriptionService } from 'src/subscription/subscription.service';
 import * as convertXML from 'xml-js';
 
-type RedditEntry = {
+export type RedditMessage = {
+  author: {
+    name: {
+      _text: string;
+    };
+    uri: {
+      _text: string;
+    };
+  };
+  category: {
+    _attributes: {
+      term: string;
+      label: string;
+    };
+  };
+  content: {
+    _attributes: {
+      type: string;
+    };
+    _text: string;
+  };
+  id: {
+    _text: string;
+  };
+  link: {
+    _attributes: {
+      href: string;
+    };
+  };
+  updated: {
+    _text: string;
+  };
+  published: {
+    _text: string;
+  };
+  title: {
+    _text: string;
+  };
+};
+
+export type RedditEntry = {
   feed: {
     id: {
       _text: string;
@@ -16,55 +56,39 @@ type RedditEntry = {
     title: {
       _text: string;
     };
-    entry: {
-      author: {
-        name: {
-          _text: string;
-        };
-        uri: {
-          _text: string;
-        };
-      };
-      category: {
-        _attributes: {
-          term: string;
-          label: string;
-        };
-      };
-      content: {
-        _attributes: {
-          type: string;
-        };
-        _text: string;
-      };
-      id: {
-        _text: string;
-      };
-      link: {
-        _attributes: {
-          href: string;
-        };
-      };
-      updated: {
-        _text: string;
-      };
-      published: {
-        _text: string;
-      };
-      title: {
-        _text: string;
-      };
-    }[];
+    entry: RedditMessage[];
   };
 };
 
 @Injectable()
 export class RedditService {
   constructor(
+    @Inject(forwardRef(() => SubscriptionService))
     private subscriptionService: SubscriptionService,
     private contextService: ContextService,
     private finderService: FinderService,
   ) {}
+
+  async getRedditChannelMessages(channelName: string) {
+    try {
+      const rss = await this.getRSS(
+        `https://www.reddit.com/${channelName}.rss`,
+      );
+      if (!rss) return;
+      const xml = this.parseXML(rss);
+      if (
+        !xml ||
+        !xml.feed ||
+        !xml.feed.entry ||
+        xml.feed.title._text === 'search results'
+      )
+        return;
+
+      return xml.feed.entry;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async grabReddits() {
     try {
@@ -91,6 +115,7 @@ export class RedditService {
             .map((sub) => sub.link),
         ),
       );
+      // console.log('uniqueReddits', uniqueReddits);
 
       const submissionXmls = await Promise.allSettled(
         uniqueReddits.map((reddit) =>

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import { ContextService } from 'src/context/context.service';
 import { FinderService } from 'src/finder/finder.service';
@@ -19,6 +19,7 @@ export class TelegramService {
   private T_SESSION: string;
 
   constructor(
+    @Inject(forwardRef(() => SubscriptionService))
     private subscriptionService: SubscriptionService,
     private contextService: ContextService,
     private finderService: FinderService,
@@ -43,6 +44,19 @@ export class TelegramService {
       await client.connect();
       const dialogs = await client.getDialogs({});
       return { client, dialogs };
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getTelegramChannelMessages(channelName: string) {
+    try {
+      const telegramEntry = await this.getTelegramClientAndDialogs();
+      if (!telegramEntry) return;
+      const { client, dialogs } = telegramEntry;
+      if (!client || !dialogs) return;
+      const messages = await getMessages({ client, dialogs, channelName });
+      return messages;
     } catch (error) {
       console.log(error);
     }
@@ -74,6 +88,7 @@ export class TelegramService {
             .filter(Boolean),
         ),
       );
+      // console.log('uniqueTelegrams', uniqueTelegrams);
 
       const telegramEntry = await this.getTelegramClientAndDialogs();
       if (!telegramEntry) return;
@@ -98,6 +113,7 @@ export class TelegramService {
           console.log(error);
         }
       }
+      // console.log('telegramMessages', telegramMessages);
 
       // save profiles
       await Promise.all(

@@ -4,7 +4,7 @@ import { Dialog } from 'telegram/tl/custom/dialog';
 const MSG_FETCH_LIMIT = 10;
 const MSG_FETCH_TIME_LIMIT_MINUTES = 60;
 
-export type Message = {
+export type TelegramMessage = {
   id: number;
   text: string;
   date: number;
@@ -28,8 +28,8 @@ export const getMessagesFromChannel = async ({
   >;
   isNew?: boolean;
   lastMessageId?: number;
-}): Promise<Message[]> => {
-  const messages: Message[] = [];
+}): Promise<TelegramMessage[]> => {
+  const messages: TelegramMessage[] = [];
   if (
     dialog.entity?.className === 'Channel' ||
     dialog.entity?.className === 'Chat'
@@ -143,7 +143,7 @@ export const getMessages = async ({
       return getMessagesFromChannel({ client, dialog, lastMessageId, isNew });
     }
   } else {
-    const result: Message[] = [];
+    const result: TelegramMessage[] = [];
     for (let i = 0; i < dialogs.length; i++) {
       const messages = await getMessagesFromChannel({
         client,

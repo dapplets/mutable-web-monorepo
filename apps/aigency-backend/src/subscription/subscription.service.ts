@@ -1,10 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { SubscriptionRepository } from './subscription.repository';
+import { TelegramService } from 'src/grabbers/telegram/telegram.service';
+import { RedditService } from 'src/grabbers/reddit/reddit.service';
 
 @Injectable()
 export class SubscriptionService {
   constructor(
     private readonly subscriptionRepository: SubscriptionRepository,
+    @Inject(forwardRef(() => TelegramService))
+    private readonly telegramService: TelegramService,
+    @Inject(forwardRef(() => RedditService))
+    private readonly redditService: RedditService,
   ) {}
 
   async getSubscriptions(props: {
@@ -53,16 +59,33 @@ export class SubscriptionService {
     isByFinder: boolean;
   }) {
     const { userId, source, link, timestamp, isByFinder } = props;
+
+    // ToDo: hardcoded subscription checks. Move to service?
+    let channelName: string | null | undefined = null;
+    if (source === 'telegram') {
+      const messages =
+        await this.telegramService.getTelegramChannelMessages(link);
+      console.log(messages);
+      if (messages?.length) channelName = messages[0].source;
+    } else if (source === 'reddit') {
+      const messages = await this.redditService.getRedditChannelMessages(link);
+      console.log(messages);
+      if (messages?.length) {
+        channelName = messages[0].category._attributes.label;
+      }
+    }
+
+    // console.log(channelName);
+
     const subscription = this.subscriptionRepository.create({
       userId,
       source,
-      link,
+      link: channelName ?? link,
       isEnabled: true,
       lastSeenPostTimestamp: timestamp ?? null,
       isByFinder,
     });
-
-    // ToDo: check subscription link before save
+    // console.log(subscription);
 
     await this.subscriptionRepository.insert(subscription);
 
