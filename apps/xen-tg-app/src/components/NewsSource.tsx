@@ -88,6 +88,12 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
     ) {
       setSource('telegram')
       setIsValid(true)
+    } else if (/^r\//.test(newLink)) {
+      setSource('reddit')
+      setIsValid(false)
+    } else if (/^https:\/\/t\.me\//.test(newLink) || /^@/.test(newLink)) {
+      setSource('telegram')
+      setIsValid(false)
     } else {
       setSource(null)
       setIsValid(false)
@@ -132,6 +138,7 @@ export const NewSubscription: FC<{ onClose: () => void }> = ({ onClose }) => {
           type="submit"
           className={`flex h-8 w-15 shrink-0 cursor-pointer items-center justify-center gap-1 rounded-[10px] bg-(--color-green) text-xs/[100%] font-normal text-(--color-opposite-text) capitalize opacity-100 disabled:cursor-default disabled:opacity-50 dark:bg-(--color-main-text) dark:text-(--color-opposite-text)`}
           disabled={
+            !isValid ||
             showWrongSubscriptionNameMessage ||
             addSubscription.isPending ||
             addSubscription.isSuccess ||
