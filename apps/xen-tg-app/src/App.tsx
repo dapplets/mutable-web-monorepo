@@ -2,7 +2,6 @@ import { Link } from 'react-router'
 import SettingsIcon from './assets/settings'
 import XEN_IMAGE from '/xen.png'
 import Capabilities from './components/Capabilities'
-import Layout from './components/Layout'
 import Wallet from './components/Wallet'
 
 const App = () => {
@@ -10,7 +9,7 @@ const App = () => {
   if (!tg.isExpanded) tg.expand()
 
   return (
-    <Layout>
+    <>
       <Link
         to="/settings"
         className="absolute top-5 right-4 rounded-full border border-(--color-opposite-text) bg-(--color-light-white-bg) p-2 backdrop-blur-3xl backdrop-opacity-80 dark:border-(--color-main-text)/30"
@@ -22,7 +21,7 @@ const App = () => {
       </div>
       <Wallet />
       <Capabilities />
-    </Layout>
+    </>
   )
 }
 

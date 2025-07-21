@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { startTransition, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 
 export const useGoBack = () => {
@@ -6,7 +6,7 @@ export const useGoBack = () => {
   const { BackButton } = window.Telegram.WebApp
   useEffect(() => {
     BackButton.show()
-    const backRoute = () => navigate(-1)
+    const backRoute = () => startTransition(() => navigate(-1))
     BackButton.onClick(backRoute)
     return () => {
       BackButton.hide()

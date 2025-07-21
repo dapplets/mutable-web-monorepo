@@ -8,7 +8,6 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import { formatDistance } from 'date-fns'
 import { useEffect, useRef, useState } from 'react'
 import { TSubscription } from '../types'
-import Layout from './Layout'
 import { NewSubscription, Subscription } from './NewsSource'
 import Spinner from './Spinner'
 
@@ -190,7 +189,7 @@ const NewsMonitor = () => {
   useGoBack()
 
   return (
-    <Layout>
+    <>
       <div className="z-1 flex w-full items-center justify-between gap-2.5 px-2.5">
         <div className="flex items-center gap-2.5">
           <div className="flex h-6 w-6 items-center justify-between">
@@ -265,7 +264,7 @@ const NewsMonitor = () => {
           </div>
         ) : null}
       </div>
-    </Layout>
+    </>
   )
 }
 

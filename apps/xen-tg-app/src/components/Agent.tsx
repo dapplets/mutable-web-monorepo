@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react'
+import { FC, startTransition, useEffect, useMemo } from 'react'
 // import UnlinkOutlineIcon from '../assets/unlink-outline'
 import ArrowForwardIcon from '@/assets/arrow-forward'
 import { Switch } from '@/components/ui/switch'
@@ -54,7 +54,8 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
 
   const action = useMemo(() => {
     // ToDo: better to use capabilitiy.id?
-    if (capabilitiy.name === 'news-monitor') return () => navigate('/news-monitor')
+    if (capabilitiy.name === 'news-monitor')
+      return () => startTransition(() => navigate('/news-monitor'))
   }, [capabilitiy, navigate])
 
   const handleChangeStatus = () =>

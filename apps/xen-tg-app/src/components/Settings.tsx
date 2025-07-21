@@ -4,10 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router'
 import { TMemory } from '../types'
 import DeveloperMode from './DeveloperMode'
-import Layout from './Layout'
+import FullscreenMode from './FullscreenMode'
 import ThemeButton from './ThemeButton'
 import Warnings from './Warnings'
-import FullscreenMode from './FullscreenMode'
 
 const queryFn = (name: string, params?: { [key: string]: string | number }) => async () => {
   if (!window.Telegram.WebApp.initData) {
@@ -45,7 +44,7 @@ const Settings = () => {
   useGoBack()
 
   return (
-    <Layout>
+    <>
       <ThemeButton />
       <FullscreenMode />
       <DeveloperMode />
@@ -63,7 +62,7 @@ const Settings = () => {
         </div>
       </div>
       <Warnings />
-    </Layout>
+    </>
   )
 }
 
