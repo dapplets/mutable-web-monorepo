@@ -75,8 +75,6 @@ export class SubscriptionService {
       }
     }
 
-    // console.log(channelName);
-
     const subscription = this.subscriptionRepository.create({
       userId,
       source,
@@ -85,7 +83,6 @@ export class SubscriptionService {
       lastSeenPostTimestamp: timestamp ?? null,
       isByFinder,
     });
-    // console.log(subscription);
 
     await this.subscriptionRepository.insert(subscription);
 

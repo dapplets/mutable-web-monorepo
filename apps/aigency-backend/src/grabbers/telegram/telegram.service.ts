@@ -55,7 +55,12 @@ export class TelegramService {
       if (!telegramEntry) return;
       const { client, dialogs } = telegramEntry;
       if (!client || !dialogs) return;
-      const messages = await getMessages({ client, dialogs, channelName });
+      const messages = await getMessages({
+        client,
+        dialogs,
+        channelName,
+        isNew: true,
+      });
       return messages;
     } catch (error) {
       console.log(error);
