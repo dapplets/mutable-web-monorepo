@@ -1,4 +1,4 @@
-import { FC, startTransition, useEffect, useMemo } from 'react'
+import { FC, startTransition, useEffect, useMemo, useState } from 'react'
 // import UnlinkOutlineIcon from '../assets/unlink-outline'
 import ArrowForwardIcon from '@/assets/arrow-forward'
 import { Switch } from '@/components/ui/switch'
@@ -42,6 +42,7 @@ type TAgentProps = {
 }
 
 const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
+  const [isWaiting, setIsWaiting] = useState(false)
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -55,7 +56,10 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
   const action = useMemo(() => {
     // ToDo: better to use capabilitiy.id?
     if (capabilitiy.name === 'news-monitor')
-      return () => startTransition(() => navigate('/news-monitor'))
+      return () => {
+        setIsWaiting(true)
+        startTransition(() => navigate('/news-monitor'))
+      }
   }, [capabilitiy, navigate])
 
   const handleChangeStatus = () =>
@@ -83,9 +87,13 @@ const Agent: FC<TAgentProps> = ({ capabilitiy }) => {
         <div className="group flex items-center gap-2 pt-1 pb-0.25 text-left text-[14px]/[125%] font-semibold wrap-anywhere">
           {capabilitiy.title ?? capabilitiy.name}
           {action ? (
-            <div className="text-(--color-gray-text) transition group-hover:text-(--color-main-text)">
-              <ArrowForwardIcon />
-            </div>
+            isWaiting ? (
+              <span className="h-3 w-3 animate-spin rounded-[6px] border-2 border-(--color-opposite-text) border-b-(--color-gray-text)"></span>
+            ) : (
+              <div className="text-(--color-gray-text) transition group-hover:text-(--color-main-text)">
+                <ArrowForwardIcon />
+              </div>
+            )
           ) : null}
         </div>
         {capabilitiy.title ? (
