@@ -11,8 +11,12 @@ import { AllRpcExceptionsFilter } from 'src/common/all-rpc-exceptions.filter';
 export class RedditController {
   constructor(private redditService: RedditService) {}
 
-  @ZodToOpenRPC({ params: z.object({}) })
-  public grabReddits() {
-    return this.redditService.grabReddits();
+  @ZodToOpenRPC({
+    params: z.object({
+      channelName: z.string().optional(),
+    }),
+  })
+  public grabReddits(params: { channelName?: string }) {
+    return this.redditService.grabReddits(params.channelName);
   }
 }

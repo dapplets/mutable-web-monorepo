@@ -90,7 +90,7 @@ export class RedditService {
     }
   }
 
-  async grabReddits() {
+  async grabReddits(channelName?: string) {
     try {
       const activeSubscriptions =
         await this.subscriptionService.getSubscriptions({
@@ -99,22 +99,25 @@ export class RedditService {
           offset: 0,
           onlyActive: true,
         });
-      if (!activeSubscriptions || !activeSubscriptions.total) return;
+      if (!channelName && (!activeSubscriptions || !activeSubscriptions.total))
+        return;
 
       const usersWithActiveFinders =
         await this.finderService.getActiveFinders();
 
-      const uniqueReddits = Array.from(
-        new Set(
-          activeSubscriptions.items
-            .filter(
-              (item) =>
-                !item.isByFinder ||
-                usersWithActiveFinders.includes(item.userId),
-            )
-            .map((sub) => sub.link),
-        ),
-      );
+      const uniqueReddits = channelName
+        ? [channelName]
+        : Array.from(
+            new Set(
+              activeSubscriptions.items
+                .filter(
+                  (item) =>
+                    !item.isByFinder ||
+                    usersWithActiveFinders.includes(item.userId),
+                )
+                .map((sub) => sub.link),
+            ),
+          );
       // console.log('uniqueReddits', uniqueReddits);
 
       const submissionXmls = await Promise.allSettled(

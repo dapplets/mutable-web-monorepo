@@ -62,16 +62,18 @@ export class SubscriptionService {
 
     // ToDo: hardcoded subscription checks. Move to service?
     let channelName: string | null | undefined = null;
+    let messages: any[] | null | undefined = null;
     if (source === 'telegram') {
-      const messages =
-        await this.telegramService.getTelegramChannelMessages(link);
-      console.log(messages);
-      if (messages?.length) channelName = messages[0].source;
+      messages = await this.telegramService.getTelegramChannelMessages(link);
+      // console.log(messages);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+      if (messages?.length) channelName = messages[0].source!;
     } else if (source === 'reddit') {
-      const messages = await this.redditService.getRedditChannelMessages(link);
-      console.log(messages);
+      messages = await this.redditService.getRedditChannelMessages(link);
+      // console.log(messages);
       if (messages?.length) {
-        channelName = messages[0].category._attributes.label;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        channelName = messages[0].category._attributes.label!;
       }
     }
 
@@ -94,6 +96,7 @@ export class SubscriptionService {
       lastSeenPostTimestamp: subscription.lastSeenPostTimestamp,
       isByFinder: subscription.isByFinder,
       evaluations: subscription.evaluations,
+      messages,
     };
   }
 
