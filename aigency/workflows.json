@@ -176,6 +176,7 @@
     },
     "createdAt": "2025-06-25T22:29:35.956Z",
     "id": "XlgyLGPthXQBsJXW",
+    "isArchived": false,
     "meta": {
       "templateCredsSetupCompleted": true
     },
@@ -514,6 +515,747 @@
   {
     "active": false,
     "connections": {
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Find new profiles",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Find new profiles": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getMemoriesByUser",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Find new profiles",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Posts by channels": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Find new profiles",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getActiveFinders",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "addSubscriptionByUser",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "addContext",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getActiveFinders": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getMemoriesByUser": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getSubscriptionsByUser",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getSubscriptionsByUser": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-08-04T13:43:07.184Z",
+    "id": "DYobwuF2WJHU7whV",
+    "isArchived": false,
+    "meta": null,
+    "name": "Finder",
+    "nodes": [
+      {
+        "id": "1a0afa2c-6a09-43c5-9515-6280f9b8cca0",
+        "name": "Posts by channels",
+        "parameters": {
+          "inputSchema": "{\n\t\"type\": \"array\",\n\t\"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n    \t\t\"source\": {\n    \t\t\t\"type\": \"string\"\n    \t\t},\n    \t\t\"channels\": {\n    \t\t\t\"type\": \"array\",\n    \t\t\t\"items\": {\n    \t\t\t\t\"type\": \"object\",\n                    \"properties\": {\n                        \"name\": {\n                            \"type\": \"string\"\n                        },\n                        \"url\": {\n                            \"type\": \"string\"\n                        },\n                        \"username\": {\n                            \"type\": \"string\"\n                        }\n                    }\n    \t\t\t}\n    \t\t}\n    \t}\n    }\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          1820,
+          480
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "70150291-91a5-4d50-9f3e-f9dde2d77a11",
+        "name": "Find new profiles",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You are getting information about the user: memories about him/her and their subscriptions on the relevant resources.\nUsing this information you need to find in the Web new useful and interesting information channels to the user. It is necessary to search for information only on certain resources. Here is a list of them: Reddit, Telegram.\nYou should return a list of new information sources (channels) that may be of interest to the user.\nYou can work in any language, regardless of whether the user understands it.\nYou make your decision only based on user knowledge and common sense - the user doesn't want to receive too many meaningless notifications."
+          },
+          "promptType": "define",
+          "text": "=Memories: {{ $json.memories.join(', ') }}\nSubscriptions: {{ $json.subscriptions.map(v => `${v.source}: ${v.link}`).join(', ') }}"
+        },
+        "position": [
+          1640,
+          260
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2
+      },
+      {
+        "id": "0258554b-68a0-4f22-9958-67bd8eaa85cd",
+        "name": "Schedule Trigger",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtHour": 10
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "eaf0cf41-716f-48c9-800c-fa7f78e6a3a6",
+        "name": "getActiveFinders",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getActiveFinders\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          240,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "894d601b-bfa1-4e5a-9953-15e65a749e24",
+        "name": "getMemoriesByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"getMemoriesByUser\",\"id\":1,\"params\":{\"userId\":{{ $json.result }},\"limit\":100000,\"offset\":0}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          940,
+          100
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "800a2cae-68eb-4c29-bbd4-bd2b0029ed38",
+        "name": "getSubscriptionsByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"getSubscriptionsByUser\",\"id\":1,\"params\":{\"userId\":{{ $('Merge2').item.json.result }},\"onlyActive\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          1180,
+          100
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "00d7e7fb-09b9-4141-be8e-b690028a868e",
+        "name": "Edit Fields",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a286c53d-58dc-4c05-a76c-70e39f381b67",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $('Merge2').item.json.result }}"
+              },
+              {
+                "id": "42ec6bb2-44db-43ce-9f27-ec1177c78fee",
+                "name": "memories",
+                "type": "array",
+                "value": "={{ $('getMemoriesByUser').item.json.result.items.map(v=>v.data) }}"
+              },
+              {
+                "id": "0dfd814c-b72c-4588-894c-0c6d0db264fc",
+                "name": "subscriptions",
+                "type": "array",
+                "value": "={{ $json.result.items }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1400,
+          100
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "cccb17c4-3702-46dd-9dfb-e79ce9570747",
+        "name": "Split Out1",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "include": "=",
+          "options": {
+          }
+        },
+        "position": [
+          460,
+          0
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "e565bf3d-94eb-42c7-b560-d9f4bbf60a9e",
+        "name": "OpenAI Chat Model",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "openai/o3-mini",
+            "mode": "list",
+            "value": "openai/o3-mini"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1640,
+          480
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "4acf5c90-9117-42a1-a359-f8ca3a27560c",
+        "name": "Merge1",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2040,
+          120
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "028626fa-11a6-4f27-9e99-c584d6653e00",
+        "name": "addSubscriptionByUser",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"addSubscriptionByUser\",\"id\":1,\"params\":{\"userId\":{{ $json.id }},\"source\":\"{{ $json.source.toLowerCase() }}\",\"link\":\"{{ $json.channels.name }}\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          3000,
+          240
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d1f91a7b-7653-41c9-9ce0-d310c4dd226d",
+        "name": "Split Out",
+        "parameters": {
+          "fieldToSplitOut": "output",
+          "fieldsToInclude": "id",
+          "include": "selectedOtherFields",
+          "options": {
+          }
+        },
+        "position": [
+          2260,
+          120
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "e8daf742-efde-4b76-9145-536d16c83aa5",
+        "name": "Split Out2",
+        "parameters": {
+          "fieldToSplitOut": "channels",
+          "include": "allOtherFields",
+          "options": {
+          }
+        },
+        "position": [
+          2700,
+          120
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "5384a7b3-a2a5-4941-8d94-6f39f3215f0b",
+        "name": "Edit Fields1",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "4ae65f03-a257-406d-bfcf-0bcd81bd7f0b",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json.id }}"
+              },
+              {
+                "id": "7b55e107-8ace-4934-a6ba-bbbea46e7063",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json.output.source }}"
+              },
+              {
+                "id": "4661dc43-b268-479a-acb6-4b926a3c25ab",
+                "name": "channels",
+                "type": "array",
+                "value": "={{ $json.output.channels }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          2480,
+          120
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "66650d9d-5bd1-41b7-8229-2987ca5f88eb",
+        "name": "addContext",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"addContext\",\"id\":1,\"params\":{\"context\":{\"id\":\"{{ $json.channels.name }}\",\"namespace\":\"{{ $json.source.toLowerCase() }}\",\"type\":\"profile\",\"content\":{{ JSON.stringify($json.channels) }},\"providerId\":\"finder-1-0\"}}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          3000,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "a5dbc647-50d9-4de0-8c86-c6be4cd5427b",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "run-finder",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          0,
+          300
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
+      },
+      {
+        "id": "ee91e479-cdc8-440e-b8f5-059ebb7af9f2",
+        "name": "Edit Fields2",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "822381cc-9ea6-45eb-8387-d43fac1eb43b",
+                "name": "result",
+                "type": "number",
+                "value": "={{ $json.body.params.userId }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          460,
+          240
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "413bb8e6-fea9-46ca-abf3-87cc2d943a2c",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "fdf3dba9-205c-4ed3-863c-0cca69175af0",
+                "leftValue": "={{ $json.body.params.userId }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "number"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          240,
+          300
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "eeaeb593-2dea-4f8d-bc7a-92cd63b094da",
+        "name": "Merge2",
+        "parameters": {
+        },
+        "position": [
+          720,
+          100
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-08-04T13:43:07.184Z",
+    "versionId": "cf44f045-bba4-49b3-9d01-dc234f9002cf"
+  },
+  {
+    "active": false,
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "grabReddits",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-08-04T13:43:49.941Z",
+    "id": "tJhCNIh8pnzVud15",
+    "isArchived": false,
+    "meta": null,
+    "name": "Reddit_grabber_runner",
+    "nodes": [
+      {
+        "id": "855bf5a4-a8e8-4a9b-b5ca-dc75f0ded850",
+        "name": "Schedule Trigger",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 42
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "7780321d-c4aa-4ccf-b32b-de83336a4044",
+        "name": "grabReddits",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"grabReddits\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-08-05T10:16:09.465Z",
+    "versionId": "478933ed-f818-4016-98fb-051cc0549f81"
+  },
+  {
+    "active": false,
+    "connections": {
       "Aggregate": {
         "main": [
           [
@@ -660,6 +1402,7 @@
     },
     "createdAt": "2025-06-25T21:12:07.398Z",
     "id": "auW3GgmiSzdIeFDs",
+    "isArchived": false,
     "meta": null,
     "name": "Call Near AI Agents",
     "nodes": [
@@ -1019,6 +1762,1755 @@
   {
     "active": true,
     "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Fix merge: flat structure",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Aigency": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getMessagesByUser1",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "setLastSeenPostTimestamp",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Code1": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Create message": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Aigency",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Subscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "index": 1,
+              "node": "Merge2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Every 1h": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getUsersByCapability",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter relevant": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Filter1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Fix merge: flat structure": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter relevant",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Summarize evaluations",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Get technical ones": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Subscriptions",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "setLastSeenPostTimestamp",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "deleteMessageByUser",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Subscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out2",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Subscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Loop Over Subscriptions": {
+        "main": [
+          [
+          ],
+          [
+            {
+              "index": 0,
+              "node": "getPosts",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Create message",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Merge2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Filter1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_languageModel"
+            },
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Parse content": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getMemoriesByUser",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Speaker": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Code1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getSubscriptionsByUser",
+              "type": "main"
+            },
+            {
+              "index": 1,
+              "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getActiveFinders",
+              "type": "main"
+            },
+            {
+              "index": 0,
+              "node": "Merge2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Split Out2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Parse content",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Speaker",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser1": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Summarize evaluations": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "addEvaluation",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Webhook": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getUsersByCapability",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "getUsersByCapability",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "deleteMessageByUser": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Loop Over Subscriptions",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getActiveFinders": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getMemoriesByUser": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getMessagesByUser1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Get technical ones",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getPosts": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "If2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getSubscriptionsByUser": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Merge1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "getUsersByCapability": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Split Out",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-08-04T13:43:21.634Z",
+    "id": "35gEkA85rpAnDYwH",
+    "isArchived": false,
+    "meta": null,
+    "name": "News_Monitor",
+    "nodes": [
+      {
+        "id": "69cfb774-5205-4d03-a789-e28ff49ffd1b",
+        "name": "Webhook",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+          },
+          "path": "scan-subscriptions",
+          "responseData": "noData",
+          "responseMode": "lastNode"
+        },
+        "position": [
+          -3300,
+          440
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "9595e75a-b768-4323-8417-c4834e50f385"
+      },
+      {
+        "id": "c842838b-5d8a-40f2-85da-fd77ed93a635",
+        "name": "Every 1h",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "hoursInterval": 3,
+                "triggerAtMinute": 1
+              }
+            ]
+          }
+        },
+        "position": [
+          -3300,
+          240
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "968c829c-6e6b-4691-ab73-39f783770fe0",
+        "name": "Speaker",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=Your sole purpose is to read news. You must read, analyze and report about news. Do not ask any questions - just report. Your sole purpose is to read the news and retell it to the user emphasizing the most important things in one sentence. **Be extremely brief. Always include links without changes.**\n\nYou perceive **News** as something you read yourself.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}\n\nYour memories of the user that will influence your attitude towards the news:\n{{ $('getMemoriesByUser').item.json.result.items.map(x=>x.data) }}"
+          },
+          "promptType": "define",
+          "text": "=This message is not from user - it's only to initialize your answer. Do not greet the user. You just saw this news:\nmessage: {{ $json.text }}\nid: {{ $json.id }}"
+        },
+        "position": [
+          1920,
+          360
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8
+      },
+      {
+        "id": "7d3117a3-0341-4378-b129-63e576baacd3",
+        "name": "When clicking ‘Test workflow’",
+        "parameters": {
+        },
+        "position": [
+          -3300,
+          40
+        ],
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1
+      },
+      {
+        "id": "6c0c2835-dabb-41ad-8780-85d041f31099",
+        "maxTries": 5,
+        "name": "AI Agent",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You're always getting news with id. Your only task is to understand whether this news will be useful and interesting for the user or should be ignored. Evaluate each of them on a scale from 0 to 100%, where 0 is not interesting at all and 100% is definitely interesting.\n\nYou make your decision only based on user knowledge and common sense - the user doesn't want to receive too many meaningless notifications.\n\n## Your knowledge of the user:\n{{ $json.result.items.map(item => item.data) }}"
+          },
+          "promptType": "define",
+          "text": "=id: {{ $('Parse content').item.json.id }}\nmessage:\n{{ ($('Parse content').item.json.content.title ? $('Parse content').item.json.content.title + '.\\n' : '') + $('Parse content').item.json.content.text }}"
+        },
+        "position": [
+          780,
+          240
+        ],
+        "retryOnFail": true,
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.8,
+        "waitBetweenTries": 3000
+      },
+      {
+        "id": "76f1162d-ddb9-4d5b-9872-17af492c8828",
+        "name": "Structured Output Parser1",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": [\"number\",\"string\"],\n      \"description\": \"unchanged id\"\n    },\n    \"evaluation\": {\n        \"type\": \"number\",\n        \"minimum\": 0,\n        \"maximum\": 100,\n        \"description\": \"Channel rating in percentage based on user benefit and interest\"\n    }\n  },\n  \"required\": [\n    \"id\",\n    \"evaluation\"\n  ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          980,
+          520
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "disabled": true,
+        "id": "31ed66fd-0e2b-4429-bb19-08d9f7b8f201",
+        "name": "Postgres: Save messages metadata",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "columns": {
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false,
+            "mappingMode": "defineBelow",
+            "matchingColumns": [
+              "id"
+            ],
+            "schema": [
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": true,
+                "display": true,
+                "displayName": "id",
+                "id": "id",
+                "removed": true,
+                "required": false,
+                "type": "number"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "userid",
+                "id": "userid",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "pubdate",
+                "id": "pubdate",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "delivered",
+                "id": "delivered",
+                "required": false,
+                "type": "string"
+              },
+              {
+                "canBeUsedToMatch": true,
+                "defaultMatch": false,
+                "display": true,
+                "displayName": "identifier",
+                "id": "identifier",
+                "required": false,
+                "type": "string"
+              }
+            ],
+            "value": {
+              "delivered": "={{ $now }}",
+              "identifier": "={{ $('If2').item.json.content.id }}",
+              "pubdate": "={{ new Date($('If2').item.json.content.createdAt * 1000) }}",
+              "userid": "={{ $('Loop Over Subscriptions').item.json.userid }}"
+            }
+          },
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "delivered",
+            "mode": "list",
+            "value": "delivered"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('If2').item.json.namespace }}"
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "fd77a6f0-9847-4923-8199-179675aa073c",
+        "name": "Filter relevant",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "b3b4aa19-77ab-4ab4-a996-c2c599bc1d87",
+                "leftValue": "={{ $json.evaluation }}",
+                "operator": {
+                  "operation": "gte",
+                  "type": "number"
+                },
+                "rightValue": 70
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1400,
+          240
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "6a6dbaf9-5c98-4a5e-91d3-37427048b92f",
+        "name": "Fix merge: flat structure",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "6b089568-62eb-45ac-9f54-4a14998f55a6",
+                "name": "id",
+                "type": "string",
+                "value": "={{ $json.output.id + '' }}"
+              },
+              {
+                "id": "93bce667-352c-488c-b117-602767f6abeb",
+                "name": "text",
+                "type": "string",
+                "value": "={{ $('Parse content').item.json.content.text }}"
+              },
+              {
+                "id": "673aac4a-bfa2-4cbd-b652-ff388427ca88",
+                "name": "date",
+                "type": "string",
+                "value": "={{ $('Parse content').item.json.timestamp }}"
+              },
+              {
+                "id": "7ec30b28-c3cb-4ea0-9670-b2d64b463379",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $('Loop Over Subscriptions').item.json.source }}"
+              },
+              {
+                "id": "5eb3a087-e569-4bbb-bf8f-d4f5a56406bb",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $('Loop Over Subscriptions').item.json.link }}"
+              },
+              {
+                "id": "844ffdf6-a122-443f-9cf0-47aa3fa26536",
+                "name": "evaluation",
+                "type": "number",
+                "value": "={{ $json.output.evaluation }}"
+              },
+              {
+                "id": "0f44ef5b-93da-4738-875e-fe4f6dc30bc3",
+                "name": "url",
+                "type": "string",
+                "value": "={{ $('Parse content').item.json.content.url }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1160,
+          240
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "5b2962f2-4847-4d43-af9d-dc42d8575c3f",
+        "name": "Merge",
+        "parameters": {
+          "advanced": true,
+          "mergeByFields": {
+            "values": [
+              {
+                "field1": "id",
+                "field2": "id"
+              }
+            ]
+          },
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          2540,
+          240
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.1
+      },
+      {
+        "id": "647fcb7b-2c74-4e77-861e-5a28b4477bd9",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n    \"title\": \"Message with ID\",\n    \"description\": \"Structured output (message) with flat stucture with only two properties\",\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"id\": {\n\t\t\t\"type\": [\"number\",\"string\"],\n            \"description\": \"unchanged id\"\n\t\t},\n\t\t\"message\": {\n\t\t\t\"type\": \"string\",\n            \"description\": \"result message for the user\"\n\t\t}\n\t},\n    \"required\": [\n      \"id\",\n      \"message\"\n    ]\n}",
+          "schemaType": "manual"
+        },
+        "position": [
+          2160,
+          600
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "000a1a1b-5087-447b-867a-a83d50ffd2f6",
+        "name": "Create message",
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.message = item.json.message\n    + '\\n\\nSource: ['\n    + item.json.link\n    + ']('\n    + (item.json.source === 'telegram'\n      ? item.json.url\n      : item.json.source === 'reddit'\n        ? `https://www.reddit.com/${item.json.link}/comments/${item.json.id}/`\n        : '')\n    + ')'\n}\n\nreturn $input.all();"
+        },
+        "position": [
+          2780,
+          240
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "disabled": true,
+        "id": "75c483a1-fe18-40f8-aa1d-487c07deb648",
+        "name": "Get last messages",
+        "parameters": {
+          "operation": "select",
+          "options": {
+          },
+          "returnAll": true,
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "sort": {
+            "values": [
+              {
+                "column": "id",
+                "direction": "DESC"
+              }
+            ]
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Subscriptions').item.json.username.toLowerCase() }}"
+          }
+        },
+        "position": [
+          3260,
+          620
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.6
+      },
+      {
+        "alwaysOutputData": true,
+        "id": "19aff83a-182a-4796-9da1-c61415f2129d",
+        "name": "Get technical ones",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "f406eacc-38ac-491a-905a-21896fcb7911",
+                "leftValue": "={{ $json.message.content }}",
+                "operator": {
+                  "operation": "startsWith",
+                  "type": "string"
+                },
+                "rightValue": "This message is not from user"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3720,
+          240
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "disabled": true,
+        "id": "a77e5680-d09a-48bd-a984-5b53bfdd874d",
+        "name": "Delete technical messages",
+        "parameters": {
+          "deleteCommand": "delete",
+          "operation": "deleteTable",
+          "options": {
+          },
+          "schema": {
+            "__rl": true,
+            "cachedResultName": "public",
+            "mode": "list",
+            "value": "public"
+          },
+          "table": {
+            "__rl": true,
+            "mode": "name",
+            "value": "={{ $('Loop Over Subscriptions').item.json.username.toLowerCase() }}"
+          },
+          "where": {
+            "values": [
+              {
+                "column": "id",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        },
+        "position": [
+          4000,
+          620
+        ],
+        "type": "n8n-nodes-base.postgres",
+        "typeVersion": 2.5
+      },
+      {
+        "id": "6629f425-179a-4fa4-ba37-ccd4704ccc9c",
+        "name": "If",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "4fade0fb-3091-4c65-a63e-5ebed9ee8fdc",
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": "''"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1620,
+          240
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "17845e93-0867-4521-8695-5036c444f1d5",
+        "name": "If2",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "77ee8eec-4ea1-4dea-a797-894d631c8210",
+                "leftValue": "={{ $json.result }}",
+                "operator": {
+                  "operation": "notEmpty",
+                  "singleValue": true,
+                  "type": "array"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -140,
+          240
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "35d31cc1-ad4f-4543-a576-325813ce3f5a",
+        "name": "getUsersByCapability",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getUsersByCapability\",\"id\":1,\"params\":{\"domain\":\"core\",\"name\":\"news-monitor\",\"onlyActive\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          -3060,
+          240
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "24cfa8b5-9cf8-47c9-85ab-802016030fa5",
+        "name": "getSubscriptionsByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"getSubscriptionsByUser\",\"id\":1,\"params\":{\"userId\":{{ $json.id }},\"onlyActive\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          -2600,
+          120
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "b0e849ea-7e07-4b6c-840a-b1e7f1d69199",
+        "name": "Split Out",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "options": {
+          }
+        },
+        "position": [
+          -2840,
+          240
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "59701e59-ecf6-4540-a2cc-aa4e3803e179",
+        "name": "Filter",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "0a748b52-6944-4dcb-b0ff-f1ba2d654525",
+                "leftValue": "={{ $json.result.total }}",
+                "operator": {
+                  "operation": "notEquals",
+                  "type": "number"
+                },
+                "rightValue": 0
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -2160,
+          240
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "242cd464-8411-4a55-8005-526eef5bdcd2",
+        "name": "Merge1",
+        "parameters": {
+          "combineBy": "combineByPosition",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          -2380,
+          240
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "2f96c1f5-4e5d-4788-82c0-af70d27272c3",
+        "name": "Split Out1",
+        "parameters": {
+          "fieldToSplitOut": "result.items",
+          "include": "allOtherFields",
+          "options": {
+          }
+        },
+        "position": [
+          -1940,
+          240
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "57ffad89-6464-42b9-a364-01380179af7c",
+        "name": "getPosts",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"getContexts\",\"id\":1,\"params\":{\"source\":\"{{ $json.source }}\",\"link\":\"{{ $json.link }}\",\"timestamp\":\"{{ $json.lastSeenPostTimestamp ?? new Date(0).toISOString() }}\"}} ",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          -380,
+          240
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "38a7673d-ed45-43de-aa6f-6b0aebf3b7f9",
+        "name": "Split Out2",
+        "parameters": {
+          "fieldToSplitOut": "result",
+          "options": {
+          }
+        },
+        "position": [
+          100,
+          240
+        ],
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1
+      },
+      {
+        "id": "177ef4e9-2bfb-4ba8-ae4e-74b959b4d3c2",
+        "name": "getMemoriesByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"getMemoriesByUser\",\"id\":1,\"params\":{\"userId\":{{ $('Loop Over Subscriptions').item.json.userId }},\"limit\":100000,\"offset\":0}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          540,
+          240
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "TzGoyk2exlDciHXS",
+            "name": "Vlad Proxy"
+          }
+        },
+        "id": "692194eb-5500-4a1e-a19a-9efdbf9e334b",
+        "name": "OpenAI Chat Model",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "openai/o3-mini",
+            "mode": "list",
+            "value": "openai/o3-mini"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1420,
+          560
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "disabled": true,
+        "id": "ec07b71c-97b9-4af3-a9cc-20246100c8a8",
+        "name": "getMessagesByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getMessagesByUser\",\"id\":1,\"params\":{\"userId\":249317824,\"limit\":100000,\"offset\":0}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          540,
+          740
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "496df58e-3e77-4f58-9f9b-bee5d3acc996",
+        "name": "getMessagesByUser1",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"getMessagesByUser\",\"id\":1,\"params\":{\"userId\":{{ $('Loop Over Subscriptions').item.json.userId }},\"limit\":50,\"offset\":0}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          3480,
+          240
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "641fff7b-a217-4c07-88a0-fa4b9aff061d",
+        "name": "deleteMessageByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"deleteMessageByUser\",\"id\":1,\"params\":{\"userId\":{{ $json.user_id }},\"messageId\":\"{{ $json.id }}\"}} ",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          4180,
+          240
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "0886dd39-ede4-434e-beae-16ea76880623",
+        "name": "Code1",
+        "parameters": {
+          "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.id = item.json.output.id + ''\n  item.json.message = item.json.output.message\n  delete item.json.output\n}\n\nreturn $input.all();"
+        },
+        "position": [
+          2280,
+          360
+        ],
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2
+      },
+      {
+        "id": "b3ae652e-0a26-4010-b4f2-b30ed12b2507",
+        "name": "If1",
+        "parameters": {
+          "conditions": {
+            "combinator": "and",
+            "conditions": [
+              {
+                "id": "ed3817d6-0e87-4bfd-9ab4-04d175d36f1b",
+                "leftValue": "={{ $json.id }}",
+                "operator": {
+                  "operation": "exists",
+                  "singleValue": true,
+                  "type": "string"
+                },
+                "rightValue": ""
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          3940,
+          240
+        ],
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "05f3bc45-8c5b-4181-8ed9-fce5c73ca226",
+        "name": "setLastSeenPostTimestamp",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"setLastSeenPostTimestamp\",\"id\":1,\"params\":{\"userId\":{{ $('Loop Over Subscriptions').item.json.userId }},\"source\":\"{{ $('Fix merge: flat structure').item.json.source }}\",\"link\":\"{{ $('Fix merge: flat structure').item.json.link }}\",\"timestamp\":\"{{ $('Fix merge: flat structure').item.json.date }}\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          3480,
+          40
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "executeOnce": true,
+        "id": "e44f0bb7-14d4-4e3c-8693-ea7859523b72",
+        "name": "getActiveFinders",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getActiveFinders\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          -1720,
+          340
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "d5db7677-a788-4d6f-9c61-e44a3738cd89",
+        "name": "Filter1",
+        "parameters": {
+          "conditions": {
+            "combinator": "or",
+            "conditions": [
+              {
+                "id": "3f461c64-5199-4b8c-9363-3db7b04066a2",
+                "leftValue": "={{ $json['result.items'].isByFinder }}",
+                "operator": {
+                  "operation": "false",
+                  "singleValue": true,
+                  "type": "boolean"
+                },
+                "rightValue": ""
+              },
+              {
+                "id": "6f30f092-a641-43c9-a0c8-9c8b55533186",
+                "leftValue": "={{ $json.activeFinders }}",
+                "operator": {
+                  "operation": "contains",
+                  "rightType": "any",
+                  "type": "array"
+                },
+                "rightValue": "={{ $json.id }}"
+              }
+            ],
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            }
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1080,
+          240
+        ],
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2
+      },
+      {
+        "id": "44fe01ab-a5fa-4ef7-b119-ba5b57161661",
+        "name": "Edit Fields",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "40a6eb78-cf34-48b2-a991-133344cebaef",
+                "name": "id",
+                "type": "number",
+                "value": "={{ $json['result.items'].id }}"
+              },
+              {
+                "id": "265932d7-d6aa-4548-b501-4fee58f1c09a",
+                "name": "userId",
+                "type": "number",
+                "value": "={{ $json['result.items'].userId }}"
+              },
+              {
+                "id": "4a6956fb-ee83-4b62-a589-2efacfe3214d",
+                "name": "source",
+                "type": "string",
+                "value": "={{ $json['result.items'].source }}"
+              },
+              {
+                "id": "f1ad0195-595a-4bcd-8624-1e9d55ff0d26",
+                "name": "link",
+                "type": "string",
+                "value": "={{ $json['result.items'].link }}"
+              },
+              {
+                "id": "8f88c0a6-55df-4f54-aee0-ff7cdd36dd12",
+                "name": "isEnabled",
+                "type": "boolean",
+                "value": "={{ $json['result.items'].isEnabled }}"
+              },
+              {
+                "id": "9af74067-2679-42ca-b067-385bcea05c42",
+                "name": "lastSeenPostTimestamp",
+                "type": "string",
+                "value": "={{ $json['result.items'].lastSeenPostTimestamp }}"
+              },
+              {
+                "id": "64861f97-e690-4a4e-a40a-1eacd2e45138",
+                "name": "isByFinder",
+                "type": "boolean",
+                "value": "={{ $json['result.items'].isByFinder }}"
+              },
+              {
+                "id": "6b657ab4-eea8-464c-b0c4-5ba0356bea9a",
+                "name": "evaluations",
+                "type": "array",
+                "value": "={{ $json['result.items'].evaluations }}"
+              },
+              {
+                "id": "bc5834bb-0444-4116-97bf-a7d87508aed4",
+                "name": "username",
+                "type": "string",
+                "value": "={{ $json.username }}"
+              },
+              {
+                "id": "a6e99dfb-1887-49b6-b2cf-a0cf4add7f41",
+                "name": "status",
+                "type": "boolean",
+                "value": "={{ $json.status }}"
+              },
+              {
+                "id": "3cf71e59-03ce-4bf2-80d1-d9c0e607c85a",
+                "name": "nearAccountId",
+                "type": "string",
+                "value": "={{ $json.nearAccountId }}"
+              },
+              {
+                "id": "40afd7db-68fd-47ad-87fa-940f7d7cf44e",
+                "name": "isDeveloper",
+                "type": "boolean",
+                "value": "={{ $json.isDeveloper }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -860,
+          240
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "2dddf3be-2e81-4cbc-8a2f-80aa97c1dc10",
+        "name": "Parse content",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "7752d1dd-21a6-4810-b27b-3b191b7199c4",
+                "name": "content",
+                "type": "object",
+                "value": "={{ JSON.parse($json.content) }}"
+              }
+            ]
+          },
+          "includeOtherFields": true,
+          "options": {
+          }
+        },
+        "position": [
+          320,
+          240
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "04f29f1f-64d6-4d76-b914-3161a091c1b8",
+        "name": "addEvaluation",
+        "onError": "continueRegularOutput",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "={\"jsonrpc\":\"2.0\",\"method\":\"addEvaluation\",\"id\":1,\"params\":{\"id\":{{ $('Loop Over Subscriptions').item.json.id }},\"newValue\":{{ Math.round($json.average_evaluation) }}}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          1620,
+          20
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "ec2167c9-0b55-43ef-9cc7-7e6c0e772ac4",
+        "name": "Loop Over Subscriptions",
+        "parameters": {
+          "options": {
+            "reset": false
+          }
+        },
+        "position": [
+          -640,
+          240
+        ],
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3
+      },
+      {
+        "id": "abb2adeb-f858-4e6f-83e3-57f73b7e3eb2",
+        "name": "Summarize evaluations",
+        "parameters": {
+          "fieldsToSummarize": {
+            "values": [
+              {
+                "aggregation": "average",
+                "field": "evaluation"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          1400,
+          20
+        ],
+        "type": "n8n-nodes-base.summarize",
+        "typeVersion": 1.1
+      },
+      {
+        "id": "055c283e-3622-46ed-95f9-d337311799b1",
+        "name": "Merge2",
+        "parameters": {
+          "combineBy": "combineAll",
+          "mode": "combine",
+          "options": {
+          }
+        },
+        "position": [
+          -1300,
+          240
+        ],
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "eed27940-a988-4cba-9b72-75b17f228703",
+        "name": "Edit Fields1",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "703bd4c3-79d7-49e8-bd72-a2f641302510",
+                "name": "activeFinders",
+                "type": "array",
+                "value": "={{ $json.result }}"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -1520,
+          340
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "2ddd9627-8e38-430e-94df-2a145d5363e6",
+        "name": "Sticky Note",
+        "parameters": {
+          "content": "todo: send via backend"
+        },
+        "position": [
+          2980,
+          480
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "id": "6272cd17-e8bb-412e-8244-cceea1b492df",
+        "name": "Sticky Note1",
+        "parameters": {
+          "content": "todo: send via backend"
+        },
+        "position": [
+          2120,
+          -20
+        ],
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1
+      },
+      {
+        "credentials": {
+          "aigencyCredentialsApi": {
+            "id": "NT3LNHu3KSSR2MMu",
+            "name": "Aigency Credentials account"
+          }
+        },
+        "id": "f81e258a-4996-4723-ab93-180229c65f64",
+        "name": "Aigency",
+        "parameters": {
+          "operation": "sendMessage",
+          "text": "={{ $json.message }}",
+          "userId": "={{ $('Loop Over Subscriptions').item.json.userId }}"
+        },
+        "position": [
+          3000,
+          240
+        ],
+        "type": "@dapplets/n8n-nodes-aigency.aigency",
+        "typeVersion": 1
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": {
+      "node:Every 1h": {
+        "recurrenceRules": [
+        ]
+      }
+    },
+    "tags": [
+    ],
+    "triggerCount": 2,
+    "updatedAt": "2025-08-05T10:15:56.534Z",
+    "versionId": "f878fe52-7439-4625-bb73-1498058ac3bb"
+  },
+  {
+    "active": true,
+    "connections": {
       "Aigency Chat Memory": {
         "ai_memory": [
           [
@@ -1306,6 +3798,7 @@
     },
     "createdAt": "2025-06-24T23:15:13.037Z",
     "id": "mJs0QycAT9JKx7d7",
+    "isArchived": false,
     "meta": {
       "templateCredsSetupCompleted": true
     },
@@ -2010,7 +4503,1152 @@
     "tags": [
     ],
     "triggerCount": 1,
-    "updatedAt": "2025-06-26T14:24:35.686Z",
+    "updatedAt": "2025-06-27T12:59:13.431Z",
     "versionId": "19e7d59b-ef39-4b87-9cdb-b8e9e2645722"
+  },
+  {
+    "active": false,
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "grabTelegrams",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-08-04T13:42:50.484Z",
+    "id": "51ewSPz9YpDj0I7y",
+    "isArchived": false,
+    "meta": null,
+    "name": "Telegram_grabber_runner",
+    "nodes": [
+      {
+        "id": "0eb8ad90-1da8-47f4-bbf8-b721317d4d7b",
+        "name": "Schedule Trigger",
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "hours",
+                "triggerAtMinute": 42
+              }
+            ]
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ae77737b-f0ba-4b94-ba7a-41e3c28acf8b",
+        "name": "grabTelegrams",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"grabTelegrams\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "={{ process.env.AIGENCY_API_URL }}"
+        },
+        "position": [
+          220,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-08-05T10:16:21.452Z",
+    "versionId": "fe0e77ae-332a-4fc7-bf5b-00b4ea9209dd"
+  },
+  {
+    "active": false,
+    "connections": {
+    },
+    "createdAt": "2025-08-04T13:43:35.176Z",
+    "id": "18V6sAXZ4jRTn2gF",
+    "isArchived": false,
+    "meta": null,
+    "name": "HTTP_Nodes",
+    "nodes": [
+      {
+        "id": "f62f8e8f-2682-4df5-8d5d-59d9fed906d6",
+        "name": "addContext",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"addContext\",\"id\":1,\"params\":{\"context\":{\"id\":\"id-8\",\"namespace\":\"n\",\"type\":\"post\",\"content\":\"Hello world!!!\",\"providerId\":\"new-finder\"}}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          240,
+          440
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "60cad385-0d4c-4f8a-8080-69e76482c86c",
+        "name": "getUsersByCapability",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getUsersByCapability\",\"id\":1,\"params\":{\"domain\":\"core\",\"name\":\"news-monitor\",\"onlyActive\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          240,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "e74ec472-05a9-4d57-a6c6-dd3cc59277b6",
+        "name": "getSubscriptionsByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getSubscriptionsByUser\",\"id\":1,\"params\":{\"userId\":249317824,\"onlyActive\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          1440,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "179905c1-f1ab-47c0-bb68-6811005aa15c",
+        "name": "getPosts",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getContexts\",\"id\":1,\"params\":{\"source\":\"from-name\",\"link\":\"from-id\",\"timestamp\":\"2025-07-03T12:54:47.984Z\",\"providerId\":\"new-finder\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          0,
+          440
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "6425d714-193e-4852-a914-0005f74f908c",
+        "name": "getMemoriesByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getMemoriesByUser\",\"id\":1,\"params\":{\"userId\":249317824,\"limit\":100000,\"offset\":0}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          0,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "eb7ae13b-c291-48d8-ac80-44a1d2379a5b",
+        "name": "getMessagesByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getMessagesByUser\",\"id\":1,\"params\":{\"userId\":249317824,\"limit\":100000,\"offset\":0}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          480,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "6ff39b10-f2b5-428f-8693-324cb3bfbd41",
+        "name": "deleteMessageByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"deleteMessageByUser\",\"id\":1,\"params\":{\"userId\":249317824,\"messageId\":\"861abbc1-20ce-48d7-b9d2-75923d0b9e8d\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          720,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "461be7a5-af72-4332-8041-e9ed27ab3826",
+        "name": "setLastSeenPostTimestamp",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"setLastSeenPostTimestamp\",\"id\":1,\"params\":{\"userId\":249317824,\"source\":\"reddit\",\"link\":\"r/Spb\",\"timestamp\":\"2025-07-07T12:54:47.984Z\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          720,
+          440
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "046a4741-078c-4436-9eac-4fe20ca4d085",
+        "name": "getSubscriptionsBySource",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getSubscriptionsBySource\",\"id\":1,\"params\":{\"source\":\"telegram\",\"onlyActive\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          1200,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "fe2505f4-6794-4d77-b41f-14f1f0cd35c0",
+        "name": "grabReddits",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"grabReddits\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "086c1bf9-1444-45e8-9d6a-2d3cc0d5c51e",
+        "name": "grabTelegrams",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"grabTelegrams\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          240,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "2881e49d-7896-41f2-be08-64197cd9d915",
+        "name": "getLastSavedTelegramMessageId",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getLastSavedTelegramMessageId\",\"id\":1,\"params\":{\"link\":\"КОНТЕКСТ\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          480,
+          440
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "511e38e2-57e9-4cef-b48d-46067a225ed9",
+        "name": "getActiveFinders",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getActiveFinders\",\"id\":1,\"params\":{}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          960,
+          220
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "50a1f3c3-a62f-4b2e-b2f7-61f52a5a8391",
+        "name": "addSubscriptionByUser",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"addSubscriptionByUser\",\"id\":1,\"params\":{\"userId\":249317824,\"source\":\"telegram\",\"link\":\"abcdefg5\"}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          720,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "1c58b728-f858-416b-a726-02e977237a83",
+        "name": "setIsByFinder",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"setIsByFinder\",\"id\":1,\"params\":{\"entityId\":23,\"isByFinder\":true}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          960,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "9fb17666-8a54-4376-8041-52090cf6b26b",
+        "name": "addEvaluation",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"addEvaluation\",\"id\":1,\"params\":{\"id\":23,\"newValue\":47}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          1200,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      },
+      {
+        "id": "36f6b550-68de-4c39-afb1-fe40ce3b1611",
+        "name": "getEvaluations",
+        "parameters": {
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "jsonBody": "{\"jsonrpc\":\"2.0\",\"method\":\"getEvaluations\",\"id\":1,\"params\":{\"id\":23}}",
+          "method": "POST",
+          "options": {
+          },
+          "sendBody": true,
+          "sendHeaders": true,
+          "specifyBody": "json",
+          "url": "https://famous-lands-wish.loca.lt/rpc/"
+        },
+        "position": [
+          1440,
+          0
+        ],
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 0,
+    "updatedAt": "2025-08-04T13:43:35.176Z",
+    "versionId": "8e736d80-323d-46ec-b41d-5d0dfe37f500"
+  },
+  {
+    "active": false,
+    "connections": {
+      "AI Agent": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields10",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Basic LLM Chain2": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Edit Fields1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook1",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook2",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Edit Fields10": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Respond to Webhook",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "Incoming": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Switch",
+              "type": "main"
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain",
+              "type": "ai_languageModel"
+            },
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "ai_languageModel"
+            },
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_languageModel"
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_memory"
+            }
+          ]
+        ]
+      },
+      "Structured Output Parser": {
+        "ai_outputParser": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain",
+              "type": "ai_outputParser"
+            },
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "ai_outputParser"
+            },
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "ai_outputParser"
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "AI Agent",
+              "type": "main"
+            }
+          ],
+          [
+            {
+              "index": 0,
+              "node": "Basic LLM Chain2",
+              "type": "main"
+            }
+          ]
+        ]
+      }
+    },
+    "createdAt": "2025-08-05T08:30:18.796Z",
+    "id": "mBLgBS8zuYc8TuDz",
+    "isArchived": false,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "name": "My workflow",
+    "nodes": [
+      {
+        "id": "dc72e1f1-81b3-4b79-b84c-1a74b44139d8",
+        "name": "Edit Fields10",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "25c9dbbe-ebe0-48cf-84ee-d0a6d43b4ec2",
+                "name": "header",
+                "type": "string",
+                "value": "={{ $json.output.header }}"
+              },
+              {
+                "id": "04e6f73a-7434-4ab9-8225-e213f00229c4",
+                "name": "data",
+                "type": "string",
+                "value": "={{ $json.output.text }}"
+              },
+              {
+                "id": "c50e2c02-16d4-4eed-916c-cc1aa2302813",
+                "name": "iconUrl",
+                "type": "string",
+                "value": "https://img.icons8.com/2266EE/robot"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          420,
+          40
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "1aab40b1-85b9-42a9-a8cb-3eb2a7c36bff",
+        "name": "Respond to Webhook",
+        "parameters": {
+          "options": {
+          },
+          "respondWith": "allIncomingItems"
+        },
+        "position": [
+          640,
+          40
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4
+      },
+      {
+        "id": "3cadfbe8-2441-4663-b228-88972beb947d",
+        "name": "Structured Output Parser",
+        "parameters": {
+          "inputSchema": "{\n  \"type\": \"object\",\n  \"required\": [\"header\", \"text\"],\n  \"properties\": {\n    \"header\": {\n      \"type\": \"string\",\n      \"minLength\": 1,\n      \"description\": \"Short textual header\"\n    },\n    \"text\": {\n      \"type\": \"string\",\n      \"minLength\": 1,\n      \"description\": \"Longer explanatory text or message body\"\n    }\n  },\n  \"additionalProperties\": false\n}\n",
+          "schemaType": "manual"
+        },
+        "position": [
+          320,
+          640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+        "typeVersion": 1.3
+      },
+      {
+        "id": "f02a9229-9ab2-41c9-933c-3e046dba5c7e",
+        "name": "Basic LLM Chain",
+        "parameters": {
+          "batching": {
+          },
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You are an intelligent assistant specializing in retelling text. Your task is to analyze and process any input texts, creating short, accurate and structured retellings. Make sure that your answer is always shorter than the original text. You can answer only in Russian.\n\nBasic rules:\n1. Keep the key meanings, arguments, and conclusions of the source text.\n2. Simplify complex designs and avoid redundant details if they do not carry a semantic load.\n3. Eliminate repetitive thoughts, tautologies, and rhetorical repetitions.\n4. Retell the text in a clear and modern language.\n5. Structure the retelling in the form of short paragraphs or bullet points, if the text is suitable for such presentation.\n6. If the text contains important terms or definitions, be sure to include them in the retelling.\n7. Do not add your conclusions, do not interpret the text beyond the original meaning. The retelling must strictly reflect the original content.\n\nRetelling style:\n- Brief, concise and informative.\n- Suitable for rapid intelligent text processing by humans.\n- Without subjective assessments.\n\nIf you are given a text, start retelling immediately, without explaining the process.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}"
+              }
+            ]
+          },
+          "promptType": "define",
+          "text": "=Проанализируй следующий текст. Я в общих чертах разбираюсь в теме, но хотелось бы понятного объяснения. Дай свой максимально краткий вывод о его содержании: \n{{ $('Incoming').item.json.body.text }}\n\nПридумай твоему ответу подходящий заголовок."
+        },
+        "position": [
+          20,
+          40
+        ],
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.7
+      },
+      {
+        "id": "dd307493-a913-4d1a-b218-c427ac6d6774",
+        "name": "Incoming",
+        "parameters": {
+          "httpMethod": "POST",
+          "options": {
+            "allowedOrigins": "*"
+          },
+          "path": "retell",
+          "responseMode": "responseNode"
+        },
+        "position": [
+          -520,
+          240
+        ],
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "webhookId": "a0b556ef-3570-4157-bbea-04c20ddfa835"
+      },
+      {
+        "credentials": {
+          "openAiApi": {
+            "id": "TzGoyk2exlDciHXS",
+            "name": "Vlad Proxy"
+          }
+        },
+        "id": "341ccf16-e8ff-4bf0-9ac3-32b6540e5e8b",
+        "name": "OpenAI Chat Model",
+        "parameters": {
+          "model": {
+            "__rl": true,
+            "cachedResultName": "gemini/gemini-2.0-flash-exp",
+            "mode": "list",
+            "value": "gemini/gemini-2.0-flash-exp"
+          },
+          "options": {
+          }
+        },
+        "position": [
+          -80,
+          640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2
+      },
+      {
+        "id": "ffbd1d63-1c8b-4b9e-9a5c-114d8a9a5251",
+        "name": "Switch",
+        "parameters": {
+          "options": {
+          },
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "4de3d292-a423-4c88-abd3-719067cf9581",
+                      "leftValue": "={{ $json.body.action }}",
+                      "operator": {
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "shorten"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "shorten",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "703fc066-aed1-49cb-bf83-857c1277b576",
+                      "leftValue": "={{ $json.body.action }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "chat"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "chat",
+                "renameOutput": true
+              },
+              {
+                "conditions": {
+                  "combinator": "and",
+                  "conditions": [
+                    {
+                      "id": "8b0875cc-87a6-475a-804e-5dca2b7f3d51",
+                      "leftValue": "={{ $json.body.action }}",
+                      "operator": {
+                        "name": "filter.operator.equals",
+                        "operation": "equals",
+                        "type": "string"
+                      },
+                      "rightValue": "retell"
+                    }
+                  ],
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  }
+                },
+                "outputKey": "retell",
+                "renameOutput": true
+              }
+            ]
+          }
+        },
+        "position": [
+          -320,
+          220
+        ],
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2
+      },
+      {
+        "id": "6137ba85-a97e-4a2b-9782-f8a8ca11f6b1",
+        "name": "Respond to Webhook1",
+        "parameters": {
+          "options": {
+          },
+          "respondWith": "allIncomingItems"
+        },
+        "position": [
+          640,
+          240
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4
+      },
+      {
+        "id": "78e16485-88cf-491b-8add-a80435551c9e",
+        "name": "Respond to Webhook2",
+        "parameters": {
+          "options": {
+          },
+          "respondWith": "allIncomingItems"
+        },
+        "position": [
+          640,
+          440
+        ],
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.4
+      },
+      {
+        "id": "528955d2-5dc7-4f1d-a6db-113194dada8f",
+        "name": "Basic LLM Chain2",
+        "parameters": {
+          "batching": {
+          },
+          "hasOutputParser": true,
+          "messages": {
+            "messageValues": [
+              {
+                "message": "=You are an intelligent assistant specializing in retelling text. Your task is to analyze and process any input texts, creating short, accurate and structured retellings. Make sure that your answer is always shorter than the original text. You can answer only in Russian.\n\nBasic rules:\n1. Keep the key meanings, arguments, and conclusions of the source text.\n2. Simplify complex designs and avoid redundant details if they do not carry a semantic load.\n3. Eliminate repetitive thoughts, tautologies, and rhetorical repetitions.\n4. Retell the text in a clear and modern language.\n5. Structure the retelling in the form of short paragraphs or bullet points, if the text is suitable for such presentation.\n6. If the text contains important terms or definitions, be sure to include them in the retelling.\n7. Do not add your conclusions, do not interpret the text beyond the original meaning. The retelling must strictly reflect the original content.\n\nRetelling style:\n- Brief, concise and informative.\n- Suitable for rapid intelligent text processing by humans.\n- Without subjective assessments.\n\nIf you are given a text, start retelling immediately, without explaining the process.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}"
+              }
+            ]
+          },
+          "promptType": "define",
+          "text": "=Проанализируй следующий текст. Дай свой развернутый структурированный вывод о его содержании в виде маркированного списка: \n{{ $('Incoming').item.json.body.text }}\n\nПридумай твоему ответу подходящий заголовок."
+        },
+        "position": [
+          20,
+          440
+        ],
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.7
+      },
+      {
+        "id": "671abe0f-f949-45b3-81b1-4d96bad4f916",
+        "name": "Edit Fields",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "25c9dbbe-ebe0-48cf-84ee-d0a6d43b4ec2",
+                "name": "header",
+                "type": "string",
+                "value": "={{ $json.output.header }}"
+              },
+              {
+                "id": "04e6f73a-7434-4ab9-8225-e213f00229c4",
+                "name": "data",
+                "type": "string",
+                "value": "={{ $json.output.text }}"
+              },
+              {
+                "id": "c50e2c02-16d4-4eed-916c-cc1aa2302813",
+                "name": "iconUrl",
+                "type": "string",
+                "value": "https://img.icons8.com/2266EE/chat"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          420,
+          240
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "edf985d3-0276-4007-9055-c54fd63f1bd4",
+        "name": "Edit Fields1",
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "25c9dbbe-ebe0-48cf-84ee-d0a6d43b4ec2",
+                "name": "header",
+                "type": "string",
+                "value": "={{ $json.output.header }}"
+              },
+              {
+                "id": "04e6f73a-7434-4ab9-8225-e213f00229c4",
+                "name": "data",
+                "type": "string",
+                "value": "={{ $json.output.text }}"
+              },
+              {
+                "id": "c50e2c02-16d4-4eed-916c-cc1aa2302813",
+                "name": "iconUrl",
+                "type": "string",
+                "value": "https://img.icons8.com/2266EE/robot"
+              }
+            ]
+          },
+          "options": {
+          }
+        },
+        "position": [
+          420,
+          440
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "4d68d984-1905-4bc6-854e-a30116088ccd",
+        "name": "AI Agent",
+        "parameters": {
+          "hasOutputParser": true,
+          "options": {
+            "systemMessage": "=You are an intelligent assistant specializing in answering questions. Your task is to analyze and process any input texts. Make sure that your answer is always shorter than the original text. You can answer only in Russian.\n\nAnswers style:\n- Brief, concise and informative.\n- Suitable for rapid intelligent text processing by humans.\n- Without subjective assessments.\n\nIf you are given a text, start retelling immediately, without explaining the process.\n\n## Now: {{\n  (() => {\n    const daysOfWeek = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];\n    const now = new Date($now); // Ensure $now is a Date object\n    const dayIndex = (now.getDay() + 6) % 7; // Adjust so Monday is index 0\n    return daysOfWeek[dayIndex];\n  })()\n}}, {{ $now.format('yyyy-MM-dd, T') }}"
+          },
+          "promptType": "define",
+          "text": "={{ $json.body.text }}\n\nПроанализируй текст и ответь на вопрос: {{ $json.body.question }} Если вопрос никак не связан с текстом ранее - говори об этом прямо. Избегай ненужных объяснений и оправданий."
+        },
+        "position": [
+          20,
+          240
+        ],
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 2
+      },
+      {
+        "id": "f5f3a2c9-b993-40da-b292-13524760ec8b",
+        "name": "Simple Memory",
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $json.body.url.extractUrlPath().hash() }}"
+        },
+        "position": [
+          80,
+          640
+        ],
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3
+      }
+    ],
+    "pinData": {
+    },
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [
+    ],
+    "triggerCount": 1,
+    "updatedAt": "2025-08-05T10:16:00.122Z",
+    "versionId": "3699e277-430f-450f-b3e2-418c2e451a41"
   }
 ]
